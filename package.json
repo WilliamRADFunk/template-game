@@ -1,0 +1,67 @@
+{
+  "name": "the-enzmann",
+  "version": "0.1.0",
+  "description": "\"A space odyssey game.\"",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build": "gulp build",
+    "clean:docs": "npm run rimraf docs/",
+    "lint": "gulp lint",
+    "postbuild": "gulp clean:temp",
+    "readme": "gulp typedoc",
+    "start": "gulp",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilliamRADFunk/enzmann.git"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "William Robert Funk",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/WilliamRADFunk/enzmann/issues"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "homepage": "https://github.com/WilliamRADFunk/enzmann#readme",
+  "devDependencies": {
+    "@types/randomcolor": "^0.5.0",
+    "@types/three": "^0.92.18",
+    "babel": "^6.23.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "browserify": "^16.2.2",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-cli": "^2.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.6.1",
+    "gulp-sass": "^4.0.1",
+    "gulp-sass-lint": "^1.4.0",
+    "gulp-sequence": "^1.0.0",
+    "gulp-tslint": "^8.1.3",
+    "gulp-typedoc": "^2.2.0",
+    "gulp-typescript": "^5.0.0-alpha.3",
+    "gulp-uglify": "^3.0.1",
+    "npm-run-all": "^4.1.3",
+    "rimraf": "^2.6.2",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.11.0",
+    "typedoc": "0.11.0",
+    "typedoc-plugin-markdown": "1.1.15",
+    "typescript": "2.9.2",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "dependencies": {
+    "randomcolor": "^0.5.3",
+    "three": "^0.96.0"
+  }
+}

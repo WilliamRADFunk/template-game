@@ -1,0 +1,41 @@
+body  {
+  background-image: url('../assets/images/background2.jpg');
+  background-repeat: repeat;
+  // background-size: 99vw 99vh;
+  display: block;
+  font-family: Arial;
+  margin: 0;
+}
+
+h1  {
+  -webkit-text-stroke-color: #000000;
+  -webkit-text-stroke-width: 3px;
+  color: rgb(232, 248, 8);
+  display: block;
+  font-size: 48px;
+  height: 50px;
+  margin-top: 40px;
+  text-align: center;
+}
+
+#mainview  {
+  background-color: #000000;
+  box-shadow: 0 0 8px 1px #fe6c07;
+  display: block;
+  height: 100vh;
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+@media (max-width: 1000px)  {
+  body  {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 767px)  {
+  body  {
+    font-size: 8px;
+  }
+}
