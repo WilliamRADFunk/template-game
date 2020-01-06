@@ -1,7 +1,7 @@
 {
   "name": "the-enzmann",
   "version": "0.1.0",
-  "description": "\"A space odyssey game.\"",
+  "description": "\"A space odyssey to reach home after being flung far into the deep reaches of the galaxy.\"",
   "main": "index.js",
   "private": true,
   "scripts": {

@@ -1,5 +1,5 @@
 # The Enzmann
-(In Progress) A space odyssey game.</br></br>
+(In Progress) A space odyssey to reach home after being flung far into the deep reaches of the galaxy.</br></br>
 
 ***
 
