@@ -20,15 +20,8 @@ import {
     Texture,
     Camera} from 'three';
 
-import { CollisionatorSingleton } from './collisionator';
 import { SoundinatorSingleton } from './soundinator';
-import { Planet } from './player/planet';
-import { Shield } from './player/shield';
-import { AsteroidGenerator } from './asteroids/asteroid-generator';
-import { ScoreHandler } from './displays/score-handler';
-import { EnemyMissileGenerator } from './enemies/enemy-missile-generator';
 import { LevelHandler } from './displays/level-handler';
-import { SaucerGenerator } from './enemies/saucer-generator';
 import { Menu } from './displays/menu';
 import { ControlPanel } from './controls/control-panel';
 import { HelpHandler } from './displays/help-handler';
@@ -451,15 +444,15 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
         sat1: 1, sat2: 1, sat3: 1, sat4: 1,
         score: 0
     };
-    let isGameLive = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
     let HEIGHT: number = window.innerHeight * 0.99;
     // Create ThreeJS scene.
     const scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    const renderer: WebGLRenderer|CanvasRenderer = ((window as any)['WebGLRenderingContext']) ?
-        new WebGLRenderer() : new CanvasRenderer();
+    const renderer: WebGLRenderer|CanvasRenderer = ((window as any)['WebGLRenderingContext'])
+        ? new WebGLRenderer()
+        : new CanvasRenderer();
     // Make it black and size it to window.
     (renderer as any).setClearColor(0x000000, 0);
     renderer.setSize( WIDTH, HEIGHT );
@@ -489,14 +482,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
-    // Create player's planet, which will also create its four satellites.
-    const planet = new Planet([0, 0, 0], gameLoadData, gameFont);
-    planet.addToScene(scene, planetTextures, buildingTextures, specMap);
-    CollisionatorSingleton.add(planet);
-    // Create shield around the planet.
-    const shield = new Shield();
-    shield.addToScene(scene);
-    CollisionatorSingleton.add(shield);
     // Create the click collision layer
     const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
     const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
@@ -508,11 +493,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
 
     // Create Score and Level handlers 
     const levelHandler = new LevelHandler(scene, gameFont, gameLoadData);
-    const scoreboard = new ScoreHandler(scene, levelHandler.getColor(), gameFont, gameLoadData);
-    // Create all unit generators that can be dangerous to player
-    const asteroidGenerator = new AsteroidGenerator(scene, scoreboard, asteroidTexture, gameLoadData);
-    const saucerGenerator = new SaucerGenerator(scene, scoreboard, saucerTextures, gameLoadData);
-    const enemyMissileGenerator = new EnemyMissileGenerator(scene, scoreboard, levelHandler.getColor(), gameLoadData);
     // Create control panel in upper right corner of screen.
     const controlPanel = new ControlPanel(scene, 3.25, -5.8, gameLoadData.difficulty, levelHandler.getColor(), gameFont);
 
@@ -533,7 +513,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
         }
         raycaster.setFromCamera(mouse, camera);
         const thingsTouched = raycaster.intersectObjects(scene.children);
-        let launchFlag = true;
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
             if (el.object.name === 'Pause Button') {
@@ -543,7 +522,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                     saveHandler.deactivate();
                 }
                 controlPanel.pauseChange();
-                launchFlag = false;
                 SoundinatorSingleton.playClick();
                 return;
             }
@@ -555,13 +533,11 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                 } else {
                     helpHandler.deactivate();
                 }
-                launchFlag = false;
                 SoundinatorSingleton.playClick();
                 return;
             }
             if (el.object.name === 'Mute Button') {
                 controlPanel.muteChange();
-                launchFlag = false;
                 return;
             }
             if (el.object.name === 'Exit Button') {
@@ -569,7 +545,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                 saveHandler.deactivate();
                 helpHandler.deactivate();
                 controlPanel.exitChange();
-                launchFlag = false;
                 SoundinatorSingleton.playClick();
                 return;
             }
@@ -578,7 +553,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                     controlPanel.helpChange(!controlPanel.isHelp());
                     helpHandler.deactivate();
                 }
-                launchFlag = false;
                 SoundinatorSingleton.playClick();
                 return;
             }
@@ -587,7 +561,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                     controlPanel.saveChange(!controlPanel.isSave());
                     saveHandler.deactivate();
                 }
-                launchFlag = false;
                 SoundinatorSingleton.playClick();
                 return;
             }
@@ -599,7 +572,6 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                 } else {
                     saveHandler.deactivate();
                 }
-                launchFlag = false;
                 SoundinatorSingleton.playClick();
                 return;
             }
@@ -607,47 +579,21 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
                 const helpShield = helpHandler.getShield();
                 if (helpShield.getActive()) helpShield.deactivate();
                 else helpShield.activate();
-                launchFlag = false;
                 return;
             }
         });
         if (!controlPanel.isPaused()) {
-            // Detection for player clicked on planet for shield manipulation.
-            thingsTouched.forEach(el => {
-                if (el.object.name === 'Shield') {
-                    if (shield.getActive()) shield.deactivate();
-                    else shield.activate();
-                    launchFlag = false;
-                    return;
-                }
-            });
-            // Detection for where (if not planet) player clicked to fire satellite weapons.
-            if (launchFlag) {
-                thingsTouched.forEach(el => {
-                    if (el.object.name === 'Click Barrier') {
-                        planet.fire(scene, el.point);
-                        return;
-                    }
-                });
-            }
+            
         }
     };
 
     
     const helpHandler = new HelpHandler(scene, gameFont, saucerTextures, asteroidTexture, buildingTextures, specMap, planetTextures);
     const saveHandler = new SaveHandler(scene, gameFont);
-    
-    let jobCounter = 0;
-    let noMissiles = false;
-    let noAsteroids = false;
-    let noSaucers = false;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        jobCounter++;
-        if (jobCounter > 10) jobCounter = 0;
-
         if (controlPanel.isExit()) {
             window.removeEventListener( 'resize', onWindowResize, false);
             container.removeChild( (renderer as any).domElement );
@@ -661,76 +607,10 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
             // When paused, do nothing but render.
         // Only run operations allowed during a fluctuating banner animation.
         } else if (levelHandler.isAnimating()) {
-            const levelBannerPeak = levelHandler.runAnimationCycle();
-            if (levelBannerPeak && isGameLive) {
-                controlPanel.nextLevel(levelHandler.getColor());
-                scoreboard.nextLevel(levelHandler.getColor());
-            }
-            // Periodically check if things collided.
-            if (jobCounter === 10) {
-                CollisionatorSingleton.checkForCollisions(scene);
-            }
-            // Let the last explosions finish off even during next level banner animation.
-            noAsteroids = asteroidGenerator.endCycle(isGameLive);
-            noSaucers = saucerGenerator.endCycle(isGameLive);
-            noMissiles = enemyMissileGenerator.endCycle(isGameLive);
-            // To give the game over screen a more interesting feel,
-            // spawn more asteroids and missiles after they've exhausted themselves.
-            if (noAsteroids && noMissiles && (noSaucers || !isGameLive)) {
-                enemyMissileGenerator.refreshLevel(levelHandler.getLevel(), levelHandler.getColor());
-                asteroidGenerator.refreshLevel(levelHandler.getLevel());
-                saucerGenerator.refreshLevel(levelHandler.getLevel());
-            }
-            // The world keeps on spinning.
-            planet.endCycle();
-            // If dead, drain the battery. If not, let charging get a head start.
-            shield.endCycle(planet.getPowerRegenRate());
+            
         // Run operations unrelated to fluctuating banner animation
         } else {
-            // Checks to make sure game isn't over.
-            if (isGameLive) {
-                const status = planet.getStatus();
-                isGameLive = status.quadrant1 || status.quadrant2 || status.quadrant3 || status.quadrant4;
-                // No matter what let control panel be visible again.
-                controlPanel.endCycle();
-                // If game is over, stop increasing the score.
-                scoreboard.endCycle();
-                // If game is over, level can't change.
-                levelHandler.endCycle();
-                if (!isGameLive) levelHandler.endGame();
-            }
-            // Periodically check if things collided.
-            if (jobCounter === 10) {
-                CollisionatorSingleton.checkForCollisions(scene);
-            }
-            noAsteroids = asteroidGenerator.endCycle(isGameLive);
-            noSaucers = saucerGenerator.endCycle(isGameLive);
-            noMissiles = enemyMissileGenerator.endCycle(isGameLive);
-            planet.endCycle(scoreboard.getBonuses());
-            shield.endCycle(planet.getPowerRegenRate());
-            // Game is still live but there are no more enemy missiles or asteroids.
-            // Increase the level and refresh everything.
-            if (isGameLive && noAsteroids && noMissiles && noSaucers) {
-                levelHandler.nextLevel();
-                scoreboard.endCycle(true);
-                controlPanel.endCycle(true);
-                // Adjust game save data.
-                const status = planet.getStatus();
-                gameLoadData.b1 = (status.quadrant1) ? 1 : 0;
-                gameLoadData.b2 = (status.quadrant2) ? 1 : 0;
-                gameLoadData.b3 = (status.quadrant3) ? 1 : 0;
-                gameLoadData.b4 = (status.quadrant4) ? 1 : 0;
-                gameLoadData.level = levelHandler.getLevel();
-                gameLoadData.sat1 = (status.sat1) ? 1 : 0;
-                gameLoadData.sat2 = (status.sat2) ? 1 : 0;
-                gameLoadData.sat3 = (status.sat3) ? 1 : 0;
-                gameLoadData.sat4 = (status.sat4) ? 1 : 0;
-                gameLoadData.score = scoreboard.getScore();
-                // Start the next wave of enemies.
-                asteroidGenerator.refreshLevel(levelHandler.getLevel());
-                saucerGenerator.refreshLevel(levelHandler.getLevel());
-                enemyMissileGenerator.refreshLevel(levelHandler.getLevel(), levelHandler.getColor());
-            }
+            
         }
         renderer.render( scene, camera );
 	    requestAnimationFrame( render );
