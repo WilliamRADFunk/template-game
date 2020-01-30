@@ -219,17 +219,9 @@ export class HelpHandler {
     constructor(
         scene: Scene,
         helpFont: Font,
-        saucerTextures: Texture[],
-        asteroidTexture: Texture,
-        buildingTextures: Texture[],
-        specMap: Texture,
-        planetTextures: Texture[]) {
+        asteroidTexture: Texture) {
         this.helpFont = helpFont;
         this.scene = scene;
-        this.buildingTextures = buildingTextures;
-        this.planetTextures = planetTextures;
-        this.saucerTextures = saucerTextures;
-        this.specMap = specMap;
 
         this.sectionMaterial = new MeshBasicMaterial( {color: 0x111111, opacity: 1, transparent: false, side: DoubleSide} );
         this.sectionMaterialGlow = new MeshPhongMaterial( {color: 0x0955FF, opacity: 0.2, transparent: true, side: DoubleSide} );

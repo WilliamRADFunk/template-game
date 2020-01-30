@@ -219,11 +219,7 @@ export class Menu {
     constructor(
         scene: Scene,
         menuFont: Font,
-        saucerTextures: Texture[],
-        asteroidTexture: Texture,
-        buildingTextures: Texture[],
-        specMap: Texture,
-        planetTextures: Texture[]) {
+        asteroidTexture: Texture) {
         this.menuFont = menuFont;
         this.scene = scene;
         this.fontDifficultyBtnParams = {
@@ -370,7 +366,7 @@ export class Menu {
         this.help.rotation.x = -1.5708;
         this.scene.add(this.help);
 
-        this.helpHandler = new HelpHandler(this.scene, this.menuFont, saucerTextures, asteroidTexture, buildingTextures, specMap, planetTextures);
+        this.helpHandler = new HelpHandler(this.scene, this.menuFont, asteroidTexture);
         this.loadHandler = new LoadHandler(this.scene, this.menuFont);
 
         // Sound text

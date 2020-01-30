@@ -1,7 +1,6 @@
 import gulp from 'gulp';
-import gulpSequence from 'gulp-sequence';
 import tslint from 'gulp-tslint';
-import gutil from 'gulp-util';
+import log from 'fancy-log';
 import sass from 'gulp-sass';
 import typescript from 'gulp-typescript';
 import uglify from 'gulp-uglify';
@@ -15,22 +14,22 @@ import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
 
 gulp.task('clean:dist', () => {
-gutil.log('== Cleaning dist ==');
+log('== Cleaning dist ==');
 return del(['dist/**/*']);
 });
 
 gulp.task('clean:docs', () => {
-  gutil.log('== Cleaning docs ==');
+  log('== Cleaning docs ==');
   return del(['docs/**/*']);
 });
 
 gulp.task('clean:temp', () => {
-  gutil.log('== Cleaning temp ==');
+  log('== Cleaning temp ==');
   return del(['dist/js-pure/**/*.*']);
 });
 
 gulp.task('readme', () => {
-  gutil.log('== Assembling documentation files ==');
+  log('== Assembling documentation files ==');
   return gulp.src(['src/**/*.ts'])
     .pipe(typedoc({
       // TypeScript options (see typescript docs)
@@ -50,17 +49,17 @@ gulp.task('readme', () => {
 });
 
 gulp.task('tslint', () => {
-  gutil.log('== Lintifying the ts files ==');
-  gulp.src('src/**/*.ts')
+  log('== Lintifying the ts files ==');
+  return gulp.src('src/**/*.ts')
     .pipe(tslint({
         formatter: 'verbose'
     }))
-    .pipe(tslint.report())
+    .pipe(tslint.report());
 });
 
 gulp.task('sasslint', () => {
-  gutil.log('== Lintifying the ts files ==');
-  gulp.src(['src/scss/**/*.s+(a|c)ss'])
+  log('== Lintifying the ts files ==');
+  return gulp.src(['src/scss/**/*.s+(a|c)ss'])
     .pipe(sassLint({
       options: {
         formatter: 'stylish'
@@ -88,83 +87,84 @@ gulp.task('sasslint', () => {
       }
     }))
     .pipe(sassLint.format())
-    .pipe(sassLint.failOnError())
+    .pipe(sassLint.failOnError());
 });
 
 gulp.task('html', () => {
-  gutil.log('== Copying index.html to dist ==');
-  gulp.src('src/index.html')
+  log('== Copying index.html to dist ==');
+  return gulp.src('src/index.html')
     .pipe(gulp.dest('dist'))
-    .pipe(connect.reload())
+    .pipe(connect.reload());
 });
 
 gulp.task('assets', () => {
-  gutil.log('== Copying index.html to dist ==');
-  gulp.src('src/assets/**/*')
+  log('== Copying index.html to dist ==');
+  return gulp.src('src/assets/**/*')
     .pipe(gulp.dest('dist/assets'))
-    .pipe(connect.reload())
+    .pipe(connect.reload());
 });
 
 gulp.task('typescript', () => {
-  gutil.log('== Transmogrifying ts to js ==');
+  log('== Transmogrifying ts to js ==');
   return gulp.src('src/**/*.ts')
     .pipe(typescript({
       noImplicitAny: true,
       sourceMap: true,
-      module: "commonjs"
+      module: "commonjs",
+      target: 'es2015'
     }))
-      .on('error', gutil.log)
+      .on('error', log)
     .pipe(gulp.dest('dist/js-pure'));
 });
 
 gulp.task('bundle', () => {
-  gutil.log('== Bundling the js ==');
+  log('== Bundling the js ==');
   return browserify('./dist/js-pure/index.js')
-      .on('error', gutil.log)
+      .on('error', log)
     .bundle()
-      .on('error', gutil.log)
+      .on('error', log)
     .pipe(source('bundle.js'))
-      .on('error', gutil.log)
+      .on('error', log)
     .pipe(buffer())
     .pipe(gulp.dest('./dist/js-pure/'))
 });
 
 gulp.task('fuglify', () => {
-  gutil.log('== Fuglifying the js ==');
+  log('== Fuglifying the js ==');
   return gulp.src('dist/js-pure/bundle.js')
     .pipe(uglify())
-      .on('error', gutil.log)
+      .on('error', log)
     .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('sass', () => {
-  gutil.log('== Converting scss to css ==');
-  gulp.src([
+  log('== Converting scss to css ==');
+  return gulp.src([
     'src/scss/reset_author_richard_clark.scss',
     'src/scss/**/*.scss'
   ])
     .pipe(sass({style: 'expanded'}))
-      .on('error', gutil.log)
+      .on('error', log)
     .pipe(concat('styles.css'))
-      .on('error', gutil.log)
+      .on('error', log)
     .pipe(gulp.dest('dist/css'))
-    .pipe(connect.reload())
+    .pipe(connect.reload());
 });
 
 gulp.task('scripts:reload', (callback) => {
-  gulpSequence('clean:temp', 'typescript', 'bundle', 'fuglify', 'reload')(callback);
+  gulp.series('clean:temp', 'typescript', 'bundle', 'fuglify', 'reload')(callback);
 });
 
 gulp.task('connect', () => {
-  gutil.log('== Opening live reload server ==');
-  connect.server({
+  log('== Opening live reload server ==');
+  return connect.server({
     root: 'dist',
     livereload: true
-  })
+  });
 });
 
 gulp.task('reload', () => {
-  gutil.log('== reloading ==');
+  log('== reloading ==');
   return gulp.src('dist/index.html')
     .pipe(connect.reload());
 });
@@ -176,24 +176,24 @@ gulp.task('watch', () => {
   gulp.watch('src/index.html', ['html']);
 });
 
-gulp.task('build', gulpSequence(
+gulp.task('build', gulp.series(
   'clean:dist',
   ['tslint', 'sasslint'],
   ['assets', 'html', 'sass', 'typescript'],
-  'bundle',
-  'fuglify'
+  'bundle'// ,
+  // 'fuglify'
 ));
 
-gulp.task('typedoc', gulpSequence(
+gulp.task('typedoc', gulp.series(
   'clean:docs',
   'readme'
 ));
 
-gulp.task('lint', gulpSequence(
+gulp.task('lint', gulp.series(
   ['tslint', 'sasslint']
 ));
 
-gulp.task('default', gulpSequence(
+gulp.task('default', gulp.series(
   'clean:dist',
   ['assets', 'html', 'sass', 'typescript'],
   'bundle',

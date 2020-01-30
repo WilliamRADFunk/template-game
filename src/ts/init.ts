@@ -203,14 +203,6 @@ const soundLoaders: AudioLoader[] = [
  */
 const sounds: Audio[] = [];
 /**
- * Loads the graphics for specMap.
- */
-const specMapLoader = new TextureLoader();
-/**
- * The loaded font, used for the scoreboard.
- */
-let specMap: Texture;
-/**
  * Passes the callback functions to font and texture loaders,
  * each fitted with their chance to check if all others are done.
  */
@@ -221,43 +213,9 @@ const loadAssets = () => {
         asteroidTexture = texture;
         checkAssetsLoaded();
     });
-    // Get the ball rolling on each of the five saucer texture loads.
-    buildingLoaders.forEach((loader, index) => {
-        buildingLoaders[index].load( `assets/images/building${index + 1}.png`, texture => {
-            buildingTextures[index] = texture;
-            checkAssetsLoaded();
-        });
-    });
     // Callback function to set the scoreboard font once it is finished loading.
     fontLoader.load( 'assets/fonts/Light Pixel-7_Regular.json', font => {
         gameFont = font;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the planet foundation texture once it is finished loading.
-    planetLoaders[0].load( 'assets/images/funkmap.jpg', texture => {
-        planetTextures[0] = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the planet dead texture once it is finished loading.
-    planetLoaders[2].load( 'assets/images/funkmap_dead.jpg', texture => {
-        planetTextures[2] = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the planet bump texture once it is finished loading.
-    planetLoaders[1].load( 'assets/images/funkbump.jpg', texture => {
-        planetTextures[1] = texture;
-        checkAssetsLoaded();
-    });
-    // Get the ball rolling on each of the five saucer texture loads.
-    saucerLoaders.forEach((loader, index) => {
-        saucerLoaders[index].load( `assets/images/saucer${index + 1}.png`, texture => {
-            saucerTextures[index] = texture;
-            checkAssetsLoaded();
-        });
-    });
-    // Callback function to set the specMap texture once it is finished loading.
-    specMapLoader.load( 'assets/images/funkspec.jpg', texture => {
-        specMap = texture;
         checkAssetsLoaded();
     });
     // Get the ball rolling on each of the sound file loads.
@@ -281,10 +239,8 @@ const loadAssets = () => {
  * Checks to see if all assets are finished loaded. If so, start rendering the game.
  */
 const checkAssetsLoaded = () => {
-    if (gameFont && asteroidTexture && specMap &&
-        buildingTextures.length === buildingLoaders.length &&
+    if (gameFont && asteroidTexture &&
         saucerTextures.length === saucerLoaders.length &&
-        planetTextures.length === planetLoaders.length &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadMenu();
@@ -357,12 +313,12 @@ const loadMenu = () => {
                 SoundinatorSingleton.playClick();
                 return;
             } else if (el.object.name === 'Load Code') {
-                setTimeout(() => {
-                    isMenuMode = false;
-                    window.removeEventListener( 'resize', onWindowResize, false);
-                    container.removeChild( (rendererMenu as any).domElement );
-                    loadGame(menu.getDifficulty(), menu.getGameData());
-                }, 250);
+                // setTimeout(() => {
+                //     isMenuMode = false;
+                //     window.removeEventListener( 'resize', onWindowResize, false);
+                //     container.removeChild( (rendererMenu as any).domElement );
+                //     loadGame(menu.getDifficulty(), menu.getGameData());
+                // }, 250);
                 SoundinatorSingleton.playClick();
                 return;
             } else if (el.object.name === 'Easy') {
@@ -382,11 +338,11 @@ const loadMenu = () => {
                 SoundinatorSingleton.playClick();
                 return;
             } else if (el.object.name === 'Load') {
-                menu.pressedLoad();
+                // menu.pressedLoad();
                 SoundinatorSingleton.playClick();
                 return;
             } else if (el.object.name === 'Help') {
-                menu.pressedHelp();
+                // menu.pressedHelp();
                 SoundinatorSingleton.playClick();
                 return;
             } else if (el.object.name === 'On') {
@@ -396,7 +352,7 @@ const loadMenu = () => {
                 menu.pressedOff();
                 return;
             } else if (el.object.name === 'Return Help') {
-                menu.returnToMainMenu();
+                // menu.returnToMainMenu();
                 SoundinatorSingleton.playClick();
                 return;
             } else if (el.object.name === 'Return Load') {
@@ -414,7 +370,7 @@ const loadMenu = () => {
             }
         });
     };
-    menu = new Menu(sceneMenu, gameFont, saucerTextures, asteroidTexture, buildingTextures, specMap, planetTextures);
+    menu = new Menu(sceneMenu, gameFont, asteroidTexture);
     startMenuRendering();
 };
 const startMenuRendering = () => {
@@ -588,7 +544,7 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
     };
 
     
-    const helpHandler = new HelpHandler(scene, gameFont, saucerTextures, asteroidTexture, buildingTextures, specMap, planetTextures);
+    const helpHandler = new HelpHandler(scene, gameFont, asteroidTexture);
     const saveHandler = new SaveHandler(scene, gameFont);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
