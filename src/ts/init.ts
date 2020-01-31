@@ -16,18 +16,12 @@ import {
     Scene,
     TextureLoader,
     WebGLRenderer,
-    Vector2, 
+    Vector2,
     Texture,
     Camera} from 'three';
 
 import { SoundinatorSingleton } from './soundinator';
-import { LevelHandler } from './displays/level-handler';
-import { Menu } from './displays/menu';
-import { ControlPanel } from './controls/control-panel';
-import { HelpHandler } from './displays/help-handler';
-import { GameLoadData } from './models/game-load-data';
-import { CreateSaveCode } from './utils/create-save-code';
-import { SaveHandler } from './displays/save-handler';
+import { AsteroidGenerator } from './asteroids/asteroid-generator';
 
 /**
  * Loads the graphic for asteroid.
@@ -41,19 +35,6 @@ let asteroidTexture: Texture;
  * The thing that hears sound.
  */
 const audioListener: AudioListener = new AudioListener();
-/**
- * Loads the graphics for buildings.
- */
-const buildingLoaders: TextureLoader[] = [
-    new TextureLoader(),
-    new TextureLoader(),
-    new TextureLoader(),
-    new TextureLoader()
-];
-/**
- * The loaded textures, used for the buildings.
- */
-const buildingTextures: Texture[] = [];
 /**
  * The camera for main menu
  */
@@ -71,39 +52,9 @@ let gameFont: Font;
  */
 let isMenuMode: boolean = true;
 /**
- * Instance of Menu for controlling buttons and menu lighting.
- */
-let menu: Menu;
-/**
- * Loads the graphics for planet.
- */
-const planetLoaders: TextureLoader[] = [
-    new TextureLoader(),
-    new TextureLoader(),
-    new TextureLoader()
-];
-/**
- * The loaded textures, used for the planet.
- */
-const planetTextures: Texture[] = [];
-/**
  * The renderer for main menu
  */
 let rendererMenu: WebGLRenderer|CanvasRenderer;
-/**
- * Loads the graphics for saucers.
- */
-const saucerLoaders: TextureLoader[] = [
-    new TextureLoader(),
-    new TextureLoader(),
-    new TextureLoader(),
-    new TextureLoader(),
-    new TextureLoader()
-];
-/**
- * The loaded textures, used for the saucers.
- */
-const saucerTextures: Texture[] = [];
 /**
  * The scene for main menu.
  */
@@ -123,14 +74,14 @@ const soundPaths: string[] = [
      * Click On Sound
      * http://soundbible.com/1280-Click-On.html
      * license: Attribution 3.0
-     * Recorded by: Mike Koenig 
+     * Recorded by: Mike Koenig
      */
     'assets/audio/click.mp3',
     /**
     * Tank Firing Sound
     * http://soundbible.com/1326-Tank-Firing.html
     * license: Attribution 3.0
-    * Recorded by: snottyboy 
+    * Recorded by: snottyboy
     */
     'assets/audio/fire.mp3',
     /**
@@ -240,10 +191,9 @@ const loadAssets = () => {
  */
 const checkAssetsLoaded = () => {
     if (gameFont && asteroidTexture &&
-        saucerTextures.length === saucerLoaders.length &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
-        loadMenu();
+        loadGame();
     }
 };
 const loadMenu = () => {
@@ -302,75 +252,20 @@ const loadMenu = () => {
         const thingsTouched = raycaster.intersectObjects(sceneMenu.children);
         // Detection for player clicked on planet for shield manipulation.
         thingsTouched.forEach(el => {
-            if (el.object.name === 'Start') {
-                const difficulty = menu.pressedStart();
-                setTimeout(() => {
-                    isMenuMode = false;
-                    window.removeEventListener( 'resize', onWindowResize, false);
-                    container.removeChild( (rendererMenu as any).domElement );
-                    loadGame(difficulty);
-                }, 750);
+            if (el.object.name === 'A') {
                 SoundinatorSingleton.playClick();
                 return;
-            } else if (el.object.name === 'Load Code') {
-                // setTimeout(() => {
-                //     isMenuMode = false;
-                //     window.removeEventListener( 'resize', onWindowResize, false);
-                //     container.removeChild( (rendererMenu as any).domElement );
-                //     loadGame(menu.getDifficulty(), menu.getGameData());
-                // }, 250);
+            } else if (el.object.name === 'B') {
                 SoundinatorSingleton.playClick();
                 return;
-            } else if (el.object.name === 'Easy') {
-                menu.changeDifficulty(0);
+            } else if (el.object.name === 'C') {
                 SoundinatorSingleton.playClick();
                 return;
-            } else if (el.object.name === 'Normal') {
-                menu.changeDifficulty(1);
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Hard') {
-                menu.changeDifficulty(2);
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Hardcore') {
-                menu.changeDifficulty(3);
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Load') {
-                // menu.pressedLoad();
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Help') {
-                // menu.pressedHelp();
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'On') {
-                menu.pressedOn();
-                return;
-            } else if (el.object.name === 'Off') {
-                menu.pressedOff();
-                return;
-            } else if (el.object.name === 'Return Help') {
-                // menu.returnToMainMenu();
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Return Load') {
-                menu.returnToMainMenu();
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Help Shield') {
-                menu.toggleHelpShield();
-                return;
-            } else if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
-                .some(test => test === el.object.name)) {
-                menu.charEntered(el.object.name);
-                SoundinatorSingleton.playClick();
+            } else if (el.object.name === 'D') {
                 return;
             }
         });
     };
-    menu = new Menu(sceneMenu, gameFont, asteroidTexture);
     startMenuRendering();
 };
 const startMenuRendering = () => {
@@ -379,7 +274,7 @@ const startMenuRendering = () => {
      */
     const render = () => {
         if (isMenuMode) {
-            menu.endCycle();
+            // menu.endCycle();
             rendererMenu.render( sceneMenu, cameraMenu );
             requestAnimationFrame( render );
         }
@@ -392,14 +287,7 @@ const startMenuRendering = () => {
  * All things game related. Only starts when all assets are finished loading.
  * @param difficulty player's choice in difficulty level.
  */
-const loadGame = (difficulty: number, gld?: GameLoadData) => {
-    const gameLoadData: GameLoadData = (gld && gld.difficulty < 3) ? gld : {
-        b1: 1, b2: 1, b3: 1, b4: 1,
-        difficulty: difficulty,
-        level: 1,
-        sat1: 1, sat2: 1, sat3: 1, sat4: 1,
-        score: 0
-    };
+const loadGame = () => {
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
     let HEIGHT: number = window.innerHeight * 0.99;
@@ -447,10 +335,7 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
     clickBarrier.rotation.set(1.5708, 0, 0);
     scene.add(clickBarrier);
 
-    // Create Score and Level handlers 
-    const levelHandler = new LevelHandler(scene, gameFont, gameLoadData);
-    // Create control panel in upper right corner of screen.
-    const controlPanel = new ControlPanel(scene, 3.25, -5.8, gameLoadData.difficulty, levelHandler.getColor(), gameFont);
+    const asteroidGenerator = new AsteroidGenerator(scene, asteroidTexture);
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
@@ -471,102 +356,20 @@ const loadGame = (difficulty: number, gld?: GameLoadData) => {
         const thingsTouched = raycaster.intersectObjects(scene.children);
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
-            if (el.object.name === 'Pause Button') {
-                if (controlPanel.isHelp()) {
-                    helpHandler.deactivate();
-                } else if (controlPanel.isSave()) {
-                    saveHandler.deactivate();
-                }
-                controlPanel.pauseChange();
+            if (el.object.name === 'A') {
                 SoundinatorSingleton.playClick();
-                return;
-            }
-            if (el.object.name === 'Help Button') {
-                controlPanel.helpChange(!controlPanel.isHelp());
-                saveHandler.deactivate();
-                if (controlPanel.isHelp()) {
-                    helpHandler.activate();
-                } else {
-                    helpHandler.deactivate();
-                }
-                SoundinatorSingleton.playClick();
-                return;
-            }
-            if (el.object.name === 'Mute Button') {
-                controlPanel.muteChange();
-                return;
-            }
-            if (el.object.name === 'Exit Button') {
-                controlPanel.resume();
-                saveHandler.deactivate();
-                helpHandler.deactivate();
-                controlPanel.exitChange();
-                SoundinatorSingleton.playClick();
-                return;
-            }
-            if (el.object.name === 'Return Help') {
-                if (controlPanel.isHelp()) {
-                    controlPanel.helpChange(!controlPanel.isHelp());
-                    helpHandler.deactivate();
-                }
-                SoundinatorSingleton.playClick();
-                return;
-            }
-            if (el.object.name === 'Return Save') {
-                if (controlPanel.isSave()) {
-                    controlPanel.saveChange(!controlPanel.isSave());
-                    saveHandler.deactivate();
-                }
-                SoundinatorSingleton.playClick();
-                return;
-            }
-            if (el.object.name === 'Save Button') {
-                controlPanel.saveChange(!controlPanel.isSave());
-                helpHandler.deactivate();
-                if (controlPanel.isSave()) {
-                    saveHandler.activate(CreateSaveCode(gameLoadData));
-                } else {
-                    saveHandler.deactivate();
-                }
-                SoundinatorSingleton.playClick();
-                return;
-            }
-            if (el.object.name === 'Help Shield') {
-                const helpShield = helpHandler.getShield();
-                if (helpShield.getActive()) helpShield.deactivate();
-                else helpShield.activate();
                 return;
             }
         });
-        if (!controlPanel.isPaused()) {
-            
-        }
     };
-
-    
-    const helpHandler = new HelpHandler(scene, gameFont, asteroidTexture);
-    const saveHandler = new SaveHandler(scene, gameFont);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        if (controlPanel.isExit()) {
-            window.removeEventListener( 'resize', onWindowResize, false);
-            container.removeChild( (renderer as any).domElement );
-            loadMenu();
+        if (false) {
             return;
-        } else if (controlPanel.isHelp()) {
-            helpHandler.endCycle();
-        } else if (controlPanel.isSave()) {
-            saveHandler.endCycle();
-        } else if (controlPanel.isPaused()) {
-            // When paused, do nothing but render.
-        // Only run operations allowed during a fluctuating banner animation.
-        } else if (levelHandler.isAnimating()) {
-            
-        // Run operations unrelated to fluctuating banner animation
         } else {
-            
+            const noAsteroids = asteroidGenerator.endCycle(true);
         }
         renderer.render( scene, camera );
 	    requestAnimationFrame( render );

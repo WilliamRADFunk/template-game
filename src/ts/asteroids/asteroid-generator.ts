@@ -2,8 +2,6 @@ import { Scene, Texture } from 'three';
 
 import { Asteroid } from './asteroid';
 import { CollisionatorSingleton } from '../collisionator';
-import { ScoreHandler } from '../displays/score-handler';
-import { GameLoadData } from '../models/game-load-data';
 /**
  * @class
  * Makes, Moves, and Scores the asteroids and their resulting destruction.
@@ -44,7 +42,7 @@ export class AsteroidGenerator {
     /**
      * Reference to the scorekeeper for adding points on asteroid destruction.
      */
-    private scoreboard: ScoreHandler;
+    private scoreboard: any;
     /**
      * Constructor for the AsteroidGenerator class
      * @param scene           graphic rendering scene object. Used each iteration to redraw things contained in scene.
@@ -53,12 +51,12 @@ export class AsteroidGenerator {
      * @param gld             contains level of difficulty and level chosen by player.
      * @hidden
      */
-    constructor(scene: Scene, scoreboard: ScoreHandler, asteroidTexture: Texture, gld: GameLoadData) {
-        this.difficulty = gld.difficulty;
-        this.currentLevel = gld.level;
+    constructor(scene: Scene, asteroidTexture: Texture) {
+        this.difficulty = 1;
+        this.currentLevel = 1;
         this.asteroidPoints = (this.difficulty + 1) * this.asteroidPoints;
         this.scene = scene;
-        this.scoreboard = scoreboard;
+        this.scoreboard = { addPoints: () => {} };
         this.aTexture = asteroidTexture;
         this.makeAsteroidsFromLoad();
     }
