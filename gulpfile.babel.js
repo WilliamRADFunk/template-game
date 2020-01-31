@@ -3,7 +3,7 @@ import tslint from 'gulp-tslint';
 import log from 'fancy-log';
 import sass from 'gulp-sass';
 import typescript from 'gulp-typescript';
-import uglify from 'gulp-uglify';
+import uglify from 'gulp-uglify-es';
 import connect from 'gulp-connect';
 import concat from 'gulp-concat';
 import del from 'del';
@@ -180,8 +180,8 @@ gulp.task('build', gulp.series(
   'clean:dist',
   ['tslint', 'sasslint'],
   ['assets', 'html', 'sass', 'typescript'],
-  'bundle'// ,
-  // 'fuglify'
+  'bundle',
+  'fuglify'
 ));
 
 gulp.task('typedoc', gulp.series(
