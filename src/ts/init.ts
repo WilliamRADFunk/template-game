@@ -356,7 +356,7 @@ const loadGame = () => {
         const thingsTouched = raycaster.intersectObjects(scene.children);
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
-            if (el.object.name === 'A') {
+            if (el.object.name === 'Click Barrier') {
                 SoundinatorSingleton.playClick();
                 return;
             }

@@ -38,7 +38,7 @@ class Soundinator {
     /**
      * Tracks whether game is in silent mode or not.
      */
-    private isMute: boolean = true;
+    private isMute: boolean = false;
     /**
      * Contains the regenerated satellite or base sound.
      */
