@@ -36,10 +36,6 @@ let asteroidTexture: Texture;
  */
 const audioListener: AudioListener = new AudioListener();
 /**
- * The camera for main menu
- */
-let cameraMenu: Camera;
-/**
  * Loads the font from a json file.
  */
 const fontLoader = new FontLoader();
@@ -47,18 +43,6 @@ const fontLoader = new FontLoader();
  * The loaded font, used for the scoreboard.
  */
 let gameFont: Font;
-/**
- * Flag to allow menu rendering to continue.
- */
-let isMenuMode: boolean = true;
-/**
- * The renderer for main menu
- */
-let rendererMenu: WebGLRenderer|CanvasRenderer;
-/**
- * The scene for main menu.
- */
-let sceneMenu: Scene;
 /**
  * Sound file paths
  */
@@ -195,93 +179,6 @@ const checkAssetsLoaded = () => {
         SoundinatorSingleton.addSounds(sounds);
         loadGame();
     }
-};
-const loadMenu = () => {
-    isMenuMode = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    sceneMenu = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    rendererMenu = ((window as any)['WebGLRenderingContext']) ?
-        new WebGLRenderer() : new CanvasRenderer();
-    // Make it black and size it to window.
-    (rendererMenu as any).setClearColor(0x000000, 0);
-    rendererMenu.setSize( WIDTH, HEIGHT );
-    rendererMenu.autoClear = false;
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (rendererMenu as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    cameraMenu =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	cameraMenu.position.set(0, -20, 0);
-    cameraMenu.lookAt(sceneMenu.position);
-    cameraMenu.add(audioListener);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating cameraMenu and rendererMenu.
-     */
-    const onWindowResize = () => {
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
-        rendererMenu.setSize( WIDTH, HEIGHT );
-        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        document.getElementById('mainview').style.width = WIDTH + 'px';
-        document.getElementById('mainview').style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
-    // Click event listener that activates certain menu options.
-    const raycaster = new Raycaster();
-    document.onclick = event => {
-        const mouse = new Vector2();
-        event.preventDefault();
-        // Gets accurate click positions using css and raycasting.
-        const position = {
-            left: container.offsetLeft,
-            top: container.offsetTop
-        };
-        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-        if (event.clientX !== undefined) {
-            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-        }
-        raycaster.setFromCamera(mouse, cameraMenu);
-        const thingsTouched = raycaster.intersectObjects(sceneMenu.children);
-        // Detection for player clicked on planet for shield manipulation.
-        thingsTouched.forEach(el => {
-            if (el.object.name === 'A') {
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'B') {
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'C') {
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'D') {
-                return;
-            }
-        });
-    };
-    startMenuRendering();
-};
-const startMenuRendering = () => {
-    /**
-     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
-     */
-    const render = () => {
-        if (isMenuMode) {
-            // menu.endCycle();
-            rendererMenu.render( sceneMenu, cameraMenu );
-            requestAnimationFrame( render );
-        }
-    };
-    // Kick off the first render loop iteration.
-    rendererMenu.render( sceneMenu, cameraMenu );
-	requestAnimationFrame( render );
 };
 /**
  * All things game related. Only starts when all assets are finished loading.

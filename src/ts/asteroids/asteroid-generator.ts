@@ -34,7 +34,7 @@ export class AsteroidGenerator {
     /**
      * Maximum number of asteroids that can exist at one time.
      */
-    private maxAsteroids: number = 10;
+    private maxAsteroids: number = 20;
     /**
      * Reference to the scene, used to remove projectile from rendering cycle once destroyed.
      */
@@ -52,8 +52,8 @@ export class AsteroidGenerator {
      * @hidden
      */
     constructor(scene: Scene, asteroidTexture: Texture) {
-        this.difficulty = 1;
-        this.currentLevel = 1;
+        this.difficulty = 2;
+        this.currentLevel = 2;
         this.asteroidPoints = (this.difficulty + 1) * this.asteroidPoints;
         this.scene = scene;
         this.scoreboard = { addPoints: () => {} };
