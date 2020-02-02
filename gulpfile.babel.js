@@ -198,6 +198,5 @@ gulp.task('default', gulp.series(
   ['assets', 'html', 'sass', 'typescript'],
   'bundle',
   'fuglify',
-  'connect',
-  'watch'
+  'connect'
 ));

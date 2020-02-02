@@ -17,11 +17,12 @@ import {
     TextureLoader,
     WebGLRenderer,
     Vector2,
-    Texture,
-    Camera} from 'three';
+    Texture} from 'three';
 
-import { SoundinatorSingleton } from './soundinator';
 import { AsteroidGenerator } from './asteroids/asteroid-generator';
+import { SceneType } from './models/SceneType';
+import { SoundinatorSingleton } from './soundinator';
+import { Menu } from './displays/menu';
 
 /**
  * Loads the graphic for asteroid.
@@ -43,6 +44,23 @@ const fontLoader = new FontLoader();
  * The loaded font, used for the scoreboard.
  */
 let gameFont: Font;
+
+const scenes: { [ key: string ]: SceneType } = {
+    intro: {
+        active: false,
+        camera: null,
+        instance: null,
+        renderer: null,
+        scene: null
+    },
+    menu: {
+        active: false,
+        camera: null,
+        instance: null,
+        renderer: null,
+        scene: null
+    }
+};
 /**
  * Sound file paths
  */
@@ -177,46 +195,180 @@ const checkAssetsLoaded = () => {
     if (gameFont && asteroidTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
-        loadGame();
+        loadIntro();
     }
 };
-/**
- * All things game related. Only starts when all assets are finished loading.
- * @param difficulty player's choice in difficulty level.
- */
-const loadGame = () => {
+const loadMenu = () => {
+    scenes.menu.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
     let HEIGHT: number = window.innerHeight * 0.99;
     // Create ThreeJS scene.
-    const scene = new Scene();
+    scenes.menu.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    const renderer: WebGLRenderer|CanvasRenderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer()
-        : new CanvasRenderer();
+    scenes.menu.renderer = ((window as any)['WebGLRenderingContext']) ?
+        new WebGLRenderer() : new CanvasRenderer();
     // Make it black and size it to window.
-    (renderer as any).setClearColor(0x000000, 0);
-    renderer.setSize( WIDTH, HEIGHT );
-    renderer.autoClear = false;
-    // An all around brightish light that hits everything equally.
-    scene.add(new AmbientLight(0xCCCCCC));
+    (scenes.menu.renderer as any).setClearColor(0x000000, 0);
+    scenes.menu.renderer.setSize( WIDTH, HEIGHT );
+    (scenes.menu.renderer as any).autoClear = false;
     // Render to the html container.
     const container = document.getElementById('mainview');
-	container.appendChild( (renderer as any).domElement );
+	container.appendChild( (scenes.menu.renderer as any).domElement );
     // Set up player's ability to see the game, and focus center on planet.
-    const camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	camera.position.set(0, -20, 0);
-    camera.lookAt(scene.position);
-    camera.add(audioListener);
+    scenes.menu.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
+	scenes.menu.camera.position.set(0, -20, 0);
+    scenes.menu.camera.lookAt(scenes.menu.scene.position);
+    scenes.menu.camera.add(audioListener);
     /**
-     * Gracefully handles a change in window size, by recalculating shape and updating camera and renderer.
+     * Gracefully handles a change in window size, by recalculating shape and updating scenes.menu.camera and scenes.menu.renderer.
      */
     const onWindowResize = () => {
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
         else WIDTH = HEIGHT;
-        renderer.setSize( WIDTH, HEIGHT );
+        scenes.menu.renderer.setSize( WIDTH, HEIGHT );
+        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        document.getElementById('mainview').style.width = WIDTH + 'px';
+        document.getElementById('mainview').style.height = HEIGHT + 'px';
+    };
+    onWindowResize();
+    window.addEventListener( 'resize', onWindowResize, false);
+    // Click event listener that activates certain menu options.
+    const raycaster = new Raycaster();
+    document.onclick = event => {
+        const mouse = new Vector2();
+        event.preventDefault();
+        // Gets accurate click positions using css and raycasting.
+        const position = {
+            left: container.offsetLeft,
+            top: container.offsetTop
+        };
+        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
+        if (event.clientX !== undefined) {
+            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
+            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
+        }
+        raycaster.setFromCamera(mouse, scenes.menu.camera);
+        const thingsTouched = raycaster.intersectObjects(scenes.menu.scene.children);
+        // Detection for player clicked on planet for shield manipulation.
+        thingsTouched.forEach(el => {
+            if (el.object.name === 'Start') {
+                const difficulty = scenes.menu.instance.pressedStart();
+                setTimeout(() => {
+                    scenes.menu.active = false;
+                    window.removeEventListener( 'resize', onWindowResize, false);
+                    container.removeChild( (scenes.menu.renderer as any).domElement );
+                    // loadGame(difficulty);
+                }, 750);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Load Code') {
+                setTimeout(() => {
+                    scenes.menu.active = false;
+                    window.removeEventListener( 'resize', onWindowResize, false);
+                    container.removeChild( (scenes.menu.renderer as any).domElement );
+                    // loadGame(1);
+                }, 250);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Easy') {
+                scenes.menu.instance.changeDifficulty(0);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Normal') {
+                scenes.menu.instance.changeDifficulty(1);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Hard') {
+                scenes.menu.instance.changeDifficulty(2);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Hardcore') {
+                scenes.menu.instance.changeDifficulty(3);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Load') {
+                scenes.menu.instance.pressedLoad();
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Help') {
+                scenes.menu.instance.pressedHelp();
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'On') {
+                scenes.menu.instance.pressedOn();
+                return;
+            } else if (el.object.name === 'Off') {
+                scenes.menu.instance.pressedOff();
+                return;
+            } else if (el.object.name === 'Return Help') {
+                scenes.menu.instance.returnToMainMenu();
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Return Load') {
+                scenes.menu.instance.returnToMainMenu();
+                SoundinatorSingleton.playClick();
+                return;
+            }
+        });
+    };
+    scenes.menu.instance = new Menu(scenes.menu.scene, gameFont);
+    startMenuRendering();
+};
+const startMenuRendering = () => {
+    /**
+     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
+     */
+    const render = () => {
+        if (scenes.menu.active) {
+            scenes.menu.instance.endCycle();
+            scenes.menu.renderer.render( scenes.menu.scene, scenes.menu.camera );
+            requestAnimationFrame( render );
+        }
+    };
+    // Kick off the first render loop iteration.
+    scenes.menu.renderer.render( scenes.menu.scene, scenes.menu.camera );
+	requestAnimationFrame( render );
+};
+/**
+ * Game's intro scene. Only starts when all assets are finished loading.
+ */
+const loadIntro = () => {
+    scenes.intro.active = true;
+    // Establish initial window size.
+    let WIDTH: number = window.innerWidth * 0.99;
+    let HEIGHT: number = window.innerHeight * 0.99;
+    // Create ThreeJS scene.
+    scenes.intro.scene = new Scene();
+    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
+    scenes.intro.renderer = ((window as any)['WebGLRenderingContext'])
+        ? new WebGLRenderer()
+        : new CanvasRenderer();
+    // Make it black and size it to window.
+    (scenes.intro.renderer as any).setClearColor(0x000000, 0);
+    scenes.intro.renderer.setSize( WIDTH, HEIGHT );
+    (scenes.intro.renderer as any).autoClear = false;
+    // An all around brightish light that hits everything equally.
+    scenes.intro.scene.add(new AmbientLight(0xCCCCCC));
+    // Render to the html container.
+    const container = document.getElementById('mainview');
+	container.appendChild( (scenes.intro.renderer as any).domElement );
+    // Set up player's ability to see the game, and focus center on planet.
+    scenes.intro.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
+	scenes.intro.camera.position.set(0, -20, 0);
+    scenes.intro.camera.lookAt(scenes.intro.scene.position);
+    scenes.intro.camera.add(audioListener);
+    /**
+     * Gracefully handles a change in window size, by recalculating shape and updating scenes.intro.camera and scenes.intro.renderer.
+     */
+    const onWindowResize = () => {
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        scenes.intro.renderer.setSize( WIDTH, HEIGHT );
         document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
         document.getElementById('mainview').style.width = WIDTH + 'px';
         document.getElementById('mainview').style.height = HEIGHT + 'px';
@@ -230,9 +382,9 @@ const loadGame = () => {
     clickBarrier.name = 'Click Barrier';
     clickBarrier.position.set(0, 0, 0);
     clickBarrier.rotation.set(1.5708, 0, 0);
-    scene.add(clickBarrier);
+    scenes.intro.scene.add(clickBarrier);
 
-    const asteroidGenerator = new AsteroidGenerator(scene, asteroidTexture);
+    const asteroidGenerator = new AsteroidGenerator(scenes.intro.scene, asteroidTexture);
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
@@ -249,12 +401,16 @@ const loadGame = () => {
             mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
             mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
         }
-        raycaster.setFromCamera(mouse, camera);
-        const thingsTouched = raycaster.intersectObjects(scene.children);
+        raycaster.setFromCamera(mouse, scenes.intro.camera);
+        const thingsTouched = raycaster.intersectObjects(scenes.intro.scene.children);
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
             if (el.object.name === 'Click Barrier') {
                 SoundinatorSingleton.playClick();
+                scenes.intro.active = false;
+                setTimeout(() => {
+                    loadMenu();
+                }, 100);
                 return;
             }
         });
@@ -263,16 +419,25 @@ const loadGame = () => {
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        if (false) {
+        if (!scenes.intro.active) {
+            // Remove renderer from the html container, and remove event listeners.
+            window.removeEventListener( 'resize', onWindowResize, false);
+            const container = document.getElementById('mainview');
+            container.removeChild( (scenes.intro.renderer as any).domElement );
+            // Clear up memory used by intro scene.
+            scenes.intro.camera = null;
+            scenes.intro.instance = null;
+            scenes.intro.renderer = null;
+            scenes.intro.scene = null;
             return;
         } else {
             const noAsteroids = asteroidGenerator.endCycle(true);
         }
-        renderer.render( scene, camera );
+        scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
 	    requestAnimationFrame( render );
     };
     // Kick off the first render loop iteration.
-    renderer.render( scene, camera );
+    scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
 	requestAnimationFrame( render );
 };
 /**
