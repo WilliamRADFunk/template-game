@@ -38,6 +38,14 @@ let asteroidTexture: Texture;
  */
 const audioListener: AudioListener = new AudioListener();
 /**
+ * Loads the graphic for earth.
+ */
+const earthLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the earth.
+ */
+let earthTexture: Texture;
+/**
  * Loads the font from a json file.
  */
 const fontLoader = new FontLoader();
@@ -175,6 +183,11 @@ const loadAssets = () => {
         asteroidTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the earth texture once it is finished loading.
+    earthLoader.load( 'assets/images/earth.png', texture => {
+        earthTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the ship texture once it is finished loading.
     shipLoader.load( 'assets/images/ship.png', texture => {
         shipTexture = texture;
@@ -206,7 +219,7 @@ const loadAssets = () => {
  * Checks to see if all assets are finished loaded. If so, start rendering the game.
  */
 const checkAssetsLoaded = () => {
-    if (gameFont && asteroidTexture && shipTexture &&
+    if (gameFont && asteroidTexture && shipTexture && earthTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadIntro();
@@ -427,7 +440,7 @@ const loadIntro = () => {
             }
         });
     };
-    const intro = new Intro(scenes.intro.scene, shipTexture, gameFont);
+    const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, gameFont);
     setTimeout(() => {
         intro.setDestination(6.5, 0);
     }, 2000);
@@ -447,7 +460,7 @@ const loadIntro = () => {
             scenes.intro.scene = null;
             return;
         } else {
-            asteroidGenerator.endCycle(true);
+            // asteroidGenerator.endCycle(true);
             intro.endCycle();
         }
         scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );

@@ -22,6 +22,10 @@ import { SoundinatorSingleton } from '../soundinator';
  */
 export class Intro {
     /**
+     * Controls the overall rendering of the earth
+     */
+    private earth: Mesh;
+    /**
      * Controls size and shape of the ship
      */
     private shipGeometry: CircleGeometry;
@@ -89,18 +93,31 @@ export class Intro {
      * Constructor for the Intro (Scene) class
      * @param scene         graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param shipTexture   texture for the ship.
+     * @param shipTexture   texture for the earth.
      * @param introFont     loaded font to use for help display text.
      * @param x1            origin point x of where the ship starts.
      * @param z1            origin point z of where the ship starts.
      * @hidden
      */
-    constructor(scene: Scene, shipTexture: Texture, introFont: Font) {
+    constructor(scene: Scene, shipTexture: Texture, earthTexture: Texture, introFont: Font) {
         this.introFont = introFont;
         this.speed += (1 / 1000);
-        this.originalStartingPoint = [-6.5, 0];
-        this.currentPoint = [-6.5, 0];
-
+        this.originalStartingPoint = [-5.5, 0];
+        this.currentPoint = [-5.5, 0];
         this.scene = scene;
+
+		const earthGeometry = new CircleGeometry(5, 16, 16);
+        const earthMaterial = new MeshPhongMaterial();
+        earthMaterial.map = earthTexture;
+        earthMaterial.map.minFilter = LinearFilter;
+        earthMaterial.shininess = 0;
+        earthMaterial.transparent = true;
+        this.earth = new Mesh(earthGeometry, earthMaterial);
+        this.earth.position.set(this.currentPoint[0] - 1, 0.5, this.currentPoint[1]);
+        this.earth.rotation.set(-1.5708, 0, 0);
+        this.earth.name = 'Intro Scene';
+        this.scene.add(this.earth);
+
 		this.shipGeometry = new CircleGeometry(0.5, 16, 16);
         this.shipMaterial = new MeshPhongMaterial();
         this.shipMaterial.map = shipTexture;
