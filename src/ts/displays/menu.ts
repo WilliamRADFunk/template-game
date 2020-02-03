@@ -310,7 +310,7 @@ export class Menu {
                 bevelSegments: 3
             });
         this.mainBanner = new Mesh( this.mainBannerGeometry, this.menuSelectedMaterial );
-        this.mainBanner.position.set(-5, -0.5, -3);
+        this.mainBanner.position.set(-4.85, -0.5, -3);
         this.mainBanner.rotation.x = -1.5708;
         this.scene.add(this.mainBanner);
         // Copyright text

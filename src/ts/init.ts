@@ -23,6 +23,7 @@ import { AsteroidGenerator } from './asteroids/asteroid-generator';
 import { SceneType } from './models/SceneType';
 import { SoundinatorSingleton } from './soundinator';
 import { Menu } from './displays/menu';
+import { Intro } from './scenes/intro';
 
 /**
  * Loads the graphic for asteroid.
@@ -61,6 +62,14 @@ const scenes: { [ key: string ]: SceneType } = {
         scene: null
     }
 };
+/**
+ * Loads the graphic for ship.
+ */
+const shipLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the ships.
+ */
+let shipTexture: Texture;
 /**
  * Sound file paths
  */
@@ -166,6 +175,11 @@ const loadAssets = () => {
         asteroidTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the ship texture once it is finished loading.
+    shipLoader.load( 'assets/images/ship.png', texture => {
+        shipTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the scoreboard font once it is finished loading.
     fontLoader.load( 'assets/fonts/Light Pixel-7_Regular.json', font => {
         gameFont = font;
@@ -192,7 +206,7 @@ const loadAssets = () => {
  * Checks to see if all assets are finished loaded. If so, start rendering the game.
  */
 const checkAssetsLoaded = () => {
-    if (gameFont && asteroidTexture &&
+    if (gameFont && asteroidTexture && shipTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadIntro();
@@ -408,13 +422,15 @@ const loadIntro = () => {
             if (el.object.name === 'Click Barrier') {
                 SoundinatorSingleton.playClick();
                 scenes.intro.active = false;
-                setTimeout(() => {
-                    loadMenu();
-                }, 100);
+                loadMenu();
                 return;
             }
         });
     };
+    const intro = new Intro(scenes.intro.scene, shipTexture, gameFont);
+    setTimeout(() => {
+        intro.setDestination(6.5, 0);
+    }, 2000);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
@@ -431,7 +447,8 @@ const loadIntro = () => {
             scenes.intro.scene = null;
             return;
         } else {
-            const noAsteroids = asteroidGenerator.endCycle(true);
+            asteroidGenerator.endCycle(true);
+            intro.endCycle();
         }
         scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
 	    requestAnimationFrame( render );
