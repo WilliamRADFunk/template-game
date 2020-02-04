@@ -4,7 +4,7 @@ import {
     Mesh,
     MeshPhongMaterial,
     Scene,
-    Texture, 
+    Texture,
     PlaneGeometry,
     MeshBasicMaterial,
     DoubleSide,
@@ -54,7 +54,15 @@ export class Intro {
      */
     private sequences: Sequence[] = [
         {
-            actorEvents: [],
+            actorEvents: [
+                {
+                    actorIndex: 0,
+                    endPoint: [ -8.5, 0 ],
+                    speed: 0.001,
+                    startingFrame: 1,
+                    startPoint: [ -6.5, 0 ]
+                }
+            ],
             endingFrame: 5000,
             startingFrame: 1,
             textEvents: [
@@ -79,6 +87,7 @@ export class Intro {
     private text: FadableText = {
         counter: 1,
         font: null,
+        geometry: null,
         headerParams: null,
         isFadeIn: true,
         isHolding: false,
@@ -124,6 +133,7 @@ export class Intro {
             bevelSize: 0.5,
             bevelSegments: 3
         };
+        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
 
         const earth = createActor();
         earth.originalStartingPoint = [-6.5, 0];
@@ -174,13 +184,7 @@ export class Intro {
         this.scene.add(ship.mesh);
         this.actors[2] = ship;
     }
-    /**
-     * Creates an explosion during collision and adds it to the collildables list.
-     */
-    private createExplosion(): void {
-        this.explosion = new Explosion(this.scene, this.actors[2].mesh.position.x, this.actors[2].mesh.position.z, 0.2, true);
-        SoundinatorSingleton.playBoom(true);
-    }
+
     /**
      * At the end of each loop iteration, move the asteroid a little.
      * @returns whether or not the asteroid is done, and its points calculated.
@@ -195,10 +199,10 @@ export class Intro {
         }
         if (this.currentSequenceIndex < this.sequences.length) {
             const sequence = this.sequences[this.currentSequenceIndex];
-            let actorEvent = sequence.actorEvents.find(event => event.startingFrame === this.currentFrame);
-            let textEvent = sequence.textEvents.find(event => event.startingFrame === this.currentFrame);
+            const actorEvent = sequence.actorEvents.find(event => event.startingFrame === this.currentFrame);
+            const textEvent = sequence.textEvents.find(event => event.startingFrame === this.currentFrame);
             if (actorEvent) {
-                // Do Something
+                const actor = this.actors[actorEvent.actorIndex];
             }
             if (textEvent) {
                 this.text.sentence = textEvent.sentence;
@@ -219,7 +223,7 @@ export class Intro {
         });
         return true;
     }
-    
+
     /**
      * Builds the text and graphics for the text dialogue at top of screen.
      */
@@ -247,8 +251,7 @@ export class Intro {
             return;
         }
 
-        let textGeo = new TextGeometry(this.text.sentence, this.text.headerParams);
-        this.text.mesh = new Mesh( textGeo, this.text.material );
+        this.text.mesh = new Mesh( this.text.geometry, this.text.material );
         this.text.mesh.position.set(-5.65, -11.4, -5.5);
         this.text.mesh.rotation.x = -1.5708;
         this.scene.add(this.text.mesh);
