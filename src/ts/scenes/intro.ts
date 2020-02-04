@@ -15,6 +15,7 @@ import {
 
 import { Explosion } from '../weapons/explosion';
 import { SoundinatorSingleton } from '../soundinator';
+import { Entity } from '../models/entity';
 
 /**
  * @class
@@ -24,55 +25,45 @@ export class Intro {
     /**
      * Controls the overall rendering of the earth
      */
-    private earth: Mesh;
-    /**
-     * Controls size and shape of the ship
-     */
-    private shipGeometry: CircleGeometry;
-    /**
-     * Controls the color of the ship material
-     */
-	private shipMaterial: MeshPhongMaterial;
+    private earth: Entity = {
+        currentPoint: [],
+        distanceTraveled: 0,
+        endingPoint: [],
+        geometry: null,
+        inMotion: false,
+        material: null,
+        mesh: null,
+        originalStartingPoint: [],
+        speed: 0.002,
+        totalDistance: 0
+    };
     /**
      * Controls the overall rendering of the ship
      */
-    private ship: Mesh;
-    /**
-     * Keeps track of the x,z point the ship is at currently.
-     */
-    private currentPoint: number[];
-    /**
-     * Tracks the distance traveled thus far to update the calculateNextPoint calculation.
-     */
-    private distanceTraveled: number;
-    /**
-     * Keeps track of the x,z point of ship's destination point.
-     */
-    private endingPoint: number[];
+    private ship: Entity = {
+        currentPoint: [],
+        distanceTraveled: 0,
+        endingPoint: [],
+        geometry: null,
+        inMotion: false,
+        material: null,
+        mesh: null,
+        originalStartingPoint: [],
+        speed: 0.002,
+        totalDistance: 0
+    };
     /**
      * Explosion from impacted ship
      */
     private explosion: Explosion;
     /**
-     * Flag to signal whether next travel point should be calculated.
-     */
-    private inMotion: boolean = false;
-    /**
      * Loaded font for display text.
      */
     private introFont: Font;
     /**
-     * Keeps track of the x,z point where ship fired from.
-     */
-    private originalStartingPoint: number[];
-    /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
     private scene: Scene;
-    /**
-     * The speed at which the ship travels.
-     */
-    private speed: number = 0.002;
     /**
      * Since most of the text on the menu has same parameters, use one variable.
      */
@@ -86,14 +77,10 @@ export class Intro {
      */
     private text: Mesh;
     /**
-     * The total distance from ship to planet.
-     */
-    private totalDistance: number;
-    /**
      * Constructor for the Intro (Scene) class
      * @param scene         graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param shipTexture   texture for the ship.
-     * @param shipTexture   texture for the earth.
+     * @param earthTexture  texture for the earth.
      * @param introFont     loaded font to use for help display text.
      * @param x1            origin point x of where the ship starts.
      * @param z1            origin point z of where the ship starts.
@@ -101,34 +88,43 @@ export class Intro {
      */
     constructor(scene: Scene, shipTexture: Texture, earthTexture: Texture, introFont: Font) {
         this.introFont = introFont;
-        this.speed += (1 / 1000);
-        this.originalStartingPoint = [-5.5, 0];
-        this.currentPoint = [-5.5, 0];
+        this.ship.speed += (1 / 1000);
+        this.earth.originalStartingPoint = [-6.5, 0];
+        this.earth.currentPoint = [-6.5, 0];
+        this.ship.originalStartingPoint = [-5.5, 0];
+        this.ship.currentPoint = [-5.5, 0];
         this.scene = scene;
 
-		const earthGeometry = new CircleGeometry(5, 16, 16);
-        const earthMaterial = new MeshPhongMaterial();
-        earthMaterial.map = earthTexture;
-        earthMaterial.map.minFilter = LinearFilter;
-        earthMaterial.shininess = 0;
-        earthMaterial.transparent = true;
-        this.earth = new Mesh(earthGeometry, earthMaterial);
-        this.earth.position.set(this.currentPoint[0] - 1, 0.5, this.currentPoint[1]);
-        this.earth.rotation.set(-1.5708, 0, 0);
-        this.earth.name = 'Intro Scene';
-        this.scene.add(this.earth);
+		this.earth.geometry = new CircleGeometry(5, 16, 16);
+        this.earth.material = new MeshPhongMaterial();
+        this.earth.material.map = earthTexture;
+        this.earth.material.map.minFilter = LinearFilter;
+        this.earth.material.shininess = 0;
+        this.earth.material.transparent = true;
+        this.earth.mesh = new Mesh(this.earth.geometry, this.earth.material);
+        this.earth.mesh.position.set(this.earth.currentPoint[0], 0.5, this.earth.currentPoint[1]);
+        this.earth.mesh.rotation.set(-1.5708, 0, 0);
+        this.earth.mesh.name = 'Intro Scene';
+        this.scene.add(this.earth.mesh);
 
-		this.shipGeometry = new CircleGeometry(0.5, 16, 16);
-        this.shipMaterial = new MeshPhongMaterial();
-        this.shipMaterial.map = shipTexture;
-        this.shipMaterial.map.minFilter = LinearFilter;
-        this.shipMaterial.shininess = 0;
-        this.shipMaterial.transparent = true;
-        this.ship = new Mesh(this.shipGeometry, this.shipMaterial);
-        this.ship.position.set(this.currentPoint[0], 0.2, this.currentPoint[1]);
-        this.ship.rotation.set(-1.5708, 0, -1.5708);
-        this.ship.name = 'Intro Scene';
-        this.scene.add(this.ship);
+        const stationMaterial = new MeshBasicMaterial( {color: 0xFF0000, opacity: 1, transparent: false, side: DoubleSide} );
+        const stationBackingGeometry = new PlaneGeometry(4, 4, 0, 0);
+        const section = new Mesh( stationBackingGeometry, stationMaterial );
+        section.position.set(this.ship.currentPoint[0] - 1, 0.4, this.ship.currentPoint[1]);
+        section.rotation.set(1.5708, 0, 0);
+        this.scene.add(section);
+
+		this.ship.geometry = new CircleGeometry(0.5, 16, 16);
+        this.ship.material = new MeshPhongMaterial();
+        this.ship.material.map = shipTexture;
+        this.ship.material.map.minFilter = LinearFilter;
+        this.ship.material.shininess = 0;
+        this.ship.material.transparent = true;
+        this.ship.mesh = new Mesh(this.ship.geometry, this.ship.material);
+        this.ship.mesh.position.set(this.ship.currentPoint[0] + 0.5, 0.2, this.ship.currentPoint[1]);
+        this.ship.mesh.rotation.set(-1.5708, 0, -1.5708);
+        this.ship.mesh.name = 'Intro Scene';
+        this.scene.add(this.ship.mesh);
 
         this.textHeaderParams = {
             font: this.introFont,
@@ -148,18 +144,18 @@ export class Intro {
     /**
      * Calculates the next point in the ship's path.
      */
-    private calculateNextPoint(): void {
-        this.distanceTraveled += this.speed;
+    private calculateNextPoint(entity: Entity): void {
+        entity.distanceTraveled += entity.speed;
         // (xt, yt) = ( ( (1 − t) * x0 + t * x1 ), ( (1 − t) * y0 + t * y1) )
-        const t = this.distanceTraveled / this.totalDistance;
-        this.currentPoint[0] = ((1 - t) * this.originalStartingPoint[0]) + (t * this.endingPoint[0]);
-        this.currentPoint[1] = ((1 - t) * this.originalStartingPoint[1]) + (t * this.endingPoint[1]);
+        const t = entity.distanceTraveled / entity.totalDistance;
+        entity.currentPoint[0] = ((1 - t) * entity.originalStartingPoint[0]) + (t * entity.endingPoint[0]);
+        entity.currentPoint[1] = ((1 - t) * entity.originalStartingPoint[1]) + (t * entity.endingPoint[1]);
     }
     /**
      * Creates an explosion during collision and adds it to the collildables list.
      */
     private createExplosion(): void {
-        this.explosion = new Explosion(this.scene, this.ship.position.x, this.ship.position.z, 0.2, true);
+        this.explosion = new Explosion(this.scene, this.ship.mesh.position.x, this.ship.mesh.position.z, 0.2, true);
         SoundinatorSingleton.playBoom(true);
     }
     /**
@@ -173,11 +169,11 @@ export class Intro {
                 this.explosion = null;
                 return false;
             }
-        } else if (this.inMotion) {
-            this.calculateNextPoint();
-            this.ship.position.set(this.currentPoint[0], 0.2, this.currentPoint[1]);
-            if (Math.abs(this.currentPoint[0] - this.endingPoint[0]) <= 0.01 && Math.abs(this.currentPoint[1] - this.endingPoint[1]) <= 0.01) {
-                this.inMotion = false;
+        } else if (this.ship.inMotion) {
+            this.calculateNextPoint(this.ship);
+            this.ship.mesh.position.set(this.ship.currentPoint[0], 0.2, this.ship.currentPoint[1]);
+            if (Math.abs(this.ship.currentPoint[0] - this.ship.endingPoint[0]) <= 0.01 && Math.abs(this.ship.currentPoint[1] - this.ship.endingPoint[1]) <= 0.01) {
+                this.ship.inMotion = false;
             }
         }
         return true;
@@ -196,11 +192,13 @@ export class Intro {
     }
 
     public setDestination(x: number, z: number): void {
-        this.endingPoint = [x, z];
-        this.totalDistance = Math.sqrt(((x - this.currentPoint[0]) * (x - this.currentPoint[0])) + ((z - this.currentPoint[1]) * (z - this.currentPoint[1])));
-        this.distanceTraveled = 0;
+        this.ship.originalStartingPoint[0] = this.ship.currentPoint[0];
+        this.ship.originalStartingPoint[1] = this.ship.currentPoint[1];
+        this.ship.endingPoint = [x, z];
+        this.ship.totalDistance = Math.sqrt(((x - this.ship.currentPoint[0]) * (x - this.ship.currentPoint[0])) + ((z - this.ship.currentPoint[1]) * (z - this.ship.currentPoint[1])));
+        this.ship.distanceTraveled = 0;
         // Calculates the first (second vertices) point.
-        this.calculateNextPoint();
-        this.inMotion = true;
+        this.calculateNextPoint(this.ship);
+        this.ship.inMotion = true;
     }
 }
