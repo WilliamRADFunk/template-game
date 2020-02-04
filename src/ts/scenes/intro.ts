@@ -61,9 +61,23 @@ export class Intro {
                     speed: 0.001,
                     startingFrame: 1,
                     startPoint: [ -6.5, 0 ]
+                },
+                {
+                    actorIndex: 1,
+                    endPoint: [ -6, 0 ],
+                    speed: 0.002,
+                    startingFrame: 60,
+                    startPoint: [ -9.5, 0 ]
+                },
+                {
+                    actorIndex: 2,
+                    endPoint: [ -4.5, 0 ],
+                    speed: 0.002,
+                    startingFrame: 60,
+                    startPoint: [ -8, 0 ]
                 }
             ],
-            endingFrame: 5000,
+            endingFrame: 2000,
             startingFrame: 1,
             textEvents: [
                 {
@@ -133,7 +147,6 @@ export class Intro {
             bevelSize: 0.5,
             bevelSegments: 3
         };
-        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
 
         const earth = createActor();
         earth.originalStartingPoint = [-6.5, 0];
@@ -146,30 +159,30 @@ export class Intro {
         (earth.material as any).shininess = 0;
         earth.material.transparent = true;
         earth.mesh = new Mesh(earth.geometry, earth.material);
-        earth.mesh.position.set(earth.currentPoint[0], 0.5, earth.currentPoint[1]);
+        earth.mesh.position.set(earth.currentPoint[0], 2, earth.currentPoint[1]);
         earth.mesh.rotation.set(-1.5708, 0, 0);
         earth.mesh.name = 'Earth';
         this.scene.add(earth.mesh);
         this.actors[0] = earth;
 
         const station = createActor();
-        station.originalStartingPoint = [-6.5, 0];
-        station.currentPoint = [-6.5, 0];
-        station.endingPoint = [-6.5, 0];
+        station.originalStartingPoint = [-9.5, 0];
+        station.currentPoint = [-9.5, 0];
+        station.endingPoint = [-9.5, 0];
         station.speed = 0.003;
         station.material = new MeshBasicMaterial( {color: 0xFF0000, opacity: 1, transparent: false, side: DoubleSide} );
-        station.geometry = new PlaneGeometry(4, 4, 0, 0);
+        station.geometry = new PlaneGeometry(4, 4, 1, 1);
         station.mesh = new Mesh( station.geometry, station.material );
-        station.mesh.position.set(station.currentPoint[0], 0.4, station.currentPoint[1]);
+        station.mesh.position.set(station.currentPoint[0], 1, station.currentPoint[1]);
         station.mesh.rotation.set(1.5708, 0, 0);
         earth.mesh.name = 'Station';
         this.scene.add(station.mesh);
         this.actors[1] = station;
 
         const ship = createActor();
-        ship.originalStartingPoint = [-5, 0];
-        ship.currentPoint = [-5, 0];
-        ship.endingPoint = [-5, 0];
+        ship.originalStartingPoint = [-8, 0];
+        ship.currentPoint = [-8, 0];
+        ship.endingPoint = [-8, 0];
         ship.speed = 0.003;
 		ship.geometry = new CircleGeometry(0.5, 16, 16);
         ship.material = new MeshPhongMaterial();
@@ -178,11 +191,25 @@ export class Intro {
         (ship.material as any).shininess = 0;
         ship.material.transparent = true;
         ship.mesh = new Mesh(ship.geometry, ship.material);
-        ship.mesh.position.set(ship.currentPoint[0], 0.2, ship.currentPoint[1]);
+        ship.mesh.position.set(ship.currentPoint[0], 0, ship.currentPoint[1]);
         ship.mesh.rotation.set(-1.5708, 0, -1.5708);
         ship.mesh.name = 'Enzmann';
         this.scene.add(ship.mesh);
         this.actors[2] = ship;
+    }
+
+    private setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number): void {
+        const actor = this.actors[actorIndex];
+        actor.originalStartingPoint[0] = x1;
+        actor.currentPoint[0] = x1;
+        actor.originalStartingPoint[1] = z1;
+        actor.currentPoint[1] = z1;
+        actor.endingPoint = [x2, z2];
+        actor.totalDistance = Math.sqrt(((x2 - x1) * (x2 - x1)) + ((z2 - z1) * (z2 - z1)));
+        actor.distanceTraveled = 0;
+        // Calculates the first (second vertices) point.
+        this.calculateNextPoint(actor);
+        actor.inMotion = true;
     }
 
     /**
@@ -199,11 +226,12 @@ export class Intro {
         }
         if (this.currentSequenceIndex < this.sequences.length) {
             const sequence = this.sequences[this.currentSequenceIndex];
-            const actorEvent = sequence.actorEvents.find(event => event.startingFrame === this.currentFrame);
+            
+            sequence.actorEvents.filter(event => event.startingFrame === this.currentFrame).forEach(actorEvent => {
+                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1]);
+            });
+            
             const textEvent = sequence.textEvents.find(event => event.startingFrame === this.currentFrame);
-            if (actorEvent) {
-                const actor = this.actors[actorEvent.actorIndex];
-            }
             if (textEvent) {
                 this.text.sentence = textEvent.sentence;
                 this.text.isFadeIn = true;
@@ -221,6 +249,7 @@ export class Intro {
                 actor.inMotion = false;
             }
         });
+        console.log(this.currentFrame);
         return true;
     }
 
@@ -251,23 +280,12 @@ export class Intro {
             return;
         }
 
+        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
         this.text.mesh = new Mesh( this.text.geometry, this.text.material );
         this.text.mesh.position.set(-5.65, -11.4, -5.5);
         this.text.mesh.rotation.x = -1.5708;
         this.scene.add(this.text.mesh);
 
         this.text.counter++;
-    }
-
-    public setDestination(actorIndex: number, x: number, z: number): void {
-        const actor = this.actors[actorIndex];
-        actor.originalStartingPoint[0] = actor.currentPoint[0];
-        actor.originalStartingPoint[1] = actor.currentPoint[1];
-        actor.endingPoint = [x, z];
-        actor.totalDistance = Math.sqrt(((x - actor.currentPoint[0]) * (x - actor.currentPoint[0])) + ((z - actor.currentPoint[1]) * (z - actor.currentPoint[1])));
-        actor.distanceTraveled = 0;
-        // Calculates the first (second vertices) point.
-        this.calculateNextPoint(actor);
-        actor.inMotion = true;
     }
 }
