@@ -11,7 +11,9 @@ import {
     TextGeometry,
     TextGeometryParameters,
     Font,
-    MeshLambertMaterial} from 'three';
+    MeshLambertMaterial,
+    PointLight,
+    DirectionalLight} from 'three';
 
 import { Explosion } from '../weapons/explosion';
 import { SoundinatorSingleton } from '../soundinator';
@@ -41,10 +43,6 @@ export class Intro {
      * Current scene in the sequence.
      */
     private currentSequenceIndex: number = 0;
-    /**
-     * Explosion from impacted ship
-     */
-    private explosion: Explosion;
     /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
@@ -85,16 +83,18 @@ export class Intro {
                     startingFrame: 1,
                 },
                 {
-                    sentence: 'Humanity had spread to the stars.',
+                    sentence: 'Humanity had populated dozens of neighboring star systems.',
                     startingFrame: 480,
                 },
                 {
-                    sentence: 'Civilizations rose and fell as war came and went.',
+                    sentence: 'Sentence 3.',
                     startingFrame: 960,
                 }
             ]
         }
     ];
+
+    private stars: Mesh[] = [];
     /**
      * Text of the intro screen.
      */
@@ -120,6 +120,22 @@ export class Intro {
      */
     constructor(scene: Scene, shipTexture: Texture, earthTexture: Texture, introFont: Font) {
         this.scene = scene;
+
+        const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 1, transparent: false, side: DoubleSide} );
+        const mag = Math.random() / 20;
+        const geometry = new PlaneGeometry(mag, mag, 1, 1);
+        for (let i = 0; i < 1000; i++) {
+            const isXNeg = Math.random() < 0.5 ? -1 : 1;
+            const isZNeg = Math.random() < 0.5 ? -1 : 1;
+            const xCoord = Math.random() * 10;
+            const zCoord = Math.random() * 10;
+            const mesh = new Mesh( geometry, material );
+            mesh.position.set((isXNeg * xCoord), 5, (isZNeg * zCoord));
+            mesh.rotation.set(1.5708, 0, 0);
+            mesh.name = `Star-${i}`;
+            this.scene.add(mesh);
+            this.stars[i] = mesh;
+        }
 
 		this.createActors(earthTexture, shipTexture, introFont);
     }
@@ -249,7 +265,6 @@ export class Intro {
                 actor.inMotion = false;
             }
         });
-        console.log(this.currentFrame);
         return true;
     }
 

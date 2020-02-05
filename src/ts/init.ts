@@ -441,9 +441,6 @@ const loadIntro = () => {
         });
     };
     const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, gameFont);
-    // setTimeout(() => {
-    //     intro.setDestination(2, 6.5, 0);
-    // }, 2000);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
