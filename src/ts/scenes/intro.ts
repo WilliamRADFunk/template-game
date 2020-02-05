@@ -9,13 +9,9 @@ import {
     MeshBasicMaterial,
     DoubleSide,
     TextGeometry,
-    TextGeometryParameters,
     Font,
-    MeshLambertMaterial,
-    PointLight,
-    DirectionalLight} from 'three';
+    MeshLambertMaterial} from 'three';
 
-import { Explosion } from '../weapons/explosion';
 import { SoundinatorSingleton } from '../soundinator';
 import { Actor } from '../models/actor';
 import { createActor } from '../utils/create-actor';
@@ -95,6 +91,7 @@ export class Intro {
     ];
 
     private stars: Mesh[] = [];
+    private starsInMotion: boolean = true;
     /**
      * Text of the intro screen.
      */
@@ -109,6 +106,8 @@ export class Intro {
         mesh: null,
         sentence: ''
     };
+    private warpedStars: Mesh[] = [];
+    private warpedStarsInMotion: boolean = false;
     /**
      * Constructor for the Intro (Scene) class
      * @param scene         graphic rendering scene object. Used each iteration to redraw things contained in scene.
@@ -122,19 +121,29 @@ export class Intro {
         this.scene = scene;
 
         const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 1, transparent: false, side: DoubleSide} );
-        const mag = Math.random() / 20;
-        const geometry = new PlaneGeometry(mag, mag, 1, 1);
+        const mag = (Math.floor(Math.random() * 1.5) + 1) / 100;// Math.random() / 20;
+        const geometry = new PlaneGeometry(mag, mag, 0.01, 0.01);
         for (let i = 0; i < 1000; i++) {
             const isXNeg = Math.random() < 0.5 ? -1 : 1;
             const isZNeg = Math.random() < 0.5 ? -1 : 1;
-            const xCoord = Math.random() * 10;
-            const zCoord = Math.random() * 10;
+            const xCoord = Math.random() * 7;
+            const zCoord = Math.random() * 7;
             const mesh = new Mesh( geometry, material );
             mesh.position.set((isXNeg * xCoord), 5, (isZNeg * zCoord));
             mesh.rotation.set(1.5708, 0, 0);
             mesh.name = `Star-${i}`;
             this.scene.add(mesh);
             this.stars[i] = mesh;
+        }
+        const warpedGeometry = new PlaneGeometry(0.5, mag, 1, 1);
+        for (let j = 0; j < this.stars.length; j++) {
+            const mesh = new Mesh( warpedGeometry, material );
+            mesh.position.set(this.stars[j].position.x, 5, this.stars[j].position.z);
+            mesh.rotation.set(1.5708, 0, 0);
+            mesh.name = `Warped-Star-${j}`;
+            this.scene.add(mesh);
+            mesh.visible = false;
+            this.warpedStars[j] = mesh;
         }
 
 		this.createActors(earthTexture, shipTexture, introFont);
@@ -265,6 +274,35 @@ export class Intro {
                 actor.inMotion = false;
             }
         });
+        if (this.starsInMotion) {
+            this.stars.forEach((star, index) => {
+                star.position.set(star.position.x - 0.001, 5, star.position.z);
+                if (index < 50) {
+                    star.position.set(star.position.x - 0.001, 5, star.position.z);
+                } else if (index < 80) {
+                    star.position.set(star.position.x - 0.0015, 5, star.position.z);
+                } else {
+                    star.position.set(star.position.x - 0.002, 5, star.position.z);
+                }
+                if (star.position.x < -7) {
+                    star.position.set(7, 5, star.position.z);
+                }
+            });
+        }
+        if (this.warpedStarsInMotion) {
+            this.warpedStars.forEach((warpedStar, index) => {
+                if (index < 50) {
+                    warpedStar.position.set(warpedStar.position.x - 0.001, 5, warpedStar.position.z);
+                } else if (index < 80) {
+                    warpedStar.position.set(warpedStar.position.x - 0.002, 5, warpedStar.position.z);
+                } else {
+                    warpedStar.position.set(warpedStar.position.x - 0.003, 5, warpedStar.position.z);
+                }
+                if (warpedStar.position.x < -7) {
+                    warpedStar.position.set(7, 5, warpedStar.position.z);
+                }
+            });
+        }
         return true;
     }
 
