@@ -121,9 +121,9 @@ export class Intro {
         this.scene = scene;
 
         const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 1, transparent: false, side: DoubleSide} );
-        const mag = (Math.floor(Math.random() * 1.5) + 1) / 100;// Math.random() / 20;
-        const geometry = new PlaneGeometry(mag, mag, 0.01, 0.01);
         for (let i = 0; i < 1000; i++) {
+            const mag = (Math.floor(Math.random() * 3) + 1) / 100;
+            const geometry = new PlaneGeometry(mag, mag, 0.01, 0.01);
             const isXNeg = Math.random() < 0.5 ? -1 : 1;
             const isZNeg = Math.random() < 0.5 ? -1 : 1;
             const xCoord = Math.random() * 7;
@@ -135,8 +135,10 @@ export class Intro {
             this.scene.add(mesh);
             this.stars[i] = mesh;
         }
-        const warpedGeometry = new PlaneGeometry(0.5, mag, 1, 1);
+
         for (let j = 0; j < this.stars.length; j++) {
+            const mag = (Math.floor(Math.random() * 3) + 1) / 100;
+            const warpedGeometry = new PlaneGeometry(0.5, mag, 1, 1);
             const mesh = new Mesh( warpedGeometry, material );
             mesh.position.set(this.stars[j].position.x, 5, this.stars[j].position.z);
             mesh.rotation.set(1.5708, 0, 0);
@@ -275,14 +277,15 @@ export class Intro {
             }
         });
         if (this.starsInMotion) {
+            const length = this.stars.length;
             this.stars.forEach((star, index) => {
-                star.position.set(star.position.x - 0.001, 5, star.position.z);
-                if (index < 50) {
+                const percentile = Math.floor((index / length) * 100);
+                if (percentile < 70) {
+                    // Stationary
+                } else if (percentile < 90) {
                     star.position.set(star.position.x - 0.001, 5, star.position.z);
-                } else if (index < 80) {
-                    star.position.set(star.position.x - 0.0015, 5, star.position.z);
                 } else {
-                    star.position.set(star.position.x - 0.002, 5, star.position.z);
+                    star.position.set(star.position.x - 0.0015, 5, star.position.z);
                 }
                 if (star.position.x < -7) {
                     star.position.set(7, 5, star.position.z);
@@ -290,13 +293,15 @@ export class Intro {
             });
         }
         if (this.warpedStarsInMotion) {
+            const length = this.warpedStars.length;
             this.warpedStars.forEach((warpedStar, index) => {
-                if (index < 50) {
+                const percentile = Math.floor((index / length) * 100);
+                if (percentile < 70) {
+                    // Stationary
+                } else if (percentile < 90) {
                     warpedStar.position.set(warpedStar.position.x - 0.001, 5, warpedStar.position.z);
-                } else if (index < 80) {
-                    warpedStar.position.set(warpedStar.position.x - 0.002, 5, warpedStar.position.z);
                 } else {
-                    warpedStar.position.set(warpedStar.position.x - 0.003, 5, warpedStar.position.z);
+                    warpedStar.position.set(warpedStar.position.x - 0.0015, 5, warpedStar.position.z);
                 }
                 if (warpedStar.position.x < -7) {
                     warpedStar.position.set(7, 5, warpedStar.position.z);
