@@ -1,4 +1,4 @@
-import { CircleGeometry, Mesh, MeshPhongMaterial, MeshBasicMaterial, PlaneGeometry } from "three";
+import { CircleGeometry, Mesh, MeshPhongMaterial, MeshBasicMaterial, PlaneGeometry, Object3D } from "three";
 import { ActorEvent } from "./actor-event";
 
 export interface Actor {
@@ -9,7 +9,7 @@ export interface Actor {
     geometry: CircleGeometry | PlaneGeometry;
     inMotion: boolean;
     material: MeshPhongMaterial | MeshBasicMaterial;
-    mesh: Mesh;
+    mesh: Mesh|Object3D;
     originalStartingPoint: number[];
     speed: number;
     totalDistance: number;

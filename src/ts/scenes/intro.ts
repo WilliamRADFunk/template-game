@@ -10,7 +10,8 @@ import {
     DoubleSide,
     TextGeometry,
     Font,
-    MeshLambertMaterial} from 'three';
+    MeshLambertMaterial,
+    Object3D} from 'three';
 
 import { SoundinatorSingleton } from '../soundinator';
 import { Actor } from '../models/actor';
@@ -324,10 +325,24 @@ export class Intro {
             bevelSegments: 3
         };
 
+        const sectionMaterial = new MeshBasicMaterial( {color: 0x111111, opacity: 1, transparent: false, side: DoubleSide} );
+        const sectionMaterialGlow = new MeshPhongMaterial( {color: 0x5555FF, opacity: 0.6, transparent: true, side: DoubleSide} );
+        const sectionBackingGeometryMiddle = new PlaneGeometry( 4.5, 0.8, 0, 0 );
+        const sectionGlowGeometryMiddle = new PlaneGeometry( 4.7, 0.9, 0, 0 );
+
+        const sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.position.set(0, 0.1, 5);
+        sectionGlow.rotation.set(1.5708, 0, 0);
+
+        const section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.position.set(0, 0, 5);
+        section.rotation.set(1.5708, 0, 0);        
+
         const earth = createActor();
         earth.originalStartingPoint = [0, 0];
         earth.currentPoint = [0, 0];
         earth.endingPoint = [0, 0];
+        let meshGroup = new Object3D();
         earth.geometry = new CircleGeometry(5, 16, 16);
         earth.material = new MeshPhongMaterial();
         earth.material.map = earthTexture;
@@ -338,7 +353,11 @@ export class Intro {
         earth.mesh.position.set(earth.currentPoint[0], 2, earth.currentPoint[1]);
         earth.mesh.rotation.set(-1.5708, 0, 0);
         earth.mesh.name = 'Earth';
-        this.scene.add(earth.mesh);
+        meshGroup.add(earth.mesh);
+        meshGroup.add(sectionGlow);
+        meshGroup.add(section);
+        earth.mesh = meshGroup;
+        this.scene.add(meshGroup);
         this.actors.push(earth);
 
         const station = createActor();
