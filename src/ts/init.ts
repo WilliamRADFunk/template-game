@@ -46,6 +46,14 @@ const earthLoader = new TextureLoader();
  */
 let earthTexture: Texture;
 /**
+ * Loads the graphic for enceladus.
+ */
+const enceladusLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the enceladus.
+ */
+let enceladusTexture: Texture;
+/**
  * Loads the font from a json file.
  */
 const fontLoader = new FontLoader();
@@ -53,6 +61,14 @@ const fontLoader = new FontLoader();
  * The loaded font, used for the scoreboard.
  */
 let gameFont: Font;
+/**
+ * Loads the graphic for mars.
+ */
+const marsLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the mars.
+ */
+let marsTexture: Texture;
 
 const scenes: { [ key: string ]: SceneType } = {
     intro: {
@@ -188,6 +204,16 @@ const loadAssets = () => {
         earthTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the enceladus texture once it is finished loading.
+    enceladusLoader.load( 'assets/images/enceladus.png', texture => {
+        enceladusTexture = texture;
+        checkAssetsLoaded();
+    });
+    // Callback function to set the mars texture once it is finished loading.
+    marsLoader.load( 'assets/images/mars.png', texture => {
+        marsTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the ship texture once it is finished loading.
     shipLoader.load( 'assets/images/ship.png', texture => {
         shipTexture = texture;
@@ -219,7 +245,7 @@ const loadAssets = () => {
  * Checks to see if all assets are finished loaded. If so, start rendering the game.
  */
 const checkAssetsLoaded = () => {
-    if (gameFont && asteroidTexture && shipTexture && earthTexture &&
+    if (gameFont && asteroidTexture && shipTexture && earthTexture && marsTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadIntro();
@@ -411,8 +437,6 @@ const loadIntro = () => {
     clickBarrier.rotation.set(1.5708, 0, 0);
     scenes.intro.scene.add(clickBarrier);
 
-    const asteroidGenerator = new AsteroidGenerator(scenes.intro.scene, asteroidTexture);
-
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
     document.onclick = event => {
@@ -440,7 +464,7 @@ const loadIntro = () => {
             }
         });
     };
-    const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, gameFont);
+    const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, gameFont);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
@@ -457,8 +481,20 @@ const loadIntro = () => {
             scenes.intro.scene = null;
             return;
         } else {
-            // asteroidGenerator.endCycle(true);
-            intro.endCycle();
+            if (!intro.endCycle()) {
+                scenes.intro.active = false;
+                // Remove renderer from the html container, and remove event listeners.
+                window.removeEventListener( 'resize', onWindowResize, false);
+                const container = document.getElementById('mainview');
+                container.removeChild( (scenes.intro.renderer as any).domElement );
+                // Clear up memory used by intro scene.
+                scenes.intro.camera = null;
+                scenes.intro.instance = null;
+                scenes.intro.renderer = null;
+                scenes.intro.scene = null;
+                loadMenu();
+                return;
+            }                
         }
         scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
 	    requestAnimationFrame( render );

@@ -5,6 +5,7 @@ export interface FadableText {
     font: Font;
     geometry: TextGeometry;
     headerParams: TextGeometryParameters;
+    holdCount: number;
     isFadeIn: boolean;
     isHolding: boolean;
     material: MeshLambertMaterial;

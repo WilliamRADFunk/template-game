@@ -1,6 +1,9 @@
+import { ActorEvent } from "./actor-event";
+import { TextEvent } from "./text-event";
+
 export interface Sequence {
-    actorEvents: { actorIndex: number; endPoint: number[]; speed: number; startingFrame: number; startPoint: number[]; }[];
+    actorEvents: ActorEvent[];
     endingFrame: number;
-    textEvents: { startingFrame: number; sentence: string; }[];
+    textEvents: TextEvent[];
     startingFrame: number;
 }
