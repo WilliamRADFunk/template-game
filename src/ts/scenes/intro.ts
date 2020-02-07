@@ -75,7 +75,7 @@ export class Intro {
                 {
                     actorIndex: 0, // Earth exits stage left
                     endPoint: [ -15, 0 ],
-                    speed: 0.03,
+                    speed: 0.05,
                     startingFrame: 181,
                     startPoint: [ 0, 0 ],
                     type: "Moving"
@@ -83,7 +83,7 @@ export class Intro {
                 {
                     actorIndex: 3, // Mars enter stage right
                     endPoint: [ 0, 0 ],
-                    speed: 0.03,
+                    speed: 0.05,
                     startingFrame: 181,
                     startPoint: [ 20, 0 ],
                     type: "Moving"
@@ -92,7 +92,7 @@ export class Intro {
                     actorIndex: -1, // Stars stop moving
                     endPoint: [ 0, 0 ],
                     speed: 0,
-                    startingFrame: 679,
+                    startingFrame: 579,
                     startPoint: [ 0, 0 ],
                     type: "Stars Stopping"
                 },
@@ -101,17 +101,17 @@ export class Intro {
                     duration: 180,
                     endPoint: [ 0, 0 ],
                     speed: 0,
-                    startingFrame: 700,
+                    startingFrame: 600,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
                 }
             ],
-            endingFrame: 880,
+            endingFrame: 780,
             startingFrame: 1,
             textEvents: [
                 {
                     sentence: '2032: Colonization of Mars',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 1,
                 }
             ]
@@ -138,7 +138,7 @@ export class Intro {
                 {
                     actorIndex: 3, // Mars exits stage left
                     endPoint: [ -15, 0 ],
-                    speed: 0.03,
+                    speed: 0.05,
                     startingFrame: 181,
                     startPoint: [ 0, 0 ],
                     type: "Moving"
@@ -146,7 +146,7 @@ export class Intro {
                 {
                     actorIndex: 4, // Asteroid enter stage right
                     endPoint: [ 0, 0 ],
-                    speed: 0.03,
+                    speed: 0.05,
                     startingFrame: 181,
                     startPoint: [ 20, 0 ],
                     type: "Moving"
@@ -155,7 +155,7 @@ export class Intro {
                     actorIndex: -1, // Stars stop moving
                     endPoint: [ 0, 0 ],
                     speed: 0,
-                    startingFrame: 679,
+                    startingFrame: 579,
                     startPoint: [ 0, 0 ],
                     type: "Stars Stopping"
                 },
@@ -164,17 +164,17 @@ export class Intro {
                     duration: 180,
                     endPoint: [ 0, 0 ],
                     speed: 0,
-                    startingFrame: 700,
+                    startingFrame: 600,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
                 }
             ],
-            endingFrame: 880,
+            endingFrame: 780,
             startingFrame: 1,
             textEvents: [
                 {
                     sentence: '2067: Industrial mining of asteroid belt',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 1,
                 }
             ]
@@ -201,7 +201,7 @@ export class Intro {
                 {
                     actorIndex: 4, // Asteroid exits stage left
                     endPoint: [ -15, 0 ],
-                    speed: 0.03,
+                    speed: 0.05,
                     startingFrame: 181,
                     startPoint: [ 0, 0 ],
                     type: "Moving"
@@ -209,7 +209,7 @@ export class Intro {
                 {
                     actorIndex: 5, // Enceladus enter stage right
                     endPoint: [ 0, 0 ],
-                    speed: 0.03,
+                    speed: 0.05,
                     startingFrame: 181,
                     startPoint: [ 20, 0 ],
                     type: "Moving"
@@ -218,7 +218,7 @@ export class Intro {
                     actorIndex: -1, // Stars stop moving
                     endPoint: [ 0, 0 ],
                     speed: 0,
-                    startingFrame: 679,
+                    startingFrame: 579,
                     startPoint: [ 0, 0 ],
                     type: "Stars Stopping"
                 },
@@ -227,37 +227,37 @@ export class Intro {
                     duration: 180,
                     endPoint: [ 0, 0 ],
                     speed: 0,
-                    startingFrame: 700,
+                    startingFrame: 600,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
                 }
             ],
-            endingFrame: 880,
+            endingFrame: 780,
             startingFrame: 1,
             textEvents: [
                 {
                     sentence: '2091: Submerged colony formed on Enceladus',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 1,
                 },
                 {
                     sentence: '2110: Exploration of Sol System\'s outer edges',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 1440,
                 },
                 {
                     sentence: '2148: The Photon harnessed for propulsion (98% lightspeed)',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 1920,
                 },
                 {
                     sentence: '2156: Colony formed in Alpha Centauri',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 2400,
                 },
                 {
                     sentence: '2170: First contact with alien life',
-                    holdCount: 520,
+                    holdCount: 420,
                     startingFrame: 2880,
                 }
             ]
@@ -330,13 +330,19 @@ export class Intro {
         const sectionBackingGeometryMiddle = new PlaneGeometry( 4.5, 0.8, 0, 0 );
         const sectionGlowGeometryMiddle = new PlaneGeometry( 4.7, 0.9, 0, 0 );
 
-        const sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
-        sectionGlow.position.set(0, 0.1, 5);
+        let sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.position.set(0, 0.1, -5);
         sectionGlow.rotation.set(1.5708, 0, 0);
 
-        const section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
-        section.position.set(0, 0, 5);
-        section.rotation.set(1.5708, 0, 0);        
+        let section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.position.set(0, 0, -5);
+        section.rotation.set(1.5708, 0, 0); 
+        
+        const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
+        let textGeometry = new TextGeometry('Earth', this.text.headerParams);
+        let textMesh = new Mesh( textGeometry, textMaterial );
+        textMesh.position.set(-0.5, -0.5, -4.85);
+        textMesh.rotation.x = -1.5708;
 
         const earth = createActor();
         earth.originalStartingPoint = [0, 0];
@@ -352,33 +358,53 @@ export class Intro {
         earth.mesh = new Mesh(earth.geometry, earth.material);
         earth.mesh.position.set(earth.currentPoint[0], 2, earth.currentPoint[1]);
         earth.mesh.rotation.set(-1.5708, 0, 0);
-        earth.mesh.name = 'Earth';
         meshGroup.add(earth.mesh);
         meshGroup.add(sectionGlow);
         meshGroup.add(section);
+        meshGroup.add(textMesh);
+        meshGroup.name = 'Earth';
         earth.mesh = meshGroup;
         this.scene.add(meshGroup);
         this.actors.push(earth);
 
+        sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.rotation.set(1.5708, 0, 0);
+
+        section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.rotation.set(1.5708, 0, 0); 
+
+        textGeometry = new TextGeometry('Gemini Station: The Rim', this.text.headerParams);
+        textMesh = new Mesh( textGeometry, textMaterial );
+        textMesh.rotation.x = -1.5708;
+
         const station = createActor();
-        station.originalStartingPoint = [-9.5, 0];
-        station.currentPoint = [-9.5, 0];
-        station.endingPoint = [-9.5, 0];
-        station.speed = 0.003;
+        station.originalStartingPoint = [0, 0];
+        station.currentPoint = [0, 0];
+        station.endingPoint = [0, 0];
+        meshGroup = new Object3D();
         station.material = new MeshBasicMaterial( {color: 0xFF0000, opacity: 1, transparent: false, side: DoubleSide} );
         station.geometry = new PlaneGeometry(4, 4, 1, 1);
         station.mesh = new Mesh( station.geometry, station.material );
         station.mesh.position.set(station.currentPoint[0], 1, station.currentPoint[1]);
         station.mesh.rotation.set(1.5708, 0, 0);
-        earth.mesh.name = 'Station';
-        this.scene.add(station.mesh);
+        meshGroup.add(station.mesh);
+        sectionGlow.position.set(station.currentPoint[0], 0.1, station.currentPoint[1] - 5);
+        meshGroup.add(sectionGlow);
+        section.position.set(station.currentPoint[0], 0, station.currentPoint[1] - 5);
+        meshGroup.add(section);
+        textMesh.position.set(station.currentPoint[0] - 2.5, -0.5, station.currentPoint[1] - 4.85);
+        meshGroup.add(textMesh);
+        station.mesh = meshGroup;
+        meshGroup.name = 'Station';
+        this.scene.add(meshGroup);
+        meshGroup.position.set(-50, 2, 0);
         this.actors.push(station);
 
         const ship = createActor();
         ship.originalStartingPoint = [0, 0];
         ship.currentPoint = [0, 0];
         ship.endingPoint = [0, 0];
-        ship.speed = 0.003;
+        meshGroup = new Object3D();
 		ship.geometry = new CircleGeometry(0.5, 16, 16);
         ship.material = new MeshPhongMaterial();
         ship.material.map = shipTexture;
@@ -392,10 +418,21 @@ export class Intro {
         this.scene.add(ship.mesh);
         this.actors.push(ship);
 
+        sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.rotation.set(1.5708, 0, 0);
+
+        section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.rotation.set(1.5708, 0, 0); 
+
+        textGeometry = new TextGeometry('Mars', this.text.headerParams);
+        textMesh = new Mesh( textGeometry, textMaterial );
+        textMesh.rotation.x = -1.5708;
+
         const mars = createActor();
-        mars.originalStartingPoint = [15, 0];
-        mars.currentPoint = [15, 0];
-        mars.endingPoint = [15, 0];
+        mars.originalStartingPoint = [0, 0];
+        mars.currentPoint = [0, 0];
+        mars.endingPoint = [0, 0];
+        meshGroup = new Object3D();
         mars.geometry = new CircleGeometry(5, 16, 16);
         mars.material = new MeshPhongMaterial();
         mars.material.map = marsTexture;
@@ -405,14 +442,34 @@ export class Intro {
         mars.mesh = new Mesh(mars.geometry, mars.material);
         mars.mesh.position.set(mars.currentPoint[0], 2, mars.currentPoint[1]);
         mars.mesh.rotation.set(-1.5708, 0, 0);
-        mars.mesh.name = 'Mars';
-        this.scene.add(mars.mesh);
+        meshGroup.add(mars.mesh);
+        sectionGlow.position.set(mars.currentPoint[0], 0.1, mars.currentPoint[1] - 5);
+        meshGroup.add(sectionGlow);
+        section.position.set(mars.currentPoint[0], 0, mars.currentPoint[1] - 5);
+        meshGroup.add(section);
+        textMesh.position.set(mars.currentPoint[0] - 0.5, -0.5, mars.currentPoint[1] - 4.85);
+        meshGroup.add(textMesh);
+        mars.mesh = meshGroup;
+        meshGroup.name = 'Mars';
+        this.scene.add(meshGroup);
+        meshGroup.position.set(-50, 2, 0);
         this.actors.push(mars);
 
+        sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.rotation.set(1.5708, 0, 0);
+
+        section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.rotation.set(1.5708, 0, 0); 
+
+        textGeometry = new TextGeometry('Asteroid Belt', this.text.headerParams);
+        textMesh = new Mesh( textGeometry, textMaterial );
+        textMesh.rotation.x = -1.5708;
+
         const asteroid = createActor();
-        asteroid.originalStartingPoint = [15, 0];
-        asteroid.currentPoint = [15, 0];
-        asteroid.endingPoint = [15, 0];
+        asteroid.originalStartingPoint = [0, 0];
+        asteroid.currentPoint = [0, 0];
+        asteroid.endingPoint = [0, 0];
+        meshGroup = new Object3D();
         asteroid.geometry = new CircleGeometry(5, 16, 16);
         asteroid.material = new MeshPhongMaterial();
         asteroid.material.map = asteroidTexture;
@@ -422,14 +479,34 @@ export class Intro {
         asteroid.mesh = new Mesh(asteroid.geometry, asteroid.material);
         asteroid.mesh.position.set(asteroid.currentPoint[0], 2, asteroid.currentPoint[1]);
         asteroid.mesh.rotation.set(-1.5708, 0, 0);
-        asteroid.mesh.name = 'Asteroid';
-        this.scene.add(asteroid.mesh);
+        meshGroup.add(asteroid.mesh);
+        sectionGlow.position.set(asteroid.currentPoint[0], 0.1, asteroid.currentPoint[1] - 5);
+        meshGroup.add(sectionGlow);
+        section.position.set(asteroid.currentPoint[0], 0, asteroid.currentPoint[1] - 5);
+        meshGroup.add(section);
+        textMesh.position.set(asteroid.currentPoint[0] - 1, -0.5, asteroid.currentPoint[1] - 4.85);
+        meshGroup.add(textMesh);
+        asteroid.mesh = meshGroup;
+        meshGroup.name = 'Asteroid';
+        this.scene.add(meshGroup);
+        meshGroup.position.set(-50, 2, 0);
         this.actors.push(asteroid);
 
+        sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.rotation.set(1.5708, 0, 0);
+
+        section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.rotation.set(1.5708, 0, 0); 
+
+        textGeometry = new TextGeometry('Enceladus', this.text.headerParams);
+        textMesh = new Mesh( textGeometry, textMaterial );
+        textMesh.rotation.x = -1.5708;
+
         const enceladus = createActor();
-        enceladus.originalStartingPoint = [15, 0];
-        enceladus.currentPoint = [15, 0];
-        enceladus.endingPoint = [15, 0];
+        enceladus.originalStartingPoint = [0, 0];
+        enceladus.currentPoint = [0, 0];
+        enceladus.endingPoint = [0, 0];
+        meshGroup = new Object3D();
         enceladus.geometry = new CircleGeometry(5, 48, 48);
         enceladus.material = new MeshPhongMaterial();
         enceladus.material.map = enceladusTexture;
@@ -439,8 +516,17 @@ export class Intro {
         enceladus.mesh = new Mesh(enceladus.geometry, enceladus.material);
         enceladus.mesh.position.set(enceladus.currentPoint[0], 2, enceladus.currentPoint[1]);
         enceladus.mesh.rotation.set(-1.5708, 0, 0);
-        enceladus.mesh.name = 'Enceladus';
-        this.scene.add(enceladus.mesh);
+        meshGroup.add(enceladus.mesh);
+        sectionGlow.position.set(enceladus.currentPoint[0], 0.1, enceladus.currentPoint[1] - 5);
+        meshGroup.add(sectionGlow);
+        section.position.set(enceladus.currentPoint[0], 0, enceladus.currentPoint[1] - 5);
+        meshGroup.add(section);
+        textMesh.position.set(enceladus.currentPoint[0] - 0.7, -0.5, enceladus.currentPoint[1] - 4.85);
+        meshGroup.add(textMesh);
+        enceladus.mesh = meshGroup;
+        meshGroup.name = 'Enceladus';
+        this.scene.add(meshGroup);
+        meshGroup.position.set(-50, 2, 0);
         this.actors.push(enceladus);
     }
 
@@ -557,6 +643,42 @@ export class Intro {
         }
     }
 
+    /**
+     * Builds the text and graphics for the text dialogue at bottom of screen.
+     */
+    private makeText(): void {
+        if (this.text.mesh) {
+            this.scene.remove(this.text.mesh);
+        }
+        if (this.text.isFadeIn && this.text.counter > 180) {
+            this.text.isFadeIn = false;
+            this.text.isHolding = true;
+            this.text.counter = 1;
+        } else if (this.text.isHolding && this.text.counter > this.text.holdCount) {
+            this.text.isFadeIn = false;
+            this.text.isHolding = false;
+            this.text.counter = 1;
+        }
+
+        if (this.text.isFadeIn) {
+            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: this.text.counter / 180, transparent: true} );
+        } else if (this.text.isHolding) {
+            // Do nothing
+        } else if (this.text.counter < 181) {
+            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: (180 - this.text.counter) / 180, transparent: true} );
+        } else {
+            return;
+        }
+
+        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
+        this.text.mesh = new Mesh( this.text.geometry, this.text.material );
+        this.text.mesh.position.set(-5.65, -11.4, 5.5);
+        this.text.mesh.rotation.x = -1.5708;
+        this.scene.add(this.text.mesh);
+
+        this.text.counter++;
+    }
+
     private setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number, speed: number): void {
         const actor = this.actors[actorIndex];
         actor.speed = speed;
@@ -634,41 +756,5 @@ export class Intro {
             });
         }
         return true;
-    }
-
-    /**
-     * Builds the text and graphics for the text dialogue at top of screen.
-     */
-    private makeText(): void {
-        if (this.text.mesh) {
-            this.scene.remove(this.text.mesh);
-        }
-        if (this.text.isFadeIn && this.text.counter > 180) {
-            this.text.isFadeIn = false;
-            this.text.isHolding = true;
-            this.text.counter = 1;
-        } else if (this.text.isHolding && this.text.counter > this.text.holdCount) {
-            this.text.isFadeIn = false;
-            this.text.isHolding = false;
-            this.text.counter = 1;
-        }
-
-        if (this.text.isFadeIn) {
-            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: this.text.counter / 180, transparent: true} );
-        } else if (this.text.isHolding) {
-            // Do nothing
-        } else if (this.text.counter < 181) {
-            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: (180 - this.text.counter) / 180, transparent: true} );
-        } else {
-            return;
-        }
-
-        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
-        this.text.mesh = new Mesh( this.text.geometry, this.text.material );
-        this.text.mesh.position.set(-5.65, -11.4, -5.5);
-        this.text.mesh.rotation.x = -1.5708;
-        this.scene.add(this.text.mesh);
-
-        this.text.counter++;
     }
 }
