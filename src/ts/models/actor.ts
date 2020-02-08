@@ -4,6 +4,7 @@ import { ActorEvent } from "./actor-event";
 export interface Actor {
     action?: ActorEvent;
     currentPoint: number[];
+    currentRotation: number;
     distanceTraveled: number;
     endingPoint: number[];
     geometry: CircleGeometry | PlaneGeometry;
@@ -11,6 +12,7 @@ export interface Actor {
     material: MeshPhongMaterial | MeshBasicMaterial;
     mesh: Mesh|Object3D;
     originalStartingPoint: number[];
-    speed: number;
+    moveSpeed: number;
+    rotateSpeed: number;
     totalDistance: number;
 };

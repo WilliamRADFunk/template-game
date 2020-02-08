@@ -42,12 +42,12 @@ export class Intro {
         // 8: venus,
         // 9: tiny earth,
         // 10: tiny mars,
-        // 11: uranus,
-        // 12: neptune,
-        // 13: pluto,
-        // 14: barrier station,
-        // 15: jupiter,
-        // 16: saturn
+        // 11: jupiter,
+        // 12: saturn,
+        // 13: uranus,
+        // 14: neptune
+        // 15: pluto,
+        // 16: barrier station,
     ];
     /**
      * Current frame
@@ -71,7 +71,7 @@ export class Intro {
         //             actorIndex: 2, // Ship lifts off from Earth
         //             duration: 180,
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 1,
         //             startPoint: [ 0, 0 ],
         //             type: "Grow"
@@ -79,7 +79,7 @@ export class Intro {
         //         {
         //             actorIndex: -1, // Stars in motion
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 181,
         //             startPoint: [ 0, 0 ],
         //             type: "Stars Moving"
@@ -87,7 +87,7 @@ export class Intro {
         //         {
         //             actorIndex: 0, // Earth exits stage left
         //             endPoint: [ -15, 0 ],
-        //             speed: 0.05,
+        //             moveSpeed: 0.05,
         //             startingFrame: 181,
         //             startPoint: [ 0, 0 ],
         //             type: "Moving"
@@ -95,7 +95,7 @@ export class Intro {
         //         {
         //             actorIndex: 3, // Mars enter stage right
         //             endPoint: [ 0, 0 ],
-        //             speed: 0.05,
+        //             moveSpeed: 0.05,
         //             startingFrame: 181,
         //             startPoint: [ 20, 0 ],
         //             type: "Moving"
@@ -103,7 +103,7 @@ export class Intro {
         //         {
         //             actorIndex: -1, // Stars stop moving
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 579,
         //             startPoint: [ 0, 0 ],
         //             type: "Stars Stopping"
@@ -112,7 +112,7 @@ export class Intro {
         //             actorIndex: 2, // Ship lands on Mars
         //             duration: 180,
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 600,
         //             startPoint: [ 0, 0 ],
         //             type: "Shrink"
@@ -134,7 +134,7 @@ export class Intro {
         //             actorIndex: 2, // Ship lifts off from Mars
         //             duration: 180,
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 1,
         //             startPoint: [ 0, 0 ],
         //             type: "Grow"
@@ -142,7 +142,7 @@ export class Intro {
         //         {
         //             actorIndex: -1, // Stars in motion
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 181,
         //             startPoint: [ 0, 0 ],
         //             type: "Stars Moving"
@@ -150,7 +150,7 @@ export class Intro {
         //         {
         //             actorIndex: 3, // Mars exits stage left
         //             endPoint: [ -15, 0 ],
-        //             speed: 0.05,
+        //             moveSpeed: 0.05,
         //             startingFrame: 181,
         //             startPoint: [ 0, 0 ],
         //             type: "Moving"
@@ -158,7 +158,7 @@ export class Intro {
         //         {
         //             actorIndex: 4, // Asteroid enter stage right
         //             endPoint: [ 0, 0 ],
-        //             speed: 0.05,
+        //             moveSpeed: 0.05,
         //             startingFrame: 181,
         //             startPoint: [ 20, 0 ],
         //             type: "Moving"
@@ -166,7 +166,7 @@ export class Intro {
         //         {
         //             actorIndex: -1, // Stars stop moving
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 579,
         //             startPoint: [ 0, 0 ],
         //             type: "Stars Stopping"
@@ -175,7 +175,7 @@ export class Intro {
         //             actorIndex: 2, // Ship lands on Asteroid
         //             duration: 180,
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 600,
         //             startPoint: [ 0, 0 ],
         //             type: "Shrink"
@@ -197,7 +197,7 @@ export class Intro {
         //             actorIndex: 2, // Ship lifts off from Asteroid
         //             duration: 180,
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 1,
         //             startPoint: [ 0, 0 ],
         //             type: "Grow"
@@ -205,7 +205,7 @@ export class Intro {
         //         {
         //             actorIndex: -1, // Stars in motion
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 181,
         //             startPoint: [ 0, 0 ],
         //             type: "Stars Moving"
@@ -213,7 +213,7 @@ export class Intro {
         //         {
         //             actorIndex: 4, // Asteroid exits stage left
         //             endPoint: [ -15, 0 ],
-        //             speed: 0.05,
+        //             moveSpeed: 0.05,
         //             startingFrame: 181,
         //             startPoint: [ 0, 0 ],
         //             type: "Moving"
@@ -221,7 +221,7 @@ export class Intro {
         //         {
         //             actorIndex: 5, // Enceladus enter stage right
         //             endPoint: [ 0, 0 ],
-        //             speed: 0.05,
+        //             moveSpeed: 0.05,
         //             startingFrame: 181,
         //             startPoint: [ 20, 0 ],
         //             type: "Moving"
@@ -229,7 +229,7 @@ export class Intro {
         //         {
         //             actorIndex: -1, // Stars stop moving
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 579,
         //             startPoint: [ 0, 0 ],
         //             type: "Stars Stopping"
@@ -238,7 +238,7 @@ export class Intro {
         //             actorIndex: 2, // Ship lands on Enceladus
         //             duration: 180,
         //             endPoint: [ 0, 0 ],
-        //             speed: 0,
+        //             moveSpeed: 0,
         //             startingFrame: 600,
         //             startPoint: [ 0, 0 ],
         //             type: "Shrink"
@@ -260,7 +260,7 @@ export class Intro {
                     actorIndex: 0, // Earth shrinks
                     duration: 10,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 1,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
@@ -269,7 +269,7 @@ export class Intro {
                     actorIndex: 3, // Mars shrinks
                     duration: 10,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 1,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
@@ -278,7 +278,7 @@ export class Intro {
                     actorIndex: 4, // Asteroid shrinks
                     duration: 10,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 1,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
@@ -287,7 +287,7 @@ export class Intro {
                     actorIndex: 5, // Enceladus shrinks
                     duration: 100,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 1,
                     startPoint: [ 0, 0 ],
                     type: "Shrink"
@@ -296,7 +296,7 @@ export class Intro {
                     actorIndex: 6, // The Sun grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 10,
                     startPoint: [ 0, 0 ],
                     type: "Grow"
@@ -305,7 +305,7 @@ export class Intro {
                     actorIndex: 7, // Mercury grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 10,
                     startPoint: [ 0, 0 ],
                     type: "Grow"
@@ -314,7 +314,7 @@ export class Intro {
                     actorIndex: 8, // Venus grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 10,
                     startPoint: [ 0, 0 ],
                     type: "Grow"
@@ -323,7 +323,7 @@ export class Intro {
                     actorIndex: 9, // Tiny Earth grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 10,
                     startPoint: [ 0, 0 ],
                     type: "Grow"
@@ -332,10 +332,164 @@ export class Intro {
                     actorIndex: 10, // Tiny Mars grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0.05,
+                    moveSpeed: 0.05,
                     startingFrame: 10,
                     startPoint: [ 0, 0 ],
                     type: "Grow"
+                },
+                {
+                    actorIndex: 11, // Jupiter grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 12, // Saturn grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 13, // Uranus grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 14, // Neptune grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 15, // Pluto grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 16, // Barrier Station grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 7, // Mercury rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.005,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 8, // Venus rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.004,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 9, // Tiny Earth rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0035,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 10, // Tiny Mars rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.003,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 11, // Jupiter rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0025,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 12, // Saturn rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.002,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 13, // Uranus rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0015,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 14, // Neptune rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.001,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 15, // Pluto rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0008,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 16, // Barrier Station rotates
+                    duration: 420,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0005,
+                    startingFrame: 180,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
                 }
             ],
             endingFrame: 780,
@@ -345,11 +499,236 @@ export class Intro {
                     sentence: '2110: Manned exploration of Sol System\'s outer edges',
                     holdCount: 420,
                     startingFrame: 1,
+                }
+            ]
+        },
+        {
+            actorEvents: [
+                {
+                    actorIndex: 7, // Mercury rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.005,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
                 },
+                {
+                    actorIndex: 8, // Venus rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.004,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 9, // Tiny Earth rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0035,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 10, // Tiny Mars rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.003,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 11, // Jupiter rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0025,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 12, // Saturn rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.002,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 13, // Uranus rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0015,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 14, // Neptune rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.001,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 15, // Pluto rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0008,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: 16, // Barrier Station rotates
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    rotateSpeed: 0.0005,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Rotate"
+                },
+                {
+                    actorIndex: -1, // warped stars in motion
+                    endPoint: [ 0, 0 ],
+                    moveSpeed: 0,
+                    startingFrame: 181,
+                    startPoint: [ 0, 0 ],
+                    type: "Warped Stars Moving"
+                },
+                {
+                    actorIndex: 6, // Sun exit stage left
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Moving"
+                },
+                {
+                    actorIndex: 7, // Mercury rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.005,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 8, // Venus rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.004,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 9, // Tiny Earth rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.0035,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 10, // Tiny Mars rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.003,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 11, // Jupiter rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.0025,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 12, // Saturn rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.002,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 13, // Uranus rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.0015,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 14, // Neptune rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.001,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 15, // Pluto rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.0008,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+                {
+                    actorIndex: 16, // Barrier Station rotates
+                    duration: 180,
+                    endPoint: [ -15, 0 ],
+                    moveSpeed: 0.01,
+                    rotateSpeed: 0.0005,
+                    startingFrame: 182,
+                    startPoint: [ 0, 0 ],
+                    type: "Move & Rotate"
+                },
+            ],
+            endingFrame: 780,
+            startingFrame: 1,
+            textEvents: [
                 {
                     sentence: '2148: The Photon harnessed for propulsion (98% lightspeed)',
                     holdCount: 420,
-                    startingFrame: 600,
+                    startingFrame: 1,
                 },
                 {
                     sentence: '2156: Colony formed in Alpha Centauri',
@@ -405,7 +784,7 @@ export class Intro {
      * Calculates the next point in the ship's path.
      */
     private calculateNextPoint(actor: Actor): void {
-        actor.distanceTraveled += actor.speed;
+        actor.distanceTraveled += actor.moveSpeed;
         // (xt, yt) = ( ( (1 − t) * x0 + t * x1 ), ( (1 − t) * y0 + t * y1) )
         const t = actor.distanceTraveled / actor.totalDistance;
         actor.currentPoint[0] = ((1 - t) * actor.originalStartingPoint[0]) + (t * actor.endingPoint[0]);
@@ -631,6 +1010,16 @@ export class Intro {
         meshGroup.position.set(-50, 2, 0);
         this.actors.push(enceladus);
 
+        sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
+        sectionGlow.rotation.set(1.5708, 0, 0);
+
+        section = new Mesh( sectionBackingGeometryMiddle, sectionMaterial );
+        section.rotation.set(1.5708, 0, 0); 
+
+        textGeometry = new TextGeometry('Sol System', this.text.headerParams);
+        textMesh = new Mesh( textGeometry, textMaterial );
+        textMesh.rotation.x = -1.5708;
+
         let zIndex = 0;
 
         const sun = createActor();
@@ -644,7 +1033,15 @@ export class Intro {
         sun.mesh.position.set(sun.currentPoint[0], zIndex, sun.currentPoint[1]);
         sun.mesh.rotation.set(-1.5708, 0, 0);
         sun.mesh.name = 'Sun';
-        this.scene.add(sun.mesh);
+        meshGroup.add(sun.mesh);
+        sectionGlow.position.set(sun.currentPoint[0], 0.1, sun.currentPoint[1] - 5);
+        meshGroup.add(sectionGlow);
+        section.position.set(sun.currentPoint[0], 0, sun.currentPoint[1] - 5);
+        meshGroup.add(section);
+        textMesh.position.set(sun.currentPoint[0] - 0.7, -0.5, sun.currentPoint[1] - 4.85);
+        meshGroup.add(textMesh);
+        this.scene.add(meshGroup);
+        sun.mesh = meshGroup;
         sun.mesh.scale.set(0.0001, 0.0001, 0.0001);
         this.actors.push(sun);
 
@@ -685,6 +1082,8 @@ export class Intro {
         meshGroup.add(black);
 
         this.scene.add(meshGroup);
+        mercury.currentRotation = -0.2;
+        meshGroup.rotation.set(0, -0.2, 0);
         meshGroup.scale.set(0.0001, 0.0001, 0.0001);
         this.actors.push(mercury);
 
@@ -727,6 +1126,8 @@ export class Intro {
         meshGroup.add(black);
 
         this.scene.add(meshGroup);
+        venus.currentRotation = 0.75;
+        meshGroup.rotation.set(0, 0.75, 0);
         meshGroup.scale.set(0.0001, 0.0001, 0.0001);
         this.actors.push(venus);
 
@@ -769,6 +1170,8 @@ export class Intro {
         meshGroup.add(black);
 
         this.scene.add(meshGroup);
+        tinyEarth.currentRotation = -0.5;
+        meshGroup.rotation.set(0, -0.5, 0);
         meshGroup.scale.set(0.0001, 0.0001, 0.0001);
         this.actors.push(tinyEarth);
 
@@ -811,8 +1214,274 @@ export class Intro {
         meshGroup.add(black);
 
         this.scene.add(meshGroup);
+        tinyMars.currentRotation = 0.5;
+        meshGroup.rotation.set(0, 0.5, 0);
         meshGroup.scale.set(0.0001, 0.0001, 0.0001);
         this.actors.push(tinyMars);
+
+        zIndex += 3;
+
+        const jupiter = createActor();
+        jupiter.originalStartingPoint = [0, 0];
+        jupiter.currentPoint = [-1.74, 0];
+        jupiter.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        jupiter.geometry = new CircleGeometry(0.05, 48, 48);
+        jupiter.material = new MeshBasicMaterial({ color: 0x00AAFF });
+        jupiter.mesh = new Mesh(jupiter.geometry, jupiter.material);
+        jupiter.mesh.position.set(jupiter.currentPoint[0], zIndex + 1, jupiter.currentPoint[1]);
+        jupiter.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(jupiter.mesh);
+        meshGroup.name = 'Jupiter';
+        jupiter.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(1.75, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(1.73, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        jupiter.currentRotation = -1.5;
+        meshGroup.rotation.set(0, -1.5, 0);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(jupiter);
+
+        zIndex += 3;
+
+        const saturn = createActor();
+        saturn.originalStartingPoint = [0, 0];
+        saturn.currentPoint = [-1.99, 0];
+        saturn.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        saturn.geometry = new CircleGeometry(0.05, 48, 48);
+        saturn.material = new MeshBasicMaterial({ color: 0xA0A0A0 });
+        saturn.mesh = new Mesh(saturn.geometry, saturn.material);
+        saturn.mesh.position.set(saturn.currentPoint[0], zIndex + 1, saturn.currentPoint[1]);
+        saturn.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(saturn.mesh);
+        meshGroup.name = 'Saturn';
+        saturn.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(2, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(1.98, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        saturn.currentRotation = -2.3;
+        meshGroup.rotation.set(0, -2.3, 0);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(saturn);
+
+        zIndex += 3;
+
+        const uranus = createActor();
+        uranus.originalStartingPoint = [0, 0];
+        uranus.currentPoint = [-2.24, 0];
+        uranus.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        uranus.geometry = new CircleGeometry(0.05, 48, 48);
+        uranus.material = new MeshBasicMaterial({ color: 0xAA00AA });
+        uranus.mesh = new Mesh(uranus.geometry, uranus.material);
+        uranus.mesh.position.set(uranus.currentPoint[0], zIndex + 1, uranus.currentPoint[1]);
+        uranus.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(uranus.mesh);
+        meshGroup.name = 'Uranus';
+        uranus.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(2.25, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(2.23, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        uranus.currentRotation = 2.3;
+        meshGroup.rotation.set(0, 2.3, 0);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(uranus);
+
+        zIndex += 3;
+
+        const neptune = createActor();
+        neptune.originalStartingPoint = [0, 0];
+        neptune.currentPoint = [-2.49, 0];
+        neptune.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        neptune.geometry = new CircleGeometry(0.05, 48, 48);
+        neptune.material = new MeshBasicMaterial({ color: 0xAAFF00 });
+        neptune.mesh = new Mesh(neptune.geometry, neptune.material);
+        neptune.mesh.position.set(neptune.currentPoint[0], zIndex + 1, neptune.currentPoint[1]);
+        neptune.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(neptune.mesh);
+        meshGroup.name = 'neptune';
+        neptune.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(2.5, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(2.48, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        neptune.currentRotation = 3.1;
+        meshGroup.rotation.set(0, 3.1, 0);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(neptune);
+
+        zIndex += 3;
+
+        const pluto = createActor();
+        pluto.originalStartingPoint = [0, 0];
+        pluto.currentPoint = [-2.74, 0];
+        pluto.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        pluto.geometry = new CircleGeometry(0.05, 48, 48);
+        pluto.material = new MeshBasicMaterial({ color: 0xFFFFFF });
+        pluto.mesh = new Mesh(pluto.geometry, pluto.material);
+        pluto.mesh.position.set(pluto.currentPoint[0], zIndex + 1, pluto.currentPoint[1]);
+        pluto.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(pluto.mesh);
+        meshGroup.name = 'Pluto';
+        pluto.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(2.75, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(2.73, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        pluto.currentRotation = -2.8;
+        meshGroup.rotation.set(0, -2.8, 0);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(pluto);
+
+        zIndex += 3;
+
+        const barrierStation = createActor();
+        barrierStation.originalStartingPoint = [0, 0];
+        barrierStation.currentPoint = [-2.99, 0];
+        barrierStation.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        barrierStation.geometry = new CircleGeometry(0.05, 48, 48);
+        barrierStation.material = new MeshBasicMaterial({ color: 0x00FFFF });
+        barrierStation.mesh = new Mesh(barrierStation.geometry, barrierStation.material);
+        barrierStation.mesh.position.set(barrierStation.currentPoint[0], zIndex + 1, barrierStation.currentPoint[1]);
+        barrierStation.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(barrierStation.mesh);
+        meshGroup.name = 'Barrier Station';
+        barrierStation.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(3, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(2.98, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        barrierStation.currentRotation = -3.1416;
+        meshGroup.rotation.set(0, -3.1416, 0);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(barrierStation);
 
         zIndex += 3;
     }
@@ -834,7 +1503,7 @@ export class Intro {
             this.stars[i] = mesh;
         }
 
-        for (let j = 0; j < this.stars.length; j++) {
+        for (let j = 0; j < this.stars.length / 2; j++) {
             const mag = (Math.floor(Math.random() * 3) + 1) / 100;
             const warpedGeometry = new PlaneGeometry(0.5, mag, 1, 1);
             const mesh = new Mesh( warpedGeometry, material );
@@ -856,22 +1525,35 @@ export class Intro {
                 if (Math.abs(actor.currentPoint[0] - actor.endingPoint[0]) <= 0.03 && Math.abs(actor.currentPoint[1] - actor.endingPoint[1]) <= 0.03) {
                     actor.mesh.position.set(actor.endingPoint[0], 0.2, actor.endingPoint[1]);
                     actor.inMotion = false;
-                    console.log('handleActorEvents', actor.mesh.name, this.currentFrame);
+                }
+                break;
+            }
+            case 'Move & Rotate': {
+                this.calculateNextPoint(actor);
+                actor.mesh.position.set(actor.currentPoint[0], 0.2, actor.currentPoint[1]);
+                this.rotate(actor);
+                if (Math.abs(actor.currentPoint[0] - actor.endingPoint[0]) <= 0.03 && Math.abs(actor.currentPoint[1] - actor.endingPoint[1]) <= 0.03) {
+                    actor.mesh.position.set(actor.endingPoint[0], 0.2, actor.endingPoint[1]);
+                    actor.inMotion = false;
                 }
                 break;
             }
             case 'Grow': {
-                const currentScale = this.actors[actorEvent.actorIndex].mesh.scale.x;
+                const currentScale = actor.mesh.scale.x;
                 let newScale = currentScale + (1 / actorEvent.duration);
                 newScale = newScale <= 1 ? newScale : 1;
-                this.actors[actorEvent.actorIndex].mesh.scale.set(newScale, newScale, newScale);
+                actor.mesh.scale.set(newScale, newScale, newScale);
                 break;
             }
             case 'Shrink': {
-                const currentScale = this.actors[actorEvent.actorIndex].mesh.scale.x;
+                const currentScale = actor.mesh.scale.x;
                 let newScale = currentScale - (1 / actorEvent.duration);
                 newScale = newScale >= 0.0001 ? newScale : 0.0001;
-                this.actors[actorEvent.actorIndex].mesh.scale.set(newScale, newScale, newScale);
+                actor.mesh.scale.set(newScale, newScale, newScale);
+                break;
+            }
+            case 'Rotate': {
+                this.rotate(actor);
                 break;
             }
         }
@@ -881,22 +1563,37 @@ export class Intro {
         console.log('initiateActorEvents', actorEvent.type, this.currentFrame);
         switch(actorEvent.type) {
             case 'Moving': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.speed);
+                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.action = actorEvent;
                 break;
             }
+            case 'Move & Rotate': {
+                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
+                const actor = this.actors[actorEvent.actorIndex];
+                actor.moveSpeed = actorEvent.moveSpeed;
+                actor.rotateSpeed = actorEvent.rotateSpeed;
+                actor.action = actorEvent;
+                break;
+            }
             case 'Grow': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.speed);
+                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.mesh.scale.set(0, 0, 0);
                 actor.action = actorEvent;
                 break;
             }
             case 'Shrink': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.speed);
+                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.mesh.scale.set(1, 1, 1);
+                actor.action = actorEvent;
+                break;
+            }
+            case 'Rotate': {
+                const actor = this.actors[actorEvent.actorIndex];
+                actor.rotateSpeed = actorEvent.rotateSpeed;
+                actor.inMotion = true;
                 actor.action = actorEvent;
                 break;
             }
@@ -910,9 +1607,15 @@ export class Intro {
             }
             case 'Warped Stars Moving': {
                 this.warpedStarsInMotion = true;
+                this.warpedStars.forEach(warpedStar => {
+                    warpedStar.visible = true;
+                });
                 break;
             }
             case 'Warped Stars Stopping': {
+                this.warpedStars.forEach(warpedStar => {
+                    warpedStar.visible = false;
+                });
                 this.warpedStarsInMotion = false;
                 break;
             }
@@ -968,7 +1671,7 @@ export class Intro {
 
     private setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number, speed: number): void {
         const actor = this.actors[actorIndex];
-        actor.speed = speed;
+        actor.moveSpeed = speed;
         actor.originalStartingPoint[0] = x1;
         actor.currentPoint[0] = x1;
         actor.originalStartingPoint[1] = z1;
@@ -1043,5 +1746,16 @@ export class Intro {
             });
         }
         return true;
+    }
+    /**
+     * Spins planet at its set rate.
+     */
+    private rotate(actor: Actor): void {
+        const twoPi = 2 * Math.PI;
+        actor.currentRotation += actor.rotateSpeed;
+        if (actor.currentRotation >= twoPi) {
+            actor.currentRotation -= twoPi
+        }
+        actor.mesh.rotation.set(0, actor.currentRotation, 0);
     }
 }
