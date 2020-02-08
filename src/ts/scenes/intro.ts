@@ -11,7 +11,8 @@ import {
     TextGeometry,
     Font,
     MeshLambertMaterial,
-    Object3D} from 'three';
+    Object3D,
+    Color} from 'three';
 
 import { SoundinatorSingleton } from '../soundinator';
 import { Actor } from '../models/actor';
@@ -36,6 +37,17 @@ export class Intro {
         // 3: mars,
         // 4: asteroid,
         // 5: enceladus,
+        // 6: sun,
+        // 7: mercury,
+        // 8: venus,
+        // 9: tiny earth,
+        // 10: tiny mars,
+        // 11: uranus,
+        // 12: neptune,
+        // 13: pluto,
+        // 14: barrier station,
+        // 15: jupiter,
+        // 16: saturn
     ];
     /**
      * Current frame
@@ -53,202 +65,291 @@ export class Intro {
      * Tracks series of events that make up the intro scene.
      */
     private sequences: Sequence[] = [
+        // {
+        //     actorEvents: [
+        //         {
+        //             actorIndex: 2, // Ship lifts off from Earth
+        //             duration: 180,
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 1,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Grow"
+        //         },
+        //         {
+        //             actorIndex: -1, // Stars in motion
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 181,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Stars Moving"
+        //         },
+        //         {
+        //             actorIndex: 0, // Earth exits stage left
+        //             endPoint: [ -15, 0 ],
+        //             speed: 0.05,
+        //             startingFrame: 181,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Moving"
+        //         },
+        //         {
+        //             actorIndex: 3, // Mars enter stage right
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0.05,
+        //             startingFrame: 181,
+        //             startPoint: [ 20, 0 ],
+        //             type: "Moving"
+        //         },
+        //         {
+        //             actorIndex: -1, // Stars stop moving
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 579,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Stars Stopping"
+        //         },
+        //         {
+        //             actorIndex: 2, // Ship lands on Mars
+        //             duration: 180,
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 600,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Shrink"
+        //         }
+        //     ],
+        //     endingFrame: 780,
+        //     startingFrame: 1,
+        //     textEvents: [
+        //         {
+        //             sentence: '2032: Colonization of Mars',
+        //             holdCount: 420,
+        //             startingFrame: 1,
+        //         }
+        //     ]
+        // },
+        // {
+        //     actorEvents: [
+        //         {
+        //             actorIndex: 2, // Ship lifts off from Mars
+        //             duration: 180,
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 1,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Grow"
+        //         },
+        //         {
+        //             actorIndex: -1, // Stars in motion
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 181,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Stars Moving"
+        //         },
+        //         {
+        //             actorIndex: 3, // Mars exits stage left
+        //             endPoint: [ -15, 0 ],
+        //             speed: 0.05,
+        //             startingFrame: 181,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Moving"
+        //         },
+        //         {
+        //             actorIndex: 4, // Asteroid enter stage right
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0.05,
+        //             startingFrame: 181,
+        //             startPoint: [ 20, 0 ],
+        //             type: "Moving"
+        //         },
+        //         {
+        //             actorIndex: -1, // Stars stop moving
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 579,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Stars Stopping"
+        //         },
+        //         {
+        //             actorIndex: 2, // Ship lands on Asteroid
+        //             duration: 180,
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 600,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Shrink"
+        //         }
+        //     ],
+        //     endingFrame: 780,
+        //     startingFrame: 1,
+        //     textEvents: [
+        //         {
+        //             sentence: '2067: Industrial mining of asteroid belt',
+        //             holdCount: 420,
+        //             startingFrame: 1,
+        //         }
+        //     ]
+        // },
+        // {
+        //     actorEvents: [
+        //         {
+        //             actorIndex: 2, // Ship lifts off from Asteroid
+        //             duration: 180,
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 1,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Grow"
+        //         },
+        //         {
+        //             actorIndex: -1, // Stars in motion
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 181,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Stars Moving"
+        //         },
+        //         {
+        //             actorIndex: 4, // Asteroid exits stage left
+        //             endPoint: [ -15, 0 ],
+        //             speed: 0.05,
+        //             startingFrame: 181,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Moving"
+        //         },
+        //         {
+        //             actorIndex: 5, // Enceladus enter stage right
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0.05,
+        //             startingFrame: 181,
+        //             startPoint: [ 20, 0 ],
+        //             type: "Moving"
+        //         },
+        //         {
+        //             actorIndex: -1, // Stars stop moving
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 579,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Stars Stopping"
+        //         },
+        //         {
+        //             actorIndex: 2, // Ship lands on Enceladus
+        //             duration: 180,
+        //             endPoint: [ 0, 0 ],
+        //             speed: 0,
+        //             startingFrame: 600,
+        //             startPoint: [ 0, 0 ],
+        //             type: "Shrink"
+        //         }
+        //     ],
+        //     endingFrame: 780,
+        //     startingFrame: 1,
+        //     textEvents: [
+        //         {
+        //             sentence: '2091: Submerged colony formed on Enceladus',
+        //             holdCount: 420,
+        //             startingFrame: 1,
+        //         }
+        //     ]
+        // },
         {
             actorEvents: [
                 {
-                    actorIndex: 2, // Ship lifts off from Earth
+                    actorIndex: 0, // Earth shrinks
+                    duration: 10,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Shrink"
+                },
+                {
+                    actorIndex: 3, // Mars shrinks
+                    duration: 10,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Shrink"
+                },
+                {
+                    actorIndex: 4, // Asteroid shrinks
+                    duration: 10,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Shrink"
+                },
+                {
+                    actorIndex: 5, // Enceladus shrinks
+                    duration: 100,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 1,
+                    startPoint: [ 0, 0 ],
+                    type: "Shrink"
+                },
+                {
+                    actorIndex: 6, // The Sun grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 1,
+                    speed: 0.05,
+                    startingFrame: 10,
                     startPoint: [ 0, 0 ],
                     type: "Grow"
                 },
                 {
-                    actorIndex: -1, // Stars in motion
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 181,
-                    startPoint: [ 0, 0 ],
-                    type: "Stars Moving"
-                },
-                {
-                    actorIndex: 0, // Earth exits stage left
-                    endPoint: [ -15, 0 ],
-                    speed: 0.05,
-                    startingFrame: 181,
-                    startPoint: [ 0, 0 ],
-                    type: "Moving"
-                },
-                {
-                    actorIndex: 3, // Mars enter stage right
-                    endPoint: [ 0, 0 ],
-                    speed: 0.05,
-                    startingFrame: 181,
-                    startPoint: [ 20, 0 ],
-                    type: "Moving"
-                },
-                {
-                    actorIndex: -1, // Stars stop moving
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 579,
-                    startPoint: [ 0, 0 ],
-                    type: "Stars Stopping"
-                },
-                {
-                    actorIndex: 2, // Ship lands on Mars
+                    actorIndex: 7, // Mercury grows
                     duration: 180,
                     endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 600,
+                    speed: 0.05,
+                    startingFrame: 10,
                     startPoint: [ 0, 0 ],
-                    type: "Shrink"
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 8, // Venus grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 9, // Tiny Earth grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
+                },
+                {
+                    actorIndex: 10, // Tiny Mars grows
+                    duration: 180,
+                    endPoint: [ 0, 0 ],
+                    speed: 0.05,
+                    startingFrame: 10,
+                    startPoint: [ 0, 0 ],
+                    type: "Grow"
                 }
             ],
             endingFrame: 780,
             startingFrame: 1,
             textEvents: [
                 {
-                    sentence: '2032: Colonization of Mars',
+                    sentence: '2110: Manned exploration of Sol System\'s outer edges',
                     holdCount: 420,
                     startingFrame: 1,
-                }
-            ]
-        },
-        {
-            actorEvents: [
-                {
-                    actorIndex: 2, // Ship lifts off from Mars
-                    duration: 180,
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 1,
-                    startPoint: [ 0, 0 ],
-                    type: "Grow"
-                },
-                {
-                    actorIndex: -1, // Stars in motion
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 181,
-                    startPoint: [ 0, 0 ],
-                    type: "Stars Moving"
-                },
-                {
-                    actorIndex: 3, // Mars exits stage left
-                    endPoint: [ -15, 0 ],
-                    speed: 0.05,
-                    startingFrame: 181,
-                    startPoint: [ 0, 0 ],
-                    type: "Moving"
-                },
-                {
-                    actorIndex: 4, // Asteroid enter stage right
-                    endPoint: [ 0, 0 ],
-                    speed: 0.05,
-                    startingFrame: 181,
-                    startPoint: [ 20, 0 ],
-                    type: "Moving"
-                },
-                {
-                    actorIndex: -1, // Stars stop moving
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 579,
-                    startPoint: [ 0, 0 ],
-                    type: "Stars Stopping"
-                },
-                {
-                    actorIndex: 2, // Ship lands on Asteroid
-                    duration: 180,
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 600,
-                    startPoint: [ 0, 0 ],
-                    type: "Shrink"
-                }
-            ],
-            endingFrame: 780,
-            startingFrame: 1,
-            textEvents: [
-                {
-                    sentence: '2067: Industrial mining of asteroid belt',
-                    holdCount: 420,
-                    startingFrame: 1,
-                }
-            ]
-        },
-        {
-            actorEvents: [
-                {
-                    actorIndex: 2, // Ship lifts off from Enceladus
-                    duration: 180,
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 1,
-                    startPoint: [ 0, 0 ],
-                    type: "Grow"
-                },
-                {
-                    actorIndex: -1, // Stars in motion
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 181,
-                    startPoint: [ 0, 0 ],
-                    type: "Stars Moving"
-                },
-                {
-                    actorIndex: 4, // Asteroid exits stage left
-                    endPoint: [ -15, 0 ],
-                    speed: 0.05,
-                    startingFrame: 181,
-                    startPoint: [ 0, 0 ],
-                    type: "Moving"
-                },
-                {
-                    actorIndex: 5, // Enceladus enter stage right
-                    endPoint: [ 0, 0 ],
-                    speed: 0.05,
-                    startingFrame: 181,
-                    startPoint: [ 20, 0 ],
-                    type: "Moving"
-                },
-                {
-                    actorIndex: -1, // Stars stop moving
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 579,
-                    startPoint: [ 0, 0 ],
-                    type: "Stars Stopping"
-                },
-                {
-                    actorIndex: 2, // Ship lands on Enceladus
-                    duration: 180,
-                    endPoint: [ 0, 0 ],
-                    speed: 0,
-                    startingFrame: 600,
-                    startPoint: [ 0, 0 ],
-                    type: "Shrink"
-                }
-            ],
-            endingFrame: 780,
-            startingFrame: 1,
-            textEvents: [
-                {
-                    sentence: '2091: Submerged colony formed on Enceladus',
-                    holdCount: 420,
-                    startingFrame: 1,
-                },
-                {
-                    sentence: '2110: Exploration of Sol System\'s outer edges',
-                    holdCount: 420,
-                    startingFrame: 1440,
                 },
                 {
                     sentence: '2148: The Photon harnessed for propulsion (98% lightspeed)',
                     holdCount: 420,
-                    startingFrame: 1920,
+                    startingFrame: 600,
                 },
                 {
                     sentence: '2156: Colony formed in Alpha Centauri',
@@ -416,6 +517,7 @@ export class Intro {
         ship.mesh.rotation.set(-1.5708, 0, -1.5708);
         ship.mesh.name = 'Enzmann';
         this.scene.add(ship.mesh);
+        ship.mesh.scale.set(0.0001, 0.0001, 0.0001);
         this.actors.push(ship);
 
         sectionGlow = new Mesh( sectionGlowGeometryMiddle, sectionMaterialGlow );
@@ -528,11 +630,196 @@ export class Intro {
         this.scene.add(meshGroup);
         meshGroup.position.set(-50, 2, 0);
         this.actors.push(enceladus);
+
+        let zIndex = 0;
+
+        const sun = createActor();
+        sun.originalStartingPoint = [0, 0];
+        sun.currentPoint = [0, 0];
+        sun.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        sun.geometry = new CircleGeometry(0.5, 48, 48);
+        sun.material = new MeshBasicMaterial({ color: 0xF9D71C });
+        sun.mesh = new Mesh(sun.geometry, sun.material);
+        sun.mesh.position.set(sun.currentPoint[0], zIndex, sun.currentPoint[1]);
+        sun.mesh.rotation.set(-1.5708, 0, 0);
+        sun.mesh.name = 'Sun';
+        this.scene.add(sun.mesh);
+        sun.mesh.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(sun);
+
+        const mercury = createActor();
+        mercury.originalStartingPoint = [0, 0];
+        mercury.currentPoint = [-0.74, 0];
+        mercury.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        mercury.geometry = new CircleGeometry(0.05, 48, 48);
+        mercury.material = new MeshBasicMaterial({ color: 0xFF88FF });
+        mercury.mesh = new Mesh(mercury.geometry, mercury.material);
+        mercury.mesh.position.set(mercury.currentPoint[0], zIndex + 1, mercury.currentPoint[1]);
+        mercury.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(mercury.mesh);
+        meshGroup.name = 'Mercury';
+        mercury.mesh = meshGroup;
+
+        let orbitGeometry = new CircleGeometry(0.75, 32, 32);
+        let orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        let orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        let blackGeometry = new CircleGeometry(0.73, 32, 32);
+        let blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        let black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(mercury);
+
+        zIndex += 3;
+
+        const venus = createActor();
+        venus.originalStartingPoint = [0, 0];
+        venus.currentPoint = [-0.99, 0];
+        venus.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        venus.geometry = new CircleGeometry(0.05, 48, 48);
+        venus.material = new MeshBasicMaterial({ color: 0x88FF88 });
+        venus.mesh = new Mesh(venus.geometry, venus.material);
+        venus.mesh.position.set(venus.currentPoint[0], zIndex + 1, venus.currentPoint[1]);
+        venus.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(venus.mesh);
+        meshGroup.name = 'Venus';
+        venus.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(1, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(0.98, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(venus);
+
+        zIndex += 3;
+
+        const tinyEarth = createActor();
+        tinyEarth.originalStartingPoint = [0, 0];
+        tinyEarth.currentPoint = [-1.24, 0];
+        tinyEarth.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        tinyEarth.geometry = new CircleGeometry(0.05, 48, 48);
+        tinyEarth.material = new MeshBasicMaterial({ color: 0x8888FF });
+        tinyEarth.mesh = new Mesh(tinyEarth.geometry, tinyEarth.material);
+        tinyEarth.mesh.position.set(tinyEarth.currentPoint[0], zIndex + 1, tinyEarth.currentPoint[1]);
+        tinyEarth.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(tinyEarth.mesh);
+        meshGroup.name = 'Tiny Earth';
+        tinyEarth.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(1.25, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(1.23, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(tinyEarth);
+
+        zIndex += 3;
+
+        const tinyMars = createActor();
+        tinyMars.originalStartingPoint = [0, 0];
+        tinyMars.currentPoint = [-1.49, 0];
+        tinyMars.endingPoint = [0, 0];
+        meshGroup = new Object3D();
+        tinyMars.geometry = new CircleGeometry(0.05, 48, 48);
+        tinyMars.material = new MeshBasicMaterial({ color: 0xFF4444 });
+        tinyMars.mesh = new Mesh(tinyMars.geometry, tinyMars.material);
+        tinyMars.mesh.position.set(tinyMars.currentPoint[0], zIndex + 1, tinyMars.currentPoint[1]);
+        tinyMars.mesh.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(tinyMars.mesh);
+        meshGroup.name = 'Tiny Mars';
+        tinyMars.mesh = meshGroup;
+
+        orbitGeometry = new CircleGeometry(1.50, 32, 32);
+        orbitMaterial = new MeshBasicMaterial({
+            color: new Color(0xFFFFFF),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: true});
+        orbit = new Mesh(orbitGeometry, orbitMaterial);
+        orbit.position.set(0, zIndex + 3, 0);
+        orbit.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(orbit);
+        // Inner Black Circle
+        blackGeometry = new CircleGeometry(1.48, 32, 32);
+        blackMaterial = new MeshBasicMaterial({
+            color: new Color(0x000000),
+            opacity: 1,
+            side: DoubleSide,
+            transparent: false});
+        black = new Mesh(blackGeometry, blackMaterial);
+        black.position.set(0, zIndex + 2, 0);
+        black.rotation.set(-1.5708, 0, 0);
+        meshGroup.add(black);
+
+        this.scene.add(meshGroup);
+        meshGroup.scale.set(0.0001, 0.0001, 0.0001);
+        this.actors.push(tinyMars);
+
+        zIndex += 3;
     }
 
     private createStars(): void {
         const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 1, transparent: false, side: DoubleSide} );
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 500; i++) {
             const mag = (Math.floor(Math.random() * 3) + 1) / 100;
             const geometry = new PlaneGeometry(mag, mag, 0.01, 0.01);
             const isXNeg = Math.random() < 0.5 ? -1 : 1;
@@ -583,7 +870,7 @@ export class Intro {
             case 'Shrink': {
                 const currentScale = this.actors[actorEvent.actorIndex].mesh.scale.x;
                 let newScale = currentScale - (1 / actorEvent.duration);
-                newScale = newScale >= 0 ? newScale : 0;
+                newScale = newScale >= 0.0001 ? newScale : 0.0001;
                 this.actors[actorEvent.actorIndex].mesh.scale.set(newScale, newScale, newScale);
                 break;
             }
