@@ -23,7 +23,7 @@ import { AsteroidGenerator } from './asteroids/asteroid-generator';
 import { SceneType } from './models/SceneType';
 import { SoundinatorSingleton } from './soundinator';
 import { Menu } from './displays/menu';
-import { Intro } from './scenes/intro';
+import { Intro } from './scenes/intro/intro';
 
 /**
  * Loads the graphic for asteroid.
@@ -497,7 +497,7 @@ const loadIntro = () => {
             }                
         }
         scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
-	    requestAnimationFrame( render );
+        requestAnimationFrame( render );
     };
     // Kick off the first render loop iteration.
     scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
