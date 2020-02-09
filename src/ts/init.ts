@@ -19,7 +19,6 @@ import {
     Vector2,
     Texture} from 'three';
 
-import { AsteroidGenerator } from './asteroids/asteroid-generator';
 import { SceneType } from './models/SceneType';
 import { SoundinatorSingleton } from './soundinator';
 import { Menu } from './displays/menu';

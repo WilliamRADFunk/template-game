@@ -11,12 +11,7 @@ import {
     TextGeometry,
     Font,
     MeshLambertMaterial,
-    Object3D,
-    Color,
-    Geometry,
-    Vector3,
-    LineBasicMaterial,
-    Line} from 'three';
+    Object3D} from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
