@@ -40,6 +40,7 @@ import { createUranus } from './actors/create-uranus';
 import { createNeptune } from './actors/create-neptune';
 import { createPluto } from './actors/create-pluto';
 import { createErobusStation } from './actors/create-erobus-station';
+import { createSolarSystem } from './actors/create-solar-system';
 
 /**
  * @class
@@ -247,81 +248,17 @@ export class Intro {
         this.scene.add(enceladus.mesh);
         this.actors.push(enceladus);
 
-        let zIndex = 3;
-
-        const sun = createSun(
+        this.actors.push(...createSolarSystem(
+            introFont,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams,
-            zIndex);
-        this.scene.add(sun.mesh);
-        this.actors.push(sun);
-
-        zIndex += 3;
-
-        const mercury = createMercury(zIndex);
-        this.scene.add(mercury.mesh);
-        this.actors.push(mercury);
-
-        zIndex += 3;
-
-        const venus = createVenus(zIndex);
-        this.scene.add(venus.mesh);
-        this.actors.push(venus);
-
-        zIndex += 3;
-
-        const tinyEarth = createTinyEarth(zIndex);
-        this.scene.add(tinyEarth.mesh);
-        this.actors.push(tinyEarth);
-
-        zIndex += 3;
-
-        const tinyMars = createTinyMars(zIndex);
-        this.scene.add(tinyMars.mesh);
-        this.actors.push(tinyMars);
-
-        zIndex += 3;
-
-        const jupiter = createJuptier(zIndex);
-        this.scene.add(jupiter.mesh);
-        this.actors.push(jupiter);
-
-        zIndex += 3;
-
-        const saturn = createSaturn(zIndex);
-        this.scene.add(saturn.mesh);
-        this.actors.push(saturn);
-
-        zIndex += 3;
-
-        const uranus = createUranus(zIndex);
-        this.scene.add(uranus.mesh);
-        this.actors.push(uranus);
-
-        zIndex += 3;
-
-        const neptune = createNeptune(zIndex);
-        this.scene.add(neptune.mesh);
-        this.actors.push(neptune);
-
-        zIndex += 3;
-
-        const pluto = createPluto(zIndex);
-        this.scene.add(pluto.mesh);
-        this.actors.push(pluto);
-
-        zIndex += 3;
-
-        const barrierStation = createErobusStation(
-            introFont,
-            labelBackMaterialGlow,
-            labelBackMaterial,
-            zIndex);
-        this.scene.add(barrierStation.mesh);
-        this.actors.push(barrierStation);
+            this.text.headerParams
+        ).filter(x => {
+            this.scene.add(x.mesh);
+            return true;
+        }))
     }
 
     private createStars(): void {
