@@ -28,6 +28,7 @@ import { createEnceladus } from './actors/create-enceladus';
 import { createSolarSystem } from './actors/create-solar-system';
 import { createShip1 } from './actors/create-ship-1';
 import { createGeminiStation } from './actors/createGeminiStation';
+import { createEntryEffect } from './actors/create-entry-effect';
 
 /**
  * @class
@@ -54,7 +55,8 @@ export class Intro {
         // 13: pluto,
         // 14: barrier station,
         // 15: station,
-        // 16: ship,
+        // 16: entryEffect,
+        // 17: ship,
     ];
     /**
      * Current frame
@@ -126,10 +128,25 @@ export class Intro {
      * @param x1            origin point x of where the ship starts.
      * @param z1            origin point z of where the ship starts.
      */
-    constructor(scene: Scene, shipTexture: Texture, earthTexture: Texture, marsTexture: Texture, asteroidTexture: Texture, enceladusTexture: Texture, introFont: Font) {
+    constructor(
+        scene: Scene,
+        shipTexture: Texture,
+        earthTexture: Texture,
+        marsTexture: Texture,
+        asteroidTexture: Texture,
+        enceladusTexture: Texture,
+        entryEffectTexture: Texture,
+        introFont: Font) {
         this.scene = scene;
         this.createStars();
-		this.createActors(earthTexture, marsTexture, asteroidTexture, enceladusTexture, shipTexture, introFont);
+		this.createActors(
+            earthTexture,
+            marsTexture,
+            asteroidTexture,
+            enceladusTexture,
+            shipTexture,
+            entryEffectTexture,
+            introFont);
     }
     /**
      * Calculates the next point in the ship's path.
@@ -150,6 +167,7 @@ export class Intro {
         asteroidTexture: Texture,
         enceladusTexture: Texture,
         shipTexture: Texture,
+        entryEffectTexture: Texture,
         introFont: Font): void {
         this.text.headerParams = {
             font: introFont,
@@ -238,6 +256,10 @@ export class Intro {
             this.text.headerParams);
         this.scene.add(station.mesh);
         this.actors.push(station);
+
+        const entryEffect = createEntryEffect(entryEffectTexture);
+        this.scene.add(entryEffect.mesh);
+        this.actors.push(entryEffect);
 
         const ship = createShip1(shipTexture);
         this.scene.add(ship.mesh);
@@ -395,6 +417,13 @@ export class Intro {
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.inMotion = true;
                 actorEvent.warbleArray = this.warblePositions.slice();
+                actor.action = actorEvent;
+                break;
+            }
+            case 'Flaming': {
+                const actor = this.actors[actorEvent.actorIndex];
+                actor.inMotion = true;
+                actor.mesh.visible = true;
                 actor.action = actorEvent;
                 break;
             }

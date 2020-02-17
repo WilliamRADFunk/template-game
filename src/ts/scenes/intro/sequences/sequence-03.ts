@@ -1,7 +1,7 @@
 export const SEQUENCE03 = {
     actorEvents: [
         {
-            actorIndex: 16, // Ship lifts off from Asteroid
+            actorIndex: 17, // Ship lifts off from Asteroid
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -18,7 +18,7 @@ export const SEQUENCE03 = {
             type: "Stars Moving"
         },
         {
-            actorIndex: 16, // Ship warbles
+            actorIndex: 17, // Ship warbles
             duration: 240,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.1,
@@ -60,7 +60,7 @@ export const SEQUENCE03 = {
             type: "Stars Stopping"
         },
         {
-            actorIndex: 16, // Ship lands on Enceladus
+            actorIndex: 17, // Ship lands on Enceladus
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,

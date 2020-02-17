@@ -1,7 +1,7 @@
 export const SEQUENCE01 = {
     actorEvents: [
         {
-            actorIndex: 16, // Ship lifts off from Earth
+            actorIndex: 17, // Ship lifts off from Earth
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -18,7 +18,7 @@ export const SEQUENCE01 = {
             type: "Stars Moving"
         },
         {
-            actorIndex: 16, // Ship warbles
+            actorIndex: 17, // Ship warbles
             duration: 240,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.1,
@@ -60,7 +60,16 @@ export const SEQUENCE01 = {
             type: "Stars Stopping"
         },
         {
-            actorIndex: 16, // Ship lands on Mars
+            actorIndex: 16, // Entry flame effect
+            duration: 220,
+            endPoint: [ 0, 0 ],
+            moveSpeed: 0,
+            startingFrame: 360,
+            startPoint: [ 0, 0 ],
+            type: "Flaming"
+        },
+        {
+            actorIndex: 17, // Ship lands on Mars
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
