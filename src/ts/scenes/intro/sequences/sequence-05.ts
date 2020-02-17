@@ -1,7 +1,7 @@
 export const SEQUENCE05 = {
     actorEvents: [
         {
-            actorIndex: 7, // Mercury rotates
+            actorIndex: 5, // Mercury rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -11,7 +11,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 8, // Venus rotates
+            actorIndex: 6, // Venus rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -21,7 +21,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 9, // Tiny Earth rotates
+            actorIndex: 7, // Tiny Earth rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -31,7 +31,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 10, // Tiny Mars rotates
+            actorIndex: 8, // Tiny Mars rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -41,7 +41,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 11, // Jupiter rotates
+            actorIndex: 9, // Jupiter rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -51,7 +51,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 12, // Saturn rotates
+            actorIndex: 10, // Saturn rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -61,7 +61,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 13, // Uranus rotates
+            actorIndex: 11, // Uranus rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -71,7 +71,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 14, // Neptune rotates
+            actorIndex: 12, // Neptune rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -81,7 +81,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 15, // Pluto rotates
+            actorIndex: 13, // Pluto rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -91,7 +91,7 @@ export const SEQUENCE05 = {
             type: "Rotate"
         },
         {
-            actorIndex: 16, // Barrier Station rotates
+            actorIndex: 14, // Barrier Station rotates
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -109,7 +109,7 @@ export const SEQUENCE05 = {
             type: "Warped Stars Moving"
         },
         {
-            actorIndex: 6, // Sun exit stage left
+            actorIndex: 4, // Sun exit stage left
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -118,7 +118,7 @@ export const SEQUENCE05 = {
             type: "Moving"
         },
         {
-            actorIndex: 7, // Mercury rotates
+            actorIndex: 5, // Mercury rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -128,7 +128,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 8, // Venus rotates
+            actorIndex: 6, // Venus rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -138,7 +138,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 9, // Tiny Earth rotates
+            actorIndex: 7, // Tiny Earth rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -148,7 +148,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 10, // Tiny Mars rotates
+            actorIndex: 8, // Tiny Mars rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -158,7 +158,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 11, // Jupiter rotates
+            actorIndex: 9, // Jupiter rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -168,7 +168,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 12, // Saturn rotates
+            actorIndex: 10, // Saturn rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -178,7 +178,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 13, // Uranus rotates
+            actorIndex: 11, // Uranus rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -188,7 +188,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 14, // Neptune rotates
+            actorIndex: 12, // Neptune rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -198,7 +198,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 15, // Pluto rotates
+            actorIndex: 13, // Pluto rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,
@@ -208,7 +208,7 @@ export const SEQUENCE05 = {
             type: "Move & Rotate"
         },
         {
-            actorIndex: 16, // Barrier Station rotates
+            actorIndex: 14, // Barrier Station rotates
             duration: 180,
             endPoint: [ -15, 0 ],
             moveSpeed: 0.01,

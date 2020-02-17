@@ -10,7 +10,7 @@ export const SEQUENCE04 = {
             type: "Shrink"
         },
         {
-            actorIndex: 3, // Mars shrinks
+            actorIndex: 1, // Mars shrinks
             duration: 10,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -19,7 +19,7 @@ export const SEQUENCE04 = {
             type: "Shrink"
         },
         {
-            actorIndex: 4, // Asteroid shrinks
+            actorIndex: 2, // Asteroid shrinks
             duration: 10,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -28,7 +28,7 @@ export const SEQUENCE04 = {
             type: "Shrink"
         },
         {
-            actorIndex: 5, // Enceladus shrinks
+            actorIndex: 3, // Enceladus shrinks
             duration: 100,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -37,7 +37,7 @@ export const SEQUENCE04 = {
             type: "Shrink"
         },
         {
-            actorIndex: 6, // The Sun grows
+            actorIndex: 4, // The Sun grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -46,7 +46,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 7, // Mercury grows
+            actorIndex: 5, // Mercury grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -55,7 +55,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 8, // Venus grows
+            actorIndex: 6, // Venus grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -64,7 +64,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 9, // Tiny Earth grows
+            actorIndex: 7, // Tiny Earth grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -73,7 +73,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 10, // Tiny Mars grows
+            actorIndex: 8, // Tiny Mars grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -82,7 +82,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 11, // Jupiter grows
+            actorIndex: 9, // Jupiter grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -91,7 +91,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 12, // Saturn grows
+            actorIndex: 10, // Saturn grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -100,7 +100,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 13, // Uranus grows
+            actorIndex: 11, // Uranus grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -109,7 +109,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 14, // Neptune grows
+            actorIndex: 12, // Neptune grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -118,7 +118,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 15, // Pluto grows
+            actorIndex: 13, // Pluto grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -127,7 +127,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 16, // Barrier Station grows
+            actorIndex: 14, // Barrier Station grows
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
@@ -136,7 +136,7 @@ export const SEQUENCE04 = {
             type: "Grow"
         },
         {
-            actorIndex: 7, // Mercury rotates
+            actorIndex: 5, // Mercury rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -146,7 +146,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 8, // Venus rotates
+            actorIndex: 6, // Venus rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -156,7 +156,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 9, // Tiny Earth rotates
+            actorIndex: 7, // Tiny Earth rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -166,7 +166,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 10, // Tiny Mars rotates
+            actorIndex: 8, // Tiny Mars rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -176,7 +176,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 11, // Jupiter rotates
+            actorIndex: 9, // Jupiter rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -186,7 +186,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 12, // Saturn rotates
+            actorIndex: 10, // Saturn rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -196,7 +196,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 13, // Uranus rotates
+            actorIndex: 11, // Uranus rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -206,7 +206,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 14, // Neptune rotates
+            actorIndex: 12, // Neptune rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -216,7 +216,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 15, // Pluto rotates
+            actorIndex: 13, // Pluto rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -226,7 +226,7 @@ export const SEQUENCE04 = {
             type: "Rotate"
         },
         {
-            actorIndex: 16, // Barrier Station rotates
+            actorIndex: 14, // Barrier Station rotates
             duration: 420,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,

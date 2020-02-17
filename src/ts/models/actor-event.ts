@@ -7,4 +7,5 @@ export interface ActorEvent {
     startingFrame: number;
     startPoint: number[];
     type: string;
+    warbleArray?: [number, number][];
 }

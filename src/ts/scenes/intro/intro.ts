@@ -1,6 +1,4 @@
 import {
-    CircleGeometry,
-    LinearFilter,
     Mesh,
     MeshPhongMaterial,
     Scene,
@@ -10,12 +8,10 @@ import {
     DoubleSide,
     TextGeometry,
     Font,
-    MeshLambertMaterial,
-    Object3D} from 'three';
+    MeshLambertMaterial } from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
-import { createActor } from '../../utils/create-actor';
 import { FadableText } from '../../models/fadable-text';
 import { Sequence } from '../../models/sequence';
 import { ActorEvent } from '../../models/actor-event';
@@ -29,18 +25,9 @@ import { createEarth } from './actors/create-earth';
 import { createMars } from './actors/create-mars';
 import { createAsteroid } from './actors/create-asteroid';
 import { createEnceladus } from './actors/create-enceladus';
-import { createSun } from './actors/create-sun';
-import { createMercury } from './actors/create-mercury';
-import { createVenus } from './actors/create-venus';
-import { createTinyEarth } from './actors/create-tiny-earth';
-import { createTinyMars } from './actors/create-tiny-mars';
-import { createJuptier } from './actors/create-jupiter';
-import { createSaturn } from './actors/create-saturn';
-import { createUranus } from './actors/create-uranus';
-import { createNeptune } from './actors/create-neptune';
-import { createPluto } from './actors/create-pluto';
-import { createErobusStation } from './actors/create-erobus-station';
 import { createSolarSystem } from './actors/create-solar-system';
+import { createShip1 } from './actors/create-ship-1';
+import { createGeminiStation } from './actors/createGeminiStation';
 
 /**
  * @class
@@ -52,22 +39,22 @@ export class Intro {
      */
     private actors: Actor[] = [
         // 0: earth,
-        // 1: station,
-        // 2: ship,
-        // 3: mars,
-        // 4: asteroid,
-        // 5: enceladus,
-        // 6: sun,
-        // 7: mercury,
-        // 8: venus,
-        // 9: tiny earth,
-        // 10: tiny mars,
-        // 11: jupiter,
-        // 12: saturn,
-        // 13: uranus,
-        // 14: neptune
-        // 15: pluto,
-        // 16: barrier station,
+        // 1: mars,
+        // 2: asteroid,
+        // 3: enceladus,
+        // 4: sun,
+        // 5: mercury,
+        // 6: venus,
+        // 7: tiny earth,
+        // 8: tiny mars,
+        // 9: jupiter,
+        // 10: saturn,
+        // 11: uranus,
+        // 12: neptune
+        // 13: pluto,
+        // 14: barrier station,
+        // 15: station,
+        // 16: ship,
     ];
     /**
      * Current frame
@@ -109,6 +96,24 @@ export class Intro {
         mesh: null,
         sentence: ''
     };
+    private warblePositions: [number, number][] = [
+        [0.01, 0.01],
+        [-0.01, -0.01],
+        [0.01, -0.01],
+        [-0.01, 0.01],
+        [0.01, 0.01],
+        [-0.01, -0.01],
+        [0.01, -0.01],
+        [-0.01, 0.01],
+        [0.01, 0.01],
+        [-0.01, -0.01],
+        [0.01, -0.01],
+        [-0.01, 0.01],
+        [0.01, 0.01],
+        [-0.01, -0.01],
+        [0.01, -0.01],
+        [-0.01, 0.01]
+    ];
     private warpedStars: Mesh[] = [];
     private warpedStarsInMotion: boolean = false;
     /**
@@ -139,7 +144,13 @@ export class Intro {
     /**
      * Creates items to be moved around in scene.
      */
-    private createActors(earthTexture: Texture, marsTexture: Texture, asteroidTexture: Texture, enceladusTexture: Texture, shipTexture: Texture, introFont: Font): void {
+    private createActors(
+        earthTexture: Texture,
+        marsTexture: Texture,
+        asteroidTexture: Texture,
+        enceladusTexture: Texture,
+        shipTexture: Texture,
+        introFont: Font): void {
         this.text.headerParams = {
             font: introFont,
             size: 0.199,
@@ -151,8 +162,18 @@ export class Intro {
             bevelSegments: 3
         };
 
-        const labelBackMaterial = new MeshBasicMaterial( {color: 0x111111, opacity: 1, transparent: false, side: DoubleSide} );
-        const labelBackMaterialGlow = new MeshPhongMaterial( {color: 0x5555FF, opacity: 0.6, transparent: true, side: DoubleSide} );
+        const labelBackMaterial = new MeshBasicMaterial({
+            color: 0x111111,
+            opacity: 1,
+            transparent: false,
+            side: DoubleSide
+        });
+        const labelBackMaterialGlow = new MeshPhongMaterial({
+            color: 0x5555FF,
+            opacity: 0.6,
+            transparent: true,
+            side: DoubleSide
+        });
         const labelBackGeometry = new PlaneGeometry( 4.5, 0.8, 0, 0 );
         const labelBackGlowGeometry = new PlaneGeometry( 4.7, 0.9, 0, 0 );
 
@@ -165,58 +186,6 @@ export class Intro {
             this.text.headerParams);
         this.scene.add(earth.mesh);
         this.actors.push(earth);
-
-        const xlabelBackGlow = new Mesh( labelBackGlowGeometry, labelBackMaterialGlow );
-        xlabelBackGlow.rotation.set(1.5708, 0, 0);
-
-        const xlabelBack = new Mesh( labelBackGeometry, labelBackMaterial );
-        xlabelBack.rotation.set(1.5708, 0, 0); 
-
-        const xtextGeometry = new TextGeometry('Gemini Station: The Rim', this.text.headerParams);
-        const xtextMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
-        const xtextMesh = new Mesh( xtextGeometry, xtextMaterial );
-        xtextMesh.rotation.x = -1.5708;
-
-        const station = createActor();
-        station.originalStartingPoint = [0, 0];
-        station.currentPoint = [0, 0];
-        station.endingPoint = [0, 0];
-        const xmeshGroup = new Object3D();
-        station.material = new MeshBasicMaterial( {color: 0xFF0000, opacity: 1, transparent: false, side: DoubleSide} );
-        station.geometry = new PlaneGeometry(4, 4, 1, 1);
-        station.mesh = new Mesh( station.geometry, station.material );
-        station.mesh.position.set(station.currentPoint[0], 1, station.currentPoint[1]);
-        station.mesh.rotation.set(1.5708, 0, 0);
-        xmeshGroup.add(station.mesh);
-        xlabelBackGlow.position.set(station.currentPoint[0], 0.1, station.currentPoint[1] - 5);
-        xmeshGroup.add(xlabelBackGlow);
-        xlabelBack.position.set(station.currentPoint[0], 0, station.currentPoint[1] - 5);
-        xmeshGroup.add(xlabelBack);
-        xtextMesh.position.set(station.currentPoint[0] - 2.5, -0.5, station.currentPoint[1] - 4.85);
-        xmeshGroup.add(xtextMesh);
-        station.mesh = xmeshGroup;
-        xmeshGroup.name = 'Station';
-        this.scene.add(xmeshGroup);
-        xmeshGroup.position.set(-50, 2, 0);
-        this.actors.push(station);
-
-        const ship = createActor();
-        ship.originalStartingPoint = [0, 0];
-        ship.currentPoint = [0, 0];
-        ship.endingPoint = [0, 0];
-		ship.geometry = new CircleGeometry(0.5, 16, 16);
-        ship.material = new MeshPhongMaterial();
-        ship.material.map = shipTexture;
-        ship.material.map.minFilter = LinearFilter;
-        (ship.material as any).shininess = 0;
-        ship.material.transparent = true;
-        ship.mesh = new Mesh(ship.geometry, ship.material);
-        ship.mesh.position.set(ship.currentPoint[0], 0, ship.currentPoint[1]);
-        ship.mesh.rotation.set(-1.5708, 0, -1.5708);
-        ship.mesh.name = 'Enzmann';
-        this.scene.add(ship.mesh);
-        ship.mesh.scale.set(0.0001, 0.0001, 0.0001);
-        this.actors.push(ship);
 
         const mars = createMars(
             marsTexture,
@@ -258,7 +227,21 @@ export class Intro {
         ).filter(x => {
             this.scene.add(x.mesh);
             return true;
-        }))
+        }));
+
+        const station = createGeminiStation(
+            earthTexture,
+            labelBackGlowGeometry,
+            labelBackMaterialGlow,
+            labelBackGeometry,
+            labelBackMaterial,
+            this.text.headerParams);
+        this.scene.add(station.mesh);
+        this.actors.push(station);
+
+        const ship = createShip1(shipTexture);
+        this.scene.add(ship.mesh);
+        this.actors.push(ship);
     }
 
     private createStars(): void {
@@ -296,19 +279,19 @@ export class Intro {
         switch(actorEvent.type) {
             case 'Moving': {
                 this.calculateNextPoint(actor);
-                actor.mesh.position.set(actor.currentPoint[0], 0.2, actor.currentPoint[1]);
+                actor.mesh.position.set(actor.currentPoint[0], actor.mesh.position.y, actor.currentPoint[1]);
                 if (Math.abs(actor.currentPoint[0] - actor.endingPoint[0]) <= 0.03 && Math.abs(actor.currentPoint[1] - actor.endingPoint[1]) <= 0.03) {
-                    actor.mesh.position.set(actor.endingPoint[0], 0.2, actor.endingPoint[1]);
+                    actor.mesh.position.set(actor.endingPoint[0], actor.mesh.position.y, actor.endingPoint[1]);
                     actor.inMotion = false;
                 }
                 break;
             }
             case 'Move & Rotate': {
                 this.calculateNextPoint(actor);
-                actor.mesh.position.set(actor.currentPoint[0], 0.2, actor.currentPoint[1]);
+                actor.mesh.position.set(actor.currentPoint[0], actor.mesh.position.y, actor.currentPoint[1]);
                 this.rotate(actor);
                 if (Math.abs(actor.currentPoint[0] - actor.endingPoint[0]) <= 0.03 && Math.abs(actor.currentPoint[1] - actor.endingPoint[1]) <= 0.03) {
-                    actor.mesh.position.set(actor.endingPoint[0], 0.2, actor.endingPoint[1]);
+                    actor.mesh.position.set(actor.endingPoint[0], actor.mesh.position.y, actor.endingPoint[1]);
                     actor.inMotion = false;
                 }
                 break;
@@ -331,6 +314,18 @@ export class Intro {
                 this.rotate(actor);
                 break;
             }
+            case 'Warble': {
+                actorEvent.duration--;
+                if (actorEvent.duration % 5 === 0) {
+                    const newPos = actorEvent.warbleArray.shift();
+                    actorEvent.warbleArray.push(newPos);
+                    actor.mesh.position.set(newPos[0], actor.mesh.position.y, newPos[1]);
+                }
+                if (actorEvent.duration <= 0) {
+                    actor.inMotion = false;
+                }
+                break;
+            }
         }
     }
 
@@ -338,13 +333,25 @@ export class Intro {
         console.log('initiateActorEvents', actorEvent.type, this.currentFrame);
         switch(actorEvent.type) {
             case 'Moving': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
+                this.setDestination(
+                    actorEvent.actorIndex,
+                    actorEvent.startPoint[0],
+                    actorEvent.startPoint[1],
+                    actorEvent.endPoint[0],
+                    actorEvent.endPoint[1],
+                    actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.action = actorEvent;
                 break;
             }
             case 'Move & Rotate': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
+                this.setDestination(
+                    actorEvent.actorIndex,
+                    actorEvent.startPoint[0],
+                    actorEvent.startPoint[1],
+                    actorEvent.endPoint[0],
+                    actorEvent.endPoint[1],
+                    actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.moveSpeed = actorEvent.moveSpeed;
                 actor.rotateSpeed = actorEvent.rotateSpeed;
@@ -352,14 +359,26 @@ export class Intro {
                 break;
             }
             case 'Grow': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
+                this.setDestination(
+                    actorEvent.actorIndex,
+                    actorEvent.startPoint[0],
+                    actorEvent.startPoint[1],
+                    actorEvent.endPoint[0],
+                    actorEvent.endPoint[1],
+                    actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.mesh.scale.set(0, 0, 0);
                 actor.action = actorEvent;
                 break;
             }
             case 'Shrink': {
-                this.setDestination(actorEvent.actorIndex, actorEvent.startPoint[0], actorEvent.startPoint[1], actorEvent.endPoint[0], actorEvent.endPoint[1], actorEvent.moveSpeed);
+                this.setDestination(
+                    actorEvent.actorIndex,
+                    actorEvent.startPoint[0],
+                    actorEvent.startPoint[1],
+                    actorEvent.endPoint[0],
+                    actorEvent.endPoint[1],
+                    actorEvent.moveSpeed);
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.mesh.scale.set(1, 1, 1);
                 actor.action = actorEvent;
@@ -369,6 +388,13 @@ export class Intro {
                 const actor = this.actors[actorEvent.actorIndex];
                 actor.rotateSpeed = actorEvent.rotateSpeed;
                 actor.inMotion = true;
+                actor.action = actorEvent;
+                break;
+            }
+            case 'Warble': {
+                const actor = this.actors[actorEvent.actorIndex];
+                actor.inMotion = true;
+                actorEvent.warbleArray = this.warblePositions.slice();
                 actor.action = actorEvent;
                 break;
             }

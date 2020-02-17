@@ -464,10 +464,12 @@ const loadIntro = () => {
         });
     };
     const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, gameFont);
+    let introConter = -1;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
+        introConter++;
         if (!scenes.intro.active) {
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', onWindowResize, false);
