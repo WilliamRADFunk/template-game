@@ -19,7 +19,7 @@ import {
     Vector2,
     Texture} from 'three';
 
-import { SceneType } from './models/SceneType';
+import { SceneType } from './models/scene-type';
 import { SoundinatorSingleton } from './soundinator';
 import { Menu } from './displays/menu';
 import { Intro } from './scenes/intro/intro';
@@ -493,7 +493,7 @@ const loadIntro = () => {
                 scenes.intro.scene = null;
                 loadMenu();
                 return;
-            }                
+            }
         }
         scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
         requestAnimationFrame( render );
