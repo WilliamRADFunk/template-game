@@ -53,14 +53,6 @@ const enceladusLoader = new TextureLoader();
  */
 let enceladusTexture: Texture;
 /**
- * Loads the graphic for entryEffect.
- */
-const entryEffectLoader = new TextureLoader();
-/**
- * The loaded texture, used for the entryEffect.
- */
-let entryEffectTexture: Texture;
-/**
  * Loads the font from a json file.
  */
 const fontLoader = new FontLoader();
@@ -204,11 +196,6 @@ const loadAssets = () => {
     // Callback function to set the asteroid texture once it is finished loading.
     asteroidLoader.load( 'assets/images/asteroid.png', texture => {
         asteroidTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the atmosphere entry effect texture once it is finished loading.
-    entryEffectLoader.load( 'assets/images/entry-flame.png', texture => {
-        entryEffectTexture = texture;
         checkAssetsLoaded();
     });
     // Callback function to set the earth texture once it is finished loading.
@@ -476,17 +463,16 @@ const loadIntro = () => {
             }
         });
     };
-    const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, entryEffectTexture, gameFont);
-    let introConter = -1;
+    const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, gameFont);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        introConter++;
+        let container;
         if (!scenes.intro.active) {
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', onWindowResize, false);
-            const container = document.getElementById('mainview');
+            container = document.getElementById('mainview');
             container.removeChild( (scenes.intro.renderer as any).domElement );
             // Clear up memory used by intro scene.
             scenes.intro.camera = null;
@@ -499,7 +485,7 @@ const loadIntro = () => {
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', onWindowResize, false);
-                const container = document.getElementById('mainview');
+                container = document.getElementById('mainview');
                 container.removeChild( (scenes.intro.renderer as any).domElement );
                 // Clear up memory used by intro scene.
                 scenes.intro.camera = null;

@@ -135,7 +135,6 @@ export class Intro {
         marsTexture: Texture,
         asteroidTexture: Texture,
         enceladusTexture: Texture,
-        entryEffectTexture: Texture,
         introFont: Font) {
         this.scene = scene;
         this.createStars();
@@ -145,7 +144,6 @@ export class Intro {
             asteroidTexture,
             enceladusTexture,
             shipTexture,
-            entryEffectTexture,
             introFont);
     }
     /**
@@ -167,7 +165,6 @@ export class Intro {
         asteroidTexture: Texture,
         enceladusTexture: Texture,
         shipTexture: Texture,
-        entryEffectTexture: Texture,
         introFont: Font): void {
         this.text.headerParams = {
             font: introFont,
@@ -257,7 +254,7 @@ export class Intro {
         this.scene.add(station.mesh);
         this.actors.push(station);
 
-        const entryEffect = createEntryEffect(entryEffectTexture);
+        const entryEffect = createEntryEffect();
         this.scene.add(entryEffect.mesh);
         this.actors.push(entryEffect);
 
@@ -450,7 +447,7 @@ export class Intro {
                 break;
             }
         }
-        
+
     }
 
     private handleTextEvents(textEvent: TextEvent): void {
@@ -529,11 +526,11 @@ export class Intro {
         }
         if (this.currentSequenceIndex < this.sequences.length) {
             const sequence = this.sequences[this.currentSequenceIndex];
-            
+
             sequence.actorEvents.filter(event => event.startingFrame === this.currentFrame).forEach(actorEvent => {
                 this.initiateActorEvents(actorEvent);
             });
-            
+
             const textEvent = sequence.textEvents.find(event => event.startingFrame === this.currentFrame);
             this.handleTextEvents(textEvent);
         } else {
