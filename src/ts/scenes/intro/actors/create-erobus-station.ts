@@ -26,11 +26,11 @@ export function createErobusStation(
     const labelGeometry = new PlaneGeometry( 2, 0.4, 0, 0 );
     const labelGlowGeometry = new PlaneGeometry( 2.1, 0.5, 0, 0 );
 
-    const labelBackGlow = new Mesh( labelGeometry, lbgMat );
+    const labelBackGlow = new Mesh( labelGlowGeometry, lbgMat );
     labelBackGlow.position.set(-4.29, 0, 0);
     labelBackGlow.rotation.set(1.5708, 0, 0);
 
-    const labelBack = new Mesh( labelGlowGeometry, lbMat );
+    const labelBack = new Mesh( labelGeometry, lbMat );
     labelBack.position.set(-4.29, -1, 0);
     labelBack.rotation.set(1.5708, 0, 0);
 
@@ -48,7 +48,7 @@ export function createErobusStation(
     const textGeometry = new TextGeometry('Erebos Station', headerParams);
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
     const textMesh = new Mesh( textGeometry, textMaterial );
-    textMesh.position.set(-3.39, -2, -0.1);
+    textMesh.position.set(-3.45, -2, -0.1);
     textMesh.rotation.set(-1.5708, 0, -3.1416);
     // Planetoid
     const barrierStation = createActor();

@@ -1,7 +1,7 @@
 export const SEQUENCE02 = {
     actorEvents: [
         {
-            actorIndex: 2, // Ship lifts off from Mars
+            actorIndex: 17, // Ship lifts off from Mars
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
@@ -18,15 +18,33 @@ export const SEQUENCE02 = {
             type: "Stars Moving"
         },
         {
-            actorIndex: 3, // Mars exits stage left
-            endPoint: [ -15, 0 ],
-            moveSpeed: 0.05,
+            actorIndex: 17, // Ship warbles
+            duration: 240,
+            endPoint: [ 0, 0 ],
+            moveSpeed: 0.1,
             startingFrame: 181,
+            startPoint: [ 0, 0 ],
+            type: "Warble"
+        },
+        {
+            actorIndex: 1, // Mars warbles
+            duration: 100,
+            endPoint: [ 0, 0 ],
+            moveSpeed: 0.1,
+            startingFrame: 191,
+            startPoint: [ 0, 0 ],
+            type: "Warble"
+        },
+        {
+            actorIndex: 1, // Mars exits stage left
+            endPoint: [ -15, 0 ],
+            moveSpeed: 0.2,
+            startingFrame: 241,
             startPoint: [ 0, 0 ],
             type: "Moving"
         },
         {
-            actorIndex: 4, // Asteroid enter stage right
+            actorIndex: 2, // Asteroid enter stage right
             endPoint: [ 0, 0 ],
             moveSpeed: 0.05,
             startingFrame: 181,
@@ -42,11 +60,11 @@ export const SEQUENCE02 = {
             type: "Stars Stopping"
         },
         {
-            actorIndex: 2, // Ship lands on Asteroid
+            actorIndex: 17, // Ship lands on Asteroid
             duration: 180,
             endPoint: [ 0, 0 ],
             moveSpeed: 0,
-            startingFrame: 600,
+            startingFrame: 400,
             startPoint: [ 0, 0 ],
             type: "Shrink"
         }
