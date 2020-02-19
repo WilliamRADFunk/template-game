@@ -591,7 +591,7 @@ const loadShipLayoutScene = () => {
     const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
     const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
     clickBarrier.name = 'Click Barrier';
-    clickBarrier.position.set(0, 0, 0);
+    clickBarrier.position.set(0, 30, 0);
     clickBarrier.rotation.set(1.5708, 0, 0);
     scenes.shipLayout.scene.add(clickBarrier);
 

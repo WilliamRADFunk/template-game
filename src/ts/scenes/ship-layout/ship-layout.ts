@@ -87,6 +87,15 @@ export class ShipLayout {
         this.text.isHolding = false;
         this.text.holdCount = -1; // Hold until replaced
         this.text.counter = 0;
+
+        const clickMaterial = new MeshBasicMaterial( {color: 0x00FF00, opacity: 0.5, transparent: true, side: DoubleSide} );
+        // Create the start collision layer
+        const startBarrierGeometry = new PlaneGeometry( 1.69, 0.45, 10, 10 );
+        const barrierStart = new Mesh( startBarrierGeometry, clickMaterial );
+        barrierStart.name = 'Start';
+        barrierStart.position.set(-0.9, 15, 2.97);
+        barrierStart.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrierStart);
     }
 
     private createStars(): void {
@@ -99,7 +108,7 @@ export class ShipLayout {
             const xCoord = Math.random() * 7;
             const zCoord = Math.random() * 7;
             const mesh = new Mesh( geometry, material );
-            mesh.position.set((isXNeg * xCoord), 5, (isZNeg * zCoord));
+            mesh.position.set((isXNeg * xCoord), 30, (isZNeg * zCoord));
             mesh.rotation.set(1.5708, 0, 0);
             mesh.name = `Star-${i}`;
             this.scene.add(mesh);

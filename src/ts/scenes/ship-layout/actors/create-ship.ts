@@ -19,7 +19,7 @@ export function createShip(shipTexture: Texture) {
     (ship.material as any).shininess = 0;
     ship.material.transparent = true;
     ship.mesh = new Mesh(ship.geometry, ship.material);
-    ship.mesh.position.set(ship.currentPoint[0], 1, ship.currentPoint[1]);
+    ship.mesh.position.set(ship.currentPoint[0], 10, ship.currentPoint[1]);
     ship.mesh.rotation.set(-Math.PI / 2, 0, 0);
     ship.mesh.name = 'Enzmann';
     return ship;
