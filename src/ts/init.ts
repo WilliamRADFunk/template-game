@@ -56,6 +56,14 @@ let enceladusTexture: Texture;
 /**
  * Loads the graphic for enzmann.
  */
+const enzmannLayoutLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the enzmann.
+ */
+let enzmannLayoutTexture: Texture;
+/**
+ * Loads the graphic for enzmann.
+ */
 const enzmannOutsideLoader = new TextureLoader();
 /**
  * The loaded texture, used for the enzmann.
@@ -222,6 +230,11 @@ const loadAssets = () => {
     // Callback function to set the enceladus texture once it is finished loading.
     enceladusLoader.load( 'assets/images/enceladus.png', texture => {
         enceladusTexture = texture;
+        checkAssetsLoaded();
+    });
+    // Callback function to set the enzmannLayout texture once it is finished loading.
+    enzmannLayoutLoader.load( 'assets/images/enzmann-layout.png', texture => {
+        enzmannLayoutTexture = texture;
         checkAssetsLoaded();
     });
     // Callback function to set the enzmannOutside texture once it is finished loading.
@@ -609,7 +622,7 @@ const loadShipLayoutScene = () => {
             }
         });
     };
-    const shipLayout = new ShipLayout(scenes.shipLayout.scene, enzmannOutsideTexture, gameFont);
+    const shipLayout = new ShipLayout(scenes.shipLayout.scene, enzmannLayoutTexture, enzmannOutsideTexture, gameFont);
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */

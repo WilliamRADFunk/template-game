@@ -57,6 +57,7 @@ export class ShipLayout {
      */
     constructor(
         scene: Scene,
+        shipInteriorTexture: Texture,
         shipTexture: Texture,
         introFont: Font) {
         this.scene = scene;
@@ -77,7 +78,7 @@ export class ShipLayout {
         const ship = createShip(shipTexture);
         this.actors.push(ship);
         this.scene.add(ship.mesh);
-        const shipInterior = createShipInteriorFrame(shipTexture);
+        const shipInterior = createShipInteriorFrame(shipInteriorTexture);
         this.actors.push(shipInterior);
         this.scene.add(shipInterior.mesh);
 
