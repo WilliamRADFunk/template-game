@@ -11,9 +11,9 @@ import {
     TextGeometryParameters,
     AmbientLight} from 'three';
 
-import { HelpHandler } from './help-handler';
-import { LoadHandler } from './load-handler';
-import { SoundinatorSingleton } from '../soundinator';
+import { HelpHandler } from '../help-screen/help-handler';
+import { LoadHandler } from '../load-screen/load-handler';
+import { SoundinatorSingleton } from '../../soundinator';
 
 /**
  * @class

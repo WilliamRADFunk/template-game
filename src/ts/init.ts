@@ -21,8 +21,9 @@ import {
 
 import { SceneType } from './models/scene-type';
 import { SoundinatorSingleton } from './soundinator';
-import { Menu } from './displays/menu';
+import { Menu } from './scenes/main-menu/menu';
 import { Intro } from './scenes/intro/intro';
+import { ShipLayout } from './scenes/ship-layout/ship-layout';
 
 /**
  * Loads the graphic for asteroid.
@@ -53,6 +54,14 @@ const enceladusLoader = new TextureLoader();
  */
 let enceladusTexture: Texture;
 /**
+ * Loads the graphic for enzmann.
+ */
+const enzmannOutsideLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the enzmann.
+ */
+let enzmannOutsideTexture: Texture;
+/**
  * Loads the font from a json file.
  */
 const fontLoader = new FontLoader();
@@ -78,6 +87,13 @@ const scenes: { [ key: string ]: SceneType } = {
         scene: null
     },
     menu: {
+        active: false,
+        camera: null,
+        instance: null,
+        renderer: null,
+        scene: null
+    },
+    shipLayout: {
         active: false,
         camera: null,
         instance: null,
@@ -208,6 +224,11 @@ const loadAssets = () => {
         enceladusTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the enzmannOutside texture once it is finished loading.
+    enzmannOutsideLoader.load( 'assets/images/enzmann-outside.png', texture => {
+        enzmannOutsideTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the mars texture once it is finished loading.
     marsLoader.load( 'assets/images/mars.png', texture => {
         marsTexture = texture;
@@ -244,10 +265,16 @@ const loadAssets = () => {
  * Checks to see if all assets are finished loaded. If so, start rendering the game.
  */
 const checkAssetsLoaded = () => {
-    if (gameFont && asteroidTexture && shipTexture && earthTexture && marsTexture &&
+    if (gameFont &&
+        asteroidTexture &&
+        shipTexture &&
+        earthTexture &&
+        marsTexture &&
+        enceladusTexture &&
+        enzmannOutsideTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
-        loadIntro();
+        loadIntroScene();
     }
 };
 const loadMenu = () => {
@@ -312,7 +339,7 @@ const loadMenu = () => {
                     scenes.menu.active = false;
                     window.removeEventListener( 'resize', onWindowResize, false);
                     container.removeChild( (scenes.menu.renderer as any).domElement );
-                    // loadGame(difficulty);
+                    loadShipLayoutScene();
                 }, 750);
                 SoundinatorSingleton.playClick();
                 return;
@@ -387,7 +414,7 @@ const startMenuRendering = () => {
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
-const loadIntro = () => {
+const loadIntroScene = () => {
     scenes.intro.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
@@ -501,6 +528,125 @@ const loadIntro = () => {
     };
     // Kick off the first render loop iteration.
     scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
+	requestAnimationFrame( render );
+};
+/**
+ * Game's intro scene. Only starts when all assets are finished loading.
+ */
+const loadShipLayoutScene = () => {
+    scenes.shipLayout.active = true;
+    // Establish initial window size.
+    let WIDTH: number = window.innerWidth * 0.99;
+    let HEIGHT: number = window.innerHeight * 0.99;
+    // Create ThreeJS scene.
+    scenes.shipLayout.scene = new Scene();
+    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
+    scenes.shipLayout.renderer = ((window as any)['WebGLRenderingContext'])
+        ? new WebGLRenderer()
+        : new CanvasRenderer();
+    // Make it black and size it to window.
+    (scenes.shipLayout.renderer as any).setClearColor(0x000000, 0);
+    scenes.shipLayout.renderer.setSize( WIDTH, HEIGHT );
+    (scenes.shipLayout.renderer as any).autoClear = false;
+    // An all around brightish light that hits everything equally.
+    scenes.shipLayout.scene.add(new AmbientLight(0xCCCCCC));
+    // Render to the html container.
+    const container = document.getElementById('mainview');
+	container.appendChild( (scenes.shipLayout.renderer as any).domElement );
+    // Set up player's ability to see the game, and focus center on planet.
+    scenes.shipLayout.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
+	scenes.shipLayout.camera.position.set(0, -20, 0);
+    scenes.shipLayout.camera.lookAt(scenes.shipLayout.scene.position);
+    scenes.shipLayout.camera.add(audioListener);
+    /**
+     * Gracefully handles a change in window size, by recalculating shape and updating scenes.shipLayout.camera and scenes.shipLayout.renderer.
+     */
+    const onWindowResize = () => {
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        scenes.shipLayout.renderer.setSize( WIDTH, HEIGHT );
+        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        document.getElementById('mainview').style.width = WIDTH + 'px';
+        document.getElementById('mainview').style.height = HEIGHT + 'px';
+    };
+    onWindowResize();
+    window.addEventListener( 'resize', onWindowResize, false);
+    // Create the click collision layer
+    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
+    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
+    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
+    clickBarrier.name = 'Click Barrier';
+    clickBarrier.position.set(0, 0, 0);
+    clickBarrier.rotation.set(1.5708, 0, 0);
+    scenes.shipLayout.scene.add(clickBarrier);
+
+    // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
+    const raycaster = new Raycaster();
+    document.onclick = event => {
+        const mouse = new Vector2();
+        event.preventDefault();
+        // Gets accurate click positions using css and raycasting.
+        const position = {
+            left: container.offsetLeft,
+            top: container.offsetTop
+        };
+        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
+        if (event.clientX !== undefined) {
+            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
+            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
+        }
+        raycaster.setFromCamera(mouse, scenes.shipLayout.camera);
+        const thingsTouched = raycaster.intersectObjects(scenes.shipLayout.scene.children);
+        // Detection for player clicked on pause button
+        thingsTouched.forEach(el => {
+            if (el.object.name === 'Click Barrier') {
+                SoundinatorSingleton.playClick();
+                scenes.shipLayout.active = false;
+                loadMenu();
+                return;
+            }
+        });
+    };
+    const shipLayout = new ShipLayout(scenes.shipLayout.scene, enzmannOutsideTexture, gameFont);
+    /**
+     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
+     */
+    const render = () => {
+        let container;
+        if (!scenes.shipLayout.active) {
+            // Remove renderer from the html container, and remove event listeners.
+            window.removeEventListener( 'resize', onWindowResize, false);
+            container = document.getElementById('mainview');
+            container.removeChild( (scenes.shipLayout.renderer as any).domElement );
+            // Clear up memory used by shipLayout scene.
+            scenes.shipLayout.camera = null;
+            scenes.shipLayout.instance = null;
+            scenes.shipLayout.renderer = null;
+            scenes.shipLayout.scene = null;
+            return;
+        } else {
+            if (!shipLayout.endCycle()) {
+                scenes.shipLayout.active = false;
+                // Remove renderer from the html container, and remove event listeners.
+                window.removeEventListener( 'resize', onWindowResize, false);
+                container = document.getElementById('mainview');
+                container.removeChild( (scenes.shipLayout.renderer as any).domElement );
+                // Clear up memory used by shipLayout scene.
+                scenes.shipLayout.camera = null;
+                scenes.shipLayout.instance = null;
+                scenes.shipLayout.renderer = null;
+                scenes.shipLayout.scene = null;
+                // loadMenu();
+                return;
+            }
+        }
+        scenes.shipLayout.renderer.render( scenes.shipLayout.scene, scenes.shipLayout.camera );
+        requestAnimationFrame( render );
+    };
+    // Kick off the first render loop iteration.
+    scenes.shipLayout.renderer.render( scenes.shipLayout.scene, scenes.shipLayout.camera );
 	requestAnimationFrame( render );
 };
 /**
