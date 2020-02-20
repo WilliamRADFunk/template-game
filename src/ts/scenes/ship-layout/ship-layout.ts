@@ -112,21 +112,35 @@ export class ShipLayout {
             }
             scene.raycaster.setFromCamera(mouse, scene.camera);
             const thingsTouched = scene.raycaster.intersectObjects(scene.scene.children);
-            // Detection for player clicked on center center square
+            Object.keys(this.meshMap).forEach(key => {
+                (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
+            });
             thingsTouched.forEach(el => {
+                // Detection for player clicked on center center square
                 if (el.object.name === 'center center') {
+                    selectedBox = this.meshMap[el.object.name];
+                    (this.meshMap[el.object.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
                     console.log("Clicked Center Center");
                     return;
+                // Detection for player clicked on center top square
                 } else if (el.object.name === 'center top') {
+                    selectedBox = this.meshMap[el.object.name];
+                    (this.meshMap[el.object.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
                     console.log("Clicked Center Top");
                     return;
+                // Detection for player clicked on center bottom square
                 } else if (el.object.name === 'center bottom') {
+                    selectedBox = this.meshMap[el.object.name];
+                    (this.meshMap[el.object.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
                     console.log("Clicked Center Bottom");
                     return;
-                } 
+                // Detection for player clicked on a non-square
+                } else {
+                    selectedBox = null;
+                }
             });
         };
         document.onmousemove = event => {
@@ -148,23 +162,33 @@ export class ShipLayout {
                 this.clearMeshMap(selectedBox, el.object.name);
                 // Detection for player hovered on center center square
                 if (el.object.name === 'center center') {
-                    setTimeout(() => {
+                    if (!selectedBox && selectedBox.name !== el.object.name) {
+                        this.text.sentence = 'Hover Center Center';
+                        this.makeText();
                         (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                    }, 0);
-                    SoundinatorSingleton.playClick();
+                        SoundinatorSingleton.playClick();
+                    }
                     console.log("Hover Center Center");
                     return;
                 // Detection for player hovered on center top square
                 } else if (el.object.name === 'center top') {
-                    (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                    SoundinatorSingleton.playClick();
-                    console.log("Hover Center Top");
+                    if (!selectedBox && selectedBox.name !== el.object.name) {
+                        this.text.sentence = 'Hover Center Top';
+                        this.makeText();
+                        (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
+                        SoundinatorSingleton.playClick();
+                        console.log("Hover Center Top");
+                    }
                     return;
                 // Detection for player hovered on center botton square
                 } else if (el.object.name === 'center bottom') {
-                    (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                    SoundinatorSingleton.playClick();
-                    console.log("Hover Center Bottom");
+                    if (!selectedBox && selectedBox.name !== el.object.name) {
+                        this.text.sentence = 'Hover Center Bottom';
+                        this.makeText();
+                        (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
+                        SoundinatorSingleton.playClick();
+                        console.log("Hover Center Bottom");
+                    }
                     return;
                 } else {
                     console.log("el.object.name", el.object.name);
@@ -212,6 +236,7 @@ export class ShipLayout {
         } else {
             Object.keys(this.meshMap).forEach(key => {
                 if (key !== selectedBox.name && key !== name) {
+                    console.log(selectedBox.name, key);
                     (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
                 }
             });
