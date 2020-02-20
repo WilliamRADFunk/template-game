@@ -1,5 +1,6 @@
 import {
     DoubleSide,
+    Font,
     Mesh,
     MeshBasicMaterial,
     MeshLambertMaterial,
@@ -7,13 +8,14 @@ import {
     Scene,
     TextGeometry,
     Texture,
-    Font } from 'three';
+    Vector2} from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
 import { FadableText } from '../../models/fadable-text';
 import { createShip } from './actors/create-ship';
 import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
+import { SceneType } from '../../models/scene-type';
 
 /**
  * @class
@@ -24,6 +26,10 @@ export class ShipLayout {
      * List of actors in the scene.
      */
     private actors: Actor[] = [];
+    private highlightedColor = 0x00FF00;
+    private unhighlightedColor = 0x87D3F8;
+    private selectedColor = 0xF1149A;
+    private meshMap: { [key: string]: Mesh } = {};
     /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
@@ -56,11 +62,11 @@ export class ShipLayout {
      * @param z1            origin point z of where the ship starts.
      */
     constructor(
-        scene: Scene,
+        scene: SceneType,
         shipInteriorTexture: Texture,
         shipTexture: Texture,
         introFont: Font) {
-        this.scene = scene;
+        this.scene = scene.scene;
         
         this.text.headerParams = {
             font: introFont,
@@ -88,14 +94,128 @@ export class ShipLayout {
         this.text.holdCount = -1; // Hold until replaced
         this.text.counter = 0;
 
-        const clickMaterial = new MeshBasicMaterial( {color: 0x00FF00, opacity: 0.5, transparent: true, side: DoubleSide} );
-        // Create the start collision layer
-        const startBarrierGeometry = new PlaneGeometry( 1.69, 0.45, 10, 10 );
-        const barrierStart = new Mesh( startBarrierGeometry, clickMaterial );
-        barrierStart.name = 'Start';
-        barrierStart.position.set(-0.9, 15, 2.97);
-        barrierStart.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrierStart);
+        let selectedBox: Mesh = null;
+
+        const container = document.getElementById('mainview');
+        document.onclick = event => {
+            const mouse = new Vector2();
+            event.preventDefault();
+            // Gets accurate click positions using css and raycasting.
+            const position = {
+                left: container.offsetLeft,
+                top: container.offsetTop
+            };
+            const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
+            if (event.clientX !== undefined) {
+                mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
+                mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
+            }
+            scene.raycaster.setFromCamera(mouse, scene.camera);
+            const thingsTouched = scene.raycaster.intersectObjects(scene.scene.children);
+            // Detection for player clicked on center center square
+            thingsTouched.forEach(el => {
+                if (el.object.name === 'center center') {
+                    SoundinatorSingleton.playClick();
+                    console.log("Clicked Center Center");
+                    return;
+                } else if (el.object.name === 'center top') {
+                    SoundinatorSingleton.playClick();
+                    console.log("Clicked Center Top");
+                    return;
+                } else if (el.object.name === 'center bottom') {
+                    SoundinatorSingleton.playClick();
+                    console.log("Clicked Center Bottom");
+                    return;
+                } 
+            });
+        };
+        document.onmousemove = event => {
+            const mouse = new Vector2();
+            event.preventDefault();
+            // Gets accurate hover positions using css and raycasting.
+            const position = {
+                left: container.offsetLeft,
+                top: container.offsetTop
+            };
+            const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
+            if (event.clientX !== undefined) {
+                mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
+                mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
+            }
+            scene.raycaster.setFromCamera(mouse, scene.camera);
+            const thingsHovered = scene.raycaster.intersectObjects(scene.scene.children);
+            thingsHovered.forEach(el => {
+                this.clearMeshMap(selectedBox, el.object.name);
+                // Detection for player hovered on center center square
+                if (el.object.name === 'center center') {
+                    setTimeout(() => {
+                        (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
+                    }, 0);
+                    SoundinatorSingleton.playClick();
+                    console.log("Hover Center Center");
+                    return;
+                // Detection for player hovered on center top square
+                } else if (el.object.name === 'center top') {
+                    (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
+                    SoundinatorSingleton.playClick();
+                    console.log("Hover Center Top");
+                    return;
+                // Detection for player hovered on center botton square
+                } else if (el.object.name === 'center bottom') {
+                    (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
+                    SoundinatorSingleton.playClick();
+                    console.log("Hover Center Bottom");
+                    return;
+                } else {
+                    console.log("el.object.name", el.object.name);
+                }
+            });
+        };
+
+        // Create the center center collision layer
+        const materialCenterCenter = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
+        const centerCenterBarrierGeometry = new PlaneGeometry( 1.64, 0.49, 10, 10 );
+        const barrierCenterCenter = new Mesh( centerCenterBarrierGeometry, materialCenterCenter );
+        barrierCenterCenter.name = 'center center';
+        barrierCenterCenter.position.set(-0.9, 15, 2.98);
+        barrierCenterCenter.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrierCenterCenter);
+        this.meshMap['center center'] = barrierCenterCenter;
+        // Create the center top collision layer
+        const materialCenterTop = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
+        const centerTopBarrierGeometry = new PlaneGeometry( 1.64, 0.49, 10, 10 );
+        const barrierCenterTop = new Mesh( centerTopBarrierGeometry, materialCenterTop );
+        barrierCenterTop.name = 'center top';
+        barrierCenterTop.position.set(-0.9, 15, 2.28);
+        barrierCenterTop.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrierCenterTop);
+        this.meshMap['center top'] = barrierCenterTop;
+        // Create the center bottom collision layer
+        const materialCenterBottom = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
+        const centerBottomBarrierGeometry = new PlaneGeometry( 1.64, 0.49, 10, 10 );
+        const barrierCenterBottom = new Mesh( centerBottomBarrierGeometry, materialCenterBottom );
+        barrierCenterBottom.name = 'center bottom';
+        barrierCenterBottom.position.set(-0.9, 15, 3.71);
+        barrierCenterBottom.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrierCenterBottom);
+        this.meshMap['center bottom'] = barrierCenterBottom;
+    }
+
+    private clearMeshMap(selectedBox: Mesh, name: string): void {
+        // If no selected box, don't bother with the extra conditional check.
+        if (!selectedBox) {
+            Object.keys(this.meshMap).forEach(key => {
+                if (key !== name) {
+                    (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
+                }
+            });
+        } else {
+            Object.keys(this.meshMap).forEach(key => {
+                if (key !== selectedBox.name && key !== name) {
+                    (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
+                }
+            });
+        }
     }
 
     private createStars(): void {

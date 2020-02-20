@@ -91,6 +91,7 @@ const scenes: { [ key: string ]: SceneType } = {
         active: false,
         camera: null,
         instance: null,
+        raycaster: null,
         renderer: null,
         scene: null
     },
@@ -98,6 +99,7 @@ const scenes: { [ key: string ]: SceneType } = {
         active: false,
         camera: null,
         instance: null,
+        raycaster: null,
         renderer: null,
         scene: null
     },
@@ -105,6 +107,7 @@ const scenes: { [ key: string ]: SceneType } = {
         active: false,
         camera: null,
         instance: null,
+        raycaster: null,
         renderer: null,
         scene: null
     }
@@ -406,7 +409,8 @@ const loadMenu = () => {
             }
         });
     };
-    scenes.menu.instance = new Menu(scenes.menu.scene, gameFont);
+    scenes.menu.instance = new Menu(scenes.menu, gameFont);
+    scenes.menu.raycaster = raycaster;
     startMenuRendering();
 };
 const startMenuRendering = () => {
@@ -503,7 +507,8 @@ const loadIntroScene = () => {
             }
         });
     };
-    const intro = new Intro(scenes.intro.scene, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, gameFont);
+    const intro = new Intro(scenes.intro, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, gameFont);
+    scenes.intro.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
@@ -517,6 +522,7 @@ const loadIntroScene = () => {
             // Clear up memory used by intro scene.
             scenes.intro.camera = null;
             scenes.intro.instance = null;
+            scenes.intro.raycaster = null;
             scenes.intro.renderer = null;
             scenes.intro.scene = null;
             return;
@@ -530,6 +536,7 @@ const loadIntroScene = () => {
                 // Clear up memory used by intro scene.
                 scenes.intro.camera = null;
                 scenes.intro.instance = null;
+                scenes.intro.raycaster = null;
                 scenes.intro.renderer = null;
                 scenes.intro.scene = null;
                 loadMenu();
@@ -586,43 +593,11 @@ const loadShipLayoutScene = () => {
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
-    // Create the click collision layer
-    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
-    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
-    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
-    clickBarrier.name = 'Click Barrier';
-    clickBarrier.position.set(0, 30, 0);
-    clickBarrier.rotation.set(1.5708, 0, 0);
-    scenes.shipLayout.scene.add(clickBarrier);
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    document.onclick = event => {
-        const mouse = new Vector2();
-        event.preventDefault();
-        // Gets accurate click positions using css and raycasting.
-        const position = {
-            left: container.offsetLeft,
-            top: container.offsetTop
-        };
-        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-        if (event.clientX !== undefined) {
-            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-        }
-        raycaster.setFromCamera(mouse, scenes.shipLayout.camera);
-        const thingsTouched = raycaster.intersectObjects(scenes.shipLayout.scene.children);
-        // Detection for player clicked on pause button
-        thingsTouched.forEach(el => {
-            if (el.object.name === 'Click Barrier') {
-                SoundinatorSingleton.playClick();
-                scenes.shipLayout.active = false;
-                loadMenu();
-                return;
-            }
-        });
-    };
-    const shipLayout = new ShipLayout(scenes.shipLayout.scene, enzmannLayoutTexture, enzmannOutsideTexture, gameFont);
+    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, gameFont);
+    scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
@@ -636,6 +611,7 @@ const loadShipLayoutScene = () => {
             // Clear up memory used by shipLayout scene.
             scenes.shipLayout.camera = null;
             scenes.shipLayout.instance = null;
+            scenes.shipLayout.raycaster = null;
             scenes.shipLayout.renderer = null;
             scenes.shipLayout.scene = null;
             return;
@@ -649,6 +625,7 @@ const loadShipLayoutScene = () => {
                 // Clear up memory used by shipLayout scene.
                 scenes.shipLayout.camera = null;
                 scenes.shipLayout.instance = null;
+                scenes.shipLayout.raycaster = null;
                 scenes.shipLayout.renderer = null;
                 scenes.shipLayout.scene = null;
                 // loadMenu();

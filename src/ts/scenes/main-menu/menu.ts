@@ -14,6 +14,7 @@ import {
 import { HelpHandler } from '../help-screen/help-handler';
 import { LoadHandler } from '../load-screen/load-handler';
 import { SoundinatorSingleton } from '../../soundinator';
+import { SceneType } from '../../models/scene-type';
 
 /**
  * @class
@@ -209,9 +210,9 @@ export class Menu {
      * @param menuFont loaded font to use for menu button text.
      * @hidden
      */
-    constructor(scene: Scene, menuFont: Font) {
+    constructor(scene: SceneType, menuFont: Font) {
         this.menuFont = menuFont;
-        this.scene = scene;
+        this.scene = scene.scene;
         this.fontDifficultyBtnParams = {
             font: this.menuFont,
             size: 0.3,

@@ -29,6 +29,7 @@ import { createSolarSystem } from './actors/create-solar-system';
 import { createShip1 } from './actors/create-ship-1';
 import { createGeminiStation } from './actors/createGeminiStation';
 import { createEntryEffect } from './actors/create-entry-effect';
+import { SceneType } from '../../models/scene-type';
 
 /**
  * @class
@@ -129,14 +130,14 @@ export class Intro {
      * @param z1            origin point z of where the ship starts.
      */
     constructor(
-        scene: Scene,
+        scene: SceneType,
         shipTexture: Texture,
         earthTexture: Texture,
         marsTexture: Texture,
         asteroidTexture: Texture,
         enceladusTexture: Texture,
         introFont: Font) {
-        this.scene = scene;
+        this.scene = scene.scene;
         this.createStars();
 		this.createActors(
             earthTexture,
