@@ -16,6 +16,7 @@ import { FadableText } from '../../models/fadable-text';
 import { createShip } from './actors/create-ship';
 import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
 import { SceneType } from '../../models/scene-type';
+import { getIntersections } from '../../utils/get-intersections';
 
 /**
  * @class
@@ -94,14 +95,26 @@ export class ShipLayout {
         this.text.holdCount = -1; // Hold until replaced
         this.text.counter = 0;
 
-        const loopy = [
+        
+
+        const rectangleBoxes = [
             { height: 0.49, width: 1.64, x: -0.9, z: 2.98, name: 'center center' },
             { height: 0.49, width: 1.64, x: -0.9, z: 2.28, name: 'center top' },
             { height: 0.49, width: 1.64, x: -0.9, z: 3.71, name: 'center bottom' },
-            { height: 1.01, width: 0.49, x: 0.36, z: 2.35, name: 'right1 top' }
+            { height: 1.01, width: 0.49, x: 0.36, z: 2.35, name: 'right1 top' },
+            { height: 1.01, width: 0.49, x: 0.36, z: 3.59, name: 'right1 bottom' },
+            { height: 0.95, width: 0.94, x: -2.39, z: 2.45, name: 'left1 top' },
+            { height: 0.95, width: 0.94, x: -2.39, z: 3.62, name: 'left1 bottom' },
+            { height: 2.10, width: 0.48, x: -3.38, z: 3.04, name: 'left2' },
+            { height: 0.77, width: 0.48, x: 0.99, z: 2.98, name: 'right2 center' },
+            { height: 0.47, width: 0.48, x: 0.99, z: 2.22, name: 'right2 top' },
+            { height: 0.47, width: 0.48, x: 0.99, z: 3.75, name: 'right2 bottom' },
+            { height: 0.24, width: 0.38, x: -5.69, z: 1.99, name: 'thruster top' },
+            { height: 0.24, width: 0.38, x: -5.69, z: 3.02, name: 'thruster center' },
+            { height: 0.24, width: 0.38, x: -5.69, z: 3.98, name: 'thruster bottom' }
         ];
 
-        loopy.forEach(box => {
+        rectangleBoxes.forEach(box => {
             const material = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
             const geometry = new PlaneGeometry( box.width, box.height, 10, 10 );
             const barrier = new Mesh( geometry, material );
@@ -112,28 +125,18 @@ export class ShipLayout {
             this.meshMap[box.name] = barrier;
         });
 
+        const intersectableThings = [...rectangleBoxes];
+
         let selectedBox: Mesh = null;
+        let hoveredBox: Mesh = null;
         const container = document.getElementById('mainview');
         document.onclick = event => {
-            const mouse = new Vector2();
             event.preventDefault();
-            // Gets accurate click positions using css and raycasting.
-            const position = {
-                left: container.offsetLeft,
-                top: container.offsetTop
-            };
-            const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-            if (event.clientX !== undefined) {
-                mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-                mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-            }
-            scene.raycaster.setFromCamera(mouse, scene.camera);
-            const thingsTouched = scene.raycaster.intersectObjects(scene.scene.children);
             Object.keys(this.meshMap).forEach(key => {
                 (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
             });
-            thingsTouched.forEach(el => {
-                const hit = loopy.find(box => {
+            getIntersections(event, container, scene).forEach(el => {
+                const hit = intersectableThings.find(box => {
                     if (el.object.name === box.name) {
                         return true;
                     }
@@ -147,52 +150,48 @@ export class ShipLayout {
             });
         };
         document.onmousemove = event => {
-            const mouse = new Vector2();
             event.preventDefault();
-            // Gets accurate hover positions using css and raycasting.
-            const position = {
-                left: container.offsetLeft,
-                top: container.offsetTop
-            };
-            const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-            if (event.clientX !== undefined) {
-                mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-                mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-            }
-            scene.raycaster.setFromCamera(mouse, scene.camera);
-            const thingsHovered = scene.raycaster.intersectObjects(scene.scene.children);
-            thingsHovered.forEach(el => {
-                this.clearMeshMap(selectedBox, el.object.name);
-                const hit = loopy.find(box => {
+            let isHovering = false;
+            getIntersections(event, container, scene).forEach(el => {
+                const hit = intersectableThings.find(box => {
                     if (el.object.name === box.name) {
                         return true;
                     }
                 });
                 if (hit) {
                     if (!selectedBox || selectedBox.name !== hit.name) {
-                        this.text.sentence = hit.name;
-                        this.makeText();
+                        isHovering = true;
+                        hoveredBox = this.meshMap[el.object.name];
                         (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                        SoundinatorSingleton.playClick();
+                    } else if (selectedBox && selectedBox.name === hit.name) {
+                        isHovering = true;
                     }
+                    this.text.sentence = hit.name;
+                    this.makeText();
                     return;
                 }
             });
+            if (!isHovering) {
+                hoveredBox = null;
+                this.text.sentence = '';
+                this.makeText();
+            }
+            this.clearMeshMap(selectedBox, hoveredBox);
         };
     }
 
-    private clearMeshMap(selectedBox: Mesh, name: string): void {
+    private clearMeshMap(selectedBox: Mesh, hoveredBox: Mesh): void {
+        const selectedName = selectedBox && selectedBox.name;
+        const hoveredName = hoveredBox && hoveredBox.name;
         // If no selected box, don't bother with the extra conditional check.
-        if (!selectedBox) {
+        if (!selectedName && !hoveredName) {
             Object.keys(this.meshMap).forEach(key => {
-                if (key !== name) {
-                    (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
-                }
+                (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
             });
         } else {
             Object.keys(this.meshMap).forEach(key => {
-                if (key !== selectedBox.name && key !== name) {
-                    console.log(selectedBox.name, key);
+                if (key !== selectedName && key !== hoveredName) {
+                    console.log(selectedName, key);
                     (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
                 }
             });

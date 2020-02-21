@@ -593,6 +593,14 @@ const loadShipLayoutScene = () => {
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
+    // Create the click collision layer
+    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
+    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
+    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
+    clickBarrier.name = 'Click Barrier';
+    clickBarrier.position.set(0, 50, 0);
+    clickBarrier.rotation.set(1.5708, 0, 0);
+    scenes.shipLayout.scene.add(clickBarrier);
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
