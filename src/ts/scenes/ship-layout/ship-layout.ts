@@ -127,6 +127,14 @@ export class ShipLayout {
 
         const intersectableThings = [...rectangleBoxes];
 
+        const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 0.6, transparent: true, side: DoubleSide} );
+        const geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
+        const barrier = new Mesh( geometry, material );
+        barrier.name = 'profile dialogue outline';
+        barrier.position.set(3, 15, -4.3);
+        barrier.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrier);
+
         let selectedBox: Mesh = null;
         let hoveredBox: Mesh = null;
         const container = document.getElementById('mainview');
@@ -191,7 +199,6 @@ export class ShipLayout {
         } else {
             Object.keys(this.meshMap).forEach(key => {
                 if (key !== selectedName && key !== hoveredName) {
-                    console.log(selectedName, key);
                     (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
                 }
             });
