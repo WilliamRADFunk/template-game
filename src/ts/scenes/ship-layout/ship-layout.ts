@@ -94,8 +94,25 @@ export class ShipLayout {
         this.text.holdCount = -1; // Hold until replaced
         this.text.counter = 0;
 
-        let selectedBox: Mesh = null;
+        const loopy = [
+            { height: 0.49, width: 1.64, x: -0.9, z: 2.98, name: 'center center' },
+            { height: 0.49, width: 1.64, x: -0.9, z: 2.28, name: 'center top' },
+            { height: 0.49, width: 1.64, x: -0.9, z: 3.71, name: 'center bottom' },
+            { height: 1.01, width: 0.49, x: 0.36, z: 2.35, name: 'right1 top' }
+        ];
 
+        loopy.forEach(box => {
+            const material = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
+            const geometry = new PlaneGeometry( box.width, box.height, 10, 10 );
+            const barrier = new Mesh( geometry, material );
+            barrier.name = box.name;
+            barrier.position.set(box.x, 15, box.z);
+            barrier.rotation.set(1.5708, 0, 0);
+            this.scene.add(barrier);
+            this.meshMap[box.name] = barrier;
+        });
+
+        let selectedBox: Mesh = null;
         const container = document.getElementById('mainview');
         document.onclick = event => {
             const mouse = new Vector2();
@@ -116,30 +133,16 @@ export class ShipLayout {
                 (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
             });
             thingsTouched.forEach(el => {
-                // Detection for player clicked on center center square
-                if (el.object.name === 'center center') {
-                    selectedBox = this.meshMap[el.object.name];
-                    (this.meshMap[el.object.name].material as any).color.set(this.selectedColor);
+                const hit = loopy.find(box => {
+                    if (el.object.name === box.name) {
+                        return true;
+                    }
+                });
+                if (hit) {
+                    selectedBox = this.meshMap[hit.name];
+                    (this.meshMap[hit.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
-                    console.log("Clicked Center Center");
                     return;
-                // Detection for player clicked on center top square
-                } else if (el.object.name === 'center top') {
-                    selectedBox = this.meshMap[el.object.name];
-                    (this.meshMap[el.object.name].material as any).color.set(this.selectedColor);
-                    SoundinatorSingleton.playClick();
-                    console.log("Clicked Center Top");
-                    return;
-                // Detection for player clicked on center bottom square
-                } else if (el.object.name === 'center bottom') {
-                    selectedBox = this.meshMap[el.object.name];
-                    (this.meshMap[el.object.name].material as any).color.set(this.selectedColor);
-                    SoundinatorSingleton.playClick();
-                    console.log("Clicked Center Bottom");
-                    return;
-                // Detection for player clicked on a non-square
-                } else {
-                    selectedBox = null;
                 }
             });
         };
@@ -160,69 +163,22 @@ export class ShipLayout {
             const thingsHovered = scene.raycaster.intersectObjects(scene.scene.children);
             thingsHovered.forEach(el => {
                 this.clearMeshMap(selectedBox, el.object.name);
-                // Detection for player hovered on center center square
-                if (el.object.name === 'center center') {
-                    if (!selectedBox && selectedBox.name !== el.object.name) {
-                        this.text.sentence = 'Hover Center Center';
+                const hit = loopy.find(box => {
+                    if (el.object.name === box.name) {
+                        return true;
+                    }
+                });
+                if (hit) {
+                    if (!selectedBox || selectedBox.name !== hit.name) {
+                        this.text.sentence = hit.name;
                         this.makeText();
                         (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
                         SoundinatorSingleton.playClick();
                     }
-                    console.log("Hover Center Center");
                     return;
-                // Detection for player hovered on center top square
-                } else if (el.object.name === 'center top') {
-                    if (!selectedBox && selectedBox.name !== el.object.name) {
-                        this.text.sentence = 'Hover Center Top';
-                        this.makeText();
-                        (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                        SoundinatorSingleton.playClick();
-                        console.log("Hover Center Top");
-                    }
-                    return;
-                // Detection for player hovered on center botton square
-                } else if (el.object.name === 'center bottom') {
-                    if (!selectedBox && selectedBox.name !== el.object.name) {
-                        this.text.sentence = 'Hover Center Bottom';
-                        this.makeText();
-                        (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                        SoundinatorSingleton.playClick();
-                        console.log("Hover Center Bottom");
-                    }
-                    return;
-                } else {
-                    console.log("el.object.name", el.object.name);
                 }
             });
         };
-
-        // Create the center center collision layer
-        const materialCenterCenter = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
-        const centerCenterBarrierGeometry = new PlaneGeometry( 1.64, 0.49, 10, 10 );
-        const barrierCenterCenter = new Mesh( centerCenterBarrierGeometry, materialCenterCenter );
-        barrierCenterCenter.name = 'center center';
-        barrierCenterCenter.position.set(-0.9, 15, 2.98);
-        barrierCenterCenter.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrierCenterCenter);
-        this.meshMap['center center'] = barrierCenterCenter;
-        // Create the center top collision layer
-        const materialCenterTop = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
-        const centerTopBarrierGeometry = new PlaneGeometry( 1.64, 0.49, 10, 10 );
-        const barrierCenterTop = new Mesh( centerTopBarrierGeometry, materialCenterTop );
-        barrierCenterTop.name = 'center top';
-        barrierCenterTop.position.set(-0.9, 15, 2.28);
-        barrierCenterTop.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrierCenterTop);
-        this.meshMap['center top'] = barrierCenterTop;
-        // Create the center bottom collision layer
-        const materialCenterBottom = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
-        const centerBottomBarrierGeometry = new PlaneGeometry( 1.64, 0.49, 10, 10 );
-        const barrierCenterBottom = new Mesh( centerBottomBarrierGeometry, materialCenterBottom );
-        barrierCenterBottom.name = 'center bottom';
-        barrierCenterBottom.position.set(-0.9, 15, 3.71);
-        barrierCenterBottom.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrierCenterBottom);
-        this.meshMap['center bottom'] = barrierCenterBottom;
     }
 
     private clearMeshMap(selectedBox: Mesh, name: string): void {
