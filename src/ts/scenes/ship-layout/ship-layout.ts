@@ -1,4 +1,5 @@
 import {
+    CircleGeometry,
     DoubleSide,
     Font,
     Mesh,
@@ -7,8 +8,7 @@ import {
     PlaneGeometry,
     Scene,
     TextGeometry,
-    Texture,
-    Vector2} from 'three';
+    Texture } from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -17,6 +17,7 @@ import { createShip } from './actors/create-ship';
 import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
+import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
 
 /**
  * @class
@@ -27,51 +28,107 @@ export class ShipLayout {
      * List of actors in the scene.
      */
     private actors: Actor[] = [];
-    private highlightedColor = 0x00FF00;
-    private unhighlightedColor = 0x87D3F8;
-    private selectedColor = 0xF1149A;
-    private meshMap: { [key: string]: Mesh } = {};
-    /**
-     * Reference to the scene, used to remove ship from rendering cycle once destroyed.
-     */
-    private scene: Scene;
 
-    private stars: Mesh[] = [];
     /**
-     * Text of the intro screen.
+     * Color for boxes user is hovering over.
      */
-    private text: FadableText = {
+    private highlightedColor = 0x00FF00;
+
+    /**
+     * Mesh for box user has hovered over.
+     */
+    private hoveredBox: Mesh = null;
+
+    /**
+     * Text for hovered room at bottom of screen.
+     */
+    private hoverText: FadableText = {
         counter: 1,
         font: null,
         geometry: null,
         headerParams: null,
-        holdCount: 0,
+        holdCount: -1, // Hold until replaced
         isFadeIn: true,
         isHolding: false,
         material: null,
         mesh: null,
         sentence: ''
     };
+
+    /**
+     * Meshes for all the boxes user can interact with.
+     */
+    private meshMap: { [key: string]: Mesh } = {};
+
+    /**
+     * Reference to the scene, used to remove ship from rendering cycle once destroyed.
+     */
+    private scene: Scene;
+
+    /**
+     * Mesh for box user has selected.
+     */
+    private selectedBox: Mesh = null;
+
+    /**
+     * Color for boxes user has clicked.
+     */
+    private selectedColor = 0xF1149A;
+
+    /**
+     * Text for selected room at top left of screen.
+     */
+    private selectionText: FadableText = {
+        counter: 1,
+        font: null,
+        geometry: null,
+        headerParams: null,
+        holdCount: -1, // Hold until replaced
+        isFadeIn: true,
+        isHolding: false,
+        material: null,
+        mesh: null,
+        sentence: ''
+    };
+
+    /**
+     * Stars in background.
+     */
+    private stars: Mesh[] = [];
+
+    /**
+     * Color for boxes user is not hovering over (default).
+     */
+    private unhighlightedColor = 0x87D3F8;
+
     /**
      * Constructor for the Intro (Scene) class
-     * @param scene         graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param shipTexture   texture for the ship.
-     * @param earthTexture  texture for the earth.
-     * @param marsTexture   texture for the mars.
-     * @param introFont     loaded font to use for help display text.
-     * @param x1            origin point x of where the ship starts.
-     * @param z1            origin point z of where the ship starts.
+     * @param scene             graphic rendering scene object. Used each iteration to redraw things contained in scene.
+     * @param shipIntTexture    texture for the ship in cut profile.
+     * @param shipTexture       texture for the ship.
+     * @param introFont         loaded font to use for help display text.
      */
     constructor(
         scene: SceneType,
-        shipInteriorTexture: Texture,
+        shipIntTexture: Texture,
         shipTexture: Texture,
         introFont: Font) {
         this.scene = scene.scene;
         
-        this.text.headerParams = {
+        this.hoverText.headerParams = {
             font: introFont,
             size: 0.199,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 0.5,
+            bevelSegments: 3
+        };
+        
+        this.selectionText.headerParams = {
+            font: introFont,
+            size: 0.159,
             height: 0.2,
             curveSegments: 12,
             bevelEnabled: false,
@@ -85,83 +142,95 @@ export class ShipLayout {
         const ship = createShip(shipTexture);
         this.actors.push(ship);
         this.scene.add(ship.mesh);
-        const shipInterior = createShipInteriorFrame(shipInteriorTexture);
+        const shipInterior = createShipInteriorFrame(shipIntTexture);
         this.actors.push(shipInterior);
         this.scene.add(shipInterior.mesh);
 
-        this.text.sentence = 'Testing';
-        this.text.isFadeIn = true;
-        this.text.isHolding = false;
-        this.text.holdCount = -1; // Hold until replaced
-        this.text.counter = 0;
-
-        
-
         const rectangleBoxes = [
-            { height: 0.49, width: 1.64, x: -0.9, z: 2.98, name: 'center center' },
-            { height: 0.49, width: 1.64, x: -0.9, z: 2.28, name: 'center top' },
-            { height: 0.49, width: 1.64, x: -0.9, z: 3.71, name: 'center bottom' },
-            { height: 1.01, width: 0.49, x: 0.36, z: 2.35, name: 'right1 top' },
-            { height: 1.01, width: 0.49, x: 0.36, z: 3.59, name: 'right1 bottom' },
-            { height: 0.95, width: 0.94, x: -2.39, z: 2.45, name: 'left1 top' },
-            { height: 0.95, width: 0.94, x: -2.39, z: 3.62, name: 'left1 bottom' },
-            { height: 2.10, width: 0.48, x: -3.38, z: 3.04, name: 'left2' },
-            { height: 0.77, width: 0.48, x: 0.99, z: 2.98, name: 'right2 center' },
-            { height: 0.47, width: 0.48, x: 0.99, z: 2.22, name: 'right2 top' },
-            { height: 0.47, width: 0.48, x: 0.99, z: 3.75, name: 'right2 bottom' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 1.99, name: 'thruster top' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 3.02, name: 'thruster center' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 3.98, name: 'thruster bottom' },
-            { height: 0.24, width: 0.37, x: 5.50, z: 3.00, name: 'sensors' },
+            { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
+            { height: 0.49, width: 1.64, x: -0.9, z: 2.28, radius: 0.07, rot: 0, name: 'Crew Quarters A' },
+            { height: 0.49, width: 1.64, x: -0.9, z: 3.71, radius: 0.09, rot: 0, name: 'Crew Quarters B' },
+            { height: 1.01, width: 0.49, x: 0.36, z: 2.35, radius: 0.05, rot: 0, name: 'Weapons Room' },
+            { height: 1.01, width: 0.49, x: 0.36, z: 3.59, radius: 0.05, rot: 0, name: 'Extended Reality Deck' },
+            { height: 0.95, width: 0.94, x: -2.39, z: 2.45, radius: 0.06, rot: 0, name: 'Climate-Controlled Cargo Space' },
+            { height: 0.95, width: 0.94, x: -2.39, z: 3.62, radius: 0.06, rot: 0, name: 'Standard Cargo Space' },
+            { height: 2.10, width: 0.48, x: -3.38, z: 3.04, radius: 0.05, rot: 0, name: 'Engine Room' },
+            { height: 0.77, width: 0.48, x: 0.99, z: 2.98, radius: 0.04, rot: 0, name: 'Bridge' },
+            { height: 0.47, width: 0.48, x: 0.99, z: 2.22, radius: 0.05, rot: 0, name: 'Officers Quarters' },
+            { height: 0.47, width: 0.48, x: 0.99, z: 3.75, radius: 0.03, rot: 0, name: 'Training Deck' },
+            { height: 0.24, width: 0.38, x: -5.69, z: 1.99, radius: 0.02, rot: 0, name: 'Port Thrusters' },
+            { height: 0.24, width: 0.38, x: -5.69, z: 3.02, radius: 0.02, rot: 0, name: 'Main Thruster' },
+            { height: 0.24, width: 0.38, x: -5.69, z: 3.98, radius: 0.02, rot: 0, name: 'Starboard Thrusters' },
+            { height: 0.24, width: 0.37, x: 5.50, z: 3.00, radius: 0.02, rot: 0, name: 'Sensors' },
+            { height: 3.02, width: 0.20, x: -4.04, z: 2.98, radius: 0.099, rot: 0, name: 'Artificial Gravity Rings' },
+            { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
         ];
 
         rectangleBoxes.forEach(box => {
-            const material = new MeshBasicMaterial( {color: this.unhighlightedColor, opacity: 0.5, transparent: true, side: DoubleSide} );
-            const geometry = new PlaneGeometry( box.width, box.height, 10, 10 );
+            const material = new MeshBasicMaterial({
+                color: this.unhighlightedColor,
+                opacity: 0.5,
+                transparent: true,
+                side: DoubleSide
+            });
+            const geometry = createBoxWithRoundedEdges(box.width, box.height, box.radius, 0);
             const barrier = new Mesh( geometry, material );
             barrier.name = box.name;
             barrier.position.set(box.x, 15, box.z);
-            barrier.rotation.set(1.5708, 0, 0);
+            barrier.rotation.set(1.5708, 0, box.rot);
             this.scene.add(barrier);
             this.meshMap[box.name] = barrier;
         });
 
-        const intersectableThings = [...rectangleBoxes];
+        let material = new MeshBasicMaterial({
+            color: this.unhighlightedColor,
+            opacity: 0.5,
+            transparent: true,
+            side: DoubleSide
+        });
+        let geometry: CircleGeometry | PlaneGeometry = new CircleGeometry(1.56, 48, 48);
+        const circleBarrier = new Mesh( geometry, material );
+        circleBarrier.name = 'Deuterium Tank';
+        circleBarrier.position.set(3.42, 15, 2.94);
+        circleBarrier.rotation.set(1.5708, 0, 0);
+        this.scene.add(circleBarrier);
+        this.meshMap[circleBarrier.name] = circleBarrier;
 
-        let material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 0.6, transparent: true, side: DoubleSide} );
-        let geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
-        let barrier = new Mesh( geometry, material );
-        barrier.name = 'profile dialogue outline';
-        barrier.position.set(3.15, 15, -4.45);
-        barrier.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrier);
+        const intersectableThings = [...rectangleBoxes, circleBarrier];
 
-        material = new MeshBasicMaterial( {color: 0x000000, opacity: 1, transparent: true, side: DoubleSide} );
-        geometry = new PlaneGeometry( 5.5, 3, 10, 10 );
-        barrier = new Mesh( geometry, material );
-        barrier.name = 'profile dialogue inline';
-        barrier.position.set(3.15, 10, -4.45);
-        barrier.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrier);
+        const textBoxes = [
+            { x: 3.15, z: -4.45, name: 'Profile Dialogue' },
+            { x: -3.15, z: -4.45, name: 'Selection' },
+        ];
 
-        material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 0.6, transparent: true, side: DoubleSide} );
-        geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
-        barrier = new Mesh( geometry, material );
-        barrier.name = 'selection outline';
-        barrier.position.set(-3.15, 15, -4.45);
-        barrier.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrier);
+        textBoxes.forEach(box => {
+            let material = new MeshBasicMaterial({
+                color: 0xFFFFFF,
+                opacity: 0.6,
+                transparent: true,
+                side: DoubleSide
+            });
+            let geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
+            let barrier = new Mesh( geometry, material );
+            barrier.name = `${box.name} Outter Box`;
+            barrier.position.set(box.x, 15, box.z);
+            barrier.rotation.set(1.5708, 0, 0);
+            this.scene.add(barrier);
 
-        material = new MeshBasicMaterial( {color: 0x000000, opacity: 1, transparent: true, side: DoubleSide} );
-        geometry = new PlaneGeometry( 5.5, 3, 10, 10 );
-        barrier = new Mesh( geometry, material );
-        barrier.name = 'selection inline';
-        barrier.position.set(-3.15, 10, -4.45);
-        barrier.rotation.set(1.5708, 0, 0);
-        this.scene.add(barrier);
+            material = new MeshBasicMaterial({
+                color: 0x000000,
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            geometry = new PlaneGeometry( 5.5, 3, 10, 10 );
+            barrier = new Mesh( geometry, material );
+            barrier.name = `${box.name} Inner Box`;
+            barrier.position.set(box.x, 10, box.z);
+            barrier.rotation.set(1.5708, 0, 0);
+            this.scene.add(barrier);
+        });
 
-        let selectedBox: Mesh = null;
-        let hoveredBox: Mesh = null;
         const container = document.getElementById('mainview');
         document.onclick = event => {
             event.preventDefault();
@@ -175,15 +244,22 @@ export class ShipLayout {
                     }
                 });
                 if (hit) {
-                    selectedBox = this.meshMap[hit.name];
+                    this.selectedBox = this.meshMap[hit.name];
                     (this.meshMap[hit.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
+                    this.selectionText.sentence = hit.name;
+                    this.selectionText.isFadeIn = true;
+                    this.selectionText.isHolding = false;
+                    this.selectionText.counter = 1;
+                    this.makeSelectionText();
                     return;
                 }
             });
         };
         document.onmousemove = event => {
             event.preventDefault();
+            const hoverName = this.hoveredBox && this.hoveredBox.name;
+            const selectedName = this.selectedBox && this.selectedBox.name;
             let isHovering = false;
             getIntersections(event, container, scene).forEach(el => {
                 const hit = intersectableThings.find(box => {
@@ -192,30 +268,39 @@ export class ShipLayout {
                     }
                 });
                 if (hit) {
-                    if (!selectedBox || selectedBox.name !== hit.name) {
+                    if (!this.selectedBox || this.selectedBox.name !== hit.name) {
                         isHovering = true;
-                        hoveredBox = this.meshMap[el.object.name];
+                        this.hoveredBox = this.meshMap[el.object.name];
                         (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                    } else if (selectedBox && selectedBox.name === hit.name) {
+                    } else if (this.selectedBox && this.selectedBox.name === hit.name) {
                         isHovering = true;
                     }
-                    this.text.sentence = hit.name;
-                    this.makeText();
+
+                    if (hit.name !== hoverName && hit.name !== selectedName) {
+                        this.hoverText.sentence = hit.name;
+                        this.hoverText.isFadeIn = true;
+                        this.hoverText.isHolding = false;
+                        this.hoverText.counter = 1;
+                        this.makeHoverText();
+                    }
                     return;
                 }
             });
             if (!isHovering) {
-                hoveredBox = null;
-                this.text.sentence = '';
-                this.makeText();
+                this.hoveredBox = null;
+                this.hoverText.sentence = '';
+                this.hoverText.isFadeIn = true;
+                this.hoverText.isHolding = false;
+                this.hoverText.counter = 1;
+                this.makeHoverText();
             }
-            this.clearMeshMap(selectedBox, hoveredBox);
+            this.clearMeshMap();
         };
     }
 
-    private clearMeshMap(selectedBox: Mesh, hoveredBox: Mesh): void {
-        const selectedName = selectedBox && selectedBox.name;
-        const hoveredName = hoveredBox && hoveredBox.name;
+    private clearMeshMap(): void {
+        const selectedName = this.selectedBox && this.selectedBox.name;
+        const hoveredName = this.hoveredBox && this.hoveredBox.name;
         // If no selected box, don't bother with the extra conditional check.
         if (!selectedName && !hoveredName) {
             Object.keys(this.meshMap).forEach(key => {
@@ -231,7 +316,12 @@ export class ShipLayout {
     }
 
     private createStars(): void {
-        const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 1, transparent: false, side: DoubleSide} );
+        const material = new MeshBasicMaterial({
+            color: 0xFFFFFF,
+            opacity: 1,
+            transparent: false,
+            side: DoubleSide
+        });
         for (let i = 0; i < 500; i++) {
             const mag = (Math.floor(Math.random() * 3) + 1) / 100;
             const geometry = new PlaneGeometry(mag, mag, 0.01, 0.01);
@@ -251,34 +341,86 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at bottom of screen.
      */
-    private makeText(): void {
-        if (this.text.mesh) {
-            this.scene.remove(this.text.mesh);
+    private makeHoverText(): void {
+        const name = this.selectedBox && this.selectedBox.name;
+        const color = name === this.hoverText.sentence ? this.selectedColor : 0x00B39F
+        if (this.hoverText.mesh) {
+            this.scene.remove(this.hoverText.mesh);
         }
-        if (this.text.isFadeIn && this.text.counter > 180) {
-            this.text.isFadeIn = false;
-            this.text.isHolding = true;
-            this.text.counter = 1;
-        } else if (this.text.isHolding) {
-            this.text.isFadeIn = false;
-            this.text.isHolding = true;
-            this.text.counter = 1;
+        if (this.hoverText.isFadeIn && this.hoverText.counter > 20) {
+            this.hoverText.isFadeIn = false;
+            this.hoverText.isHolding = true;
+            this.hoverText.counter = 1;
+        } else if (this.hoverText.isHolding) {
+            this.hoverText.isFadeIn = false;
+            this.hoverText.isHolding = true;
+            this.hoverText.counter = 1;
         }
 
-        if (this.text.isFadeIn) {
-            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: this.text.counter / 180, transparent: true} );
-            this.text.counter++;
-        } else if (this.text.isHolding) {
+        if (this.hoverText.isFadeIn) {
+            this.hoverText.material = new MeshLambertMaterial({
+                color,
+                opacity: this.hoverText.counter / 20,
+                transparent: true
+            });
+            this.hoverText.counter++;
+        } else if (this.hoverText.isHolding) {
             // Do nothing
         } else {
             return;
         }
 
-        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
-        this.text.mesh = new Mesh( this.text.geometry, this.text.material );
-        this.text.mesh.position.set(-5.65, -11.4, 5.5);
-        this.text.mesh.rotation.x = -1.5708;
-        this.scene.add(this.text.mesh);
+        this.hoverText.geometry = new TextGeometry(
+            this.hoverText.sentence,
+            this.hoverText.headerParams);
+        this.hoverText.material.color.set(color);
+        this.hoverText.mesh = new Mesh(
+            this.hoverText.geometry,
+            this.hoverText.material);
+        this.hoverText.mesh.position.set(-5.65, -11.4, 5.5);
+        this.hoverText.mesh.rotation.x = -1.5708;
+        this.scene.add(this.hoverText.mesh);
+    }
+
+    /**
+     * Builds the text and graphics for the text dialogue at top left of screen.
+     */
+    private makeSelectionText(): void {
+        if (this.selectionText.mesh) {
+            this.scene.remove(this.selectionText.mesh);
+        }
+        if (this.selectionText.isFadeIn && this.selectionText.counter > 20) {
+            this.selectionText.isFadeIn = false;
+            this.selectionText.isHolding = true;
+            this.selectionText.counter = 1;
+        } else if (this.selectionText.isHolding) {
+            this.selectionText.isFadeIn = false;
+            this.selectionText.isHolding = true;
+            this.selectionText.counter = 1;
+        }
+
+        if (this.selectionText.isFadeIn) {
+            this.selectionText.material = new MeshLambertMaterial({
+                color: this.selectedColor,
+                opacity: this.selectionText.counter / 20,
+                transparent: true
+            });
+            this.selectionText.counter++;
+        } else if (this.selectionText.isHolding) {
+            // Do nothing
+        } else {
+            return;
+        }
+
+        this.selectionText.geometry = new TextGeometry(
+            this.selectionText.sentence,
+            this.selectionText.headerParams);
+        this.selectionText.mesh = new Mesh(
+            this.selectionText.geometry,
+            this.selectionText.material);
+        this.selectionText.mesh.position.set(-5.65, -11.4, -5.5);
+        this.selectionText.mesh.rotation.x = -1.5708;
+        this.scene.add(this.selectionText.mesh);
     }
 
     /**
@@ -291,7 +433,8 @@ export class ShipLayout {
         } else {
             return false;
         }
-        this.makeText();
+        this.makeHoverText();
+        this.makeSelectionText();
         return true;
     }
 }
