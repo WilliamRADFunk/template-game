@@ -111,7 +111,8 @@ export class ShipLayout {
             { height: 0.47, width: 0.48, x: 0.99, z: 3.75, name: 'right2 bottom' },
             { height: 0.24, width: 0.38, x: -5.69, z: 1.99, name: 'thruster top' },
             { height: 0.24, width: 0.38, x: -5.69, z: 3.02, name: 'thruster center' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 3.98, name: 'thruster bottom' }
+            { height: 0.24, width: 0.38, x: -5.69, z: 3.98, name: 'thruster bottom' },
+            { height: 0.24, width: 0.37, x: 5.50, z: 3.00, name: 'sensors' },
         ];
 
         rectangleBoxes.forEach(box => {
@@ -127,11 +128,35 @@ export class ShipLayout {
 
         const intersectableThings = [...rectangleBoxes];
 
-        const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 0.6, transparent: true, side: DoubleSide} );
-        const geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
-        const barrier = new Mesh( geometry, material );
+        let material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 0.6, transparent: true, side: DoubleSide} );
+        let geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
+        let barrier = new Mesh( geometry, material );
         barrier.name = 'profile dialogue outline';
-        barrier.position.set(3, 15, -4.3);
+        barrier.position.set(3.15, 15, -4.45);
+        barrier.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrier);
+
+        material = new MeshBasicMaterial( {color: 0x000000, opacity: 1, transparent: true, side: DoubleSide} );
+        geometry = new PlaneGeometry( 5.5, 3, 10, 10 );
+        barrier = new Mesh( geometry, material );
+        barrier.name = 'profile dialogue inline';
+        barrier.position.set(3.15, 10, -4.45);
+        barrier.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrier);
+
+        material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 0.6, transparent: true, side: DoubleSide} );
+        geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
+        barrier = new Mesh( geometry, material );
+        barrier.name = 'selection outline';
+        barrier.position.set(-3.15, 15, -4.45);
+        barrier.rotation.set(1.5708, 0, 0);
+        this.scene.add(barrier);
+
+        material = new MeshBasicMaterial( {color: 0x000000, opacity: 1, transparent: true, side: DoubleSide} );
+        geometry = new PlaneGeometry( 5.5, 3, 10, 10 );
+        barrier = new Mesh( geometry, material );
+        barrier.name = 'selection inline';
+        barrier.position.set(-3.15, 10, -4.45);
         barrier.rotation.set(1.5708, 0, 0);
         this.scene.add(barrier);
 
