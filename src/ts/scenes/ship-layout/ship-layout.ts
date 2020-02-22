@@ -19,6 +19,50 @@ import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
 
+const dialogues: { [key: string]: string } = {
+    '': `"Click a blue box to
+ select a room and
+ assign technology
+ points."`,
+    'Galley & Mess Hall': ``,
+    'Crew Quarters A': ``,
+    'Crew Quarters B': ``,
+    'Weapons Room': ``,
+    'Extended Reality Deck': ``,
+    'Climate-Controlled Cargo Space': ``,
+    'Standard Cargo Space': ``,
+    'Engine Room': ``,
+    'Bridge': ``,
+    'Officers Quarters': ``,
+    'Training Deck': ``,
+    'Port Thrusters': ``,
+    'Main Thruster': ``,
+    'Starboard Thrusters': ``,
+    'Sensors': ``,
+    'Artificial Gravity Rings': ``,
+    'Shield Emitters': ``
+};
+
+const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
+    { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
+    { height: 0.49, width: 1.64, x: -0.9, z: 2.28, radius: 0.07, rot: 0, name: 'Crew Quarters A' },
+    { height: 0.49, width: 1.64, x: -0.9, z: 3.71, radius: 0.09, rot: 0, name: 'Crew Quarters B' },
+    { height: 1.01, width: 0.49, x: 0.36, z: 2.35, radius: 0.05, rot: 0, name: 'Weapons Room' },
+    { height: 1.01, width: 0.49, x: 0.36, z: 3.59, radius: 0.05, rot: 0, name: 'Extended Reality Deck' },
+    { height: 0.95, width: 0.94, x: -2.39, z: 2.45, radius: 0.06, rot: 0, name: 'Climate-Controlled Cargo Space' },
+    { height: 0.95, width: 0.94, x: -2.39, z: 3.62, radius: 0.06, rot: 0, name: 'Standard Cargo Space' },
+    { height: 2.10, width: 0.48, x: -3.38, z: 3.04, radius: 0.05, rot: 0, name: 'Engine Room' },
+    { height: 0.77, width: 0.48, x: 0.99, z: 2.98, radius: 0.04, rot: 0, name: 'Bridge' },
+    { height: 0.47, width: 0.48, x: 0.99, z: 2.22, radius: 0.05, rot: 0, name: 'Officers Quarters' },
+    { height: 0.47, width: 0.48, x: 0.99, z: 3.75, radius: 0.03, rot: 0, name: 'Training Deck' },
+    { height: 0.24, width: 0.38, x: -5.69, z: 1.99, radius: 0.02, rot: 0, name: 'Port Thrusters' },
+    { height: 0.24, width: 0.38, x: -5.69, z: 3.02, radius: 0.02, rot: 0, name: 'Main Thruster' },
+    { height: 0.24, width: 0.38, x: -5.69, z: 3.98, radius: 0.02, rot: 0, name: 'Starboard Thrusters' },
+    { height: 0.24, width: 0.37, x: 5.50, z: 3.00, radius: 0.02, rot: 0, name: 'Sensors' },
+    { height: 3.02, width: 0.20, x: -4.04, z: 2.98, radius: 0.099, rot: 0, name: 'Artificial Gravity Rings' },
+    { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
+];
+
 /**
  * @class
  * Slow moving debris object that is sometimes on the path towards planet.
@@ -28,6 +72,22 @@ export class ShipLayout {
      * List of actors in the scene.
      */
     private actors: Actor[] = [];
+
+    /**
+     * Text for hovered room at bottom of screen.
+     */
+    private dialogueText: FadableText = {
+        counter: 1,
+        font: null,
+        geometry: null,
+        headerParams: null,
+        holdCount: -1, // Hold until replaced
+        isFadeIn: true,
+        isHolding: false,
+        material: null,
+        mesh: null,
+        sentence: dialogues['']
+    };
 
     /**
      * Color for boxes user is hovering over.
@@ -115,6 +175,17 @@ export class ShipLayout {
         introFont: Font) {
         this.scene = scene.scene;
         
+        this.dialogueText.headerParams = {
+            font: introFont,
+            size: 0.159,
+            height: 0.2,
+            curveSegments: 12,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 0.5,
+            bevelSegments: 3
+        };
+
         this.hoverText.headerParams = {
             font: introFont,
             size: 0.199,
@@ -145,26 +216,6 @@ export class ShipLayout {
         const shipInterior = createShipInteriorFrame(shipIntTexture);
         this.actors.push(shipInterior);
         this.scene.add(shipInterior.mesh);
-
-        const rectangleBoxes = [
-            { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
-            { height: 0.49, width: 1.64, x: -0.9, z: 2.28, radius: 0.07, rot: 0, name: 'Crew Quarters A' },
-            { height: 0.49, width: 1.64, x: -0.9, z: 3.71, radius: 0.09, rot: 0, name: 'Crew Quarters B' },
-            { height: 1.01, width: 0.49, x: 0.36, z: 2.35, radius: 0.05, rot: 0, name: 'Weapons Room' },
-            { height: 1.01, width: 0.49, x: 0.36, z: 3.59, radius: 0.05, rot: 0, name: 'Extended Reality Deck' },
-            { height: 0.95, width: 0.94, x: -2.39, z: 2.45, radius: 0.06, rot: 0, name: 'Climate-Controlled Cargo Space' },
-            { height: 0.95, width: 0.94, x: -2.39, z: 3.62, radius: 0.06, rot: 0, name: 'Standard Cargo Space' },
-            { height: 2.10, width: 0.48, x: -3.38, z: 3.04, radius: 0.05, rot: 0, name: 'Engine Room' },
-            { height: 0.77, width: 0.48, x: 0.99, z: 2.98, radius: 0.04, rot: 0, name: 'Bridge' },
-            { height: 0.47, width: 0.48, x: 0.99, z: 2.22, radius: 0.05, rot: 0, name: 'Officers Quarters' },
-            { height: 0.47, width: 0.48, x: 0.99, z: 3.75, radius: 0.03, rot: 0, name: 'Training Deck' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 1.99, radius: 0.02, rot: 0, name: 'Port Thrusters' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 3.02, radius: 0.02, rot: 0, name: 'Main Thruster' },
-            { height: 0.24, width: 0.38, x: -5.69, z: 3.98, radius: 0.02, rot: 0, name: 'Starboard Thrusters' },
-            { height: 0.24, width: 0.37, x: 5.50, z: 3.00, radius: 0.02, rot: 0, name: 'Sensors' },
-            { height: 3.02, width: 0.20, x: -4.04, z: 2.98, radius: 0.099, rot: 0, name: 'Artificial Gravity Rings' },
-            { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
-        ];
 
         rectangleBoxes.forEach(box => {
             const material = new MeshBasicMaterial({
@@ -252,6 +303,12 @@ export class ShipLayout {
                     this.selectionText.isHolding = false;
                     this.selectionText.counter = 1;
                     this.makeSelectionText();
+
+                    this.dialogueText.sentence = dialogues[hit.name];
+                    this.dialogueText.isFadeIn = true;
+                    this.dialogueText.isHolding = false;
+                    this.dialogueText.counter = 1;
+                    this.makeDialogueText();
                     return;
                 }
             });
@@ -336,6 +393,47 @@ export class ShipLayout {
             this.scene.add(mesh);
             this.stars[i] = mesh;
         }
+    }
+
+    /**
+     * Builds the text and graphics for the text dialogue at top right of screen.
+     */
+    private makeDialogueText(): void {
+        if (this.dialogueText.mesh) {
+            this.scene.remove(this.dialogueText.mesh);
+        }
+        if (this.dialogueText.isFadeIn && this.dialogueText.counter > 20) {
+            this.dialogueText.isFadeIn = false;
+            this.dialogueText.isHolding = true;
+            this.dialogueText.counter = 1;
+        } else if (this.dialogueText.isHolding) {
+            this.dialogueText.isFadeIn = false;
+            this.dialogueText.isHolding = true;
+            this.dialogueText.counter = 1;
+        }
+
+        if (this.dialogueText.isFadeIn) {
+            this.dialogueText.material = new MeshLambertMaterial({
+                color: 0xFFFFFF,
+                opacity: this.dialogueText.counter / 20,
+                transparent: true
+            });
+            this.dialogueText.counter++;
+        } else if (this.dialogueText.isHolding) {
+            // Do nothing
+        } else {
+            return;
+        }
+
+        this.dialogueText.geometry = new TextGeometry(
+            this.dialogueText.sentence,
+            this.dialogueText.headerParams);
+        this.dialogueText.mesh = new Mesh(
+            this.dialogueText.geometry,
+            this.dialogueText.material);
+        this.dialogueText.mesh.position.set(0.75, -11.4, -5.5);
+        this.dialogueText.mesh.rotation.x = -1.5708;
+        this.scene.add(this.dialogueText.mesh);
     }
 
     /**
@@ -433,6 +531,7 @@ export class ShipLayout {
         } else {
             return false;
         }
+        this.makeDialogueText();
         this.makeHoverText();
         this.makeSelectionText();
         return true;
