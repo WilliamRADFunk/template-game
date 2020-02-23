@@ -113,6 +113,14 @@ const scenes: { [ key: string ]: SceneType } = {
     }
 };
 /**
+ * Loads the graphic for ship layout dialogue.
+ */
+const shipLayoutDialogueLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the ship layout dialogue.
+ */
+let shipLayoutDialogueTexture: Texture;
+/**
  * Loads the graphic for ship.
  */
 const shipLoader = new TextureLoader();
@@ -250,6 +258,11 @@ const loadAssets = () => {
         marsTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the ship layout dialogue texture once it is finished loading.
+    shipLayoutDialogueLoader.load( 'assets/images/ship-layout-profile.png', texture => {
+        shipLayoutDialogueTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the ship texture once it is finished loading.
     shipLoader.load( 'assets/images/ship.png', texture => {
         shipTexture = texture;
@@ -288,6 +301,7 @@ const checkAssetsLoaded = () => {
         marsTexture &&
         enceladusTexture &&
         enzmannOutsideTexture &&
+        shipLayoutDialogueTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadIntroScene();
@@ -604,7 +618,7 @@ const loadShipLayoutScene = () => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, gameFont);
+    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, shipLayoutDialogueTexture, gameFont);
     scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

@@ -18,29 +18,31 @@ import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
+import { createProfile } from './actors/create-profile';
 
 const dialogues: { [key: string]: string } = {
     '': `"Click a blue box to
  select a room and
  assign technology
  points."`,
-    'Galley & Mess Hall': ``,
-    'Crew Quarters A': ``,
-    'Crew Quarters B': ``,
-    'Weapons Room': ``,
-    'Extended Reality Deck': ``,
-    'Climate-Controlled Cargo Space': ``,
-    'Standard Cargo Space': ``,
-    'Engine Room': ``,
-    'Bridge': ``,
-    'Officers Quarters': ``,
-    'Training Deck': ``,
-    'Port Thrusters': ``,
-    'Main Thruster': ``,
-    'Starboard Thrusters': ``,
-    'Sensors': ``,
-    'Artificial Gravity Rings': ``,
-    'Shield Emitters': ``
+    'Galley & Mess Hall': `a`,
+    'Crew Quarters A': `a`,
+    'Crew Quarters B': `a`,
+    'Weapons Room': `a`,
+    'Extended Reality Deck': `a`,
+    'Climate-Controlled Cargo Space': `a`,
+    'Standard Cargo Space': `a`,
+    'Engine Room': `a`,
+    'Bridge': `a`,
+    'Officers Quarters': `a`,
+    'Training Deck': `a`,
+    'Port Thrusters': `a`,
+    'Main Thruster': `a`,
+    'Starboard Thrusters': `a`,
+    'Sensors': `a`,
+    'Artificial Gravity Rings': `a`,
+    'Shield Emitters': `a`,
+    'Deuterium Tank': `a`
 };
 
 const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
@@ -166,12 +168,14 @@ export class ShipLayout {
      * @param scene             graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param shipIntTexture    texture for the ship in cut profile.
      * @param shipTexture       texture for the ship.
+     * @param dialogueTexture   texture for the profile image.
      * @param introFont         loaded font to use for help display text.
      */
     constructor(
         scene: SceneType,
         shipIntTexture: Texture,
         shipTexture: Texture,
+        dialogueTexture: Texture,
         introFont: Font) {
         this.scene = scene.scene;
         
@@ -216,6 +220,9 @@ export class ShipLayout {
         const shipInterior = createShipInteriorFrame(shipIntTexture);
         this.actors.push(shipInterior);
         this.scene.add(shipInterior.mesh);
+        const profile = createProfile(dialogueTexture);
+        this.actors.push(profile);
+        this.scene.add(profile.mesh);
 
         rectangleBoxes.forEach(box => {
             const material = new MeshBasicMaterial({
@@ -239,7 +246,7 @@ export class ShipLayout {
             transparent: true,
             side: DoubleSide
         });
-        let geometry: CircleGeometry | PlaneGeometry = new CircleGeometry(1.56, 48, 48);
+        let geometry: CircleGeometry = new CircleGeometry(1.56, 48, 48);
         const circleBarrier = new Mesh( geometry, material );
         circleBarrier.name = 'Deuterium Tank';
         circleBarrier.position.set(3.42, 15, 2.94);
@@ -250,8 +257,8 @@ export class ShipLayout {
         const intersectableThings = [...rectangleBoxes, circleBarrier];
 
         const textBoxes = [
-            { x: 3.15, z: -4.45, name: 'Profile Dialogue' },
-            { x: -3.15, z: -4.45, name: 'Selection' },
+            { widthIn: 6, widthOut: 6.2, x: 2.9, z: -4.45, name: 'Profile Dialogue' },
+            { widthIn: 5.5, widthOut: 5.7, x: -3.15, z: -4.45, name: 'Selection' },
         ];
 
         textBoxes.forEach(box => {
@@ -261,7 +268,7 @@ export class ShipLayout {
                 transparent: true,
                 side: DoubleSide
             });
-            let geometry = new PlaneGeometry( 5.7, 3.2, 10, 10 );
+            let geometry = new PlaneGeometry( box.widthOut, 3.2, 10, 10 );
             let barrier = new Mesh( geometry, material );
             barrier.name = `${box.name} Outter Box`;
             barrier.position.set(box.x, 15, box.z);
@@ -274,7 +281,7 @@ export class ShipLayout {
                 transparent: true,
                 side: DoubleSide
             });
-            geometry = new PlaneGeometry( 5.5, 3, 10, 10 );
+            geometry = new PlaneGeometry( box.widthIn, 3, 10, 10 );
             barrier = new Mesh( geometry, material );
             barrier.name = `${box.name} Inner Box`;
             barrier.position.set(box.x, 10, box.z);
@@ -431,7 +438,7 @@ export class ShipLayout {
         this.dialogueText.mesh = new Mesh(
             this.dialogueText.geometry,
             this.dialogueText.material);
-        this.dialogueText.mesh.position.set(0.75, -11.4, -5.5);
+        this.dialogueText.mesh.position.set(0.1, -11.4, -5.5);
         this.dialogueText.mesh.rotation.x = -1.5708;
         this.scene.add(this.dialogueText.mesh);
     }
