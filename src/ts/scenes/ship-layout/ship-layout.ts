@@ -21,25 +21,159 @@ import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-e
 import { createProfile } from './actors/create-profile';
 
 const dialogues: { [key: string]: string } = {
-    '': `"Click a blue box to
- select a room and
- assign technology
- points."`,
-    'Galley & Mess Hall': `a`,
-    'Crew Quarters A': `a`,
-    'Crew Quarters B': `a`,
-    'Weapons Room': `a`,
-    'Extended Reality Deck': `a`,
-    'Climate-Controlled Cargo Space': `a`,
-    'Standard Cargo Space': `a`,
-    'Engine Room': `a`,
-    'Bridge': `a`,
-    'Officers Quarters': `a`,
-    'Training Deck': `a`,
-    'Port Thrusters': `a`,
-    'Main Thruster': `a`,
-    'Starboard Thrusters': `a`,
-    'Sensors': `a`,
+    '': `"Click a blue box to select
+ a room and assign
+ technology points."`,
+
+    'Galley & Mess Hall': `"The galley prepares food
+ for the crew. The mess
+ hall is where they eat
+ and socialize.
+  Improved equipment will
+ help less food to feed
+ more. A larger mess hall
+ is also better for
+ morale."`,
+
+    'Crew Quarters A': `"Crew quarters are
+ where your crew will
+ sleep and relax.
+  Larger crew quarters
+ allow for a higher
+ crew cap, and an improved
+ overall morale."`,
+
+    'Crew Quarters B': `"Crew quarters are
+ where your crew will
+ sleep and relax.
+  Larger crew quarters
+ allow for a higher
+ crew cap, and an improved
+ overall morale."`,
+
+    'Weapons Room': `"The Weapons Room stores,
+ loads, and fires your
+ ship's nukes. You can
+ only hold two weapon
+ types at a time.
+  Add tech points here
+ to extend range, blast
+ radius, and concussive
+ power."`,
+
+    'Extended Reality Deck': `"An entire deck with
+ full-body haptic suits,
+ and wireless VR/AR
+ headsets.
+  Boosts crew morale as
+ the improved processing
+ power allows for a more
+ immersive experience."`,
+
+    'Climate-Controlled Cargo Space': `"This is where your more
+ delicate cargo is stored.
+ Temperature, humidity,
+ and atmosphere regulated
+ to preserve it for longer.
+  Improved equipment here
+ increases cargo space,
+ and allows a larger
+ variety of goods to be
+ stored."`,
+
+    'Standard Cargo Space': `"This is where your more
+ ruggid cargo is stored.
+ Ores, trade goods, various
+ currencies, and anything
+ that can be left on a
+ shelf for long periods.
+  Improved equipment here
+ increases cargo space,
+ and allows a larger
+ variety of goods to be
+ stored."`,
+
+    'Engine Room': `"The engines don't just
+ use deuterium to make
+ the ship go. They power
+ everything on board.
+  Improvements here
+ increase the engine's
+ efficiency; to use less
+ fuel to achieve the same
+ effect."`,
+
+    'Bridge': `"The bridge is where
+ your officers do their
+ work.
+  Advancements here will
+ increase the number of
+ officers you can have
+ on-duty at a given time."`,
+
+    'Officers Quarters': `"Like crew quarters, your
+ officers need a place to
+ lay their heads. They
+ can't be seen fraternizing
+ with the enlisted. So,
+ they get their own space.
+  Improvements give
+ them more room to
+ stretch their feet,
+ and encourages them
+ to be at their best."`,
+
+    'Training Deck': `"While the crew are some
+ of the League's best
+ trained people, they
+ still need to keep those
+ skills sharp.
+  Better equipment, space,
+ and training regimen
+ will have your crew
+ humming like a finely-
+ tuned machine."`,
+
+    'Port Thrusters': `"Port-side thrusters allow
+ your ship to turn in
+ a starboard direction
+ (clockwise).
+  More tech points give
+ the thrusters more kick
+ and a faster clockwise
+ turn speed."`,
+
+    'Main Thruster': `"How fast and how far
+ your ship can move with
+ each jump.
+  Advancements here will
+ increase forward speed
+ in combat, but also how
+ far the ship can move
+ across the stars with
+ each burst."`,
+
+    'Starboard Thrusters': `"Starboard-side thrusters
+ allow your ship to
+ turn toward port
+ (counter-clockwise).
+  More tech points give
+ the thrusters more kick
+ and a faster counter-
+ clockwise turn speed."`,
+
+    'Sensors': `"You can't rely on looking
+ out a window to know
+ what's going on outside
+ the ship. You need
+ complex sensory equipment
+ to avoid debris, black
+ holes; to steer the ship
+ accurately; to find
+ things worth exploring.
+  More points = seeing
+ farther."`,
+
     'Artificial Gravity Rings': `a`,
     'Shield Emitters': `a`,
     'Deuterium Tank': `a`
@@ -181,7 +315,7 @@ export class ShipLayout {
         
         this.dialogueText.headerParams = {
             font: introFont,
-            size: 0.159,
+            size: 0.125,
             height: 0.2,
             curveSegments: 12,
             bevelEnabled: false,
@@ -438,7 +572,7 @@ export class ShipLayout {
         this.dialogueText.mesh = new Mesh(
             this.dialogueText.geometry,
             this.dialogueText.material);
-        this.dialogueText.mesh.position.set(0.1, -11.4, -5.5);
+        this.dialogueText.mesh.position.set(0, -11.4, -5.7);
         this.dialogueText.mesh.rotation.x = -1.5708;
         this.scene.add(this.dialogueText.mesh);
     }
