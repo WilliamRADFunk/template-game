@@ -135,9 +135,8 @@ const dialogues: { [key: string]: string } = {
  tuned machine."`,
 
     'Port Thrusters': `"Port-side thrusters allow
- your ship to turn in
- a starboard direction
- (clockwise).
+ your ship to turn toward
+ starboard (clockwise).
   More tech points give
  the thrusters more kick
  and a faster clockwise
@@ -171,12 +170,40 @@ const dialogues: { [key: string]: string } = {
  holes; to steer the ship
  accurately; to find
  things worth exploring.
-  More points = seeing
- farther."`,
+  More points translate
+ to seeing farther."`,
 
-    'Artificial Gravity Rings': `a`,
-    'Shield Emitters': `a`,
-    'Deuterium Tank': `a`
+    'Artificial Gravity Rings': `"The enzmann has three
+ high-density rings that
+ spin continuously about
+ the ship to provide
+ earthlike gravity, and
+ shock-aborbing stability.
+  Upgrades improve overall
+ crew efficiency and
+ reduced hull damage from
+ blasts that penetrate
+ your shilds."`,
+
+    'Shield Emitters': `"Your shields can deflect
+ many forms of physical
+ damage through a complex
+ array of electromagnetic
+ frequencies. Some photon-
+ based weapons may still
+ bypass these.
+  Spend tech points and
+ you will be able to hold
+ your shields longer and
+ recharge them faster."`,
+
+    'Deuterium Tank': `"Deuterium is your fuel.
+ This massive tank is
+ where that fuel is stored.
+  Add tech points, and
+ increase the max amount
+ of fuel you can safely
+ store at one time.`
 };
 
 const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
@@ -312,7 +339,7 @@ export class ShipLayout {
         dialogueTexture: Texture,
         introFont: Font) {
         this.scene = scene.scene;
-        
+
         this.dialogueText.headerParams = {
             font: introFont,
             size: 0.125,
@@ -334,7 +361,7 @@ export class ShipLayout {
             bevelSize: 0.5,
             bevelSegments: 3
         };
-        
+
         this.selectionText.headerParams = {
             font: introFont,
             size: 0.159,
@@ -555,7 +582,7 @@ export class ShipLayout {
 
         if (this.dialogueText.isFadeIn) {
             this.dialogueText.material = new MeshLambertMaterial({
-                color: 0xFFFFFF,
+                color: 0xFFD700,
                 opacity: this.dialogueText.counter / 20,
                 transparent: true
             });
@@ -668,7 +695,7 @@ export class ShipLayout {
      */
     endCycle(): boolean {
         if (true) {
-            
+
         } else {
             return false;
         }
