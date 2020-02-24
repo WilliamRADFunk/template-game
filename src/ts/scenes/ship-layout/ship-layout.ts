@@ -19,6 +19,7 @@ import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
 import { createProfile } from './actors/create-profile';
+import { DialogueText } from '../../models/dialogue-text';
 
 const dialogues: { [key: string]: string } = {
     '': `"Click a blue box to select
@@ -239,14 +240,13 @@ export class ShipLayout {
     /**
      * Text for hovered room at bottom of screen.
      */
-    private dialogueText: FadableText = {
+    private dialogueText: DialogueText = {
         counter: 1,
+        currentIndex: 0,
         font: null,
         geometry: null,
         headerParams: null,
-        holdCount: -1, // Hold until replaced
-        isFadeIn: true,
-        isHolding: false,
+        isFinished: false,
         material: null,
         mesh: null,
         sentence: dialogues['']
@@ -343,35 +343,38 @@ export class ShipLayout {
         this.dialogueText.headerParams = {
             font: introFont,
             size: 0.125,
-            height: 0.2,
+            height: 0.001,
             curveSegments: 12,
             bevelEnabled: false,
             bevelThickness: 1,
             bevelSize: 0.5,
-            bevelSegments: 3
+            bevelSegments: 1
         };
+        this.dialogueText.material = new MeshBasicMaterial({ color: 0xFFD700 });
 
         this.hoverText.headerParams = {
             font: introFont,
             size: 0.199,
-            height: 0.2,
+            height: 0.001,
             curveSegments: 12,
             bevelEnabled: false,
             bevelThickness: 1,
             bevelSize: 0.5,
             bevelSegments: 3
         };
+        this.hoverText.material = new MeshBasicMaterial({ color: this.unhighlightedColor });
 
         this.selectionText.headerParams = {
             font: introFont,
             size: 0.159,
-            height: 0.2,
+            height: 0.001,
             curveSegments: 12,
             bevelEnabled: false,
             bevelThickness: 1,
             bevelSize: 0.5,
             bevelSegments: 3
         };
+        this.selectionText.material = new MeshBasicMaterial({ color: 0xFFD700 });
 
         this.createStars();
 
@@ -386,14 +389,14 @@ export class ShipLayout {
         this.scene.add(profile.mesh);
 
         rectangleBoxes.forEach(box => {
-            const material = new MeshBasicMaterial({
+            const recBoxMaterial = new MeshBasicMaterial({
                 color: this.unhighlightedColor,
                 opacity: 0.5,
                 transparent: true,
                 side: DoubleSide
             });
-            const geometry = createBoxWithRoundedEdges(box.width, box.height, box.radius, 0);
-            const barrier = new Mesh( geometry, material );
+            const recBoxGeometry = createBoxWithRoundedEdges(box.width, box.height, box.radius, 0);
+            const barrier = new Mesh( recBoxGeometry, recBoxMaterial );
             barrier.name = box.name;
             barrier.position.set(box.x, 15, box.z);
             barrier.rotation.set(1.5708, 0, box.rot);
@@ -401,13 +404,13 @@ export class ShipLayout {
             this.meshMap[box.name] = barrier;
         });
 
-        let material = new MeshBasicMaterial({
+        const material = new MeshBasicMaterial({
             color: this.unhighlightedColor,
             opacity: 0.5,
             transparent: true,
             side: DoubleSide
         });
-        let geometry: CircleGeometry = new CircleGeometry(1.56, 48, 48);
+        const geometry: CircleGeometry = new CircleGeometry(1.56, 48, 48);
         const circleBarrier = new Mesh( geometry, material );
         circleBarrier.name = 'Deuterium Tank';
         circleBarrier.position.set(3.42, 15, 2.94);
@@ -423,27 +426,27 @@ export class ShipLayout {
         ];
 
         textBoxes.forEach(box => {
-            let material = new MeshBasicMaterial({
+            let textBoxMaterial = new MeshBasicMaterial({
                 color: 0xFFFFFF,
                 opacity: 0.6,
                 transparent: true,
                 side: DoubleSide
             });
-            let geometry = new PlaneGeometry( box.widthOut, 3.2, 10, 10 );
-            let barrier = new Mesh( geometry, material );
+            let textBoxGeometry = new PlaneGeometry( box.widthOut, 3.2, 10, 10 );
+            let barrier = new Mesh( textBoxGeometry, textBoxMaterial );
             barrier.name = `${box.name} Outter Box`;
             barrier.position.set(box.x, 15, box.z);
             barrier.rotation.set(1.5708, 0, 0);
             this.scene.add(barrier);
 
-            material = new MeshBasicMaterial({
+            textBoxMaterial = new MeshBasicMaterial({
                 color: 0x000000,
                 opacity: 1,
                 transparent: true,
                 side: DoubleSide
             });
-            geometry = new PlaneGeometry( box.widthIn, 3, 10, 10 );
-            barrier = new Mesh( geometry, material );
+            textBoxGeometry = new PlaneGeometry( box.widthIn, 3, 10, 10 );
+            barrier = new Mesh( textBoxGeometry, textBoxMaterial );
             barrier.name = `${box.name} Inner Box`;
             barrier.position.set(box.x, 10, box.z);
             barrier.rotation.set(1.5708, 0, 0);
@@ -473,9 +476,9 @@ export class ShipLayout {
                     this.makeSelectionText();
 
                     this.dialogueText.sentence = dialogues[hit.name];
-                    this.dialogueText.isFadeIn = true;
-                    this.dialogueText.isHolding = false;
-                    this.dialogueText.counter = 1;
+                    this.dialogueText.counter = -1;
+                    this.dialogueText.currentIndex = 0;
+                    this.dialogueText.isFinished = false;
                     this.makeDialogueText();
                     return;
                 }
@@ -567,41 +570,28 @@ export class ShipLayout {
      * Builds the text and graphics for the text dialogue at top right of screen.
      */
     private makeDialogueText(): void {
-        if (this.dialogueText.mesh) {
-            this.scene.remove(this.dialogueText.mesh);
-        }
-        if (this.dialogueText.isFadeIn && this.dialogueText.counter > 20) {
-            this.dialogueText.isFadeIn = false;
-            this.dialogueText.isHolding = true;
-            this.dialogueText.counter = 1;
-        } else if (this.dialogueText.isHolding) {
-            this.dialogueText.isFadeIn = false;
-            this.dialogueText.isHolding = true;
-            this.dialogueText.counter = 1;
-        }
-
-        if (this.dialogueText.isFadeIn) {
-            this.dialogueText.material = new MeshLambertMaterial({
-                color: 0xFFD700,
-                opacity: this.dialogueText.counter / 20,
-                transparent: true
-            });
-            this.dialogueText.counter++;
-        } else if (this.dialogueText.isHolding) {
-            // Do nothing
-        } else {
+        if (this.dialogueText.isFinished) {
             return;
         }
-
-        this.dialogueText.geometry = new TextGeometry(
-            this.dialogueText.sentence,
-            this.dialogueText.headerParams);
-        this.dialogueText.mesh = new Mesh(
-            this.dialogueText.geometry,
-            this.dialogueText.material);
-        this.dialogueText.mesh.position.set(0, -11.4, -5.7);
-        this.dialogueText.mesh.rotation.x = -1.5708;
-        this.scene.add(this.dialogueText.mesh);
+        this.dialogueText.counter++;
+        if (this.dialogueText.counter % 3 === 0 && this.dialogueText.currentIndex < this.dialogueText.sentence.length) {
+            this.dialogueText.currentIndex++;
+            if (this.dialogueText.mesh) {
+                this.scene.remove(this.dialogueText.mesh);
+            }
+            this.dialogueText.geometry = new TextGeometry(
+                this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex),
+                this.dialogueText.headerParams);
+            this.dialogueText.mesh = new Mesh(
+                this.dialogueText.geometry,
+                this.dialogueText.material);
+            this.dialogueText.mesh.position.set(0, -11.4, -5.7);
+            this.dialogueText.mesh.rotation.x = -1.5708;
+            this.scene.add(this.dialogueText.mesh);
+        }
+        if (this.dialogueText.currentIndex >= this.dialogueText.sentence.length) {
+            this.dialogueText.isFinished = true;
+        }
     }
 
     /**
@@ -624,11 +614,7 @@ export class ShipLayout {
         }
 
         if (this.hoverText.isFadeIn) {
-            this.hoverText.material = new MeshLambertMaterial({
-                color,
-                opacity: this.hoverText.counter / 20,
-                transparent: true
-            });
+            this.hoverText.material.opacity = (this.hoverText.counter / 20);
             this.hoverText.counter++;
         } else if (this.hoverText.isHolding) {
             // Do nothing
@@ -666,11 +652,7 @@ export class ShipLayout {
         }
 
         if (this.selectionText.isFadeIn) {
-            this.selectionText.material = new MeshLambertMaterial({
-                color: this.selectedColor,
-                opacity: this.selectionText.counter / 20,
-                transparent: true
-            });
+            this.selectionText.material.opacity = (this.selectionText.counter / 20);
             this.selectionText.counter++;
         } else if (this.selectionText.isHolding) {
             // Do nothing

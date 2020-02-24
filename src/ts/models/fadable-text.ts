@@ -1,4 +1,10 @@
-import { Font, Mesh, MeshLambertMaterial, TextGeometry, TextGeometryParameters } from "three";
+import {
+    Font,
+    Mesh,
+    MeshBasicMaterial,
+    MeshLambertMaterial,
+    TextGeometry,
+    TextGeometryParameters } from "three";
 
 export interface FadableText {
     counter: number;
@@ -8,7 +14,7 @@ export interface FadableText {
     holdCount: number;
     isFadeIn: boolean;
     isHolding: boolean;
-    material: MeshLambertMaterial;
+    material: MeshBasicMaterial | MeshLambertMaterial;
     mesh: Mesh;
     sentence: string;
 }
