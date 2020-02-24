@@ -473,7 +473,7 @@ export class ShipLayout {
                     this.selectionText.isFadeIn = true;
                     this.selectionText.isHolding = false;
                     this.selectionText.counter = 1;
-                    this.makeSelectionText();
+                    this.makeSelectionText(true);
 
                     this.dialogueText.sentence = dialogues[hit.name];
                     this.dialogueText.counter = -1;
@@ -509,7 +509,7 @@ export class ShipLayout {
                         this.hoverText.isFadeIn = true;
                         this.hoverText.isHolding = false;
                         this.hoverText.counter = 1;
-                        this.makeHoverText();
+                        this.makeHoverText(true);
                     }
                     return;
                 }
@@ -520,7 +520,7 @@ export class ShipLayout {
                 this.hoverText.isFadeIn = true;
                 this.hoverText.isHolding = false;
                 this.hoverText.counter = 1;
-                this.makeHoverText();
+                this.makeHoverText(true);
             }
             this.clearMeshMap();
         };
@@ -597,78 +597,66 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at bottom of screen.
      */
-    private makeHoverText(): void {
+    private makeHoverText(change?: boolean): void {
+        if (this.hoverText.isHolding) {
+            return;
+        }
         const name = this.selectedBox && this.selectedBox.name;
         const color = name === this.hoverText.sentence ? this.selectedColor : 0x00B39F
-        if (this.hoverText.mesh) {
+        if (change && this.hoverText.mesh) {
             this.scene.remove(this.hoverText.mesh);
         }
         if (this.hoverText.isFadeIn && this.hoverText.counter > 20) {
             this.hoverText.isFadeIn = false;
             this.hoverText.isHolding = true;
             this.hoverText.counter = 1;
-        } else if (this.hoverText.isHolding) {
-            this.hoverText.isFadeIn = false;
-            this.hoverText.isHolding = true;
-            this.hoverText.counter = 1;
         }
 
-        if (this.hoverText.isFadeIn) {
+        if (this.hoverText.isFadeIn && change) {
             this.hoverText.material.opacity = (this.hoverText.counter / 20);
             this.hoverText.counter++;
-        } else if (this.hoverText.isHolding) {
-            // Do nothing
-        } else {
-            return;
+            this.hoverText.geometry = new TextGeometry(
+                this.hoverText.sentence,
+                this.hoverText.headerParams);
+            this.hoverText.material.color.set(color);
+            this.hoverText.mesh = new Mesh(
+                this.hoverText.geometry,
+                this.hoverText.material);
+            this.hoverText.mesh.position.set(-5.65, -11.4, 5.5);
+            this.hoverText.mesh.rotation.x = -1.5708;
+            this.scene.add(this.hoverText.mesh);
         }
-
-        this.hoverText.geometry = new TextGeometry(
-            this.hoverText.sentence,
-            this.hoverText.headerParams);
-        this.hoverText.material.color.set(color);
-        this.hoverText.mesh = new Mesh(
-            this.hoverText.geometry,
-            this.hoverText.material);
-        this.hoverText.mesh.position.set(-5.65, -11.4, 5.5);
-        this.hoverText.mesh.rotation.x = -1.5708;
-        this.scene.add(this.hoverText.mesh);
     }
 
     /**
      * Builds the text and graphics for the text dialogue at top left of screen.
      */
-    private makeSelectionText(): void {
-        if (this.selectionText.mesh) {
+    private makeSelectionText(change?: boolean): void {
+        if (this.selectionText.isHolding) {
+            return;
+        }
+        if (change && this.selectionText.mesh) {
             this.scene.remove(this.selectionText.mesh);
         }
         if (this.selectionText.isFadeIn && this.selectionText.counter > 20) {
             this.selectionText.isFadeIn = false;
             this.selectionText.isHolding = true;
             this.selectionText.counter = 1;
-        } else if (this.selectionText.isHolding) {
-            this.selectionText.isFadeIn = false;
-            this.selectionText.isHolding = true;
-            this.selectionText.counter = 1;
         }
 
-        if (this.selectionText.isFadeIn) {
+        if (this.selectionText.isFadeIn && change) {
             this.selectionText.material.opacity = (this.selectionText.counter / 20);
             this.selectionText.counter++;
-        } else if (this.selectionText.isHolding) {
-            // Do nothing
-        } else {
-            return;
+            this.selectionText.geometry = new TextGeometry(
+                this.selectionText.sentence,
+                this.selectionText.headerParams);
+            this.selectionText.mesh = new Mesh(
+                this.selectionText.geometry,
+                this.selectionText.material);
+            this.selectionText.mesh.position.set(-5.65, -11.4, -5.5);
+            this.selectionText.mesh.rotation.x = -1.5708;
+            this.scene.add(this.selectionText.mesh);
         }
-
-        this.selectionText.geometry = new TextGeometry(
-            this.selectionText.sentence,
-            this.selectionText.headerParams);
-        this.selectionText.mesh = new Mesh(
-            this.selectionText.geometry,
-            this.selectionText.material);
-        this.selectionText.mesh.position.set(-5.65, -11.4, -5.5);
-        this.selectionText.mesh.rotation.x = -1.5708;
-        this.scene.add(this.selectionText.mesh);
     }
 
     /**
