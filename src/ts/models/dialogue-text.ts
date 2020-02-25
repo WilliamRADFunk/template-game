@@ -1,19 +1,10 @@
-import {
-    Font,
-    Mesh,
-    MeshBasicMaterial,
-    MeshLambertMaterial,
-    TextGeometry,
-    TextGeometryParameters } from "three";
+import { Font } from "three";
 
 export interface DialogueText {
     counter: number;
     currentIndex: number;
+    element: HTMLElement;
     font: Font;
-    geometry: TextGeometry;
-    headerParams: TextGeometryParameters;
     isFinished: boolean;
-    material: MeshBasicMaterial | MeshLambertMaterial;
-    mesh: Mesh;
     sentence: string;
 }

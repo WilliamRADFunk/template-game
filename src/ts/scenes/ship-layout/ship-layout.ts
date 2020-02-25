@@ -22,42 +22,42 @@ import { createProfile } from './actors/create-profile';
 import { DialogueText } from '../../models/dialogue-text';
 
 const dialogues: { [key: string]: string } = {
-    '': `"Click a blue box to select
- a room and assign
+    '': `"Click a blue box to select<br>
+ a room and assign<br>
  technology points."`,
 
-    'Galley & Mess Hall': `"The galley prepares food
- for the crew. The mess
- hall is where they eat
- and socialize.
-  Improved equipment will
- help less food to feed
- more. A larger mess hall
- is also better for
+    'Galley & Mess Hall': `"The galley prepares food<br>
+ for the crew. The mess<br>
+ hall is where they eat<br>
+ and socialize.<br>
+ &nbsp;&nbsp;Improved equipment will<br>
+ help less food to feed<br>
+ more. A larger mess hall<br>
+ is also better for<br>
  morale."`,
 
-    'Crew Quarters A': `"Crew quarters are
- where your crew will
- sleep and relax.
-  Larger crew quarters
- allow for a higher
- crew cap, and an improved
+    'Crew Quarters A': `"Crew quarters are<br>
+ where your crew will<br>
+ sleep and relax.<br>
+ &nbsp;&nbsp;Larger crew quarters<br>
+ allow for a higher<br>
+ crew cap, and an improved<br>
  overall morale."`,
 
-    'Crew Quarters B': `"Crew quarters are
- where your crew will
- sleep and relax.
-  Larger crew quarters
- allow for a higher
- crew cap, and an improved
+    'Crew Quarters B': `"Crew quarters are<br>
+ where your crew will<br>
+ sleep and relax.<br>
+ &nbsp;&nbsp;Larger crew quarters<br>
+ allow for a higher<br>
+ crew cap, and an improved<br>
  overall morale."`,
 
     'Weapons Room': `"The Weapons Room stores,
  loads, and fires your
  ship's nukes. You can
  only hold two weapon
- types at a time.
-  Add tech points here
+ types at a time.<br>
+ &nbsp;&nbsp;Add tech points here
  to extend range, blast
  radius, and concussive
  power."`,
@@ -65,8 +65,8 @@ const dialogues: { [key: string]: string } = {
     'Extended Reality Deck': `"An entire deck with
  full-body haptic suits,
  and wireless VR/AR
- headsets.
-  Boosts crew morale as
+ headsets.<br>
+ &nbsp;&nbsp;Boosts crew morale as
  the improved processing
  power allows for a more
  immersive experience."`,
@@ -75,10 +75,10 @@ const dialogues: { [key: string]: string } = {
  delicate cargo is stored.
  Temperature, humidity,
  and atmosphere regulated
- to preserve it for longer.
-  Improved equipment here
+ to preserve it for longer.<br>
+ &nbsp;&nbsp;Improved equipment here
  increases cargo space,
- and allows a larger
+ and allows for a larger
  variety of goods to be
  stored."`,
 
@@ -87,18 +87,18 @@ const dialogues: { [key: string]: string } = {
  Ores, trade goods, various
  currencies, and anything
  that can be left on a
- shelf for long periods.
-  Improved equipment here
+ shelf for long periods.<br>
+ &nbsp;&nbsp;Improved equipment here
  increases cargo space,
- and allows a larger
+ and allows for a larger
  variety of goods to be
  stored."`,
 
     'Engine Room': `"The engines don't just
  use deuterium to make
  the ship go. They power
- everything on board.
-  Improvements here
+ everything on board.<br>
+ &nbsp;&nbsp;Improvements here
  increase the engine's
  efficiency; to use less
  fuel to achieve the same
@@ -106,8 +106,8 @@ const dialogues: { [key: string]: string } = {
 
     'Bridge': `"The bridge is where
  your officers do their
- work.
-  Advancements here will
+ work.<br>
+ &nbsp;&nbsp;Advancements here will
  increase the number of
  officers you can have
  on-duty at a given time."`,
@@ -117,8 +117,8 @@ const dialogues: { [key: string]: string } = {
  lay their heads. They
  can't be seen fraternizing
  with the enlisted. So,
- they get their own space.
-  Improvements give
+ they get their own space.<br>
+ &nbsp;&nbsp;Improvements give
  them more room to
  stretch their feet,
  and encourages them
@@ -128,8 +128,8 @@ const dialogues: { [key: string]: string } = {
  of the League's best
  trained people, they
  still need to keep those
- skills sharp.
-  Better equipment, space,
+ skills sharp.<br>
+ &nbsp;&nbsp;Better equipment, space,
  and training regimen
  will have your crew
  humming like a finely-
@@ -137,16 +137,16 @@ const dialogues: { [key: string]: string } = {
 
     'Port Thrusters': `"Port-side thrusters allow
  your ship to turn toward
- starboard (clockwise).
-  More tech points give
+ starboard (clockwise).<br>
+ &nbsp;&nbsp;More tech points give
  the thrusters more kick
  and a faster clockwise
  turn speed."`,
 
     'Main Thruster': `"How fast and how far
  your ship can move with
- each jump.
-  Advancements here will
+ each jump.<br>
+ &nbsp;&nbsp;Advancements here will
  increase forward speed
  in combat, but also how
  far the ship can move
@@ -156,8 +156,8 @@ const dialogues: { [key: string]: string } = {
     'Starboard Thrusters': `"Starboard-side thrusters
  allow your ship to
  turn toward port
- (counter-clockwise).
-  More tech points give
+ (counter-clockwise).<br>
+ &nbsp;&nbsp;More tech points give
  the thrusters more kick
  and a faster counter-
  clockwise turn speed."`,
@@ -170,8 +170,8 @@ const dialogues: { [key: string]: string } = {
  to avoid debris, black
  holes; to steer the ship
  accurately; to find
- things worth exploring.
-  More points translate
+ things worth exploring.<br>
+ &nbsp;&nbsp;More points translate
  to seeing farther."`,
 
     'Artificial Gravity Rings': `"The enzmann has three
@@ -179,8 +179,8 @@ const dialogues: { [key: string]: string } = {
  spin continuously about
  the ship to provide
  earthlike gravity, and
- shock-aborbing stability.
-  Upgrades improve overall
+ shock-aborbing stability.<br>
+ &nbsp;&nbsp;Upgrades improve overall
  crew efficiency and
  reduced hull damage from
  blasts that penetrate
@@ -192,16 +192,16 @@ const dialogues: { [key: string]: string } = {
  array of electromagnetic
  frequencies. Some photon-
  based weapons may still
- bypass these.
-  Spend tech points and
+ bypass these.<br>
+ &nbsp;&nbsp;Spend tech points and
  you will be able to hold
  your shields longer and
  recharge them faster."`,
 
     'Deuterium Tank': `"Deuterium is your fuel.
  This massive tank is
- where that fuel is stored.
-  Add tech points, and
+ where that fuel is stored.<br>
+ &nbsp;&nbsp;Add tech points, and
  increase the max amount
  of fuel you can safely
  store at one time.`
@@ -243,12 +243,9 @@ export class ShipLayout {
     private dialogueText: DialogueText = {
         counter: 1,
         currentIndex: 0,
+        element: null,
         font: null,
-        geometry: null,
-        headerParams: null,
         isFinished: false,
-        material: null,
-        mesh: null,
         sentence: dialogues['']
     };
 
@@ -340,17 +337,19 @@ export class ShipLayout {
         introFont: Font) {
         this.scene = scene.scene;
 
-        this.dialogueText.headerParams = {
-            font: introFont,
-            size: 0.125,
-            height: 0.001,
-            curveSegments: 12,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 0.5,
-            bevelSegments: 1
-        };
-        this.dialogueText.material = new MeshBasicMaterial({ color: 0xFFD700 });
+        this.dialogueText.element = document.createElement('div');
+        this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
+        this.dialogueText.element.style.color = '#FFD700';
+        this.dialogueText.element.style.position = 'absolute';
+        this.dialogueText.element.style.width = '20vw';
+        this.dialogueText.element.style.height = '23vh';
+        this.dialogueText.element.style.backgroundColor = 'transparent';
+        this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
+        this.dialogueText.element.style.top = '15px';
+        this.dialogueText.element.style.right = '30vw';
+        this.dialogueText.element.style.overflowY = 'hidden';
+        this.dialogueText.element.style.fontSize = '5vw';
+        document.body.appendChild(this.dialogueText.element);
 
         this.hoverText.headerParams = {
             font: introFont,
@@ -469,18 +468,22 @@ export class ShipLayout {
                     this.selectedBox = this.meshMap[hit.name];
                     (this.meshMap[hit.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
-                    this.selectionText.sentence = hit.name;
-                    this.selectionText.isFadeIn = true;
-                    this.selectionText.isHolding = false;
-                    this.selectionText.counter = 1;
-                    this.makeSelectionText(true);
+                    if (this.selectionText.mesh) {
+                        this.scene.remove(this.selectionText.mesh);
+                    }
+                    setTimeout(() => {
+                        this.selectionText.sentence = hit.name;
+                        this.selectionText.isFadeIn = true;
+                        this.selectionText.isHolding = false;
+                        this.selectionText.counter = 1;
+                        this.makeSelectionText(true);
 
-                    this.dialogueText.sentence = dialogues[hit.name];
-                    this.dialogueText.counter = -1;
-                    this.dialogueText.currentIndex = 0;
-                    this.dialogueText.isFinished = false;
-                    this.makeDialogueText();
-                    return;
+                        this.dialogueText.sentence = dialogues[hit.name];
+                        this.dialogueText.counter = -1;
+                        this.dialogueText.currentIndex = 0;
+                        this.dialogueText.isFinished = false;
+                        this.makeDialogueText();
+                    }, 100);
                 }
             });
         };
@@ -505,16 +508,21 @@ export class ShipLayout {
                     }
 
                     if (hit.name !== hoverName && hit.name !== selectedName) {
-                        this.hoverText.sentence = hit.name;
-                        this.hoverText.isFadeIn = true;
-                        this.hoverText.isHolding = false;
-                        this.hoverText.counter = 1;
-                        this.makeHoverText(true);
+                        if (this.hoverText.mesh) {
+                            this.scene.remove(this.hoverText.mesh);
+                        }
+                        setTimeout(() => {
+                            this.hoverText.sentence = hit.name;
+                            this.hoverText.isFadeIn = true;
+                            this.hoverText.isHolding = false;
+                            this.hoverText.counter = 1;
+                            this.makeHoverText(true);
+                        }, 100);
                     }
                     return;
                 }
             });
-            if (!isHovering) {
+            if (!isHovering && this.hoverText.mesh) {
                 this.hoveredBox = null;
                 this.hoverText.sentence = '';
                 this.hoverText.isFadeIn = true;
@@ -576,18 +584,14 @@ export class ShipLayout {
         this.dialogueText.counter++;
         if (this.dialogueText.counter % 3 === 0 && this.dialogueText.currentIndex < this.dialogueText.sentence.length) {
             this.dialogueText.currentIndex++;
-            if (this.dialogueText.mesh) {
-                this.scene.remove(this.dialogueText.mesh);
+            if (this.dialogueText.sentence.charAt(this.dialogueText.currentIndex - 1) === '<') {
+                this.dialogueText.currentIndex += 3;
+            }if (this.dialogueText.sentence.charAt(this.dialogueText.currentIndex - 1) === '&') {
+                this.dialogueText.currentIndex += 11;
             }
-            this.dialogueText.geometry = new TextGeometry(
-                this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex),
-                this.dialogueText.headerParams);
-            this.dialogueText.mesh = new Mesh(
-                this.dialogueText.geometry,
-                this.dialogueText.material);
-            this.dialogueText.mesh.position.set(0, -11.4, -5.7);
-            this.dialogueText.mesh.rotation.x = -1.5708;
-            this.scene.add(this.dialogueText.mesh);
+            if (this.dialogueText.element) {
+                this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
+            }
         }
         if (this.dialogueText.currentIndex >= this.dialogueText.sentence.length) {
             this.dialogueText.isFinished = true;
@@ -605,6 +609,11 @@ export class ShipLayout {
         const color = name === this.hoverText.sentence ? this.selectedColor : 0x00B39F
         if (change && this.hoverText.mesh) {
             this.scene.remove(this.hoverText.mesh);
+            this.hoverText.geometry = null;
+            this.hoverText.mesh = null;
+            if (!this.hoverText.sentence) {
+                return;
+            }
         }
         if (this.hoverText.isFadeIn && this.hoverText.counter > 20) {
             this.hoverText.isFadeIn = false;
@@ -612,19 +621,21 @@ export class ShipLayout {
             this.hoverText.counter = 1;
         }
 
-        if (this.hoverText.isFadeIn && change) {
+        if (this.hoverText.isFadeIn) {
             this.hoverText.material.opacity = (this.hoverText.counter / 20);
             this.hoverText.counter++;
-            this.hoverText.geometry = new TextGeometry(
-                this.hoverText.sentence,
-                this.hoverText.headerParams);
-            this.hoverText.material.color.set(color);
-            this.hoverText.mesh = new Mesh(
-                this.hoverText.geometry,
-                this.hoverText.material);
-            this.hoverText.mesh.position.set(-5.65, -11.4, 5.5);
-            this.hoverText.mesh.rotation.x = -1.5708;
-            this.scene.add(this.hoverText.mesh);
+            if (change) {
+                this.hoverText.geometry = new TextGeometry(
+                    this.hoverText.sentence,
+                    this.hoverText.headerParams);
+                this.hoverText.material.color.set(color);
+                this.hoverText.mesh = new Mesh(
+                    this.hoverText.geometry,
+                    this.hoverText.material);
+                this.hoverText.mesh.position.set(-5.65, -11.4, 5.5);
+                this.hoverText.mesh.rotation.x = -1.5708;
+                this.scene.add(this.hoverText.mesh);
+            }
         }
     }
 
@@ -637,6 +648,11 @@ export class ShipLayout {
         }
         if (change && this.selectionText.mesh) {
             this.scene.remove(this.selectionText.mesh);
+            this.selectionText.geometry = null;
+            this.selectionText.mesh = null;
+            if (!this.selectionText.sentence) {
+                return;
+            }
         }
         if (this.selectionText.isFadeIn && this.selectionText.counter > 20) {
             this.selectionText.isFadeIn = false;
@@ -644,18 +660,20 @@ export class ShipLayout {
             this.selectionText.counter = 1;
         }
 
-        if (this.selectionText.isFadeIn && change) {
+        if (this.selectionText.isFadeIn) {
             this.selectionText.material.opacity = (this.selectionText.counter / 20);
             this.selectionText.counter++;
-            this.selectionText.geometry = new TextGeometry(
-                this.selectionText.sentence,
-                this.selectionText.headerParams);
-            this.selectionText.mesh = new Mesh(
-                this.selectionText.geometry,
-                this.selectionText.material);
-            this.selectionText.mesh.position.set(-5.65, -11.4, -5.5);
-            this.selectionText.mesh.rotation.x = -1.5708;
-            this.scene.add(this.selectionText.mesh);
+            if (change) {
+                this.selectionText.geometry = new TextGeometry(
+                    this.selectionText.sentence,
+                    this.selectionText.headerParams);
+                this.selectionText.mesh = new Mesh(
+                    this.selectionText.geometry,
+                    this.selectionText.material);
+                this.selectionText.mesh.position.set(-5.65, -11.4, -5.5);
+                this.selectionText.mesh.rotation.x = -1.5708;
+                this.scene.add(this.selectionText.mesh);
+            }
         }
     }
 
