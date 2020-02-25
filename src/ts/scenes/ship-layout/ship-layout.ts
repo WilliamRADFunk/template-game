@@ -52,158 +52,158 @@ const dialogues: { [key: string]: string } = {
  crew cap, and an improved<br>
  overall morale."`,
 
-    'Weapons Room': `"The Weapons Room stores,
- loads, and fires your
- ship's nukes. You can
- only hold two weapon
+    'Weapons Room': `"The Weapons Room stores,<br>
+ loads, and fires your<br>
+ ship's nukes. You can<br>
+ only hold two weapon<br>
  types at a time.<br>
- &nbsp;&nbsp;Add tech points here
- to extend range, blast
- radius, and concussive
+ &nbsp;&nbsp;Add tech points here<br>
+ to extend range, blast<br>
+ radius, and concussive<br>
  power."`,
 
-    'Extended Reality Deck': `"An entire deck with
- full-body haptic suits,
- and wireless VR/AR
+    'Extended Reality Deck': `"An entire deck with<br>
+ full-body haptic suits,<br>
+ and wireless VR/AR<br>
  headsets.<br>
- &nbsp;&nbsp;Boosts crew morale as
- the improved processing
- power allows for a more
+ &nbsp;&nbsp;Boosts crew morale as<br>
+ the improved processing<br>
+ power allows for a more<br>
  immersive experience."`,
 
-    'Climate-Controlled Cargo Space': `"This is where your more
- delicate cargo is stored.
- Temperature, humidity,
- and atmosphere regulated
+    'Climate-Controlled Cargo Space': `"This is where your more<br>
+ delicate cargo is stored.<br>
+ Temperature, humidity,<br>
+ and atmosphere regulated<br>
  to preserve it for longer.<br>
- &nbsp;&nbsp;Improved equipment here
- increases cargo space,
- and allows for a larger
- variety of goods to be
+ &nbsp;&nbsp;Improved equipment here<br>
+ increases cargo space,<br>
+ and allows for a larger<br>
+ variety of goods to be<br>
  stored."`,
 
-    'Standard Cargo Space': `"This is where your more
- ruggid cargo is stored.
- Ores, trade goods, various
- currencies, and anything
- that can be left on a
+    'Standard Cargo Space': `"This is where your more<br>
+ ruggid cargo is stored.<br>
+ Ores, trade goods, various<br>
+ currencies, and anything<br>
+ that can be left on a<br>
  shelf for long periods.<br>
- &nbsp;&nbsp;Improved equipment here
- increases cargo space,
- and allows for a larger
- variety of goods to be
+ &nbsp;&nbsp;Improved equipment here<br>
+ increases cargo space,<br>
+ and allows for a larger<br>
+ variety of goods to be<br>
  stored."`,
 
-    'Engine Room': `"The engines don't just
- use deuterium to make
- the ship go. They power
+    'Engine Room': `"The engines don't just<br>
+ use deuterium to make<br>
+ the ship go. They power<br>
  everything on board.<br>
- &nbsp;&nbsp;Improvements here
- increase the engine's
- efficiency; to use less
- fuel to achieve the same
+ &nbsp;&nbsp;Improvements here<br>
+ increase the engine's<br>
+ efficiency; to use less<br>
+ fuel to achieve the same<br>
  effect."`,
 
-    'Bridge': `"The bridge is where
- your officers do their
+    'Bridge': `"The bridge is where<br>
+ your officers do their<br>
  work.<br>
- &nbsp;&nbsp;Advancements here will
- increase the number of
- officers you can have
+ &nbsp;&nbsp;Advancements here will<br>
+ increase the number of<br>
+ officers you can have<br>
  on-duty at a given time."`,
 
-    'Officers Quarters': `"Like crew quarters, your
- officers need a place to
- lay their heads. They
- can't be seen fraternizing
- with the enlisted. So,
+    'Officers Quarters': `"Like crew quarters, your<br>
+ officers need a place to<br>
+ lay their heads. They<br>
+ can't be seen fraternizing<br>
+ with the enlisted. So,<br>
  they get their own space.<br>
- &nbsp;&nbsp;Improvements give
- them more room to
- stretch their feet,
- and encourages them
+ &nbsp;&nbsp;Improvements give<br>
+ them more room to<br>
+ stretch their feet,<br>
+ and encourages them<br>
  to be at their best."`,
 
-    'Training Deck': `"While the crew are some
- of the League's best
- trained people, they
- still need to keep those
+    'Training Deck': `"While the crew are some<br>
+ of the League's best<br>
+ trained people, they<br>
+ still need to keep those<br>
  skills sharp.<br>
- &nbsp;&nbsp;Better equipment, space,
- and training regimen
- will have your crew
- humming like a finely-
+ &nbsp;&nbsp;Better equipment, space,<br>
+ and training regimen<br>
+ will have your crew<br>
+ humming like a finely-<br>
  tuned machine."`,
 
-    'Port Thrusters': `"Port-side thrusters allow
- your ship to turn toward
+    'Port Thrusters': `"Port-side thrusters allow<br>
+ your ship to turn toward<br>
  starboard (clockwise).<br>
- &nbsp;&nbsp;More tech points give
- the thrusters more kick
- and a faster clockwise
+ &nbsp;&nbsp;More tech points give<br>
+ the thrusters more kick<br>
+ and a faster clockwise<br>
  turn speed."`,
 
-    'Main Thruster': `"How fast and how far
- your ship can move with
+    'Main Thruster': `"How fast and how far<br>
+ your ship can move with<br>
  each jump.<br>
- &nbsp;&nbsp;Advancements here will
- increase forward speed
- in combat, but also how
- far the ship can move
- across the stars with
+ &nbsp;&nbsp;Advancements here will<br>
+ increase forward speed<br>
+ in combat, but also how<br>
+ far the ship can move<br>
+ across the stars with<br>
  each burst."`,
 
-    'Starboard Thrusters': `"Starboard-side thrusters
- allow your ship to
- turn toward port
+    'Starboard Thrusters': `"Starboard-side thrusters<br>
+ allow your ship to<br>
+ turn toward port<br>
  (counter-clockwise).<br>
- &nbsp;&nbsp;More tech points give
- the thrusters more kick
- and a faster counter-
+ &nbsp;&nbsp;More tech points give<br>
+ the thrusters more kick<br>
+ and a faster counter-<br>
  clockwise turn speed."`,
 
-    'Sensors': `"You can't rely on looking
- out a window to know
- what's going on outside
- the ship. You need
- complex sensory equipment
- to avoid debris, black
- holes; to steer the ship
- accurately; to find
+    'Sensors': `"You can't rely on looking<br>
+ out a window to know<br>
+ what's going on outside<br>
+ the ship. You need<br>
+ complex sensory equipment<br>
+ to avoid debris, black<br>
+ holes; to steer the ship<br>
+ accurately; to find<br>
  things worth exploring.<br>
- &nbsp;&nbsp;More points translate
+ &nbsp;&nbsp;More points translate<br>
  to seeing farther."`,
 
-    'Artificial Gravity Rings': `"The enzmann has three
- high-density rings that
- spin continuously about
- the ship to provide
- earthlike gravity, and
+    'Artificial Gravity Rings': `"The enzmann has three<br>
+ high-density rings that<br>
+ spin continuously about<br>
+ the ship to provide<br>
+ earthlike gravity, and<br>
  shock-aborbing stability.<br>
- &nbsp;&nbsp;Upgrades improve overall
- crew efficiency and
- reduced hull damage from
- blasts that penetrate
+ &nbsp;&nbsp;Upgrades improve overall<br>
+ crew efficiency and<br>
+ reduced hull damage from<br>
+ blasts that penetrate<br>
  your shilds."`,
 
-    'Shield Emitters': `"Your shields can deflect
- many forms of physical
- damage through a complex
- array of electromagnetic
- frequencies. Some photon-
- based weapons may still
+    'Shield Emitters': `"Your shields can deflect<br>
+ many forms of physical<br>
+ damage through a complex<br>
+ array of electromagnetic<br>
+ frequencies. Some photon-<br>
+ based weapons may still<br>
  bypass these.<br>
- &nbsp;&nbsp;Spend tech points and
- you will be able to hold
- your shields longer and
+ &nbsp;&nbsp;Spend tech points and<br>
+ you will be able to hold<br>
+ your shields longer and<br>
  recharge them faster."`,
 
-    'Deuterium Tank': `"Deuterium is your fuel.
- This massive tank is
+    'Deuterium Tank': `"Deuterium is your fuel.<br>
+ This massive tank is<br>
  where that fuel is stored.<br>
- &nbsp;&nbsp;Add tech points, and
- increase the max amount
- of fuel you can safely
+ &nbsp;&nbsp;Add tech points, and<br>
+ increase the max amount<br>
+ of fuel you can safely<br>
  store at one time.`
 };
 
@@ -337,18 +337,29 @@ export class ShipLayout {
         introFont: Font) {
         this.scene = scene.scene;
 
+        let WIDTH = window.innerWidth * 0.99;
+        let HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
+        const width = WIDTH;
+        const height = HEIGHT;
+        const right = left + width;
+
         this.dialogueText.element = document.createElement('div');
         this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
         this.dialogueText.element.style.color = '#FFD700';
         this.dialogueText.element.style.position = 'absolute';
-        this.dialogueText.element.style.width = '20vw';
-        this.dialogueText.element.style.height = '23vh';
+        this.dialogueText.element.style.maxWidth = `${0.2 * width}px`;
+        this.dialogueText.element.style.width = `${0.2 * width}px`;
+        this.dialogueText.element.style.height = `${0.22 * height}px`;
         this.dialogueText.element.style.backgroundColor = 'transparent';
         this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
         this.dialogueText.element.style.top = '15px';
-        this.dialogueText.element.style.right = '30vw';
+        this.dialogueText.element.style.right = `${0.3 * WIDTH}px`;
         this.dialogueText.element.style.overflowY = 'hidden';
-        this.dialogueText.element.style.fontSize = '5vw';
+        this.dialogueText.element.style.fontSize = `${0.015 * width}px`;
+        this.dialogueText.element.style.border = '1px solid #FFFFFF';
         document.body.appendChild(this.dialogueText.element);
 
         this.hoverText.headerParams = {
