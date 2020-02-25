@@ -345,6 +345,7 @@ export class ShipLayout {
         const width = WIDTH;
         const height = HEIGHT;
         const right = left + width;
+        const widthOnRight = WIDTH - right;
 
         this.dialogueText.element = document.createElement('div');
         this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
@@ -356,7 +357,7 @@ export class ShipLayout {
         this.dialogueText.element.style.backgroundColor = 'transparent';
         this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
         this.dialogueText.element.style.top = '15px';
-        this.dialogueText.element.style.right = `${0.3 * WIDTH}px`;
+        this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
         this.dialogueText.element.style.overflowY = 'hidden';
         this.dialogueText.element.style.fontSize = `${0.015 * width}px`;
         this.dialogueText.element.style.border = '1px solid #FFFFFF';
