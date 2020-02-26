@@ -337,31 +337,8 @@ export class ShipLayout {
         introFont: Font) {
         this.scene = scene.scene;
 
-        let WIDTH = window.innerWidth * 0.99;
-        let HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
-        const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
-        const width = WIDTH;
-        const height = HEIGHT;
-        const right = left + width;
-        const widthOnRight = WIDTH - right;
-
-        this.dialogueText.element = document.createElement('div');
-        this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
-        this.dialogueText.element.style.color = '#FFD700';
-        this.dialogueText.element.style.position = 'absolute';
-        this.dialogueText.element.style.maxWidth = `${0.2 * width}px`;
-        this.dialogueText.element.style.width = `${0.2 * width}px`;
-        this.dialogueText.element.style.height = `${0.22 * height}px`;
-        this.dialogueText.element.style.backgroundColor = 'transparent';
-        this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
-        this.dialogueText.element.style.top = '15px';
-        this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
-        this.dialogueText.element.style.overflowY = 'hidden';
-        this.dialogueText.element.style.fontSize = `${0.015 * width}px`;
-        this.dialogueText.element.style.border = '1px solid #FFFFFF';
-        document.body.appendChild(this.dialogueText.element);
+        this.onWindowResize();
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
         this.hoverText.headerParams = {
             font: introFont,
@@ -687,6 +664,48 @@ export class ShipLayout {
                 this.scene.add(this.selectionText.mesh);
             }
         }
+    }
+
+    private onWindowResize(): void {
+        const layoutElement = document.getElementById('ship-layout-screen');
+        if (layoutElement) {
+            layoutElement.remove();
+        }
+        let WIDTH = window.innerWidth * 0.99;
+        let HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
+        const width = WIDTH;
+        const height = HEIGHT;
+        const right = left + width;
+        const widthOnRight = WIDTH - right;
+
+        this.dialogueText.element = document.createElement('div');
+        this.dialogueText.element.id = 'ship-layout-screen';
+        this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
+        this.dialogueText.element.style.color = '#FFD700';
+        this.dialogueText.element.style.position = 'absolute';
+        this.dialogueText.element.style.maxWidth = `${0.25 * width}px`;
+        this.dialogueText.element.style.width = `${0.25 * width}px`;
+        this.dialogueText.element.style.maxHeight = `${0.24 * height}px`;
+        this.dialogueText.element.style.height = `${0.24 * height}px`;
+        this.dialogueText.element.style.backgroundColor = 'transparent';
+        this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
+        this.dialogueText.element.style.top = `${0.01 * height}px`;
+        this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
+        this.dialogueText.element.style.overflowY = 'hidden';
+        this.dialogueText.element.style.fontSize = `${0.018 * width}px`;
+        this.dialogueText.element.style.border = '1px solid #FFFFFF';
+        document.body.appendChild(this.dialogueText.element);
+    };
+    
+    /**
+     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
+     */
+    public dispose(): void {
+        document.getElementById('ship-layout-screen').remove();
+        window.removeEventListener( 'resize', this.onWindowResize, false);
     }
 
     /**
