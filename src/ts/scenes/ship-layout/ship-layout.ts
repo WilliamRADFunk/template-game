@@ -21,6 +21,9 @@ import { createProfile } from './actors/create-profile';
 import { DialogueText } from '../../models/dialogue-text';
 import { compareRGBValues } from '../../utils/compare-rgb-values';
 
+// let border: string = '1px solid #FFF';
+let border: string = 'none';
+
 const dialogues: { [key: string]: string } = {
     '': `"Click a blue box to select<br>
  a room and assign<br>
@@ -44,13 +47,16 @@ const dialogues: { [key: string]: string } = {
  crew cap, and an improved<br>
  overall morale."`,
 
-    'Crew Quarters B': `"Crew quarters are<br>
- where your crew will<br>
- sleep and relax.<br>
- &nbsp;&nbsp;Larger crew quarters<br>
- allow for a higher<br>
- crew cap, and an improved<br>
- overall morale."`,
+    'Engineering': `"Engineering is where<br>
+ your research and<br>
+ improvements take place.<br>
+ &nbsp;&nbsp;More points here<br>
+ make it easier to<br>
+ translate alien languages,<br>
+ earn more tech points,<br>
+ and learn how to<br>
+ incorporate new alien<br>
+ technologies."`,
 
     'Weapons Room': `"The Weapons Room stores,<br>
  loads, and fires your<br>
@@ -220,7 +226,7 @@ const highlightedColorRgb: [number, number, number] = [parseInt('00', 16), parse
 const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
     { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
     { height: 0.49, width: 1.64, x: -0.9, z: 2.28, radius: 0.07, rot: 0, name: 'Crew Quarters A' },
-    { height: 0.49, width: 1.64, x: -0.9, z: 3.71, radius: 0.09, rot: 0, name: 'Crew Quarters B' },
+    { height: 0.49, width: 1.64, x: -0.9, z: 3.71, radius: 0.09, rot: 0, name: 'Engineering' },
     { height: 1.01, width: 0.49, x: 0.36, z: 2.35, radius: 0.05, rot: 0, name: 'Weapons Room' },
     { height: 1.01, width: 0.49, x: 0.36, z: 3.59, radius: 0.05, rot: 0, name: 'Extended Reality Deck' },
     { height: 0.95, width: 0.94, x: -2.39, z: 2.45, radius: 0.06, rot: 0, name: 'Climate-Controlled Cargo Space' },
@@ -246,6 +252,84 @@ const selectedColor = '#F1149A';
  * Color in rgb for boxes user has clicked.
  */
 const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt('14', 16), parseInt('9A', 16)];
+
+/**
+ * Starting tech points for each ship section, and minimum values required.
+ */
+const pointMinAndStart: { [key: string]: { min: number; start: number; } } = {
+    'Galley & Mess Hall': {
+        min: 1,
+        start: 1
+    },
+    'Crew Quarters A': {
+        min: 1,
+        start: 1
+    },
+    'Engineering': {
+        min: 1,
+        start: 1
+    },
+    'Weapons Room': {
+        min: 1,
+        start: 1
+    },
+    'Extended Reality Deck': {
+        min: 1,
+        start: 1
+    },
+    'Climate-Controlled Cargo Space': {
+        min: 1,
+        start: 1
+    },
+    'Standard Cargo Space': {
+        min: 1,
+        start: 1
+    },
+    'Engine Room': {
+        min: 1,
+        start: 1
+    },
+    'Bridge': {
+        min: 3,
+        start: 3
+    },
+    'Officers Quarters': {
+        min: 1,
+        start: 1
+    },
+    'Training Deck': {
+        min: 1,
+        start: 1
+    },
+    'Port Thrusters': {
+        min: 2,
+        start: 2
+    },
+    'Main Thruster': {
+        min: 2,
+        start: 2
+    },
+    'Starboard Thrusters': {
+        min: 2,
+        start: 2
+    },
+    'Sensors': {
+        min: 1,
+        start: 1
+    },
+    'Artificial Gravity Rings': {
+        min: 1,
+        start: 1
+    },
+    'Shield Emitters': {
+        min: 1,
+        start: 1
+    },
+    'Deuterium Tank': {
+        min: 1,
+        start: 2
+    }
+};
 
 /**
  * Color for boxes user is not hovering over (default).
@@ -306,6 +390,27 @@ export class ShipLayout {
     private meshMap: { [key: string]: Mesh } = {};
 
     /**
+     * Number of tech points player has left to spend.
+     */
+    private points: number = 10;
+
+    /**
+     * Text for points to spend at top left of screen.
+     */
+    private pointsText: FadableText = {
+        counter: 1,
+        font: null,
+        geometry: null,
+        headerParams: null,
+        holdCount: -1, // Hold until replaced
+        isFadeIn: true,
+        isHolding: false,
+        material: null,
+        mesh: null,
+        sentence: ''
+    };
+
+    /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
     private scene: Scene;
@@ -348,24 +453,11 @@ export class ShipLayout {
         scene: SceneType,
         shipIntTexture: Texture,
         shipTexture: Texture,
-        dialogueTexture: Texture,
-        introFont: Font) {
+        dialogueTexture: Texture) {
         this.scene = scene.scene;
 
         this.onWindowResize();
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
-
-        this.hoverText.headerParams = {
-            font: introFont,
-            size: 0.199,
-            height: 0.001,
-            curveSegments: 12,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 0.5,
-            bevelSegments: 3
-        };
-        this.hoverText.material = new MeshBasicMaterial({ color: unhighlightedColor });
 
         this.createStars();
 
@@ -468,6 +560,13 @@ export class ShipLayout {
                     this.selectionText.isHolding = false;
                     this.selectionText.counter = 1;
                     this.makeSelectionText();
+
+                    this.pointsText.sentence = `You have ${this.points} tech points to spend`;
+                    this.pointsText.element.innerHTML = this.pointsText.sentence;
+                    this.pointsText.isFadeIn = true;
+                    this.pointsText.isHolding = false;
+                    this.pointsText.counter = 1;
+                    this.makePointsText();
 
                     this.dialogueText.sentence = dialogues[hit.name];
                     this.dialogueText.counter = -1;
@@ -613,6 +712,25 @@ export class ShipLayout {
     }
 
     /**
+     * Builds the text and graphics for the text dialogue for points at top left of screen.
+     */
+    private makePointsText(): void {
+        if (this.pointsText.isHolding) {
+            return;
+        }
+        if (this.pointsText.isFadeIn && this.pointsText.counter > 20) {
+            this.pointsText.isFadeIn = false;
+            this.pointsText.isHolding = true;
+            this.pointsText.counter = 1;
+        }
+
+        if (this.pointsText.isFadeIn) {
+            this.pointsText.element.style.opacity = (this.pointsText.counter / 20) + '';
+            this.pointsText.counter++;
+        }
+    }
+
+    /**
      * Builds the text and graphics for the text dialogue at top left of screen.
      */
     private makeSelectionText(): void {
@@ -635,6 +753,10 @@ export class ShipLayout {
         const dialogueElement = document.getElementById('ship-layout-screen-dialogue');
         if (dialogueElement) {
             dialogueElement.remove();
+        }
+        const pointsElement = document.getElementById('ship-layout-screen-points');
+        if (pointsElement) {
+            pointsElement.remove();
         }
         const selectionElement = document.getElementById('ship-layout-screen-selection');
         if (selectionElement) {
@@ -671,7 +793,27 @@ export class ShipLayout {
         this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
         this.dialogueText.element.style.overflowY = 'hidden';
         this.dialogueText.element.style.fontSize = `${0.018 * width}px`;
+        this.dialogueText.element.style.border = border;
         document.body.appendChild(this.dialogueText.element);
+
+        this.pointsText.element = document.createElement('div');
+        this.pointsText.element.id = 'ship-layout-screen-points';
+        this.pointsText.element.style.fontFamily = 'Luckiest Guy';
+        this.pointsText.element.style.color = selectedColor;
+        this.pointsText.element.style.position = 'absolute';
+        this.pointsText.element.style.maxWidth = `${0.43 * width}px`;
+        this.pointsText.element.style.width = `${0.43 * width}px`;
+        this.pointsText.element.style.maxHeight = `${0.03 * height}px`;
+        this.pointsText.element.style.height = `${0.03 * height}px`;
+        this.pointsText.element.style.backgroundColor = 'transparent';
+        this.pointsText.element.innerHTML = this.pointsText.sentence;
+        this.pointsText.element.style.top = `${0.09 * height}px`;
+        this.pointsText.element.style.left = `${left + (0.02 * width)}px`;
+        this.pointsText.element.style.overflowY = 'hidden';
+        this.pointsText.element.style.textAlign = 'center';
+        this.pointsText.element.style.fontSize = `${0.025 * width}px`;
+        this.pointsText.element.style.border = border;
+        document.body.appendChild(this.pointsText.element);
 
         this.selectionText.element = document.createElement('div');
         this.selectionText.element.id = 'ship-layout-screen-selection';
@@ -689,7 +831,7 @@ export class ShipLayout {
         this.selectionText.element.style.overflowY = 'hidden';
         this.selectionText.element.style.textAlign = 'center';
         this.selectionText.element.style.fontSize = `${0.03 * width}px`;
-        this.selectionText.element.style.border = '1px solid #FFF';
+        this.selectionText.element.style.border = border;
         document.body.appendChild(this.selectionText.element);
 
         this.hoverText.element = document.createElement('div');
@@ -708,7 +850,7 @@ export class ShipLayout {
         this.hoverText.element.style.overflowY = 'hidden';
         this.hoverText.element.style.textAlign = 'left';
         this.hoverText.element.style.fontSize = `${0.03 * width}px`;
-        this.hoverText.element.style.border = '1px solid #FFF';
+        this.hoverText.element.style.border = border;
         document.body.appendChild(this.hoverText.element);
     };
     
@@ -717,6 +859,9 @@ export class ShipLayout {
      */
     public dispose(): void {
         document.getElementById('ship-layout-screen-dialogue').remove();
+        document.getElementById('ship-layout-screen-hover').remove();
+        document.getElementById('ship-layout-screen-points').remove();
+        document.getElementById('ship-layout-screen-selection').remove();
         window.removeEventListener( 'resize', this.onWindowResize, false);
     }
 
@@ -732,6 +877,7 @@ export class ShipLayout {
         }
         this.makeDialogueText();
         this.makeHoverText();
+        this.makePointsText();
         this.makeSelectionText();
         return true;
     }

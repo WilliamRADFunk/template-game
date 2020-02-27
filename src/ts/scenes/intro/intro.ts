@@ -350,7 +350,6 @@ export class Intro {
     }
 
     private initiateActorEvents(actorEvent: ActorEvent): void {
-        console.log('initiateActorEvents', actorEvent.type, this.currentFrame);
         switch(actorEvent.type) {
             case 'Moving': {
                 this.setDestination(

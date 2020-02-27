@@ -618,7 +618,7 @@ const loadShipLayoutScene = () => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, shipLayoutDialogueTexture, gameFont);
+    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, shipLayoutDialogueTexture);
     scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

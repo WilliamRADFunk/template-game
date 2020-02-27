@@ -16,6 +16,12 @@ import { LoadHandler } from '../load-screen/load-handler';
 import { SoundinatorSingleton } from '../../soundinator';
 import { SceneType } from '../../models/scene-type';
 
+const backgroundColor = 0xFF0044;
+// const backgroundColor = null;
+
+const backgroundOpacity = 1;
+// const backgroundOpacity = 0;
+
 /**
  * @class
  * Keeps track of all things menu related.
@@ -232,9 +238,22 @@ export class Menu {
         this.pointLight.position.set(15, 2, 0);
         this.scene.add(this.pointLight);
         
-        this.menuMaterial = new MeshLambertMaterial( {color: 0x0066FF, opacity: 1, transparent: true} );
-        this.menuSelectedMaterial = new MeshLambertMaterial( {color: 0xFFCC00, opacity: 1, transparent: true} );
-        this.clickMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
+        this.menuMaterial = new MeshLambertMaterial({
+            color: 0x0066FF,
+            opacity: 1,
+            transparent: true
+        });
+        this.menuSelectedMaterial = new MeshLambertMaterial({
+            color: 0xFFCC00,
+            opacity: 1,
+            transparent: true
+        });
+        this.clickMaterial = new MeshBasicMaterial({
+            color: backgroundColor,
+            opacity: backgroundOpacity,
+            transparent: true,
+            side: DoubleSide
+        });
         // Create the start collision layer
         const startBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
         this.barrierStart = new Mesh( startBarrierGeometry, this.clickMaterial );
