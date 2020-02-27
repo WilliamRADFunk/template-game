@@ -4,7 +4,6 @@ import {
     Font,
     Mesh,
     MeshBasicMaterial,
-    MeshLambertMaterial,
     PlaneGeometry,
     Scene,
     TextGeometry,
@@ -252,7 +251,7 @@ export class ShipLayout {
     /**
      * Color for boxes user is hovering over.
      */
-    private highlightedColor = 0x00FF00;
+    private highlightedColor = '#00FF00';
 
     /**
      * Mesh for box user has hovered over.
@@ -293,7 +292,7 @@ export class ShipLayout {
     /**
      * Color for boxes user has clicked.
      */
-    private selectedColor = 0xF1149A;
+    private selectedColor = '#F1149A';
 
     /**
      * Text for selected room at top left of screen.
@@ -351,18 +350,6 @@ export class ShipLayout {
             bevelSegments: 3
         };
         this.hoverText.material = new MeshBasicMaterial({ color: this.unhighlightedColor });
-
-        this.selectionText.headerParams = {
-            font: introFont,
-            size: 0.159,
-            height: 0.001,
-            curveSegments: 12,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 0.5,
-            bevelSegments: 3
-        };
-        this.selectionText.material = new MeshBasicMaterial({ color: 0xFFD700 });
 
         this.createStars();
 
@@ -457,22 +444,19 @@ export class ShipLayout {
                     this.selectedBox = this.meshMap[hit.name];
                     (this.meshMap[hit.name].material as any).color.set(this.selectedColor);
                     SoundinatorSingleton.playClick();
-                    if (this.selectionText.mesh) {
-                        this.scene.remove(this.selectionText.mesh);
-                    }
-                    setTimeout(() => {
-                        this.selectionText.sentence = hit.name;
-                        this.selectionText.isFadeIn = true;
-                        this.selectionText.isHolding = false;
-                        this.selectionText.counter = 1;
-                        this.makeSelectionText(true);
 
-                        this.dialogueText.sentence = dialogues[hit.name];
-                        this.dialogueText.counter = -1;
-                        this.dialogueText.currentIndex = 0;
-                        this.dialogueText.isFinished = false;
-                        this.makeDialogueText();
-                    }, 100);
+                    this.selectionText.sentence = hit.name;
+                    this.selectionText.element.innerHTML = this.selectionText.sentence;
+                    this.selectionText.isFadeIn = true;
+                    this.selectionText.isHolding = false;
+                    this.selectionText.counter = 1;
+                    this.makeSelectionText();
+
+                    this.dialogueText.sentence = dialogues[hit.name];
+                    this.dialogueText.counter = -1;
+                    this.dialogueText.currentIndex = 0;
+                    this.dialogueText.isFinished = false;
+                    this.makeDialogueText();
                 }
             });
         };
@@ -595,7 +579,7 @@ export class ShipLayout {
             return;
         }
         const name = this.selectedBox && this.selectedBox.name;
-        const color = name === this.hoverText.sentence ? this.selectedColor : 0x00B39F
+        const color = name === this.hoverText.sentence ? this.selectedColor : '#00B39F';
         if (change && this.hoverText.mesh) {
             this.scene.remove(this.hoverText.mesh);
             this.hoverText.geometry = null;
@@ -631,17 +615,9 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at top left of screen.
      */
-    private makeSelectionText(change?: boolean): void {
+    private makeSelectionText(): void {
         if (this.selectionText.isHolding) {
             return;
-        }
-        if (change && this.selectionText.mesh) {
-            this.scene.remove(this.selectionText.mesh);
-            this.selectionText.geometry = null;
-            this.selectionText.mesh = null;
-            if (!this.selectionText.sentence) {
-                return;
-            }
         }
         if (this.selectionText.isFadeIn && this.selectionText.counter > 20) {
             this.selectionText.isFadeIn = false;
@@ -650,39 +626,38 @@ export class ShipLayout {
         }
 
         if (this.selectionText.isFadeIn) {
-            this.selectionText.material.opacity = (this.selectionText.counter / 20);
+            this.selectionText.element.style.opacity = (this.selectionText.counter / 20) + '';
             this.selectionText.counter++;
-            if (change) {
-                this.selectionText.geometry = new TextGeometry(
-                    this.selectionText.sentence,
-                    this.selectionText.headerParams);
-                this.selectionText.mesh = new Mesh(
-                    this.selectionText.geometry,
-                    this.selectionText.material);
-                this.selectionText.mesh.position.set(-5.65, -11.4, -5.5);
-                this.selectionText.mesh.rotation.x = -1.5708;
-                this.scene.add(this.selectionText.mesh);
-            }
         }
     }
 
     private onWindowResize(): void {
-        const layoutElement = document.getElementById('ship-layout-screen');
-        if (layoutElement) {
-            layoutElement.remove();
+        const dialogueElement = document.getElementById('ship-layout-screen-dialogue');
+        if (dialogueElement) {
+            dialogueElement.remove();
         }
+        const selectionElement = document.getElementById('ship-layout-screen-selection');
+        if (selectionElement) {
+            selectionElement.remove();
+        }
+        const hoverElement = document.getElementById('ship-layout-screen-hover');
+        if (hoverElement) {
+            hoverElement.remove();
+        }
+
         let WIDTH = window.innerWidth * 0.99;
         let HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
+        if ( WIDTH < HEIGHT ) {
+            HEIGHT = WIDTH;
+        } else {
+            WIDTH = HEIGHT;
+        }
         const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
         const width = WIDTH;
         const height = HEIGHT;
-        const right = left + width;
-        const widthOnRight = WIDTH - right;
 
         this.dialogueText.element = document.createElement('div');
-        this.dialogueText.element.id = 'ship-layout-screen';
+        this.dialogueText.element.id = 'ship-layout-screen-dialogue';
         this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
         this.dialogueText.element.style.color = '#FFD700';
         this.dialogueText.element.style.position = 'absolute';
@@ -696,15 +671,52 @@ export class ShipLayout {
         this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
         this.dialogueText.element.style.overflowY = 'hidden';
         this.dialogueText.element.style.fontSize = `${0.018 * width}px`;
-        this.dialogueText.element.style.border = '1px solid #FFFFFF';
         document.body.appendChild(this.dialogueText.element);
+
+        this.selectionText.element = document.createElement('div');
+        this.selectionText.element.id = 'ship-layout-screen-selection';
+        this.selectionText.element.style.fontFamily = 'Luckiest Guy';
+        this.selectionText.element.style.color = '#FFD700';
+        this.selectionText.element.style.position = 'absolute';
+        this.selectionText.element.style.maxWidth = `${0.43 * width}px`;
+        this.selectionText.element.style.width = `${0.43 * width}px`;
+        this.selectionText.element.style.maxHeight = `${0.08 * height}px`;
+        this.selectionText.element.style.height = `${0.08 * height}px`;
+        this.selectionText.element.style.backgroundColor = 'transparent';
+        this.selectionText.element.innerHTML = this.selectionText.sentence;
+        this.selectionText.element.style.top = `${0.01 * height}px`;
+        this.selectionText.element.style.left = `${left + (0.02 * width)}px`;
+        this.selectionText.element.style.overflowY = 'hidden';
+        this.selectionText.element.style.textAlign = 'center';
+        this.selectionText.element.style.fontSize = `${0.03 * width}px`;
+        this.selectionText.element.style.border = '1px solid #FFF';
+        document.body.appendChild(this.selectionText.element);
+
+        this.hoverText.element = document.createElement('div');
+        this.hoverText.element.id = 'ship-layout-screen-hover';
+        this.hoverText.element.style.fontFamily = 'Luckiest Guy';
+        this.hoverText.element.style.color = '#FFD700';
+        this.hoverText.element.style.position = 'absolute';
+        this.hoverText.element.style.maxWidth = `${0.43 * width}px`;
+        this.hoverText.element.style.width = `${0.43 * width}px`;
+        this.hoverText.element.style.maxHeight = `${0.08 * height}px`;
+        this.hoverText.element.style.height = `${0.08 * height}px`;
+        this.hoverText.element.style.backgroundColor = 'transparent';
+        this.hoverText.element.innerHTML = this.hoverText.sentence;
+        this.hoverText.element.style.bottom = `${0.01 * height}px`;
+        this.hoverText.element.style.left = `${left + (0.02 * width)}px`;
+        this.hoverText.element.style.overflowY = 'hidden';
+        this.hoverText.element.style.textAlign = 'center';
+        this.hoverText.element.style.fontSize = `${0.03 * width}px`;
+        this.hoverText.element.style.border = '1px solid #FFF';
+        document.body.appendChild(this.hoverText.element);
     };
     
     /**
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
     public dispose(): void {
-        document.getElementById('ship-layout-screen').remove();
+        document.getElementById('ship-layout-screen-dialogue').remove();
         window.removeEventListener( 'resize', this.onWindowResize, false);
     }
 

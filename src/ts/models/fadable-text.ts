@@ -8,6 +8,7 @@ import {
 
 export interface FadableText {
     counter: number;
+    element?: HTMLElement;
     font: Font;
     geometry: TextGeometry;
     headerParams: TextGeometryParameters;

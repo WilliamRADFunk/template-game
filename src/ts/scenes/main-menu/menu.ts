@@ -281,7 +281,7 @@ export class Menu {
         const helpBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
         this.barrierHelp = new Mesh( helpBarrierGeometry, this.clickMaterial );
         this.barrierHelp.name = 'Help';
-        this.barrierHelp.position.set(0, 0, 2);
+        this.barrierHelp.position.set(-0.1, 0, 2);
         this.barrierHelp.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierHelp);
         // Create the sound off collision layer
@@ -311,7 +311,7 @@ export class Menu {
                 bevelSegments: 3
             });
         this.mainBanner = new Mesh( this.mainBannerGeometry, this.menuSelectedMaterial );
-        this.mainBanner.position.set(-4.85, -0.5, -3);
+        this.mainBanner.position.set(-3.85, -0.5, -3);
         this.mainBanner.rotation.x = -1.5708;
         this.scene.add(this.mainBanner);
         // Copyright text
@@ -353,7 +353,7 @@ export class Menu {
         // Help button text
         this.helpGeometry = new TextGeometry(`Help`, this.fontDifficultyBtnParams);
         this.help = new Mesh( this.helpGeometry, this.menuMaterial );
-        this.help.position.set(-0.5, -0.5, 2.2);
+        this.help.position.set(-0.6, -0.5, 2.2);
         this.help.rotation.x = -1.5708;
         this.scene.add(this.help);
 
