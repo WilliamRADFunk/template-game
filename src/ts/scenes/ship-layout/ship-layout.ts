@@ -19,6 +19,7 @@ import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
 import { createProfile } from './actors/create-profile';
 import { DialogueText } from '../../models/dialogue-text';
+import { compareRGBValues } from '../../utils/compare-rgb-values';
 
 const dialogues: { [key: string]: string } = {
     '': `"Click a blue box to select<br>
@@ -206,6 +207,16 @@ const dialogues: { [key: string]: string } = {
  store at one time.`
 };
 
+/**
+ * Color for boxes user is hovering over.
+ */
+const highlightedColor = '#00FF00';
+
+/**
+ * Color in rgb for boxes user is hovering over.
+ */
+const highlightedColorRgb: [number, number, number] = [parseInt('00', 16), parseInt('FF', 16), parseInt('00', 16)];
+
 const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
     { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
     { height: 0.49, width: 1.64, x: -0.9, z: 2.28, radius: 0.07, rot: 0, name: 'Crew Quarters A' },
@@ -225,6 +236,26 @@ const rectangleBoxes: { height: number; width: number; x: number; z: number; rad
     { height: 3.02, width: 0.20, x: -4.04, z: 2.98, radius: 0.099, rot: 0, name: 'Artificial Gravity Rings' },
     { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
 ];
+
+/**
+ * Color for boxes user has clicked.
+ */
+const selectedColor = '#F1149A';
+
+/**
+ * Color in rgb for boxes user has clicked.
+ */
+const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt('14', 16), parseInt('9A', 16)];
+
+/**
+ * Color for boxes user is not hovering over (default).
+ */
+const unhighlightedColor = '#87D3F8';
+
+/**
+ * Color in rgb for boxes user is not hovering over (default).
+ */
+const unhighlightedColorRgb: [number, number, number] = [parseInt('87', 16), parseInt('D3', 16), parseInt('F8', 16)];
 
 /**
  * @class
@@ -247,11 +278,6 @@ export class ShipLayout {
         isFinished: false,
         sentence: dialogues['']
     };
-
-    /**
-     * Color for boxes user is hovering over.
-     */
-    private highlightedColor = '#00FF00';
 
     /**
      * Mesh for box user has hovered over.
@@ -290,11 +316,6 @@ export class ShipLayout {
     private selectedBox: Mesh = null;
 
     /**
-     * Color for boxes user has clicked.
-     */
-    private selectedColor = '#F1149A';
-
-    /**
      * Text for selected room at top left of screen.
      */
     private selectionText: FadableText = {
@@ -314,11 +335,6 @@ export class ShipLayout {
      * Stars in background.
      */
     private stars: Mesh[] = [];
-
-    /**
-     * Color for boxes user is not hovering over (default).
-     */
-    private unhighlightedColor = 0x87D3F8;
 
     /**
      * Constructor for the Intro (Scene) class
@@ -349,7 +365,7 @@ export class ShipLayout {
             bevelSize: 0.5,
             bevelSegments: 3
         };
-        this.hoverText.material = new MeshBasicMaterial({ color: this.unhighlightedColor });
+        this.hoverText.material = new MeshBasicMaterial({ color: unhighlightedColor });
 
         this.createStars();
 
@@ -365,7 +381,7 @@ export class ShipLayout {
 
         rectangleBoxes.forEach(box => {
             const recBoxMaterial = new MeshBasicMaterial({
-                color: this.unhighlightedColor,
+                color: unhighlightedColor,
                 opacity: 0.5,
                 transparent: true,
                 side: DoubleSide
@@ -380,7 +396,7 @@ export class ShipLayout {
         });
 
         const material = new MeshBasicMaterial({
-            color: this.unhighlightedColor,
+            color: unhighlightedColor,
             opacity: 0.5,
             transparent: true,
             side: DoubleSide
@@ -431,18 +447,19 @@ export class ShipLayout {
         const container = document.getElementById('mainview');
         document.onclick = event => {
             event.preventDefault();
-            Object.keys(this.meshMap).forEach(key => {
-                (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
-            });
             getIntersections(event, container, scene).forEach(el => {
                 const hit = intersectableThings.find(box => {
                     if (el.object.name === box.name) {
                         return true;
                     }
                 });
-                if (hit) {
+                if (hit && hit.name !== (this.selectedBox && this.selectedBox.name)) {
+                    Object.keys(this.meshMap).forEach(key => {
+                        (this.meshMap[key].material as any).color.set(unhighlightedColor);
+                    });
+
                     this.selectedBox = this.meshMap[hit.name];
-                    (this.meshMap[hit.name].material as any).color.set(this.selectedColor);
+                    (this.meshMap[hit.name].material as any).color.set(selectedColor);
                     SoundinatorSingleton.playClick();
 
                     this.selectionText.sentence = hit.name;
@@ -472,36 +489,41 @@ export class ShipLayout {
                     }
                 });
                 if (hit) {
-                    if (!this.selectedBox || this.selectedBox.name !== hit.name) {
+                    if (selectedName !== hit.name) {
                         isHovering = true;
                         this.hoveredBox = this.meshMap[el.object.name];
-                        (this.meshMap[el.object.name].material as any).color.set(this.highlightedColor);
-                    } else if (this.selectedBox && this.selectedBox.name === hit.name) {
+                        (this.meshMap[el.object.name].material as any).color.set(highlightedColor);
+                    } else if (selectedName === hit.name) {
                         isHovering = true;
-                    }
-
-                    if (hit.name !== hoverName && hit.name !== selectedName) {
-                        if (this.hoverText.mesh) {
-                            this.scene.remove(this.hoverText.mesh);
-                        }
-                        setTimeout(() => {
+                        if (!compareRGBValues(this.hoverText.element.style.color.toString().trim(), selectedColorRgb)) {
                             this.hoverText.sentence = hit.name;
+                            this.hoverText.element.innerHTML = this.hoverText.sentence;
                             this.hoverText.isFadeIn = true;
                             this.hoverText.isHolding = false;
                             this.hoverText.counter = 1;
-                            this.makeHoverText(true);
-                        }, 100);
+                            this.makeHoverText();
+                        }
+                    }
+
+                    if (hit.name !== hoverName && hit.name !== selectedName) {
+                        this.hoverText.sentence = hit.name;
+                        this.hoverText.element.innerHTML = this.hoverText.sentence;
+                        this.hoverText.isFadeIn = true;
+                        this.hoverText.isHolding = false;
+                        this.hoverText.counter = 1;
+                        this.makeHoverText();
                     }
                     return;
                 }
             });
-            if (!isHovering && this.hoverText.mesh) {
+            if (!isHovering && this.hoverText.sentence) {
                 this.hoveredBox = null;
                 this.hoverText.sentence = '';
+                this.hoverText.element.innerHTML = this.hoverText.sentence;
                 this.hoverText.isFadeIn = true;
                 this.hoverText.isHolding = false;
                 this.hoverText.counter = 1;
-                this.makeHoverText(true);
+                this.makeHoverText();
             }
             this.clearMeshMap();
         };
@@ -513,12 +535,12 @@ export class ShipLayout {
         // If no selected box, don't bother with the extra conditional check.
         if (!selectedName && !hoveredName) {
             Object.keys(this.meshMap).forEach(key => {
-                (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
+                (this.meshMap[key].material as any).color.set(unhighlightedColor);
             });
         } else {
             Object.keys(this.meshMap).forEach(key => {
                 if (key !== selectedName && key !== hoveredName) {
-                    (this.meshMap[key].material as any).color.set(this.unhighlightedColor);
+                    (this.meshMap[key].material as any).color.set(unhighlightedColor);
                 }
             });
         }
@@ -574,20 +596,9 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at bottom of screen.
      */
-    private makeHoverText(change?: boolean): void {
-        if (this.hoverText.isHolding) {
-            return;
-        }
+    private makeHoverText(): void {
         const name = this.selectedBox && this.selectedBox.name;
-        const color = name === this.hoverText.sentence ? this.selectedColor : '#00B39F';
-        if (change && this.hoverText.mesh) {
-            this.scene.remove(this.hoverText.mesh);
-            this.hoverText.geometry = null;
-            this.hoverText.mesh = null;
-            if (!this.hoverText.sentence) {
-                return;
-            }
-        }
+        const color = name === this.hoverText.sentence ? selectedColor : '#00B39F';
         if (this.hoverText.isFadeIn && this.hoverText.counter > 20) {
             this.hoverText.isFadeIn = false;
             this.hoverText.isHolding = true;
@@ -595,20 +606,9 @@ export class ShipLayout {
         }
 
         if (this.hoverText.isFadeIn) {
-            this.hoverText.material.opacity = (this.hoverText.counter / 20);
+            this.hoverText.element.style.opacity = (this.hoverText.counter / 20) + '';
             this.hoverText.counter++;
-            if (change) {
-                this.hoverText.geometry = new TextGeometry(
-                    this.hoverText.sentence,
-                    this.hoverText.headerParams);
-                this.hoverText.material.color.set(color);
-                this.hoverText.mesh = new Mesh(
-                    this.hoverText.geometry,
-                    this.hoverText.material);
-                this.hoverText.mesh.position.set(-5.65, -11.4, 5.5);
-                this.hoverText.mesh.rotation.x = -1.5708;
-                this.scene.add(this.hoverText.mesh);
-            }
+            this.hoverText.element.style.color = color;
         }
     }
 
@@ -697,16 +697,16 @@ export class ShipLayout {
         this.hoverText.element.style.fontFamily = 'Luckiest Guy';
         this.hoverText.element.style.color = '#FFD700';
         this.hoverText.element.style.position = 'absolute';
-        this.hoverText.element.style.maxWidth = `${0.43 * width}px`;
-        this.hoverText.element.style.width = `${0.43 * width}px`;
-        this.hoverText.element.style.maxHeight = `${0.08 * height}px`;
-        this.hoverText.element.style.height = `${0.08 * height}px`;
+        this.hoverText.element.style.maxWidth = `${0.50 * width}px`;
+        this.hoverText.element.style.width = `${0.50 * width}px`;
+        this.hoverText.element.style.maxHeight = `${0.04 * height}px`;
+        this.hoverText.element.style.height = `${0.04 * height}px`;
         this.hoverText.element.style.backgroundColor = 'transparent';
         this.hoverText.element.innerHTML = this.hoverText.sentence;
-        this.hoverText.element.style.bottom = `${0.01 * height}px`;
+        this.hoverText.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
         this.hoverText.element.style.left = `${left + (0.02 * width)}px`;
         this.hoverText.element.style.overflowY = 'hidden';
-        this.hoverText.element.style.textAlign = 'center';
+        this.hoverText.element.style.textAlign = 'left';
         this.hoverText.element.style.fontSize = `${0.03 * width}px`;
         this.hoverText.element.style.border = '1px solid #FFF';
         document.body.appendChild(this.hoverText.element);
