@@ -269,7 +269,7 @@ const loadAssets = () => {
         checkAssetsLoaded();
     });
     // Callback function to set the scoreboard font once it is finished loading.
-    fontLoader.load( 'assets/fonts/Luckiest Guy_Regular.json', font => {
+    fontLoader.load( 'assets/fonts/Luckiest_Guy_Regular.json', font => {
         gameFont = font;
         checkAssetsLoaded();
     });
