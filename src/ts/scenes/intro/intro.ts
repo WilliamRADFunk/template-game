@@ -31,6 +31,9 @@ import { createGeminiStation } from './actors/createGeminiStation';
 import { createEntryEffect } from './actors/create-entry-effect';
 import { SceneType } from '../../models/scene-type';
 
+// let border: string = '1px solid #FFF';
+let border: string = 'none';
+
 /**
  * @class
  * Slow moving debris object that is sometimes on the path towards planet.
@@ -138,6 +141,10 @@ export class Intro {
         enceladusTexture: Texture,
         introFont: Font) {
         this.scene = scene.scene;
+
+        this.onWindowResize();
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+
         this.createStars();
 		this.createActors(
             earthTexture,
@@ -457,6 +464,8 @@ export class Intro {
             this.text.isHolding = false;
             this.text.holdCount = textEvent.holdCount;
             this.text.counter = 0;
+            this.makeText();
+            this.onWindowResize();
         }
     }
 
@@ -464,8 +473,9 @@ export class Intro {
      * Builds the text and graphics for the text dialogue at bottom of screen.
      */
     private makeText(): void {
-        if (this.text.mesh) {
-            this.scene.remove(this.text.mesh);
+        const textElement = document.getElementById('intro-screen-sequence-labels');
+        if (!textElement) {
+            this.onWindowResize();
         }
         if (this.text.isFadeIn && this.text.counter > 180) {
             this.text.isFadeIn = false;
@@ -478,22 +488,65 @@ export class Intro {
         }
 
         if (this.text.isFadeIn) {
-            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: this.text.counter / 180, transparent: true} );
+            this.text.element.style.opacity = (this.text.counter / 180) + '';
         } else if (this.text.isHolding) {
             // Do nothing
         } else if (this.text.counter < 181) {
-            this.text.material = new MeshLambertMaterial( {color: 0x00B39F, opacity: (180 - this.text.counter) / 180, transparent: true} );
+            this.text.element.style.opacity = (180 - this.text.counter) / 180 + '';
         } else {
             return;
         }
 
-        this.text.geometry = new TextGeometry(this.text.sentence, this.text.headerParams);
-        this.text.mesh = new Mesh( this.text.geometry, this.text.material );
-        this.text.mesh.position.set(-5.65, -11.4, 5.5);
-        this.text.mesh.rotation.x = -1.5708;
-        this.scene.add(this.text.mesh);
-
         this.text.counter++;
+    }
+
+    private onWindowResize(): void {
+        const textElement = document.getElementById('intro-screen-sequence-labels');
+        if (textElement) {
+            textElement.remove();
+        }
+
+        let WIDTH = window.innerWidth * 0.99;
+        let HEIGHT = window.innerHeight * 0.99;
+        if ( WIDTH < HEIGHT ) {
+            HEIGHT = WIDTH;
+        } else {
+            WIDTH = HEIGHT;
+        }
+        const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
+        const width = WIDTH;
+        const height = HEIGHT;
+
+        this.text.element = document.createElement('div');
+        this.text.element.id = 'intro-screen-sequence-labels';
+        this.text.element.style.fontFamily = 'Luckiest Guy';
+        this.text.element.style.color = '#FFD700';
+        this.text.element.style.position = 'absolute';
+        this.text.element.style.maxWidth = `${0.90 * width}px`;
+        this.text.element.style.width = `${0.90 * width}px`;
+        this.text.element.style.maxHeight = `${0.04 * height}px`;
+        this.text.element.style.height = `${0.04 * height}px`;
+        this.text.element.style.backgroundColor = 'transparent';
+        this.text.element.innerHTML = this.text.sentence;
+        this.text.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
+        this.text.element.style.left = `${left + (0.02 * width)}px`;
+        this.text.element.style.overflowY = 'hidden';
+        this.text.element.style.textAlign = 'left';
+        this.text.element.style.fontSize = `${0.03 * width}px`;
+        this.text.element.style.border = border;
+        document.body.appendChild(this.text.element);
+    };
+
+    /**
+     * Spins planet at its set rate.
+     */
+    private rotate(actor: Actor): void {
+        const twoPi = 2 * Math.PI;
+        actor.currentRotation += actor.rotateSpeed;
+        if (actor.currentRotation >= twoPi) {
+            actor.currentRotation -= twoPi
+        }
+        actor.mesh.rotation.set(0, actor.currentRotation, 0);
     }
 
     private setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number, speed: number): void {
@@ -574,15 +627,12 @@ export class Intro {
         }
         return true;
     }
+    
     /**
-     * Spins planet at its set rate.
+     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
-    private rotate(actor: Actor): void {
-        const twoPi = 2 * Math.PI;
-        actor.currentRotation += actor.rotateSpeed;
-        if (actor.currentRotation >= twoPi) {
-            actor.currentRotation -= twoPi
-        }
-        actor.mesh.rotation.set(0, actor.currentRotation, 0);
+    public dispose(): void {
+        document.getElementById('intro-screen-sequence-labels').remove();
+        window.removeEventListener( 'resize', this.onWindowResize, false);
     }
 }
