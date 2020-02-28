@@ -391,6 +391,11 @@ export class ShipLayout {
     private meshMap: { [key: string]: Mesh } = {};
 
     /**
+     * HTML button for decreasing tech point on a specific ship section.
+     */
+    private minusButton: HTMLElement = null;
+
+    /**
      * Number of tech points player has left to spend.
      */
     private points: number = 10;
@@ -760,6 +765,10 @@ export class ShipLayout {
         if (hoverElement) {
             hoverElement.remove();
         }
+        const minusButtonElement = document.getElementById('minus-button');
+        if (minusButtonElement) {
+            minusButtonElement.remove();
+        }
 
         let WIDTH = window.innerWidth * 0.99;
         let HEIGHT = window.innerHeight * 0.99;
@@ -771,6 +780,43 @@ export class ShipLayout {
         const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
         const width = WIDTH;
         const height = HEIGHT;
+
+        this.minusButton = document.createElement('button');
+        this.minusButton.classList.add('fa', 'fa-minus');
+        this.minusButton.id = 'minus-button';
+        this.minusButton.style.outline = 'none';
+        this.minusButton.style.color = selectedColor;
+        this.minusButton.style.position = 'absolute';
+        this.minusButton.style.maxWidth = `${0.06 * width}px`;
+        this.minusButton.style.width = `${0.06 * width}px`;
+        this.minusButton.style.maxHeight = `${0.06 * height}px`;
+        this.minusButton.style.height = `${0.06 * height}px`;
+        this.minusButton.style.backgroundColor = 'transparent';
+        this.minusButton.style.top = `${0.15 * height}px`;
+        this.minusButton.style.left = `${left + (0.02 * width)}px`;
+        this.minusButton.style.overflowY = 'hidden';
+        this.minusButton.style.textAlign = 'center';
+        // this.minusButton.style.fontSize = `${0.025 * width}px`;
+        this.minusButton.style.border = '1px solid ' + selectedColor;
+        this.minusButton.style.borderRadius = '10px';
+        document.body.appendChild(this.minusButton);
+
+        let minusHover = () => {
+            this.minusButton.style.color = '#00B39F';
+        };
+        this.minusButton.onmouseover = minusHover.bind(this);
+        let minusExit = () => {
+            this.minusButton.style.color = selectedColor;
+        };
+        this.minusButton.onmouseleave = minusExit.bind(this);
+        let minusClick = () => {
+            this.minusButton.style.color = '#FFD700';
+            setTimeout(() => {
+                this.minusButton.style.color = '#00B39F';
+            }, 50);
+        };
+        this.minusButton.onclick = minusClick.bind(this);
+
 
         this.dialogueText.element = document.createElement('div');
         this.dialogueText.element.id = 'ship-layout-screen-dialogue';
@@ -856,6 +902,7 @@ export class ShipLayout {
         document.getElementById('ship-layout-screen-hover').remove();
         document.getElementById('ship-layout-screen-points').remove();
         document.getElementById('ship-layout-screen-selection').remove();
+        document.getElementById('minus-button').remove();
         window.removeEventListener( 'resize', this.listenerRef, false);
     }
 

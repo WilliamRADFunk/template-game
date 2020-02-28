@@ -97,6 +97,20 @@ gulp.task('html', () => {
     .pipe(connect.reload());
 });
 
+gulp.task('font-awesome', () => {
+  log('== Copying font-awesome.css to dist ==');
+  return gulp.src('src/scss/font-awesome/font-awesome.min.css')
+    .pipe(gulp.dest('dist/css'))
+    .pipe(connect.reload());
+});
+
+gulp.task('font-awesome-fonts', () => {
+  log('== Copying font-awesome fonts to dist ==');
+  return gulp.src('src/scss/font-awesome/fonts/*.*')
+    .pipe(gulp.dest('dist/fonts'))
+    .pipe(connect.reload());
+});
+
 gulp.task('assets', () => {
   log('== Copying index.html to dist ==');
   return gulp.src('src/assets/**/*')
@@ -141,7 +155,7 @@ gulp.task('sass', () => {
   log('== Converting scss to css ==');
   return gulp.src([
     'src/scss/reset_author_richard_clark.scss',
-    'src/scss/**/*.scss'
+    'src/scss/*.scss'
   ])
     .pipe(sass({style: 'expanded'}))
       .on('error', log)
@@ -179,7 +193,7 @@ gulp.task('watch', () => {
 gulp.task('build', gulp.series(
   'clean:dist',
   ['tslint', 'sasslint'],
-  ['assets', 'html', 'sass', 'typescript'],
+  ['assets', 'html', 'sass', 'font-awesome', 'font-awesome-fonts', 'typescript'],
   'bundle',
   'fuglify'
 ));
@@ -195,7 +209,7 @@ gulp.task('lint', gulp.series(
 
 gulp.task('default', gulp.series(
   'clean:dist',
-  ['assets', 'html', 'sass', 'typescript'],
+  ['assets', 'html', 'sass', 'font-awesome', 'font-awesome-fonts', 'typescript'],
   'bundle',
   'fuglify',
   'connect'
