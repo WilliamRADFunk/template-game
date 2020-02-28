@@ -70,6 +70,11 @@ export class Intro {
      * Current scene in the sequence.
      */
     private currentSequenceIndex: number = 0;
+
+    /**
+     * Reference to onWindowResize so that it can be removed later.
+     */
+    private listenerRef: () => void;
     /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
@@ -143,7 +148,8 @@ export class Intro {
         this.scene = scene.scene;
 
         this.onWindowResize();
-        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        this.listenerRef = this.onWindowResize.bind(this);
+        window.addEventListener('resize', this.listenerRef, false);
 
         this.createStars();
 		this.createActors(
@@ -633,6 +639,6 @@ export class Intro {
      */
     public dispose(): void {
         document.getElementById('intro-screen-sequence-labels').remove();
-        window.removeEventListener( 'resize', this.onWindowResize, false);
+        window.removeEventListener( 'resize', this.listenerRef, false);
     }
 }

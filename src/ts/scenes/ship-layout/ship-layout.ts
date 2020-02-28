@@ -385,6 +385,11 @@ export class ShipLayout {
     };
 
     /**
+     * Reference to onWindowResize so that it can be removed later.
+     */
+    private listenerRef: () => void;
+
+    /**
      * Meshes for all the boxes user can interact with.
      */
     private meshMap: { [key: string]: Mesh } = {};
@@ -457,7 +462,8 @@ export class ShipLayout {
         this.scene = scene.scene;
 
         this.onWindowResize();
-        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+        this.listenerRef = this.onWindowResize.bind(this);
+        window.addEventListener('resize', this.listenerRef, false);
 
         this.createStars();
 
@@ -862,7 +868,7 @@ export class ShipLayout {
         document.getElementById('ship-layout-screen-hover').remove();
         document.getElementById('ship-layout-screen-points').remove();
         document.getElementById('ship-layout-screen-selection').remove();
-        window.removeEventListener( 'resize', this.onWindowResize, false);
+        window.removeEventListener( 'resize', this.listenerRef, false);
     }
 
     /**

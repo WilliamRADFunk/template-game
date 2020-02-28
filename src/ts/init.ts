@@ -529,6 +529,7 @@ const loadIntroScene = () => {
     const render = () => {
         let container;
         if (!scenes.intro.active) {
+            intro.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', onWindowResize, false);
             container = document.getElementById('mainview');
@@ -542,6 +543,7 @@ const loadIntroScene = () => {
             return;
         } else {
             if (!intro.endCycle()) {
+                intro.dispose();
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', onWindowResize, false);
@@ -626,6 +628,7 @@ const loadShipLayoutScene = () => {
     const render = () => {
         let container;
         if (!scenes.shipLayout.active) {
+            shipLayout.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', onWindowResize, false);
             container = document.getElementById('mainview');
@@ -639,6 +642,7 @@ const loadShipLayoutScene = () => {
             return;
         } else {
             if (!shipLayout.endCycle()) {
+                shipLayout.dispose();
                 scenes.shipLayout.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', onWindowResize, false);
