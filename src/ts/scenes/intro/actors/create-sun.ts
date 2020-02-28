@@ -31,7 +31,7 @@ export function createSun(
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
     let textGeometry = new TextGeometry('Sol System', headerParams);
     let textMesh = new Mesh( textGeometry, textMaterial );
-    textMesh.position.set(-0.7, -0.5, -4.85);
+    textMesh.position.set(-0.9, -0.5, -4.85);
     textMesh.rotation.x = -1.5708;
 
     const sun = createActor();

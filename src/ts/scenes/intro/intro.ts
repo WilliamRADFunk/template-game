@@ -97,14 +97,10 @@ export class Intro {
      */
     private text: FadableText = {
         counter: 1,
-        font: null,
-        geometry: null,
-        headerParams: null,
+        element: null,
         holdCount: 0,
         isFadeIn: true,
         isHolding: false,
-        material: null,
-        mesh: null,
         sentence: ''
     };
     private warblePositions: [number, number][] = [
@@ -134,8 +130,6 @@ export class Intro {
      * @param earthTexture  texture for the earth.
      * @param marsTexture   texture for the mars.
      * @param introFont     loaded font to use for help display text.
-     * @param x1            origin point x of where the ship starts.
-     * @param z1            origin point z of where the ship starts.
      */
     constructor(
         scene: SceneType,
@@ -179,10 +173,11 @@ export class Intro {
         asteroidTexture: Texture,
         enceladusTexture: Texture,
         shipTexture: Texture,
-        introFont: Font): void {
-        this.text.headerParams = {
+        introFont: Font
+    ): void { 
+        const headerParams = {
             font: introFont,
-            size: 0.199,
+            size: 0.25,
             height: 0.2,
             curveSegments: 12,
             bevelEnabled: false,
@@ -212,7 +207,7 @@ export class Intro {
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams);
+            headerParams);
         this.scene.add(earth.mesh);
         this.actors.push(earth);
 
@@ -222,7 +217,7 @@ export class Intro {
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams);
+            headerParams);
         this.scene.add(mars.mesh);
         this.actors.push(mars);
 
@@ -232,7 +227,7 @@ export class Intro {
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams);
+            headerParams);
         this.scene.add(asteroid.mesh);
         this.actors.push(asteroid);
 
@@ -242,7 +237,7 @@ export class Intro {
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams);
+            headerParams);
         this.scene.add(enceladus.mesh);
         this.actors.push(enceladus);
 
@@ -252,7 +247,7 @@ export class Intro {
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams
+            headerParams
         ).filter(x => {
             this.scene.add(x.mesh);
             return true;
@@ -264,7 +259,7 @@ export class Intro {
             labelBackMaterialGlow,
             labelBackGeometry,
             labelBackMaterial,
-            this.text.headerParams);
+            headerParams);
         this.scene.add(station.mesh);
         this.actors.push(station);
 

@@ -48,7 +48,7 @@ export function createErobusStation(
     const textGeometry = new TextGeometry('Erebos Station', headerParams);
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
     const textMesh = new Mesh( textGeometry, textMaterial );
-    textMesh.position.set(-3.45, -2, -0.1);
+    textMesh.position.set(-3.6, -2, -0.05);
     textMesh.rotation.set(-1.5708, 0, -3.1416);
     // Planetoid
     const barrierStation = createActor();

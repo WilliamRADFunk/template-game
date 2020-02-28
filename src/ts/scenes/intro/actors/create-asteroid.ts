@@ -33,7 +33,7 @@ export function createAsteroid(
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
     let textGeometry = new TextGeometry('Asteroid Belt', headerParams);
     let textMesh = new Mesh( textGeometry, textMaterial );
-    textMesh.position.set(-1, -0.5, -4.85);
+    textMesh.position.set(-1.1, -0.5, -4.85);
     textMesh.rotation.x = -1.5708;
 
     const asteroid = createActor();

@@ -373,14 +373,10 @@ export class ShipLayout {
      */
     private hoverText: FadableText = {
         counter: 1,
-        font: null,
-        geometry: null,
-        headerParams: null,
+        element: null,
         holdCount: -1, // Hold until replaced
         isFadeIn: true,
         isHolding: false,
-        material: null,
-        mesh: null,
         sentence: ''
     };
 
@@ -404,14 +400,10 @@ export class ShipLayout {
      */
     private pointsText: FadableText = {
         counter: 1,
-        font: null,
-        geometry: null,
-        headerParams: null,
+        element: null,
         holdCount: -1, // Hold until replaced
         isFadeIn: true,
         isHolding: false,
-        material: null,
-        mesh: null,
         sentence: ''
     };
 
@@ -430,14 +422,10 @@ export class ShipLayout {
      */
     private selectionText: FadableText = {
         counter: 1,
-        font: null,
-        geometry: null,
-        headerParams: null,
+        element: null,
         holdCount: -1, // Hold until replaced
         isFadeIn: true,
         isHolding: false,
-        material: null,
-        mesh: null,
         sentence: ''
     };
 

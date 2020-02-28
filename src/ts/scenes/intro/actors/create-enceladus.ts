@@ -33,7 +33,7 @@ export function createEnceladus(
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
     let textGeometry = new TextGeometry('Enceladus', headerParams);
     let textMesh = new Mesh( textGeometry, textMaterial );
-    textMesh.position.set(-0.5, -0.5, -4.85);
+    textMesh.position.set(-0.8, -0.5, -4.85);
     textMesh.rotation.x = -1.5708;
 
     const enceladus = createActor();

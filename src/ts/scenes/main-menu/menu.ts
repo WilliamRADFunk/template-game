@@ -16,11 +16,11 @@ import { LoadHandler } from '../load-screen/load-handler';
 import { SoundinatorSingleton } from '../../soundinator';
 import { SceneType } from '../../models/scene-type';
 
-const backgroundColor = 0xFF0044;
-// const backgroundColor = null;
+// const backgroundColor = 0xFF0044;
+const backgroundColor: number = null;
 
-const backgroundOpacity = 1;
-// const backgroundOpacity = 0;
+// const backgroundOpacity = 1;
+const backgroundOpacity = 0;
 
 /**
  * @class
@@ -300,7 +300,7 @@ export class Menu {
         const helpBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
         this.barrierHelp = new Mesh( helpBarrierGeometry, this.clickMaterial );
         this.barrierHelp.name = 'Help';
-        this.barrierHelp.position.set(-0.1, 0, 2);
+        this.barrierHelp.position.set(0, 0, 2);
         this.barrierHelp.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierHelp);
         // Create the sound off collision layer
@@ -318,7 +318,7 @@ export class Menu {
         this.barrierOn.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierOn);
         // Main Banner button text
-        this.mainBannerGeometry = new TextGeometry(`Enzmann's Odyssey`,
+        this.mainBannerGeometry = new TextGeometry('Enzmann\'s Odyssey',
             {
                 font: this.menuFont,
                 size: 0.6,
@@ -334,7 +334,7 @@ export class Menu {
         this.mainBanner.rotation.x = -1.5708;
         this.scene.add(this.mainBanner);
         // Copyright text
-        this.copyrightGeometry = new TextGeometry(`Copyright 2020 Tenacious Teal Games`,
+        this.copyrightGeometry = new TextGeometry('Copyright 2020 Tenacious Teal Games',
             {
                 font: this.menuFont,
                 size: 0.2,
@@ -350,9 +350,9 @@ export class Menu {
         this.copyright.rotation.x = -1.5708;
         this.scene.add(this.copyright);
         // Start button text
-        this.startGeometry = new TextGeometry(`Start`, this.fontDifficultyBtnParams);
+        this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
         this.start = new Mesh( this.startGeometry, this.menuMaterial );
-        this.start.position.set(-0.7, -0.5, -0.8);
+        this.start.position.set(-0.6, -0.5, -0.8);
         this.start.rotation.x = -1.5708;
         this.scene.add(this.start);
         // Easy button text
@@ -364,15 +364,15 @@ export class Menu {
         // Hardcore button text
         this.createDifficultyButtons(3, ((this.difficultyLevel === 3) ? this.menuSelectedMaterial : this.menuMaterial), false);
         // Load button text
-        this.loadGeometry = new TextGeometry(`Load`, this.fontDifficultyBtnParams);
+        this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
         this.load = new Mesh( this.loadGeometry, this.menuMaterial );
-        this.load.position.set(-0.6, -0.5, 1.2);
+        this.load.position.set(-0.5, -0.5, 1.2);
         this.load.rotation.x = -1.5708;
         this.scene.add(this.load);
         // Help button text
-        this.helpGeometry = new TextGeometry(`Help`, this.fontDifficultyBtnParams);
+        this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
         this.help = new Mesh( this.helpGeometry, this.menuMaterial );
-        this.help.position.set(-0.6, -0.5, 2.2);
+        this.help.position.set(-0.5, -0.5, 2.2);
         this.help.rotation.x = -1.5708;
         this.scene.add(this.help);
 
@@ -380,13 +380,13 @@ export class Menu {
         this.loadHandler = new LoadHandler(this.scene, this.menuFont);
 
         // Sound text
-        const soundGeometry = new TextGeometry(`Sound: `, this.fontDifficultyBtnParams);
+        const soundGeometry = new TextGeometry('Sound: ', this.fontDifficultyBtnParams);
         this.sound = new Mesh( soundGeometry, this.menuMaterial );
         this.sound.position.set(-2.3, -0.5, 3.2);
         this.sound.rotation.x = -1.5708;
         this.scene.add(this.sound);
         // On button text
-        this.onGeometry = new TextGeometry(`ON`, this.fontDifficultyBtnParams);
+        this.onGeometry = new TextGeometry('ON', this.fontDifficultyBtnParams);
         this.on = new Mesh(
             this.onGeometry,
             SoundinatorSingleton.getMute() ? this.menuMaterial : this.menuSelectedMaterial);
@@ -394,11 +394,11 @@ export class Menu {
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
         // Off button text
-        this.offGeometry = new TextGeometry(`OFF`, this.fontDifficultyBtnParams);
+        this.offGeometry = new TextGeometry('OFF', this.fontDifficultyBtnParams);
         this.off = new Mesh(
             this.offGeometry,
             SoundinatorSingleton.getMute() ? this.menuSelectedMaterial : this.menuMaterial);
-        this.off.position.set(0.8, -0.5, 3.2);
+        this.off.position.set(0.85, -0.5, 3.2);
         this.off.rotation.x = -1.5708;
         this.scene.add(this.off);
     }
@@ -432,9 +432,9 @@ export class Menu {
                     this.scene.remove(this.easy);
                 }
                 // Selected easy button text
-                this.easyGeometry = new TextGeometry(`Easy`, this.fontDifficultyBtnParams);
+                this.easyGeometry = new TextGeometry('Easy', this.fontDifficultyBtnParams);
                 this.easy = new Mesh( this.easyGeometry, material );
-                this.easy.position.set(-3.8, -0.5, 0.20);
+                this.easy.position.set(-3.65, -0.5, 0.20);
                 this.easy.rotation.x = -1.5708;
                 this.scene.add(this.easy);
                 break;
@@ -444,7 +444,7 @@ export class Menu {
                     this.scene.remove(this.normal);
                 }
                 // Selected normal button text
-                this.normalGeometry = new TextGeometry(`Normal`, this.fontDifficultyBtnParams);
+                this.normalGeometry = new TextGeometry('Normal', this.fontDifficultyBtnParams);
                 this.normal = new Mesh( this.normalGeometry, material );
                 this.normal.position.set(-2.15, -0.5, 0.20);
                 this.normal.rotation.x = -1.5708;
@@ -456,9 +456,9 @@ export class Menu {
                     this.scene.remove(this.hard);
                 }
                 // Selected hard button text
-                this.hardGeometry = new TextGeometry(`Hard`, this.fontDifficultyBtnParams);
+                this.hardGeometry = new TextGeometry('Hard', this.fontDifficultyBtnParams);
                 this.hard = new Mesh( this.hardGeometry, material );
-                this.hard.position.set(-0.1, -0.5, 0.20);
+                this.hard.position.set(0, -0.5, 0.20);
                 this.hard.rotation.x = -1.5708;
                 this.scene.add(this.hard);
                 break;
@@ -468,9 +468,9 @@ export class Menu {
                     this.scene.remove(this.hardcore);
                 }
                 //  Selected hardcore button text
-                this.hardcoreGeometry = new TextGeometry(`Hardcore`, this.fontDifficultyBtnParams);
+                this.hardcoreGeometry = new TextGeometry('Hardcore', this.fontDifficultyBtnParams);
                 this.hardcore = new Mesh( this.hardcoreGeometry, material );
-                this.hardcore.position.set(1.55, -0.5, 0.20);
+                this.hardcore.position.set(1.7, -0.5, 0.20);
                 this.hardcore.rotation.x = -1.5708;
                 this.scene.add(this.hardcore);
                 break;
@@ -552,7 +552,7 @@ export class Menu {
         this.barrierHelp.visible = false;
         this.scene.remove(this.help);
         // Selected help button text
-        this.helpGeometry = new TextGeometry(`Help`, this.fontDifficultyBtnParams);
+        this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
         this.help = new Mesh( this.helpGeometry, this.menuSelectedMaterial );
         this.help.position.set(-0.5, -0.5, 2.2);
         this.help.rotation.x = -1.5708;
@@ -570,9 +570,9 @@ export class Menu {
     pressedLoad(): void {
         this.scene.remove(this.load);
         // Selected load button text
-        this.loadGeometry = new TextGeometry(`Load`, this.fontDifficultyBtnParams);
+        this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
         this.load = new Mesh( this.loadGeometry, this.menuSelectedMaterial );
-        this.load.position.set(-0.6, -0.5, 1.2);
+        this.load.position.set(-0.5, -0.5, 1.2);
         this.load.rotation.x = -1.5708;
         this.scene.add(this.load);
         setTimeout(() => {
@@ -590,7 +590,7 @@ export class Menu {
         this.scene.remove(this.on);
         // Selected off button text
         this.off = new Mesh( this.offGeometry, this.menuSelectedMaterial );
-        this.off.position.set(0.8, -0.5, 3.2);
+        this.off.position.set(0.85, -0.5, 3.2);
         this.off.rotation.x = -1.5708;
         this.scene.add(this.off);
         // Selected on button text
@@ -628,9 +628,9 @@ export class Menu {
     pressedStart(): number {
         this.scene.remove(this.start);
         // Selected start button text
-        this.startGeometry = new TextGeometry(`Start`, this.fontDifficultyBtnParams);
+        this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
         this.start = new Mesh( this.startGeometry, this.menuSelectedMaterial );
-        this.start.position.set(-0.7, -0.5, -0.8);
+        this.start.position.set(-0.6, -0.5, -0.8);
         this.start.rotation.x = -1.5708;
         this.scene.add(this.start);
         return this.difficultyLevel;
@@ -642,9 +642,9 @@ export class Menu {
         if (this.mode === 2) {
             this.scene.remove(this.load);
             // Selected load button text
-            this.loadGeometry = new TextGeometry(`Load`, this.fontDifficultyBtnParams);
+            this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
             this.load = new Mesh( this.loadGeometry, this.menuMaterial );
-            this.load.position.set(-0.6, -0.5, 1.2);
+            this.load.position.set(-0.5, -0.5, 1.2);
             this.load.rotation.x = -1.5708;
             this.scene.add(this.load);
             this.mode = 0;
@@ -653,7 +653,7 @@ export class Menu {
         } else if (this.mode === 1) {
             this.scene.remove(this.help);
             // Selected help button text
-            this.helpGeometry = new TextGeometry(`Help`, this.fontDifficultyBtnParams);
+            this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
             this.help = new Mesh( this.helpGeometry, this.menuMaterial );
             this.help.position.set(-0.5, -0.5, 2.2);
             this.help.rotation.x = -1.5708;
