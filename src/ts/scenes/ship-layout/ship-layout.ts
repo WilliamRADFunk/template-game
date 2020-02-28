@@ -785,37 +785,46 @@ export class ShipLayout {
         this.minusButton.classList.add('fa', 'fa-minus');
         this.minusButton.id = 'minus-button';
         this.minusButton.style.outline = 'none';
-        this.minusButton.style.color = selectedColor;
+        this.minusButton.style.backgroundColor = selectedColor;
+        this.minusButton.style.color = '#FFD700';
         this.minusButton.style.position = 'absolute';
         this.minusButton.style.maxWidth = `${0.06 * width}px`;
         this.minusButton.style.width = `${0.06 * width}px`;
         this.minusButton.style.maxHeight = `${0.06 * height}px`;
         this.minusButton.style.height = `${0.06 * height}px`;
-        this.minusButton.style.backgroundColor = 'transparent';
         this.minusButton.style.top = `${0.15 * height}px`;
         this.minusButton.style.left = `${left + (0.02 * width)}px`;
         this.minusButton.style.overflowY = 'hidden';
         this.minusButton.style.textAlign = 'center';
-        // this.minusButton.style.fontSize = `${0.025 * width}px`;
-        this.minusButton.style.border = '1px solid ' + selectedColor;
+        this.minusButton.style.border = '1px solid #FFD700';
         this.minusButton.style.borderRadius = '10px';
+        this.minusButton.style.boxSizing = 'border-box';
         document.body.appendChild(this.minusButton);
 
         let minusHover = () => {
-            this.minusButton.style.color = '#00B39F';
+            this.minusButton.style.backgroundColor = '#00B39F';
+            this.minusButton.style.color = '#FFD700';
+            this.minusButton.style.border = '1px solid #00B39F';
         };
         this.minusButton.onmouseover = minusHover.bind(this);
         let minusExit = () => {
-            this.minusButton.style.color = selectedColor;
+            this.minusButton.style.backgroundColor = selectedColor;
+            this.minusButton.style.color = '#FFD700';
+            this.minusButton.style.border = '1px solid ' + selectedColor;
         };
         this.minusButton.onmouseleave = minusExit.bind(this);
-        let minusClick = () => {
+        let minusMouseDown = () => {
+            this.minusButton.style.backgroundColor = '#00B39F';
             this.minusButton.style.color = '#FFD700';
-            setTimeout(() => {
-                this.minusButton.style.color = '#00B39F';
-            }, 50);
+            this.minusButton.style.border = '1px solid #00B39F';
         };
-        this.minusButton.onclick = minusClick.bind(this);
+        this.minusButton.onmousedown = minusMouseDown.bind(this);
+        let minusMouseUp = () => {
+            this.minusButton.style.backgroundColor = selectedColor;
+            this.minusButton.style.color = '#FFD700';
+            this.minusButton.style.border = '1px solid ' + selectedColor;
+        };
+        this.minusButton.onmouseup = minusMouseUp.bind(this);
 
 
         this.dialogueText.element = document.createElement('div');
