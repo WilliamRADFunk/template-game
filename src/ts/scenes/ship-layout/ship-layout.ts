@@ -219,9 +219,9 @@ const dialogues: { [key: string]: string } = {
 const highlightedColor = '#00FF00';
 
 /**
- * Color in rgb for boxes user is hovering over.
+ * Gold text color.
  */
-const highlightedColorRgb: [number, number, number] = [parseInt('00', 16), parseInt('FF', 16), parseInt('00', 16)];
+const neutralColor = '#FFD700';
 
 const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
     { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
@@ -370,11 +370,6 @@ const pointMinAndStart: { [key: string]: { current: number; min: number; start: 
 const unhighlightedColor = '#87D3F8';
 
 /**
- * Color in rgb for boxes user is not hovering over (default).
- */
-const unhighlightedColorRgb: [number, number, number] = [parseInt('87', 16), parseInt('D3', 16), parseInt('F8', 16)];
-
-/**
  * @class
  * Slow moving debris object that is sometimes on the path towards planet.
  */
@@ -395,6 +390,16 @@ export class ShipLayout {
         isFinished: false,
         sentence: dialogues['']
     };
+
+    /**
+     * Opacity level when button is disabled.
+     */
+    private disabledOpacity: string = '0.4';
+
+    /**
+     * Opacity level when button is enabled.
+     */
+    private enabledOpacity: string = '1';
 
     /**
      * Mesh for box user has hovered over.
@@ -500,6 +505,9 @@ export class ShipLayout {
         this.onWindowResize();
         this.listenerRef = this.onWindowResize.bind(this);
         window.addEventListener('resize', this.listenerRef, false);
+        
+        this.minusButton.style.visibility = 'hidden';
+        this.plusButton.style.visibility = 'hidden';
 
         this.createStars();
 
@@ -689,14 +697,24 @@ export class ShipLayout {
     private adjustTechPoints(pointSpread: { current: number; min: number; start: number; }): void {
         for (let i = 0; i < this.techPellentMeshMap.length; i++) {
             if (i < pointSpread.min) {
-                (this.techPellentMeshMap[i].material as any).color.set('#FFD700');
+                (this.techPellentMeshMap[i].material as any).color.set(neutralColor);
             } else if (i < pointSpread.current) {
                 (this.techPellentMeshMap[i].material as any).color.set(selectedColor);
             } else {
                 (this.techPellentMeshMap[i].material as any).color.set(unhighlightedColor);
             }
         }
-        this.pointsText.sentence = `You have ${this.points} tech points to spend`;
+        if (pointSpread.current > pointSpread.min) {
+            this.minusButton.style.opacity = this.enabledOpacity;
+        } else {
+            this.minusButton.style.opacity = this.disabledOpacity;
+        }
+        if (this.points <= 0 || pointSpread.current >= 10) {
+            this.plusButton.style.opacity = this.disabledOpacity;
+        } else {
+            this.plusButton.style.opacity = this.enabledOpacity;
+        }
+        this.pointsText.sentence = `You have <span style="color: ${neutralColor};">${this.points}</span> tech points to spend`;
         this.pointsText.element.innerHTML = this.pointsText.sentence;
         this.pointsText.isFadeIn = true;
         this.pointsText.isHolding = false;
@@ -867,7 +885,7 @@ export class ShipLayout {
         this.minusButton.id = 'minus-button';
         this.minusButton.style.outline = 'none';
         this.minusButton.style.backgroundColor = selectedColor;
-        this.minusButton.style.color = '#FFD700';
+        this.minusButton.style.color = neutralColor;
         this.minusButton.style.position = 'absolute';
         this.minusButton.style.maxWidth = `${0.06 * width}px`;
         this.minusButton.style.width = `${0.06 * width}px`;
@@ -879,37 +897,52 @@ export class ShipLayout {
         this.minusButton.style.textAlign = 'center';
         this.minusButton.style.border = '1px solid #FFD700';
         this.minusButton.style.borderRadius = '10px';
+        this.minusButton.style.fontSize = `${0.022 * width}px`;
         this.minusButton.style.boxSizing = 'border-box';
-        this.minusButton.style.visibility = 'hidden';
         document.body.appendChild(this.minusButton);
 
         let minusHover = () => {
-            this.minusButton.style.backgroundColor = '#00B39F';
-            this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid #FFD700';
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (pointSpread.current > pointSpread.min) {
+                this.minusButton.style.backgroundColor = '#00B39F';
+                this.minusButton.style.color = neutralColor;
+                this.minusButton.style.border = '1px solid #FFD700';
+            }
         };
         this.minusButton.onmouseover = minusHover.bind(this);
         let minusExit = () => {
-            this.minusButton.style.backgroundColor = selectedColor;
-            this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid #FFD700';
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (pointSpread.current > pointSpread.min) {
+                this.minusButton.style.backgroundColor = selectedColor;
+                this.minusButton.style.color = neutralColor;
+                this.minusButton.style.border = '1px solid #FFD700';
+            }
         };
         this.minusButton.onmouseleave = minusExit.bind(this);
         let minusMouseDown = () => {
-            this.minusButton.style.backgroundColor = '#00B39F';
-            this.minusButton.style.color = selectedColor;
-            this.minusButton.style.border = '1px solid ' + selectedColor;
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (pointSpread.current > pointSpread.min) {
+                this.minusButton.style.backgroundColor = '#00B39F';
+                this.minusButton.style.color = selectedColor;
+                this.minusButton.style.border = '1px solid ' + selectedColor;
+            }
         };
         this.minusButton.onmousedown = minusMouseDown.bind(this);
         let minusMouseUp = () => {
-            this.minusButton.style.backgroundColor = selectedColor;
-            this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid #FFD700';
             const pointSpread = pointMinAndStart[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
+                this.minusButton.style.backgroundColor = selectedColor;
+                this.minusButton.style.color = neutralColor;
+                this.minusButton.style.border = '1px solid #FFD700';
                 this.points++;
                 pointSpread.current--;
                 this.adjustTechPoints(pointSpread);
+            }
+            if (this.points > 0) {
+                this.plusButton.style.opacity = this.enabledOpacity;
+            }
+            if (pointSpread.current <= pointSpread.min) {
+                this.minusButton.style.opacity = this.disabledOpacity;
             }
         };
         this.minusButton.onmouseup = minusMouseUp.bind(this);
@@ -919,7 +952,7 @@ export class ShipLayout {
         this.plusButton.id = 'plus-button';
         this.plusButton.style.outline = 'none';
         this.plusButton.style.backgroundColor = selectedColor;
-        this.plusButton.style.color = '#FFD700';
+        this.plusButton.style.color = neutralColor;
         this.plusButton.style.position = 'absolute';
         this.plusButton.style.maxWidth = `${0.06 * width}px`;
         this.plusButton.style.width = `${0.06 * width}px`;
@@ -931,45 +964,63 @@ export class ShipLayout {
         this.plusButton.style.textAlign = 'center';
         this.plusButton.style.border = '1px solid #FFD700';
         this.plusButton.style.borderRadius = '10px';
+        this.plusButton.style.fontSize = `${0.022 * width}px`;
         this.plusButton.style.boxSizing = 'border-box';
-        this.plusButton.style.visibility = 'hidden';
         document.body.appendChild(this.plusButton);
 
         let plusHover = () => {
-            this.plusButton.style.backgroundColor = '#00B39F';
-            this.plusButton.style.color = '#FFD700';
-            this.plusButton.style.border = '1px solid #FFD700';
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (this.points > 0 && pointSpread.current < 10) {
+                this.plusButton.style.backgroundColor = '#00B39F';
+                this.plusButton.style.color = neutralColor;
+                this.plusButton.style.border = '1px solid #FFD700';
+            }
         };
         this.plusButton.onmouseover = plusHover.bind(this);
         let plusExit = () => {
-            this.plusButton.style.backgroundColor = selectedColor;
-            this.plusButton.style.color = '#FFD700';
-            this.plusButton.style.border = '1px solid #FFD700';
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (this.points > 0 && pointSpread.current < 10) {
+                this.plusButton.style.backgroundColor = selectedColor;
+                this.plusButton.style.color = neutralColor;
+                this.plusButton.style.border = '1px solid #FFD700';
+            }
         };
         this.plusButton.onmouseleave = plusExit.bind(this);
         let plusMouseDown = () => {
-            this.plusButton.style.backgroundColor = '#00B39F';
-            this.plusButton.style.color = selectedColor;
-            this.plusButton.style.border = '1px solid ' + selectedColor;
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (this.points > 0 && pointSpread.current < 10) {
+                this.plusButton.style.backgroundColor = '#00B39F';
+                this.plusButton.style.color = selectedColor;
+                this.plusButton.style.border = '1px solid ' + selectedColor;
+            }
         };
         this.plusButton.onmousedown = plusMouseDown.bind(this);
         let plusMouseUp = () => {
-            this.plusButton.style.backgroundColor = selectedColor;
-            this.plusButton.style.color = '#FFD700';
-            this.plusButton.style.border = '1px solid #FFD700';
             const pointSpread = pointMinAndStart[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
-                this.points--;
-                pointSpread.current++;
-                this.adjustTechPoints(pointSpread);
+                this.plusButton.style.backgroundColor = selectedColor;
+                this.plusButton.style.color = neutralColor;
+                this.plusButton.style.border = '1px solid #FFD700';
+                if (pointSpread.current < 10) {
+                    this.points--;
+                    pointSpread.current++;
+                    this.adjustTechPoints(pointSpread);
+                }
+            }
+            if (this.points <= 0 || pointSpread.current >= 10) {
+                this.plusButton.style.opacity = this.disabledOpacity;
             }
         };
         this.plusButton.onmouseup = plusMouseUp.bind(this);
 
+        if (this.selectedBox) {
+            this.adjustTechPoints(pointMinAndStart[this.selectedBox.name]);
+        }
+
         this.dialogueText.element = document.createElement('div');
         this.dialogueText.element.id = 'ship-layout-screen-dialogue';
         this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
-        this.dialogueText.element.style.color = '#FFD700';
+        this.dialogueText.element.style.color = neutralColor;
         this.dialogueText.element.style.position = 'absolute';
         this.dialogueText.element.style.maxWidth = `${0.25 * width}px`;
         this.dialogueText.element.style.width = `${0.25 * width}px`;
@@ -1006,7 +1057,7 @@ export class ShipLayout {
         this.selectionText.element = document.createElement('div');
         this.selectionText.element.id = 'ship-layout-screen-selection';
         this.selectionText.element.style.fontFamily = 'Luckiest Guy';
-        this.selectionText.element.style.color = '#FFD700';
+        this.selectionText.element.style.color = neutralColor;
         this.selectionText.element.style.position = 'absolute';
         this.selectionText.element.style.maxWidth = `${0.43 * width}px`;
         this.selectionText.element.style.width = `${0.43 * width}px`;
@@ -1025,7 +1076,7 @@ export class ShipLayout {
         this.hoverText.element = document.createElement('div');
         this.hoverText.element.id = 'ship-layout-screen-hover';
         this.hoverText.element.style.fontFamily = 'Luckiest Guy';
-        this.hoverText.element.style.color = '#FFD700';
+        this.hoverText.element.style.color = neutralColor;
         this.hoverText.element.style.position = 'absolute';
         this.hoverText.element.style.maxWidth = `${0.50 * width}px`;
         this.hoverText.element.style.width = `${0.50 * width}px`;
