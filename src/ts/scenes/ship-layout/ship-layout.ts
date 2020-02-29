@@ -173,7 +173,7 @@ const dialogues: { [key: string]: string } = {
  what's going on outside<br>
  the ship. You need<br>
  complex sensory equipment<br>
- to avoid debris, black<br>
+ to avoid debris and black<br>
  holes; to steer the ship<br>
  accurately; to find<br>
  things worth exploring.<br>
@@ -505,7 +505,7 @@ export class ShipLayout {
         this.onWindowResize();
         this.listenerRef = this.onWindowResize.bind(this);
         window.addEventListener('resize', this.listenerRef, false);
-        
+
         this.minusButton.style.visibility = 'hidden';
         this.plusButton.style.visibility = 'hidden';
 
@@ -1092,7 +1092,7 @@ export class ShipLayout {
         this.hoverText.element.style.border = border;
         document.body.appendChild(this.hoverText.element);
     };
-    
+
     /**
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
