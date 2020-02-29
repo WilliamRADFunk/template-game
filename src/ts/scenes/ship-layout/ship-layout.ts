@@ -243,6 +243,10 @@ const rectangleBoxes: { height: number; width: number; x: number; z: number; rad
     { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
 ];
 
+const techPelets: { height: number; width: number; x: number; z: number; radius: number; name: string; }[] = [
+    { height: 0.9, width: 0.16, x: -4.5, z: -3.83, radius: 0.07, name: 'Tech Point-1' }
+];
+
 /**
  * Color for boxes user has clicked.
  */
@@ -396,6 +400,11 @@ export class ShipLayout {
     private minusButton: HTMLElement = null;
 
     /**
+     * HTML button for increasing tech point on a specific ship section.
+     */
+    private plusButton: HTMLElement = null;
+
+    /**
      * Number of tech points player has left to spend.
      */
     private points: number = 10;
@@ -469,6 +478,22 @@ export class ShipLayout {
         const profile = createProfile(dialogueTexture);
         this.actors.push(profile);
         this.scene.add(profile.mesh);
+
+        techPelets.forEach(pellet => {
+            const pelletMaterial = new MeshBasicMaterial({
+                color: unhighlightedColor,
+                opacity: 0.5,
+                transparent: true,
+                side: DoubleSide
+            });
+            const pelletGeometry = createBoxWithRoundedEdges(pellet.width, pellet.height, pellet.radius, 0);
+            const barrier = new Mesh( pelletGeometry, pelletMaterial );
+            barrier.name = pellet.name;
+            barrier.position.set(pellet.x, 8, pellet.z);
+            barrier.rotation.set(1.5708, 0, 0);
+            this.scene.add(barrier);
+            this.meshMap[pellet.name] = barrier;
+        });
 
         rectangleBoxes.forEach(box => {
             const recBoxMaterial = new MeshBasicMaterial({
@@ -804,28 +829,72 @@ export class ShipLayout {
         let minusHover = () => {
             this.minusButton.style.backgroundColor = '#00B39F';
             this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid #00B39F';
+            this.minusButton.style.border = '1px solid #FFD700';
         };
         this.minusButton.onmouseover = minusHover.bind(this);
         let minusExit = () => {
             this.minusButton.style.backgroundColor = selectedColor;
             this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid ' + selectedColor;
+            this.minusButton.style.border = '1px solid #FFD700';
         };
         this.minusButton.onmouseleave = minusExit.bind(this);
         let minusMouseDown = () => {
             this.minusButton.style.backgroundColor = '#00B39F';
-            this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid #00B39F';
+            this.minusButton.style.color = selectedColor;
+            this.minusButton.style.border = '1px solid ' + selectedColor;
         };
         this.minusButton.onmousedown = minusMouseDown.bind(this);
         let minusMouseUp = () => {
             this.minusButton.style.backgroundColor = selectedColor;
             this.minusButton.style.color = '#FFD700';
-            this.minusButton.style.border = '1px solid ' + selectedColor;
+            this.minusButton.style.border = '1px solid #FFD700';
         };
         this.minusButton.onmouseup = minusMouseUp.bind(this);
 
+        this.plusButton = document.createElement('button');
+        this.plusButton.classList.add('fa', 'fa-plus');
+        this.plusButton.id = 'plus-button';
+        this.plusButton.style.outline = 'none';
+        this.plusButton.style.backgroundColor = selectedColor;
+        this.plusButton.style.color = '#FFD700';
+        this.plusButton.style.position = 'absolute';
+        this.plusButton.style.maxWidth = `${0.06 * width}px`;
+        this.plusButton.style.width = `${0.06 * width}px`;
+        this.plusButton.style.maxHeight = `${0.06 * height}px`;
+        this.plusButton.style.height = `${0.06 * height}px`;
+        this.plusButton.style.top = `${0.15 * height}px`;
+        this.plusButton.style.left = `${left + (0.395 * width)}px`;
+        this.plusButton.style.overflowY = 'hidden';
+        this.plusButton.style.textAlign = 'center';
+        this.plusButton.style.border = '1px solid #FFD700';
+        this.plusButton.style.borderRadius = '10px';
+        this.plusButton.style.boxSizing = 'border-box';
+        document.body.appendChild(this.plusButton);
+
+        let plusHover = () => {
+            this.plusButton.style.backgroundColor = '#00B39F';
+            this.plusButton.style.color = '#FFD700';
+            this.plusButton.style.border = '1px solid #FFD700';
+        };
+        this.plusButton.onmouseover = plusHover.bind(this);
+        let plusExit = () => {
+            this.plusButton.style.backgroundColor = selectedColor;
+            this.plusButton.style.color = '#FFD700';
+            this.plusButton.style.border = '1px solid #FFD700';
+        };
+        this.plusButton.onmouseleave = plusExit.bind(this);
+        let plusMouseDown = () => {
+            this.plusButton.style.backgroundColor = '#00B39F';
+            this.plusButton.style.color = selectedColor;
+            this.plusButton.style.border = '1px solid ' + selectedColor;
+        };
+        this.plusButton.onmousedown = plusMouseDown.bind(this);
+        let plusMouseUp = () => {
+            this.plusButton.style.backgroundColor = selectedColor;
+            this.plusButton.style.color = '#FFD700';
+            this.plusButton.style.border = '1px solid #FFD700';
+        };
+        this.plusButton.onmouseup = plusMouseUp.bind(this);
 
         this.dialogueText.element = document.createElement('div');
         this.dialogueText.element.id = 'ship-layout-screen-dialogue';
@@ -912,6 +981,7 @@ export class ShipLayout {
         document.getElementById('ship-layout-screen-points').remove();
         document.getElementById('ship-layout-screen-selection').remove();
         document.getElementById('minus-button').remove();
+        document.getElementById('plus-button').remove();
         window.removeEventListener( 'resize', this.listenerRef, false);
     }
 
