@@ -243,8 +243,19 @@ const rectangleBoxes: { height: number; width: number; x: number; z: number; rad
     { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
 ];
 
-const techPelets: { height: number; width: number; x: number; z: number; radius: number; name: string; }[] = [
-    { height: 0.9, width: 0.16, x: -4.5, z: -3.83, radius: 0.07, name: 'Tech Point-1' }
+let techPelletStartX = -4.73;
+
+const techPellets: { height: number; width: number; x: number; z: number; radius: number; name: string; }[] = [
+    { height: 0.9, width: 0.3, x: techPelletStartX, z: -3.83, radius: 0.07, name: 'Tech Point-1' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-2' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-3' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-4' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-5' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-6' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-7' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-8' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-9' },
+    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-10' }
 ];
 
 /**
@@ -260,76 +271,94 @@ const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt
 /**
  * Starting tech points for each ship section, and minimum values required.
  */
-const pointMinAndStart: { [key: string]: { min: number; start: number; } } = {
+const pointMinAndStart: { [key: string]: { current: number; min: number; start: number; } } = {
     'Galley & Mess Hall': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Crew Quarters A': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Engineering': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Weapons Room': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Extended Reality Deck': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Climate-Controlled Cargo Space': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Standard Cargo Space': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Engine Room': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Bridge': {
+        current: 3,
         min: 3,
         start: 3
     },
     'Officers Quarters': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Training Deck': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Port Thrusters': {
+        current: 2,
         min: 2,
         start: 2
     },
     'Main Thruster': {
+        current: 2,
         min: 2,
         start: 2
     },
     'Starboard Thrusters': {
+        current: 2,
         min: 2,
         start: 2
     },
     'Sensors': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Artificial Gravity Rings': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Shield Emitters': {
+        current: 1,
         min: 1,
         start: 1
     },
     'Deuterium Tank': {
+        current: 2,
         min: 1,
         start: 2
     }
@@ -449,6 +478,11 @@ export class ShipLayout {
     private stars: Mesh[] = [];
 
     /**
+     * Meshes for all the tech pellets.
+     */
+    private techPellentMeshMap: Mesh[] = [];
+
+    /**
      * Constructor for the Intro (Scene) class
      * @param scene             graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param shipIntTexture    texture for the ship in cut profile.
@@ -479,7 +513,7 @@ export class ShipLayout {
         this.actors.push(profile);
         this.scene.add(profile.mesh);
 
-        techPelets.forEach(pellet => {
+        techPellets.forEach(pellet => {
             const pelletMaterial = new MeshBasicMaterial({
                 color: unhighlightedColor,
                 opacity: 0.5,
@@ -492,7 +526,8 @@ export class ShipLayout {
             barrier.position.set(pellet.x, 8, pellet.z);
             barrier.rotation.set(1.5708, 0, 0);
             this.scene.add(barrier);
-            this.meshMap[pellet.name] = barrier;
+            barrier.visible = false;
+            this.techPellentMeshMap.push(barrier);
         });
 
         rectangleBoxes.forEach(box => {
@@ -585,12 +620,11 @@ export class ShipLayout {
                     this.selectionText.counter = 1;
                     this.makeSelectionText();
 
-                    this.pointsText.sentence = `You have ${this.points} tech points to spend`;
-                    this.pointsText.element.innerHTML = this.pointsText.sentence;
-                    this.pointsText.isFadeIn = true;
-                    this.pointsText.isHolding = false;
-                    this.pointsText.counter = 1;
-                    this.makePointsText();
+                    this.minusButton.style.visibility = 'visible';
+                    this.plusButton.style.visibility = 'visible';
+
+                    !this.techPellentMeshMap[0].visible ? this.techPellentMeshMap.forEach(x => x.visible = true) : null;
+                    this.adjustTechPoints(pointMinAndStart[hit.name]);
 
                     this.dialogueText.sentence = dialogues[hit.name];
                     this.dialogueText.counter = -1;
@@ -650,6 +684,24 @@ export class ShipLayout {
             }
             this.clearMeshMap();
         };
+    }
+
+    private adjustTechPoints(pointSpread: { current: number; min: number; start: number; }): void {
+        for (let i = 0; i < this.techPellentMeshMap.length; i++) {
+            if (i < pointSpread.min) {
+                (this.techPellentMeshMap[i].material as any).color.set('#FFD700');
+            } else if (i < pointSpread.current) {
+                (this.techPellentMeshMap[i].material as any).color.set(selectedColor);
+            } else {
+                (this.techPellentMeshMap[i].material as any).color.set(unhighlightedColor);
+            }
+        }
+        this.pointsText.sentence = `You have ${this.points} tech points to spend`;
+        this.pointsText.element.innerHTML = this.pointsText.sentence;
+        this.pointsText.isFadeIn = true;
+        this.pointsText.isHolding = false;
+        this.pointsText.counter = 20;
+        this.makePointsText();
     }
 
     private clearMeshMap(): void {
@@ -794,6 +846,10 @@ export class ShipLayout {
         if (minusButtonElement) {
             minusButtonElement.remove();
         }
+        const plusButtonElement = document.getElementById('plus-button');
+        if (plusButtonElement) {
+            plusButtonElement.remove();
+        }
 
         let WIDTH = window.innerWidth * 0.99;
         let HEIGHT = window.innerHeight * 0.99;
@@ -824,6 +880,7 @@ export class ShipLayout {
         this.minusButton.style.border = '1px solid #FFD700';
         this.minusButton.style.borderRadius = '10px';
         this.minusButton.style.boxSizing = 'border-box';
+        this.minusButton.style.visibility = 'hidden';
         document.body.appendChild(this.minusButton);
 
         let minusHover = () => {
@@ -848,6 +905,12 @@ export class ShipLayout {
             this.minusButton.style.backgroundColor = selectedColor;
             this.minusButton.style.color = '#FFD700';
             this.minusButton.style.border = '1px solid #FFD700';
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (pointSpread.current > pointSpread.min) {
+                this.points++;
+                pointSpread.current--;
+                this.adjustTechPoints(pointSpread);
+            }
         };
         this.minusButton.onmouseup = minusMouseUp.bind(this);
 
@@ -869,6 +932,7 @@ export class ShipLayout {
         this.plusButton.style.border = '1px solid #FFD700';
         this.plusButton.style.borderRadius = '10px';
         this.plusButton.style.boxSizing = 'border-box';
+        this.plusButton.style.visibility = 'hidden';
         document.body.appendChild(this.plusButton);
 
         let plusHover = () => {
@@ -893,6 +957,12 @@ export class ShipLayout {
             this.plusButton.style.backgroundColor = selectedColor;
             this.plusButton.style.color = '#FFD700';
             this.plusButton.style.border = '1px solid #FFD700';
+            const pointSpread = pointMinAndStart[this.selectedBox.name];
+            if (this.points > 0 && pointSpread.current < 10) {
+                this.points--;
+                pointSpread.current++;
+                this.adjustTechPoints(pointSpread);
+            }
         };
         this.plusButton.onmouseup = plusMouseUp.bind(this);
 
