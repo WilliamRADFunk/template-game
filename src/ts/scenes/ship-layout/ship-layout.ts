@@ -1,12 +1,9 @@
 import {
-    CircleGeometry,
     DoubleSide,
-    Font,
     Mesh,
     MeshBasicMaterial,
     PlaneGeometry,
     Scene,
-    TextGeometry,
     Texture } from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
@@ -20,198 +17,13 @@ import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-e
 import { createProfile } from './actors/create-profile';
 import { DialogueText } from '../../models/dialogue-text';
 import { compareRGBValues } from '../../utils/compare-rgb-values';
+import { dialogues } from './configs/dialogues';
+import { techPoints } from './configs/tech-points';
+import { techPellets, rectangleBoxes, textBoxes } from './configs/grid-items';
+import { createShipLayoutGrid } from '../../utils/create-ship-layout-grid';
 
-// let border: string = '1px solid #FFF';
-let border: string = 'none';
-
-const dialogues: { [key: string]: string } = {
-    '': `"Click a blue box to select<br>
- a room and assign<br>
- technology points."`,
-
-    'Galley & Mess Hall': `"The galley prepares food<br>
- for the crew. The mess<br>
- hall is where they eat<br>
- and socialize.<br>
- &nbsp;&nbsp;Improved equipment will<br>
- help less food to feed<br>
- more. A larger mess hall<br>
- is also better for<br>
- morale."`,
-
-    'Crew Quarters A': `"Crew quarters are<br>
- where your crew will<br>
- sleep and relax.<br>
- &nbsp;&nbsp;Larger crew quarters<br>
- allow for a higher<br>
- crew cap, and an improved<br>
- overall morale."`,
-
-    'Engineering': `"Engineering is where<br>
- your research and<br>
- improvements take place.<br>
- &nbsp;&nbsp;More points here<br>
- make it easier to<br>
- translate alien languages,<br>
- earn more tech points,<br>
- and learn how to<br>
- incorporate new alien<br>
- technologies."`,
-
-    'Weapons Room': `"The Weapons Room stores,<br>
- loads, and fires your<br>
- ship's nukes. You can<br>
- only hold two weapon<br>
- types at a time.<br>
- &nbsp;&nbsp;Add tech points here<br>
- to extend range, blast<br>
- radius, and concussive<br>
- power."`,
-
-    'Extended Reality Deck': `"An entire deck with<br>
- full-body haptic suits,<br>
- and wireless VR/AR<br>
- headsets.<br>
- &nbsp;&nbsp;Boosts crew morale as<br>
- the improved processing<br>
- power allows for a more<br>
- immersive experience."`,
-
-    'Climate-Controlled Cargo Space': `"This is where your more<br>
- delicate cargo is stored.<br>
- Temperature, humidity,<br>
- and atmosphere regulated<br>
- to preserve it for longer.<br>
- &nbsp;&nbsp;Improved equipment here<br>
- increases cargo space,<br>
- and allows for a larger<br>
- variety of goods to be<br>
- stored."`,
-
-    'Standard Cargo Space': `"This is where your more<br>
- ruggid cargo is stored.<br>
- Ores, trade goods, various<br>
- currencies, and anything<br>
- that can be left on a<br>
- shelf for long periods.<br>
- &nbsp;&nbsp;Improved equipment here<br>
- increases cargo space,<br>
- and allows for a larger<br>
- variety of goods to be<br>
- stored."`,
-
-    'Engine Room': `"The engines don't just<br>
- use deuterium to make<br>
- the ship go. They power<br>
- everything on board.<br>
- &nbsp;&nbsp;Improvements here<br>
- increase the engine's<br>
- efficiency; to use less<br>
- fuel to achieve the same<br>
- effect."`,
-
-    'Bridge': `"The bridge is where<br>
- your officers do their<br>
- work.<br>
- &nbsp;&nbsp;Advancements here will<br>
- increase the number of<br>
- officers you can have<br>
- on-duty at a given time."`,
-
-    'Officers Quarters': `"Like crew quarters, your<br>
- officers need a place to<br>
- lay their heads. They<br>
- can't be seen fraternizing<br>
- with the enlisted. So,<br>
- they get their own space.<br>
- &nbsp;&nbsp;Improvements give<br>
- them more room to<br>
- stretch their feet,<br>
- and encourages them<br>
- to be at their best."`,
-
-    'Training Deck': `"While the crew are some<br>
- of the League's best<br>
- trained people, they<br>
- still need to keep those<br>
- skills sharp.<br>
- &nbsp;&nbsp;Better equipment, space,<br>
- and training regimen<br>
- will have your crew<br>
- humming like a finely-<br>
- tuned machine."`,
-
-    'Port Thrusters': `"Port-side thrusters allow<br>
- your ship to turn toward<br>
- starboard (clockwise).<br>
- &nbsp;&nbsp;More tech points give<br>
- the thrusters more kick<br>
- and a faster clockwise<br>
- turn speed."`,
-
-    'Main Thruster': `"How fast and how far<br>
- your ship can move with<br>
- each jump.<br>
- &nbsp;&nbsp;Advancements here will<br>
- increase forward speed<br>
- in combat, but also how<br>
- far the ship can move<br>
- across the stars with<br>
- each burst."`,
-
-    'Starboard Thrusters': `"Starboard-side thrusters<br>
- allow your ship to<br>
- turn toward port<br>
- (counter-clockwise).<br>
- &nbsp;&nbsp;More tech points give<br>
- the thrusters more kick<br>
- and a faster counter-<br>
- clockwise turn speed."`,
-
-    'Sensors': `"You can't rely on looking<br>
- out a window to know<br>
- what's going on outside<br>
- the ship. You need<br>
- complex sensory equipment<br>
- to avoid debris and black<br>
- holes; to steer the ship<br>
- accurately; to find<br>
- things worth exploring.<br>
- &nbsp;&nbsp;More points translate<br>
- to seeing farther."`,
-
-    'Artificial Gravity Rings': `"The enzmann has three<br>
- high-density rings that<br>
- spin continuously about<br>
- the ship to provide<br>
- earthlike gravity, and<br>
- shock-aborbing stability.<br>
- &nbsp;&nbsp;Upgrades improve overall<br>
- crew efficiency and<br>
- reduced hull damage from<br>
- blasts that penetrate<br>
- your shilds."`,
-
-    'Shield Emitters': `"Your shields can deflect<br>
- many forms of physical<br>
- damage through a complex<br>
- array of electromagnetic<br>
- frequencies. Some photon-<br>
- based weapons may still<br>
- bypass these.<br>
- &nbsp;&nbsp;Spend tech points and<br>
- you will be able to hold<br>
- your shields longer and<br>
- recharge them faster."`,
-
-    'Deuterium Tank': `"Deuterium is your fuel.<br>
- This massive tank is<br>
- where that fuel is stored.<br>
- &nbsp;&nbsp;Add tech points, and<br>
- increase the max amount<br>
- of fuel you can safely<br>
- store at one time.`
-};
+// const border: string = '1px solid #FFF';
+const border: string = 'none';
 
 /**
  * Color for boxes user is hovering over.
@@ -223,41 +35,6 @@ const highlightedColor = '#00FF00';
  */
 const neutralColor = '#FFD700';
 
-const rectangleBoxes: { height: number; width: number; x: number; z: number; radius: number; rot: number; name: string; }[] = [
-    { height: 0.49, width: 1.64, x: -0.9, z: 2.98, radius: 0.09, rot: 0, name: 'Galley & Mess Hall' },
-    { height: 0.49, width: 1.64, x: -0.9, z: 2.28, radius: 0.07, rot: 0, name: 'Crew Quarters A' },
-    { height: 0.49, width: 1.64, x: -0.9, z: 3.71, radius: 0.09, rot: 0, name: 'Engineering' },
-    { height: 1.01, width: 0.49, x: 0.36, z: 2.35, radius: 0.05, rot: 0, name: 'Weapons Room' },
-    { height: 1.01, width: 0.49, x: 0.36, z: 3.59, radius: 0.05, rot: 0, name: 'Extended Reality Deck' },
-    { height: 0.95, width: 0.94, x: -2.39, z: 2.45, radius: 0.06, rot: 0, name: 'Climate-Controlled Cargo Space' },
-    { height: 0.95, width: 0.94, x: -2.39, z: 3.62, radius: 0.06, rot: 0, name: 'Standard Cargo Space' },
-    { height: 2.10, width: 0.48, x: -3.38, z: 3.04, radius: 0.05, rot: 0, name: 'Engine Room' },
-    { height: 0.77, width: 0.48, x: 0.99, z: 2.98, radius: 0.04, rot: 0, name: 'Bridge' },
-    { height: 0.47, width: 0.48, x: 0.99, z: 2.22, radius: 0.05, rot: 0, name: 'Officers Quarters' },
-    { height: 0.47, width: 0.48, x: 0.99, z: 3.75, radius: 0.03, rot: 0, name: 'Training Deck' },
-    { height: 0.24, width: 0.38, x: -5.69, z: 1.99, radius: 0.02, rot: 0, name: 'Port Thrusters' },
-    { height: 0.24, width: 0.38, x: -5.69, z: 3.02, radius: 0.02, rot: 0, name: 'Main Thruster' },
-    { height: 0.24, width: 0.38, x: -5.69, z: 3.98, radius: 0.02, rot: 0, name: 'Starboard Thrusters' },
-    { height: 0.24, width: 0.37, x: 5.50, z: 3.00, radius: 0.02, rot: 0, name: 'Sensors' },
-    { height: 3.02, width: 0.20, x: -4.04, z: 2.98, radius: 0.099, rot: 0, name: 'Artificial Gravity Rings' },
-    { height: 1.28, width: 0.16, x: 1.53, z: 2.98, radius: 0.07, rot: -0.02, name: 'Shield Emitters' }
-];
-
-let techPelletStartX = -4.73;
-
-const techPellets: { height: number; width: number; x: number; z: number; radius: number; name: string; }[] = [
-    { height: 0.9, width: 0.3, x: techPelletStartX, z: -3.83, radius: 0.07, name: 'Tech Point-1' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-2' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-3' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-4' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-5' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-6' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-7' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-8' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-9' },
-    { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-10' }
-];
-
 /**
  * Color for boxes user has clicked.
  */
@@ -267,102 +44,6 @@ const selectedColor = '#F1149A';
  * Color in rgb for boxes user has clicked.
  */
 const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt('14', 16), parseInt('9A', 16)];
-
-/**
- * Starting tech points for each ship section, and minimum values required.
- */
-const pointMinAndStart: { [key: string]: { current: number; min: number; start: number; } } = {
-    'Galley & Mess Hall': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Crew Quarters A': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Engineering': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Weapons Room': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Extended Reality Deck': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Climate-Controlled Cargo Space': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Standard Cargo Space': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Engine Room': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Bridge': {
-        current: 3,
-        min: 3,
-        start: 3
-    },
-    'Officers Quarters': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Training Deck': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Port Thrusters': {
-        current: 2,
-        min: 2,
-        start: 2
-    },
-    'Main Thruster': {
-        current: 2,
-        min: 2,
-        start: 2
-    },
-    'Starboard Thrusters': {
-        current: 2,
-        min: 2,
-        start: 2
-    },
-    'Sensors': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Artificial Gravity Rings': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Shield Emitters': {
-        current: 1,
-        min: 1,
-        start: 1
-    },
-    'Deuterium Tank': {
-        current: 2,
-        min: 1,
-        start: 2
-    }
-};
 
 /**
  * Color for boxes user is not hovering over (default).
@@ -538,42 +219,7 @@ export class ShipLayout {
             this.techPellentMeshMap.push(barrier);
         });
 
-        rectangleBoxes.forEach(box => {
-            const recBoxMaterial = new MeshBasicMaterial({
-                color: unhighlightedColor,
-                opacity: 0.5,
-                transparent: true,
-                side: DoubleSide
-            });
-            const recBoxGeometry = createBoxWithRoundedEdges(box.width, box.height, box.radius, 0);
-            const barrier = new Mesh( recBoxGeometry, recBoxMaterial );
-            barrier.name = box.name;
-            barrier.position.set(box.x, 15, box.z);
-            barrier.rotation.set(1.5708, 0, box.rot);
-            this.scene.add(barrier);
-            this.meshMap[box.name] = barrier;
-        });
-
-        const material = new MeshBasicMaterial({
-            color: unhighlightedColor,
-            opacity: 0.5,
-            transparent: true,
-            side: DoubleSide
-        });
-        const geometry: CircleGeometry = new CircleGeometry(1.56, 48, 48);
-        const circleBarrier = new Mesh( geometry, material );
-        circleBarrier.name = 'Deuterium Tank';
-        circleBarrier.position.set(3.42, 15, 2.94);
-        circleBarrier.rotation.set(1.5708, 0, 0);
-        this.scene.add(circleBarrier);
-        this.meshMap[circleBarrier.name] = circleBarrier;
-
-        const intersectableThings = [...rectangleBoxes, circleBarrier];
-
-        const textBoxes = [
-            { widthIn: 6, widthOut: 6.2, x: 2.9, z: -4.45, name: 'Profile Dialogue' },
-            { widthIn: 5.5, widthOut: 5.7, x: -3.15, z: -4.45, name: 'Selection' },
-        ];
+        const intersectableThings = createShipLayoutGrid(this.scene, rectangleBoxes, this.meshMap, unhighlightedColor);
 
         textBoxes.forEach(box => {
             let textBoxMaterial = new MeshBasicMaterial({
@@ -632,7 +278,7 @@ export class ShipLayout {
                     this.plusButton.style.visibility = 'visible';
 
                     !this.techPellentMeshMap[0].visible ? this.techPellentMeshMap.forEach(x => x.visible = true) : null;
-                    this.adjustTechPoints(pointMinAndStart[hit.name]);
+                    this.adjustTechPoints(techPoints[hit.name]);
 
                     this.dialogueText.sentence = dialogues[hit.name];
                     this.dialogueText.counter = -1;
@@ -901,8 +547,8 @@ export class ShipLayout {
         this.minusButton.style.boxSizing = 'border-box';
         document.body.appendChild(this.minusButton);
 
-        let minusHover = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const minusHover = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = '#00B39F';
                 this.minusButton.style.color = neutralColor;
@@ -910,8 +556,8 @@ export class ShipLayout {
             }
         };
         this.minusButton.onmouseover = minusHover.bind(this);
-        let minusExit = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const minusExit = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = selectedColor;
                 this.minusButton.style.color = neutralColor;
@@ -919,8 +565,8 @@ export class ShipLayout {
             }
         };
         this.minusButton.onmouseleave = minusExit.bind(this);
-        let minusMouseDown = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const minusMouseDown = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = '#00B39F';
                 this.minusButton.style.color = selectedColor;
@@ -928,8 +574,8 @@ export class ShipLayout {
             }
         };
         this.minusButton.onmousedown = minusMouseDown.bind(this);
-        let minusMouseUp = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const minusMouseUp = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = selectedColor;
                 this.minusButton.style.color = neutralColor;
@@ -968,8 +614,8 @@ export class ShipLayout {
         this.plusButton.style.boxSizing = 'border-box';
         document.body.appendChild(this.plusButton);
 
-        let plusHover = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const plusHover = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
                 this.plusButton.style.backgroundColor = '#00B39F';
                 this.plusButton.style.color = neutralColor;
@@ -977,8 +623,8 @@ export class ShipLayout {
             }
         };
         this.plusButton.onmouseover = plusHover.bind(this);
-        let plusExit = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const plusExit = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
@@ -986,8 +632,8 @@ export class ShipLayout {
             }
         };
         this.plusButton.onmouseleave = plusExit.bind(this);
-        let plusMouseDown = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const plusMouseDown = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
                 this.plusButton.style.backgroundColor = '#00B39F';
                 this.plusButton.style.color = selectedColor;
@@ -995,8 +641,8 @@ export class ShipLayout {
             }
         };
         this.plusButton.onmousedown = plusMouseDown.bind(this);
-        let plusMouseUp = () => {
-            const pointSpread = pointMinAndStart[this.selectedBox.name];
+        const plusMouseUp = () => {
+            const pointSpread = techPoints[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
@@ -1014,7 +660,7 @@ export class ShipLayout {
         this.plusButton.onmouseup = plusMouseUp.bind(this);
 
         if (this.selectedBox) {
-            this.adjustTechPoints(pointMinAndStart[this.selectedBox.name]);
+            this.adjustTechPoints(techPoints[this.selectedBox.name]);
         }
 
         this.dialogueText.element = document.createElement('div');
@@ -1031,7 +677,7 @@ export class ShipLayout {
         this.dialogueText.element.style.top = `${0.01 * height}px`;
         this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
         this.dialogueText.element.style.overflowY = 'hidden';
-        this.dialogueText.element.style.fontSize = `${0.018 * width}px`;
+        this.dialogueText.element.style.fontSize = `${0.017 * width}px`;
         this.dialogueText.element.style.border = border;
         document.body.appendChild(this.dialogueText.element);
 
