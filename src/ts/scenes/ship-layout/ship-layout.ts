@@ -669,20 +669,20 @@ export class ShipLayout {
         this.dialogueText.element = createRightPanelText(
             { left, height, width },
             this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex),
-            neutralColor,
-            border);
+            border,
+            neutralColor);
 
         this.selectionText.element = createLeftPanelTitleText(
             { left, height, width },
             this.selectionText.sentence,
-            neutralColor,
-            border);
+            border,
+            neutralColor);
 
         this.pointsText.element = createLeftPanelSubtitleText(
             { left, height, width },
             this.pointsText.sentence,
-            selectedColor,
-            border);
+            border,
+            selectedColor);
 
         this.hoverText.element = document.createElement('div');
         this.hoverText.element.id = 'ship-layout-screen-hover';
