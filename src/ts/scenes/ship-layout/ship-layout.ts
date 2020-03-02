@@ -21,6 +21,9 @@ import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
 import { techPellets, rectangleBoxes, textBoxes } from './configs/grid-items';
 import { createShipLayoutGrid } from '../../utils/create-ship-layout-grid';
+import { createRightPanelText } from '../../utils/create-right-panel-text';
+import { createLeftPanelTitleText } from '../../utils/create-left-panel-title-text';
+import { createLeftPanelSubtitleText } from '../../utils/create-left-panel-subtitle-text';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -490,15 +493,15 @@ export class ShipLayout {
     }
 
     private onWindowResize(): void {
-        const dialogueElement = document.getElementById('ship-layout-screen-dialogue');
+        const dialogueElement = document.getElementById('dialogue-text');
         if (dialogueElement) {
             dialogueElement.remove();
         }
-        const pointsElement = document.getElementById('ship-layout-screen-points');
+        const pointsElement = document.getElementById('left-panel-subtitle-text');
         if (pointsElement) {
             pointsElement.remove();
         }
-        const selectionElement = document.getElementById('ship-layout-screen-selection');
+        const selectionElement = document.getElementById('left-panel-title-text');
         if (selectionElement) {
             selectionElement.remove();
         }
@@ -663,61 +666,23 @@ export class ShipLayout {
             this.adjustTechPoints(techPoints[this.selectedBox.name]);
         }
 
-        this.dialogueText.element = document.createElement('div');
-        this.dialogueText.element.id = 'ship-layout-screen-dialogue';
-        this.dialogueText.element.style.fontFamily = 'Luckiest Guy';
-        this.dialogueText.element.style.color = neutralColor;
-        this.dialogueText.element.style.position = 'absolute';
-        this.dialogueText.element.style.maxWidth = `${0.25 * width}px`;
-        this.dialogueText.element.style.width = `${0.25 * width}px`;
-        this.dialogueText.element.style.maxHeight = `${0.24 * height}px`;
-        this.dialogueText.element.style.height = `${0.24 * height}px`;
-        this.dialogueText.element.style.backgroundColor = 'transparent';
-        this.dialogueText.element.innerHTML = this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex);
-        this.dialogueText.element.style.top = `${0.01 * height}px`;
-        this.dialogueText.element.style.left = `${left + (0.5 * width)}px`;
-        this.dialogueText.element.style.overflowY = 'hidden';
-        this.dialogueText.element.style.fontSize = `${0.017 * width}px`;
-        this.dialogueText.element.style.border = border;
-        document.body.appendChild(this.dialogueText.element);
+        this.dialogueText.element = createRightPanelText(
+            { left, height, width },
+            this.dialogueText.sentence.slice(0, this.dialogueText.currentIndex),
+            neutralColor,
+            border);
 
-        this.pointsText.element = document.createElement('div');
-        this.pointsText.element.id = 'ship-layout-screen-points';
-        this.pointsText.element.style.fontFamily = 'Luckiest Guy';
-        this.pointsText.element.style.color = selectedColor;
-        this.pointsText.element.style.position = 'absolute';
-        this.pointsText.element.style.maxWidth = `${0.43 * width}px`;
-        this.pointsText.element.style.width = `${0.43 * width}px`;
-        this.pointsText.element.style.maxHeight = `${0.03 * height}px`;
-        this.pointsText.element.style.height = `${0.03 * height}px`;
-        this.pointsText.element.style.backgroundColor = 'transparent';
-        this.pointsText.element.innerHTML = this.pointsText.sentence;
-        this.pointsText.element.style.top = `${0.09 * height}px`;
-        this.pointsText.element.style.left = `${left + (0.02 * width)}px`;
-        this.pointsText.element.style.overflowY = 'hidden';
-        this.pointsText.element.style.textAlign = 'center';
-        this.pointsText.element.style.fontSize = `${0.025 * width}px`;
-        this.pointsText.element.style.border = border;
-        document.body.appendChild(this.pointsText.element);
+        this.selectionText.element = createLeftPanelTitleText(
+            { left, height, width },
+            this.selectionText.sentence,
+            neutralColor,
+            border);
 
-        this.selectionText.element = document.createElement('div');
-        this.selectionText.element.id = 'ship-layout-screen-selection';
-        this.selectionText.element.style.fontFamily = 'Luckiest Guy';
-        this.selectionText.element.style.color = neutralColor;
-        this.selectionText.element.style.position = 'absolute';
-        this.selectionText.element.style.maxWidth = `${0.43 * width}px`;
-        this.selectionText.element.style.width = `${0.43 * width}px`;
-        this.selectionText.element.style.maxHeight = `${0.08 * height}px`;
-        this.selectionText.element.style.height = `${0.08 * height}px`;
-        this.selectionText.element.style.backgroundColor = 'transparent';
-        this.selectionText.element.innerHTML = this.selectionText.sentence;
-        this.selectionText.element.style.top = `${0.01 * height}px`;
-        this.selectionText.element.style.left = `${left + (0.02 * width)}px`;
-        this.selectionText.element.style.overflowY = 'hidden';
-        this.selectionText.element.style.textAlign = 'center';
-        this.selectionText.element.style.fontSize = `${0.03 * width}px`;
-        this.selectionText.element.style.border = border;
-        document.body.appendChild(this.selectionText.element);
+        this.pointsText.element = createLeftPanelSubtitleText(
+            { left, height, width },
+            this.pointsText.sentence,
+            selectedColor,
+            border);
 
         this.hoverText.element = document.createElement('div');
         this.hoverText.element.id = 'ship-layout-screen-hover';
@@ -743,10 +708,10 @@ export class ShipLayout {
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
     public dispose(): void {
-        document.getElementById('ship-layout-screen-dialogue').remove();
+        document.getElementById('dialogue-text').remove();
         document.getElementById('ship-layout-screen-hover').remove();
-        document.getElementById('ship-layout-screen-points').remove();
-        document.getElementById('ship-layout-screen-selection').remove();
+        document.getElementById('left-panel-subtitle-text').remove();
+        document.getElementById('left-panel-title-text').remove();
         document.getElementById('minus-button').remove();
         document.getElementById('plus-button').remove();
         window.removeEventListener( 'resize', this.listenerRef, false);
