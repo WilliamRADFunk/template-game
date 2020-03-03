@@ -29,6 +29,11 @@ import { createLeftPanelSubtitleText } from '../../utils/create-left-panel-subti
 const border: string = 'none';
 
 /**
+ * Color for boxes used for anything non-specific.
+ */
+const defaultColor = '#00B39F';
+
+/**
  * Color for boxes user is hovering over.
  */
 const highlightedColor = '#00FF00';
@@ -49,7 +54,7 @@ const selectedColor = '#F1149A';
 const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt('14', 16), parseInt('9A', 16)];
 
 /**
- * Color for boxes user is not hovering over (default).
+ * Color for boxes user is not hovering over (neutral).
  */
 const unhighlightedColor = '#87D3F8';
 
@@ -343,14 +348,16 @@ export class ShipLayout {
         };
     }
 
-    private adjustTechPoints(pointSpread: { current: number; min: number; start: number; }): void {
+    private adjustTechPoints(pointSpread: { current: number; max: number; min: number; start: number; }): void {
         for (let i = 0; i < this.techPellentMeshMap.length; i++) {
             if (i < pointSpread.min) {
                 (this.techPellentMeshMap[i].material as any).color.set(neutralColor);
             } else if (i < pointSpread.current) {
                 (this.techPellentMeshMap[i].material as any).color.set(selectedColor);
-            } else {
+            } else if (i <= pointSpread.max) {
                 (this.techPellentMeshMap[i].material as any).color.set(unhighlightedColor);
+            } else {
+                (this.techPellentMeshMap[i].material as any).color.set(defaultColor);
             }
         }
         if (pointSpread.current > pointSpread.min) {
@@ -358,7 +365,7 @@ export class ShipLayout {
         } else {
             this.minusButton.style.opacity = this.disabledOpacity;
         }
-        if (this.points <= 0 || pointSpread.current >= 10) {
+        if (this.points <= 0 || pointSpread.current >= pointSpread.max) {
             this.plusButton.style.opacity = this.disabledOpacity;
         } else {
             this.plusButton.style.opacity = this.enabledOpacity;
@@ -440,7 +447,7 @@ export class ShipLayout {
      */
     private makeHoverText(): void {
         const name = this.selectedBox && this.selectedBox.name;
-        const color = name === this.hoverText.sentence ? selectedColor : '#00B39F';
+        const color = name === this.hoverText.sentence ? selectedColor : defaultColor;
         if (this.hoverText.isFadeIn && this.hoverText.counter > 20) {
             this.hoverText.isFadeIn = false;
             this.hoverText.isHolding = true;
@@ -548,12 +555,13 @@ export class ShipLayout {
         this.minusButton.style.borderRadius = '10px';
         this.minusButton.style.fontSize = `${0.022 * width}px`;
         this.minusButton.style.boxSizing = 'border-box';
+        this.minusButton.style.visibility = this.selectedBox ? 'visible' : 'hidden';
         document.body.appendChild(this.minusButton);
 
         const minusHover = () => {
             const pointSpread = techPoints[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
-                this.minusButton.style.backgroundColor = '#00B39F';
+                this.minusButton.style.backgroundColor = defaultColor;
                 this.minusButton.style.color = neutralColor;
                 this.minusButton.style.border = '1px solid #FFD700';
             }
@@ -571,7 +579,7 @@ export class ShipLayout {
         const minusMouseDown = () => {
             const pointSpread = techPoints[this.selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
-                this.minusButton.style.backgroundColor = '#00B39F';
+                this.minusButton.style.backgroundColor = defaultColor;
                 this.minusButton.style.color = selectedColor;
                 this.minusButton.style.border = '1px solid ' + selectedColor;
             }
@@ -615,12 +623,13 @@ export class ShipLayout {
         this.plusButton.style.borderRadius = '10px';
         this.plusButton.style.fontSize = `${0.022 * width}px`;
         this.plusButton.style.boxSizing = 'border-box';
+        this.plusButton.style.visibility = this.selectedBox ? 'visible' : 'hidden';
         document.body.appendChild(this.plusButton);
 
         const plusHover = () => {
             const pointSpread = techPoints[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
-                this.plusButton.style.backgroundColor = '#00B39F';
+                this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = neutralColor;
                 this.plusButton.style.border = '1px solid #FFD700';
             }
@@ -638,7 +647,7 @@ export class ShipLayout {
         const plusMouseDown = () => {
             const pointSpread = techPoints[this.selectedBox.name];
             if (this.points > 0 && pointSpread.current < 10) {
-                this.plusButton.style.backgroundColor = '#00B39F';
+                this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = selectedColor;
                 this.plusButton.style.border = '1px solid ' + selectedColor;
             }
