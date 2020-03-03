@@ -195,9 +195,6 @@ export class ShipLayout {
         this.listenerRef = this.onWindowResize.bind(this);
         window.addEventListener('resize', this.listenerRef, false);
 
-        this.minusButton.style.visibility = 'hidden';
-        this.plusButton.style.visibility = 'hidden';
-
         this.createStars();
 
         const ship = createShip(shipTexture);
@@ -282,11 +279,11 @@ export class ShipLayout {
                     this.selectionText.counter = 1;
                     this.makeSelectionText();
 
-                    this.minusButton.style.visibility = 'visible';
-                    this.plusButton.style.visibility = 'visible';
-
                     !this.techPellentMeshMap[0].visible ? this.techPellentMeshMap.forEach(x => x.visible = true) : null;
                     this.adjustTechPoints(techPoints[hit.name]);
+
+                    this.minusButton.style.visibility = 'visible';
+                    this.plusButton.style.visibility = 'visible';
 
                     this.dialogueText.sentence = dialogues[hit.name];
                     this.dialogueText.counter = -1;
@@ -354,7 +351,7 @@ export class ShipLayout {
                 (this.techPellentMeshMap[i].material as any).color.set(neutralColor);
             } else if (i < pointSpread.current) {
                 (this.techPellentMeshMap[i].material as any).color.set(selectedColor);
-            } else if (i <= pointSpread.max) {
+            } else if (i < pointSpread.max) {
                 (this.techPellentMeshMap[i].material as any).color.set(unhighlightedColor);
             } else {
                 (this.techPellentMeshMap[i].material as any).color.set(defaultColor);
@@ -595,7 +592,7 @@ export class ShipLayout {
                 pointSpread.current--;
                 this.adjustTechPoints(pointSpread);
             }
-            if (this.points > 0) {
+            if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.opacity = this.enabledOpacity;
             }
             if (pointSpread.current <= pointSpread.min) {
@@ -628,7 +625,7 @@ export class ShipLayout {
 
         const plusHover = () => {
             const pointSpread = techPoints[this.selectedBox.name];
-            if (this.points > 0 && pointSpread.current < 10) {
+            if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = neutralColor;
                 this.plusButton.style.border = '1px solid #FFD700';
@@ -637,7 +634,7 @@ export class ShipLayout {
         this.plusButton.onmouseover = plusHover.bind(this);
         const plusExit = () => {
             const pointSpread = techPoints[this.selectedBox.name];
-            if (this.points > 0 && pointSpread.current < 10) {
+            if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
                 this.plusButton.style.border = '1px solid #FFD700';
@@ -646,7 +643,7 @@ export class ShipLayout {
         this.plusButton.onmouseleave = plusExit.bind(this);
         const plusMouseDown = () => {
             const pointSpread = techPoints[this.selectedBox.name];
-            if (this.points > 0 && pointSpread.current < 10) {
+            if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = selectedColor;
                 this.plusButton.style.border = '1px solid ' + selectedColor;
@@ -655,17 +652,15 @@ export class ShipLayout {
         this.plusButton.onmousedown = plusMouseDown.bind(this);
         const plusMouseUp = () => {
             const pointSpread = techPoints[this.selectedBox.name];
-            if (this.points > 0 && pointSpread.current < 10) {
+            if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
                 this.plusButton.style.border = '1px solid #FFD700';
-                if (pointSpread.current < 10) {
-                    this.points--;
-                    pointSpread.current++;
-                    this.adjustTechPoints(pointSpread);
-                }
+                this.points--;
+                pointSpread.current++;
+                this.adjustTechPoints(pointSpread);
             }
-            if (this.points <= 0 || pointSpread.current >= 10) {
+            if (this.points <= 0 || pointSpread.current <= pointSpread.min) {
                 this.plusButton.style.opacity = this.disabledOpacity;
             }
         };
