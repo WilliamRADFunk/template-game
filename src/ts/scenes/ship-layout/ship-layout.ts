@@ -19,11 +19,13 @@ import { DialogueText } from '../../models/dialogue-text';
 import { compareRGBValues } from '../../utils/compare-rgb-values';
 import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
-import { techPellets, rectangleBoxes, textBoxes } from './configs/grid-items';
+import { techPellets, rectangleBoxes, textBoxes, textElements } from './configs/grid-items';
 import { createShipLayoutGrid } from '../../utils/create-ship-layout-grid';
 import { createRightPanelText } from '../../utils/create-right-panel-text';
 import { createLeftPanelTitleText } from '../../utils/create-left-panel-title-text';
 import { createLeftPanelSubtitleText } from '../../utils/create-left-panel-subtitle-text';
+import { createTextPanels } from '../../utils/create-text-panels';
+import { createMinusButton } from '../../utils/create-minus-button';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -108,7 +110,7 @@ export class ShipLayout {
     };
 
     /**
-     * Reference to onWindowResize so that it can be removed later.
+     * Reference to _onWindowResize so that it can be removed later.
      */
     private listenerRef: () => void;
 
@@ -191,11 +193,11 @@ export class ShipLayout {
         dialogueTexture: Texture) {
         this.scene = scene.scene;
 
-        this.onWindowResize();
-        this.listenerRef = this.onWindowResize.bind(this);
+        this._onWindowResize();
+        this.listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this.listenerRef, false);
 
-        this.createStars();
+        this._createStars();
 
         const ship = createShip(shipTexture);
         this.actors.push(ship);
@@ -226,33 +228,7 @@ export class ShipLayout {
 
         const intersectableThings = createShipLayoutGrid(this.scene, rectangleBoxes, this.meshMap, unhighlightedColor);
 
-        textBoxes.forEach(box => {
-            let textBoxMaterial = new MeshBasicMaterial({
-                color: 0xFFFFFF,
-                opacity: 0.6,
-                transparent: true,
-                side: DoubleSide
-            });
-            let textBoxGeometry = new PlaneGeometry( box.widthOut, 3.2, 10, 10 );
-            let barrier = new Mesh( textBoxGeometry, textBoxMaterial );
-            barrier.name = `${box.name} Outter Box`;
-            barrier.position.set(box.x, 15, box.z);
-            barrier.rotation.set(1.5708, 0, 0);
-            this.scene.add(barrier);
-
-            textBoxMaterial = new MeshBasicMaterial({
-                color: 0x000000,
-                opacity: 1,
-                transparent: true,
-                side: DoubleSide
-            });
-            textBoxGeometry = new PlaneGeometry( box.widthIn, 3, 10, 10 );
-            barrier = new Mesh( textBoxGeometry, textBoxMaterial );
-            barrier.name = `${box.name} Inner Box`;
-            barrier.position.set(box.x, 10, box.z);
-            barrier.rotation.set(1.5708, 0, 0);
-            this.scene.add(barrier);
-        });
+        createTextPanels(this.scene, textBoxes);
 
         const container = document.getElementById('mainview');
         document.onclick = event => {
@@ -277,10 +253,10 @@ export class ShipLayout {
                     this.selectionText.isFadeIn = true;
                     this.selectionText.isHolding = false;
                     this.selectionText.counter = 1;
-                    this.makeSelectionText();
+                    this._makeSelectionText();
 
                     !this.techPellentMeshMap[0].visible ? this.techPellentMeshMap.forEach(x => x.visible = true) : null;
-                    this.adjustTechPoints(techPoints[hit.name]);
+                    this._adjustTechPoints(techPoints[hit.name]);
 
                     this.minusButton.style.visibility = 'visible';
                     this.plusButton.style.visibility = 'visible';
@@ -289,7 +265,7 @@ export class ShipLayout {
                     this.dialogueText.counter = -1;
                     this.dialogueText.currentIndex = 0;
                     this.dialogueText.isFinished = false;
-                    this.makeDialogueText();
+                    this._makeDialogueText();
                 }
             });
         };
@@ -317,7 +293,7 @@ export class ShipLayout {
                             this.hoverText.isFadeIn = true;
                             this.hoverText.isHolding = false;
                             this.hoverText.counter = 1;
-                            this.makeHoverText();
+                            this._makeHoverText();
                         }
                     }
 
@@ -327,7 +303,7 @@ export class ShipLayout {
                         this.hoverText.isFadeIn = true;
                         this.hoverText.isHolding = false;
                         this.hoverText.counter = 1;
-                        this.makeHoverText();
+                        this._makeHoverText();
                     }
                     return;
                 }
@@ -339,13 +315,13 @@ export class ShipLayout {
                 this.hoverText.isFadeIn = true;
                 this.hoverText.isHolding = false;
                 this.hoverText.counter = 1;
-                this.makeHoverText();
+                this._makeHoverText();
             }
-            this.clearMeshMap();
+            this._clearMeshMap();
         };
     }
 
-    private adjustTechPoints(pointSpread: { current: number; max: number; min: number; start: number; }): void {
+    private _adjustTechPoints(pointSpread: { current: number; max: number; min: number; start: number; }): void {
         for (let i = 0; i < this.techPellentMeshMap.length; i++) {
             if (i < pointSpread.min) {
                 (this.techPellentMeshMap[i].material as any).color.set(neutralColor);
@@ -372,10 +348,10 @@ export class ShipLayout {
         this.pointsText.isFadeIn = true;
         this.pointsText.isHolding = false;
         this.pointsText.counter = 20;
-        this.makePointsText();
+        this._makePointsText();
     }
 
-    private clearMeshMap(): void {
+    private _clearMeshMap(): void {
         const selectedName = this.selectedBox && this.selectedBox.name;
         const hoveredName = this.hoveredBox && this.hoveredBox.name;
         // If no selected box, don't bother with the extra conditional check.
@@ -392,7 +368,7 @@ export class ShipLayout {
         }
     }
 
-    private createStars(): void {
+    private _createStars(): void {
         const material = new MeshBasicMaterial({
             color: 0xFFFFFF,
             opacity: 1,
@@ -418,7 +394,7 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at top right of screen.
      */
-    private makeDialogueText(): void {
+    private _makeDialogueText(): void {
         if (this.dialogueText.isFinished) {
             return;
         }
@@ -442,7 +418,7 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at bottom of screen.
      */
-    private makeHoverText(): void {
+    private _makeHoverText(): void {
         const name = this.selectedBox && this.selectedBox.name;
         const color = name === this.hoverText.sentence ? selectedColor : defaultColor;
         if (this.hoverText.isFadeIn && this.hoverText.counter > 20) {
@@ -461,7 +437,7 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue for points at top left of screen.
      */
-    private makePointsText(): void {
+    private _makePointsText(): void {
         if (this.pointsText.isHolding) {
             return;
         }
@@ -480,7 +456,7 @@ export class ShipLayout {
     /**
      * Builds the text and graphics for the text dialogue at top left of screen.
      */
-    private makeSelectionText(): void {
+    private _makeSelectionText(): void {
         if (this.selectionText.isHolding) {
             return;
         }
@@ -496,31 +472,13 @@ export class ShipLayout {
         }
     }
 
-    private onWindowResize(): void {
-        const dialogueElement = document.getElementById('dialogue-text');
-        if (dialogueElement) {
-            dialogueElement.remove();
-        }
-        const pointsElement = document.getElementById('left-panel-subtitle-text');
-        if (pointsElement) {
-            pointsElement.remove();
-        }
-        const selectionElement = document.getElementById('left-panel-title-text');
-        if (selectionElement) {
-            selectionElement.remove();
-        }
-        const hoverElement = document.getElementById('ship-layout-screen-hover');
-        if (hoverElement) {
-            hoverElement.remove();
-        }
-        const minusButtonElement = document.getElementById('minus-button');
-        if (minusButtonElement) {
-            minusButtonElement.remove();
-        }
-        const plusButtonElement = document.getElementById('plus-button');
-        if (plusButtonElement) {
-            plusButtonElement.remove();
-        }
+    private _onWindowResize(): void {
+        textElements.forEach(el => {
+            const element = document.getElementById(el);
+            if (element) {
+                element.remove();
+            }
+        });
 
         let WIDTH = window.innerWidth * 0.99;
         let HEIGHT = window.innerHeight * 0.99;
@@ -533,27 +491,11 @@ export class ShipLayout {
         const width = WIDTH;
         const height = HEIGHT;
 
-        this.minusButton = document.createElement('button');
-        this.minusButton.classList.add('fa', 'fa-minus');
-        this.minusButton.id = 'minus-button';
-        this.minusButton.style.outline = 'none';
-        this.minusButton.style.backgroundColor = selectedColor;
-        this.minusButton.style.color = neutralColor;
-        this.minusButton.style.position = 'absolute';
-        this.minusButton.style.maxWidth = `${0.06 * width}px`;
-        this.minusButton.style.width = `${0.06 * width}px`;
-        this.minusButton.style.maxHeight = `${0.06 * height}px`;
-        this.minusButton.style.height = `${0.06 * height}px`;
-        this.minusButton.style.top = `${0.15 * height}px`;
-        this.minusButton.style.left = `${left + (0.02 * width)}px`;
-        this.minusButton.style.overflowY = 'hidden';
-        this.minusButton.style.textAlign = 'center';
-        this.minusButton.style.border = '1px solid #FFD700';
-        this.minusButton.style.borderRadius = '10px';
-        this.minusButton.style.fontSize = `${0.022 * width}px`;
-        this.minusButton.style.boxSizing = 'border-box';
-        this.minusButton.style.visibility = this.selectedBox ? 'visible' : 'hidden';
-        document.body.appendChild(this.minusButton);
+        this.minusButton = createMinusButton(
+            { left, height, width },
+            { neutralColor, selectedColor },
+            !!this.selectedBox
+        );
 
         const minusHover = () => {
             const pointSpread = techPoints[this.selectedBox.name];
@@ -590,7 +532,7 @@ export class ShipLayout {
                 this.minusButton.style.border = '1px solid #FFD700';
                 this.points++;
                 pointSpread.current--;
-                this.adjustTechPoints(pointSpread);
+                this._adjustTechPoints(pointSpread);
             }
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.opacity = this.enabledOpacity;
@@ -658,7 +600,7 @@ export class ShipLayout {
                 this.plusButton.style.border = '1px solid #FFD700';
                 this.points--;
                 pointSpread.current++;
-                this.adjustTechPoints(pointSpread);
+                this._adjustTechPoints(pointSpread);
             }
             if (this.points <= 0 || pointSpread.current <= pointSpread.min) {
                 this.plusButton.style.opacity = this.disabledOpacity;
@@ -667,7 +609,7 @@ export class ShipLayout {
         this.plusButton.onmouseup = plusMouseUp.bind(this);
 
         if (this.selectedBox) {
-            this.adjustTechPoints(techPoints[this.selectedBox.name]);
+            this._adjustTechPoints(techPoints[this.selectedBox.name]);
         }
 
         this.dialogueText.element = createRightPanelText(
@@ -731,10 +673,10 @@ export class ShipLayout {
         } else {
             return false;
         }
-        this.makeDialogueText();
-        this.makeHoverText();
-        this.makePointsText();
-        this.makeSelectionText();
+        this._makeDialogueText();
+        this._makeHoverText();
+        this._makePointsText();
+        this._makeSelectionText();
         return true;
     }
 }
