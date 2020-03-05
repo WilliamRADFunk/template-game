@@ -125,7 +125,7 @@ gulp.task('typescript', () => {
       noImplicitAny: true,
       sourceMap: true,
       module: "commonjs",
-      target: 'es2015'
+      target: 'ESNext'
     }))
       .on('error', log)
     .pipe(gulp.dest('dist/js-pure'));

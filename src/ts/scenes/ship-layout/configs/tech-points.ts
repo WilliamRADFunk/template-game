@@ -1,7 +1,9 @@
+import { TechPoints } from "../../../models/tech-points";
+
 /**
  * Starting tech points for each ship section, and minimum values required.
  */
-export const techPoints: { [key: string]: { current: number; max: number; min: number; start: number; } } = {
+export const techPoints: TechPoints = {
     'Galley & Mess Hall': {
         current: 1,
         max: 3,

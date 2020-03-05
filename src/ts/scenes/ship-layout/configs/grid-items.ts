@@ -45,5 +45,6 @@ export const textElements = [
     'ship-layout-screen-hover',
     'minus-button',
     'plus-button',
+    'reset-button',
     'submit-button'
 ]
