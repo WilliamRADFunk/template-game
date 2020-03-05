@@ -174,6 +174,11 @@ export class ShipLayout {
     private stars: Mesh[] = [];
 
     /**
+     * HTML button for submitting point distribution in ship layout section.
+     */
+    private submitButton: HTMLElement = null;
+
+    /**
      * Meshes for all the tech pellets.
      */
     private techPellentMeshMap: Mesh[] = [];
@@ -349,6 +354,12 @@ export class ShipLayout {
         this.pointsText.isHolding = false;
         this.pointsText.counter = 20;
         this._makePointsText();
+
+        if (this.points === 0) {
+            this.submitButton.style.visibility = 'visible';
+        } else {
+            this.submitButton.style.visibility = 'hidden';
+        }
     }
 
     private _clearMeshMap(): void {
@@ -502,7 +513,7 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = defaultColor;
                 this.minusButton.style.color = neutralColor;
-                this.minusButton.style.border = '1px solid #FFD700';
+                this.minusButton.style.border = '1px solid ' + neutralColor;
             }
         };
         this.minusButton.onmouseover = minusHover.bind(this);
@@ -511,7 +522,7 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = selectedColor;
                 this.minusButton.style.color = neutralColor;
-                this.minusButton.style.border = '1px solid #FFD700';
+                this.minusButton.style.border = '1px solid ' + neutralColor;
             }
         };
         this.minusButton.onmouseleave = minusExit.bind(this);
@@ -529,7 +540,7 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = selectedColor;
                 this.minusButton.style.color = neutralColor;
-                this.minusButton.style.border = '1px solid #FFD700';
+                this.minusButton.style.border = '1px solid ' + neutralColor;
                 this.points++;
                 pointSpread.current--;
                 this._adjustTechPoints(pointSpread);
@@ -558,7 +569,7 @@ export class ShipLayout {
         this.plusButton.style.left = `${left + (0.395 * width)}px`;
         this.plusButton.style.overflowY = 'hidden';
         this.plusButton.style.textAlign = 'center';
-        this.plusButton.style.border = '1px solid #FFD700';
+        this.plusButton.style.border = '1px solid ' + neutralColor;
         this.plusButton.style.borderRadius = '10px';
         this.plusButton.style.fontSize = `${0.022 * width}px`;
         this.plusButton.style.boxSizing = 'border-box';
@@ -570,7 +581,7 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = neutralColor;
-                this.plusButton.style.border = '1px solid #FFD700';
+                this.plusButton.style.border = '1px solid ' + neutralColor;
             }
         };
         this.plusButton.onmouseover = plusHover.bind(this);
@@ -579,7 +590,7 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
-                this.plusButton.style.border = '1px solid #FFD700';
+                this.plusButton.style.border = '1px solid ' + neutralColor;
             }
         };
         this.plusButton.onmouseleave = plusExit.bind(this);
@@ -597,7 +608,7 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
-                this.plusButton.style.border = '1px solid #FFD700';
+                this.plusButton.style.border = '1px solid ' + neutralColor;
                 this.points--;
                 pointSpread.current++;
                 this._adjustTechPoints(pointSpread);
@@ -648,6 +659,53 @@ export class ShipLayout {
         this.hoverText.element.style.fontSize = `${0.03 * width}px`;
         this.hoverText.element.style.border = border;
         document.body.appendChild(this.hoverText.element);
+
+        this.submitButton = document.createElement('button');
+        this.submitButton.innerHTML = 'Play';
+        this.submitButton.id = 'submit-button';
+        this.submitButton.style.outline = 'none';
+        this.submitButton.style.backgroundColor = selectedColor;
+        this.submitButton.style.color = neutralColor;
+        this.submitButton.style.position = 'absolute';
+        this.submitButton.style.maxWidth = `${0.12 * width}px`;
+        this.submitButton.style.width = `${0.12 * width}px`;
+        this.submitButton.style.maxHeight = `${0.03 * height}px`;
+        this.submitButton.style.height = `${0.03 * height}px`;
+        this.submitButton.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
+        this.submitButton.style.left = `${left + (0.85 * width)}px`;
+        this.submitButton.style.overflowY = 'hidden';
+        this.submitButton.style.textAlign = 'center';
+        this.submitButton.style.border = '1px solid ' + neutralColor;
+        this.submitButton.style.borderRadius = '5px';
+        this.submitButton.style.fontSize = `${0.022 * width}px`;
+        this.submitButton.style.boxSizing = 'border-box';
+        this.submitButton.style.visibility = this.points === 0 ? 'visible' : 'hidden';
+        document.body.appendChild(this.submitButton);
+
+        const submitHover = () => {
+            this.submitButton.style.backgroundColor = defaultColor;
+            this.submitButton.style.color = neutralColor;
+            this.submitButton.style.border = '1px solid ' + neutralColor;
+        };
+        this.submitButton.onmouseover = submitHover.bind(this);
+        const submitExit = () => {
+            this.submitButton.style.backgroundColor = selectedColor;
+            this.submitButton.style.color = neutralColor;
+            this.submitButton.style.border = '1px solid ' + neutralColor;
+        };
+        this.submitButton.onmouseleave = submitExit.bind(this);
+        const submitMouseDown = () => {
+            this.submitButton.style.backgroundColor = defaultColor;
+            this.submitButton.style.color = selectedColor;
+            this.submitButton.style.border = '1px solid ' + selectedColor;
+        };
+        this.submitButton.onmousedown = submitMouseDown.bind(this);
+        const submitMouseUp = () => {
+            this.submitButton.style.backgroundColor = selectedColor;
+            this.submitButton.style.color = neutralColor;
+            this.submitButton.style.border = '1px solid ' + neutralColor;
+        };
+        this.submitButton.onmouseup = submitMouseUp.bind(this);
     };
 
     /**
