@@ -30,10 +30,22 @@ import { createMinusButton } from '../../utils/create-minus-button';
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
+const borderSizeAndStyle: string = '1px solid ';
+
 /**
  * Color for boxes used for anything non-specific.
  */
 const defaultColor = '#00B39F';
+
+/**
+ * Opacity level when button is disabled.
+ */
+const disabledOpacity: string = '0.4';
+
+/**
+ * Opacity level when button is enabled.
+ */
+const enabledOpacity: string = '1';
 
 /**
  * Color for boxes user is hovering over.
@@ -83,14 +95,9 @@ export class ShipLayout {
     };
 
     /**
-     * Opacity level when button is disabled.
+     * Flag to signal user has completed layout specs.
      */
-    private disabledOpacity: string = '0.4';
-
-    /**
-     * Opacity level when button is enabled.
-     */
-    private enabledOpacity: string = '1';
+    private hasSubmitted: boolean = false;
 
     /**
      * Mesh for box user has hovered over.
@@ -339,14 +346,14 @@ export class ShipLayout {
             }
         }
         if (pointSpread.current > pointSpread.min) {
-            this.minusButton.style.opacity = this.enabledOpacity;
+            this.minusButton.style.opacity = enabledOpacity;
         } else {
-            this.minusButton.style.opacity = this.disabledOpacity;
+            this.minusButton.style.opacity = disabledOpacity;
         }
         if (this.points <= 0 || pointSpread.current >= pointSpread.max) {
-            this.plusButton.style.opacity = this.disabledOpacity;
+            this.plusButton.style.opacity = disabledOpacity;
         } else {
-            this.plusButton.style.opacity = this.enabledOpacity;
+            this.plusButton.style.opacity = enabledOpacity;
         }
         this.pointsText.sentence = `You have <span style="color: ${neutralColor};">${this.points}</span> tech points to spend`;
         this.pointsText.element.innerHTML = this.pointsText.sentence;
@@ -513,7 +520,7 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = defaultColor;
                 this.minusButton.style.color = neutralColor;
-                this.minusButton.style.border = '1px solid ' + neutralColor;
+                this.minusButton.style.border = borderSizeAndStyle + neutralColor;
             }
         };
         this.minusButton.onmouseover = minusHover.bind(this);
@@ -522,7 +529,7 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = selectedColor;
                 this.minusButton.style.color = neutralColor;
-                this.minusButton.style.border = '1px solid ' + neutralColor;
+                this.minusButton.style.border = borderSizeAndStyle + neutralColor;
             }
         };
         this.minusButton.onmouseleave = minusExit.bind(this);
@@ -531,7 +538,7 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = defaultColor;
                 this.minusButton.style.color = selectedColor;
-                this.minusButton.style.border = '1px solid ' + selectedColor;
+                this.minusButton.style.border = borderSizeAndStyle + selectedColor;
             }
         };
         this.minusButton.onmousedown = minusMouseDown.bind(this);
@@ -540,16 +547,16 @@ export class ShipLayout {
             if (pointSpread.current > pointSpread.min) {
                 this.minusButton.style.backgroundColor = selectedColor;
                 this.minusButton.style.color = neutralColor;
-                this.minusButton.style.border = '1px solid ' + neutralColor;
+                this.minusButton.style.border = borderSizeAndStyle + neutralColor;
                 this.points++;
                 pointSpread.current--;
                 this._adjustTechPoints(pointSpread);
             }
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
-                this.plusButton.style.opacity = this.enabledOpacity;
+                this.plusButton.style.opacity = enabledOpacity;
             }
             if (pointSpread.current <= pointSpread.min) {
-                this.minusButton.style.opacity = this.disabledOpacity;
+                this.minusButton.style.opacity = disabledOpacity;
             }
         };
         this.minusButton.onmouseup = minusMouseUp.bind(this);
@@ -569,7 +576,7 @@ export class ShipLayout {
         this.plusButton.style.left = `${left + (0.395 * width)}px`;
         this.plusButton.style.overflowY = 'hidden';
         this.plusButton.style.textAlign = 'center';
-        this.plusButton.style.border = '1px solid ' + neutralColor;
+        this.plusButton.style.border = borderSizeAndStyle + neutralColor;
         this.plusButton.style.borderRadius = '10px';
         this.plusButton.style.fontSize = `${0.022 * width}px`;
         this.plusButton.style.boxSizing = 'border-box';
@@ -581,7 +588,7 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = neutralColor;
-                this.plusButton.style.border = '1px solid ' + neutralColor;
+                this.plusButton.style.border = borderSizeAndStyle + neutralColor;
             }
         };
         this.plusButton.onmouseover = plusHover.bind(this);
@@ -590,7 +597,7 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
-                this.plusButton.style.border = '1px solid ' + neutralColor;
+                this.plusButton.style.border = borderSizeAndStyle + neutralColor;
             }
         };
         this.plusButton.onmouseleave = plusExit.bind(this);
@@ -599,7 +606,7 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = defaultColor;
                 this.plusButton.style.color = selectedColor;
-                this.plusButton.style.border = '1px solid ' + selectedColor;
+                this.plusButton.style.border = borderSizeAndStyle + selectedColor;
             }
         };
         this.plusButton.onmousedown = plusMouseDown.bind(this);
@@ -608,13 +615,13 @@ export class ShipLayout {
             if (this.points > 0 && pointSpread.current < pointSpread.max) {
                 this.plusButton.style.backgroundColor = selectedColor;
                 this.plusButton.style.color = neutralColor;
-                this.plusButton.style.border = '1px solid ' + neutralColor;
+                this.plusButton.style.border = borderSizeAndStyle + neutralColor;
                 this.points--;
                 pointSpread.current++;
                 this._adjustTechPoints(pointSpread);
             }
             if (this.points <= 0 || pointSpread.current <= pointSpread.min) {
-                this.plusButton.style.opacity = this.disabledOpacity;
+                this.plusButton.style.opacity = disabledOpacity;
             }
         };
         this.plusButton.onmouseup = plusMouseUp.bind(this);
@@ -675,7 +682,7 @@ export class ShipLayout {
         this.submitButton.style.left = `${left + (0.85 * width)}px`;
         this.submitButton.style.overflowY = 'hidden';
         this.submitButton.style.textAlign = 'center';
-        this.submitButton.style.border = '1px solid ' + neutralColor;
+        this.submitButton.style.border = borderSizeAndStyle + neutralColor;
         this.submitButton.style.borderRadius = '5px';
         this.submitButton.style.fontSize = `${0.022 * width}px`;
         this.submitButton.style.boxSizing = 'border-box';
@@ -683,27 +690,39 @@ export class ShipLayout {
         document.body.appendChild(this.submitButton);
 
         const submitHover = () => {
-            this.submitButton.style.backgroundColor = defaultColor;
-            this.submitButton.style.color = neutralColor;
-            this.submitButton.style.border = '1px solid ' + neutralColor;
+            if (!this.hasSubmitted) {
+                this.submitButton.style.backgroundColor = defaultColor;
+                this.submitButton.style.color = neutralColor;
+                this.submitButton.style.border = borderSizeAndStyle + neutralColor;
+            }
         };
         this.submitButton.onmouseover = submitHover.bind(this);
         const submitExit = () => {
-            this.submitButton.style.backgroundColor = selectedColor;
-            this.submitButton.style.color = neutralColor;
-            this.submitButton.style.border = '1px solid ' + neutralColor;
+            if (!this.hasSubmitted) {
+                this.submitButton.style.backgroundColor = selectedColor;
+                this.submitButton.style.color = neutralColor;
+                this.submitButton.style.border = borderSizeAndStyle + neutralColor;
+            }
         };
         this.submitButton.onmouseleave = submitExit.bind(this);
         const submitMouseDown = () => {
-            this.submitButton.style.backgroundColor = defaultColor;
-            this.submitButton.style.color = selectedColor;
-            this.submitButton.style.border = '1px solid ' + selectedColor;
+            if (!this.hasSubmitted) {
+                this.submitButton.style.backgroundColor = defaultColor;
+                this.submitButton.style.color = selectedColor;
+                this.submitButton.style.border = borderSizeAndStyle + selectedColor;
+            }
         };
         this.submitButton.onmousedown = submitMouseDown.bind(this);
         const submitMouseUp = () => {
-            this.submitButton.style.backgroundColor = selectedColor;
-            this.submitButton.style.color = neutralColor;
-            this.submitButton.style.border = '1px solid ' + neutralColor;
+            if (!this.hasSubmitted) {
+                this.submitButton.style.backgroundColor = selectedColor;
+                this.submitButton.style.color = neutralColor;
+                this.submitButton.style.border = borderSizeAndStyle + neutralColor;
+                this.submitButton.style.opacity = disabledOpacity;
+                setTimeout(() => {
+                    this.hasSubmitted = true;
+                }, 100);
+            }
         };
         this.submitButton.onmouseup = submitMouseUp.bind(this);
     };
@@ -712,12 +731,9 @@ export class ShipLayout {
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
     public dispose(): void {
-        document.getElementById('dialogue-text').remove();
-        document.getElementById('ship-layout-screen-hover').remove();
-        document.getElementById('left-panel-subtitle-text').remove();
-        document.getElementById('left-panel-title-text').remove();
-        document.getElementById('minus-button').remove();
-        document.getElementById('plus-button').remove();
+        textElements.forEach(el => {
+            document.getElementById(el).remove();
+        });
         window.removeEventListener( 'resize', this.listenerRef, false);
     }
 
@@ -726,9 +742,7 @@ export class ShipLayout {
      * @returns whether or not the scene is done.
      */
     endCycle(): boolean {
-        if (true) {
-
-        } else {
+        if (this.hasSubmitted) {
             return false;
         }
         this._makeDialogueText();

@@ -527,12 +527,10 @@ const loadIntroScene = () => {
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        let container;
         if (!scenes.intro.active) {
             intro.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', onWindowResize, false);
-            container = document.getElementById('mainview');
             container.removeChild( (scenes.intro.renderer as any).domElement );
             // Clear up memory used by intro scene.
             scenes.intro.camera = null;
@@ -547,7 +545,6 @@ const loadIntroScene = () => {
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', onWindowResize, false);
-                container = document.getElementById('mainview');
                 container.removeChild( (scenes.intro.renderer as any).domElement );
                 // Clear up memory used by intro scene.
                 scenes.intro.camera = null;
@@ -626,12 +623,10 @@ const loadShipLayoutScene = () => {
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        let container;
         if (!scenes.shipLayout.active) {
             shipLayout.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', onWindowResize, false);
-            container = document.getElementById('mainview');
             container.removeChild( (scenes.shipLayout.renderer as any).domElement );
             // Clear up memory used by shipLayout scene.
             scenes.shipLayout.camera = null;
@@ -646,7 +641,6 @@ const loadShipLayoutScene = () => {
                 scenes.shipLayout.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', onWindowResize, false);
-                container = document.getElementById('mainview');
                 container.removeChild( (scenes.shipLayout.renderer as any).domElement );
                 // Clear up memory used by shipLayout scene.
                 scenes.shipLayout.camera = null;
@@ -654,7 +648,7 @@ const loadShipLayoutScene = () => {
                 scenes.shipLayout.raycaster = null;
                 scenes.shipLayout.renderer = null;
                 scenes.shipLayout.scene = null;
-                // loadMenu();
+                loadMenu();
                 return;
             }
         }
