@@ -540,7 +540,7 @@ const loadIntroScene = () => {
             scenes.intro.scene = null;
             return;
         } else {
-            if (!intro.endCycle()) {
+            if (intro.endCycle()) {
                 intro.dispose();
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
@@ -636,7 +636,9 @@ const loadShipLayoutScene = () => {
             scenes.shipLayout.scene = null;
             return;
         } else {
-            if (!shipLayout.endCycle()) {
+            const layout = shipLayout.endCycle();
+            if (layout) {
+                console.log("Chosen Layout: ", layout);
                 shipLayout.dispose();
                 scenes.shipLayout.active = false;
                 // Remove renderer from the html container, and remove event listeners.
@@ -648,7 +650,9 @@ const loadShipLayoutScene = () => {
                 scenes.shipLayout.raycaster = null;
                 scenes.shipLayout.renderer = null;
                 scenes.shipLayout.scene = null;
-                loadMenu();
+                setTimeout(() => {
+                    loadMenu();
+                }, 10);
                 return;
             }
         }

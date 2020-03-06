@@ -822,6 +822,8 @@ export class ShipLayout {
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
     public dispose(): void {
+        document.onmousemove = () => {};
+        document.onclick = () => {};
         textElements.forEach(el => {
             document.getElementById(el).remove();
         });
@@ -832,14 +834,18 @@ export class ShipLayout {
      * At the end of each loop iteration, check for end state.
      * @returns whether or not the scene is done.
      */
-    public endCycle(): boolean {
+    public endCycle(): { [key: string]: number } {
         if (this._hasSubmitted) {
-            return false;
+            const chosenLayout: { [key: string]: number } = {};
+            Object.keys(this._cloneTechPoints).forEach(tp => {
+                chosenLayout[tp] = this._cloneTechPoints[tp].current;
+            });
+            return chosenLayout;
         }
         this._makeDialogueText();
         this._makeHoverText();
         this._makePointsText();
         this._makeSelectionText();
-        return true;
+        return null;
     }
 }

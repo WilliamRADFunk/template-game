@@ -174,7 +174,7 @@ export class Intro {
         enceladusTexture: Texture,
         shipTexture: Texture,
         introFont: Font
-    ): void { 
+    ): void {
         const headerParams = {
             font: introFont,
             size: 0.25,
@@ -588,7 +588,7 @@ export class Intro {
             const textEvent = sequence.textEvents.find(event => event.startingFrame === this.currentFrame);
             this.handleTextEvents(textEvent);
         } else {
-            return false;
+            return true;
         }
         this.makeText();
         this.actors.filter(x => x.inMotion).forEach(actor => {
@@ -626,9 +626,9 @@ export class Intro {
                 }
             });
         }
-        return true;
+        return false;
     }
-    
+
     /**
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
