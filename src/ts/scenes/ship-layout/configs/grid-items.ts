@@ -43,8 +43,6 @@ export const textElements = [
     'left-panel-subtitle-text',
     'left-panel-title-text',
     'ship-layout-screen-hover',
-    'minus-button',
-    'plus-button',
     'reset-button',
     'submit-button'
 ]

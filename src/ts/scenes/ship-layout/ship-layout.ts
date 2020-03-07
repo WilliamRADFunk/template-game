@@ -25,8 +25,11 @@ import { createRightPanelText } from '../../utils/create-right-panel-text';
 import { createLeftPanelTitleText } from '../../utils/create-left-panel-title-text';
 import { createLeftPanelSubtitleText } from '../../utils/create-left-panel-subtitle-text';
 import { createTextPanels } from '../../utils/create-text-panels';
-import { createMinusButton } from '../../utils/create-minus-button';
 import { TechPoints } from '../../models/tech-points';
+import { MinusButton } from '../../controls/buttons/minus-button';
+import { ButtonBase } from '../../controls/buttons/button-base';
+import { ButtonColors } from '../../models/button-colors';
+import { PlusButton } from '../../controls/buttons/plus-button';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -45,11 +48,6 @@ const defaultColor = '#00B39F';
  * Opacity level when button is disabled.
  */
 const disabledOpacity: string = '0.4';
-
-/**
- * Opacity level when button is enabled.
- */
-const enabledOpacity: string = '1';
 
 /**
  * Color for boxes user is hovering over.
@@ -82,6 +80,37 @@ const startingPoints = 10;
 const unhighlightedColor = '#87D3F8';
 
 /**
+ * Color scheme for all lifecycle events of a button.
+ */
+const buttonColors: ButtonColors = {
+    default: {
+        backgroundColor: selectedColor,
+        color: neutralColor,
+        border: neutralColor
+    },
+    onExit: {
+        backgroundColor: selectedColor,
+        color: neutralColor,
+        border: neutralColor
+    },
+    onHover: {
+        backgroundColor: defaultColor,
+        color: neutralColor,
+        border: neutralColor
+    },
+    onMouseDown: {
+        backgroundColor: defaultColor,
+        color: selectedColor,
+        border: selectedColor
+    },
+    onMouseUp: {
+        backgroundColor: selectedColor,
+        color: neutralColor,
+        border: neutralColor
+    }
+};
+
+/**
  * @class
  * Slow moving debris object that is sometimes on the path towards planet.
  */
@@ -90,6 +119,18 @@ export class ShipLayout {
      * List of actors in the scene.
      */
     private _actors: Actor[] = [];
+
+    /**
+     * List of buttons
+     */
+    private _buttons: { [key: string]: ButtonBase } = {
+        // HTML button for decreasing tech point on a specific ship section.
+        minusButton: null,
+        // HTML button for increasing tech point on a specific ship section.
+        plusButton: null,
+        resetButton: null,
+        submitButton: null
+    };
 
     /**
      * Cloned version of the techPoints object to allow for resetting.
@@ -139,16 +180,6 @@ export class ShipLayout {
      * Meshes for all the boxes user can interact with.
      */
     private _meshMap: { [key: string]: Mesh } = {};
-
-    /**
-     * HTML button for decreasing tech point on a specific ship section.
-     */
-    private _minusButton: HTMLElement = null;
-
-    /**
-     * HTML button for increasing tech point on a specific ship section.
-     */
-    private _plusButton: HTMLElement = null;
 
     /**
      * Number of tech points player has left to spend.
@@ -289,8 +320,8 @@ export class ShipLayout {
                     !this._techPellentMeshMap[0].visible ? this._techPellentMeshMap.forEach(x => x.visible = true) : null;
                     this._adjustTechPoints([this._cloneTechPoints[hit.name]]);
 
-                    this._minusButton.style.visibility = 'visible';
-                    this._plusButton.style.visibility = 'visible';
+                    this._buttons.minusButton.show();
+                    this._buttons.plusButton.show();
 
                     this._dialogueText.sentence = dialogues[hit.name];
                     this._dialogueText.counter = -1;
@@ -366,14 +397,14 @@ export class ShipLayout {
                 }
             }
             if (pointSpread.current > pointSpread.min) {
-                this._minusButton.style.opacity = enabledOpacity;
+                this._buttons.minusButton.enable();
             } else {
-                this._minusButton.style.opacity = disabledOpacity;
+                this._buttons.minusButton.disable();
             }
             if (this._points <= 0 || pointSpread.current >= pointSpread.max) {
-                this._plusButton.style.opacity = disabledOpacity;
+                this._buttons.plusButton.disable();
             } else {
-                this._plusButton.style.opacity = enabledOpacity;
+                this._buttons.plusButton.enable();
             }
         });
         this._pointsText.sentence = `You have <span style="color: ${neutralColor};">${this._points}</span> tech points to spend`;
@@ -518,13 +549,7 @@ export class ShipLayout {
     }
 
     private _onWindowResize(): void {
-        textElements.forEach(el => {
-            const element = document.getElementById(el);
-            if (element) {
-                element.remove();
-            }
-        });
-
+        // Get new window dimmensions
         let WIDTH = window.innerWidth * 0.99;
         let HEIGHT = window.innerHeight * 0.99;
         if ( WIDTH < HEIGHT ) {
@@ -536,127 +561,65 @@ export class ShipLayout {
         const width = WIDTH;
         const height = HEIGHT;
 
-        this._minusButton = createMinusButton(
-            { left, height, width },
-            { neutralColor, selectedColor },
-            !!this._selectedBox
-        );
+        // Sets up the minus button, or adjusts it.
+        if (!this._buttons.minusButton) {
+            const onClick = () => {
+                const pointSpread = this._cloneTechPoints[this._selectedBox.name];
+                if (pointSpread.current > pointSpread.min) {
+                    this._points++;
+                    pointSpread.current--;
+                    this._adjustTechPoints([pointSpread]);
+                }
+                if (pointSpread.current <= pointSpread.min) {
+                    this._buttons.minusButton.disable();
+                }
+            };
 
-        const minusHover = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (pointSpread.current > pointSpread.min) {
-                this._minusButton.style.backgroundColor = defaultColor;
-                this._minusButton.style.color = neutralColor;
-                this._minusButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._minusButton.onmouseover = minusHover.bind(this);
-        const minusExit = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (pointSpread.current > pointSpread.min) {
-                this._minusButton.style.backgroundColor = selectedColor;
-                this._minusButton.style.color = neutralColor;
-                this._minusButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._minusButton.onmouseleave = minusExit.bind(this);
-        const minusMouseDown = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (pointSpread.current > pointSpread.min) {
-                this._minusButton.style.backgroundColor = defaultColor;
-                this._minusButton.style.color = selectedColor;
-                this._minusButton.style.border = borderSizeAndStyle + selectedColor;
-            }
-        };
-        this._minusButton.onmousedown = minusMouseDown.bind(this);
-        const minusMouseUp = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (pointSpread.current > pointSpread.min) {
-                this._minusButton.style.backgroundColor = selectedColor;
-                this._minusButton.style.color = neutralColor;
-                this._minusButton.style.border = borderSizeAndStyle + neutralColor;
-                this._points++;
-                pointSpread.current--;
-                this._adjustTechPoints([pointSpread]);
-            }
-            if (this._points > 0 && pointSpread.current < pointSpread.max) {
-                this._plusButton.style.opacity = enabledOpacity;
-            }
-            if (pointSpread.current <= pointSpread.min) {
-                this._minusButton.style.opacity = disabledOpacity;
-            }
-        };
-        this._minusButton.onmouseup = minusMouseUp.bind(this);
+            this._buttons.minusButton = new MinusButton(
+                { left: left + (0.02 * width), height, top: (0.15 * height), width },
+                buttonColors,
+                onClick,
+                !!this._selectedBox);
+        } else {
+            this._buttons.minusButton.resize({ left: left + (0.02 * width), height, top: (0.15 * height), width });
+        }
 
-        this._plusButton = document.createElement('button');
-        this._plusButton.classList.add('fa', 'fa-plus');
-        this._plusButton.id = 'plus-button';
-        this._plusButton.style.outline = 'none';
-        this._plusButton.style.backgroundColor = selectedColor;
-        this._plusButton.style.color = neutralColor;
-        this._plusButton.style.position = 'absolute';
-        this._plusButton.style.maxWidth = `${0.06 * width}px`;
-        this._plusButton.style.width = `${0.06 * width}px`;
-        this._plusButton.style.maxHeight = `${0.06 * height}px`;
-        this._plusButton.style.height = `${0.06 * height}px`;
-        this._plusButton.style.top = `${0.15 * height}px`;
-        this._plusButton.style.left = `${left + (0.395 * width)}px`;
-        this._plusButton.style.overflowY = 'hidden';
-        this._plusButton.style.textAlign = 'center';
-        this._plusButton.style.border = borderSizeAndStyle + neutralColor;
-        this._plusButton.style.borderRadius = '10px';
-        this._plusButton.style.fontSize = `${0.022 * width}px`;
-        this._plusButton.style.boxSizing = 'border-box';
-        this._plusButton.style.visibility = this._selectedBox ? 'visible' : 'hidden';
-        document.body.appendChild(this._plusButton);
+        // Sets up the plus button, or adjusts it.
+        if (!this._buttons.plusButton) {
+            const onClick = () => {
+                const pointSpread = this._cloneTechPoints[this._selectedBox.name];
+                if (this._points > 0 && pointSpread.current < pointSpread.max) {
+                    this._points--;
+                    pointSpread.current++;
+                    this._adjustTechPoints([pointSpread]);
+                }
+                if (this._points <= 0 || pointSpread.current <= pointSpread.min) {
+                    this._buttons.plusButton.disable();
+                }
+            };
 
-        const plusHover = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (this._points > 0 && pointSpread.current < pointSpread.max) {
-                this._plusButton.style.backgroundColor = defaultColor;
-                this._plusButton.style.color = neutralColor;
-                this._plusButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._plusButton.onmouseover = plusHover.bind(this);
-        const plusExit = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (this._points > 0 && pointSpread.current < pointSpread.max) {
-                this._plusButton.style.backgroundColor = selectedColor;
-                this._plusButton.style.color = neutralColor;
-                this._plusButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._plusButton.onmouseleave = plusExit.bind(this);
-        const plusMouseDown = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (this._points > 0 && pointSpread.current < pointSpread.max) {
-                this._plusButton.style.backgroundColor = defaultColor;
-                this._plusButton.style.color = selectedColor;
-                this._plusButton.style.border = borderSizeAndStyle + selectedColor;
-            }
-        };
-        this._plusButton.onmousedown = plusMouseDown.bind(this);
-        const plusMouseUp = () => {
-            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-            if (this._points > 0 && pointSpread.current < pointSpread.max) {
-                this._plusButton.style.backgroundColor = selectedColor;
-                this._plusButton.style.color = neutralColor;
-                this._plusButton.style.border = borderSizeAndStyle + neutralColor;
-                this._points--;
-                pointSpread.current++;
-                this._adjustTechPoints([pointSpread]);
-            }
-            if (this._points <= 0 || pointSpread.current <= pointSpread.min) {
-                this._plusButton.style.opacity = disabledOpacity;
-            }
-        };
-        this._plusButton.onmouseup = plusMouseUp.bind(this);
+            this._buttons.plusButton = new PlusButton(
+                { left: left + (0.395 * width), height, top: (0.15 * height), width },
+                buttonColors,
+                onClick,
+                !!this._selectedBox);
+        } else {
+            this._buttons.plusButton.resize({ left: left + (0.395 * width), height, top: (0.15 * height), width });
+        }
 
         if (this._selectedBox) {
             this._adjustTechPoints([this._cloneTechPoints[this._selectedBox.name]]);
         }
 
+        // Destroy old text
+        textElements.forEach(el => {
+            const element = document.getElementById(el);
+            if (element) {
+                element.remove();
+            }
+        });
+
+        // Create the various texts
         this._dialogueText.element = createRightPanelText(
             { left, height, width },
             this._dialogueText.sentence.slice(0, this._dialogueText.currentIndex),
@@ -827,6 +790,8 @@ export class ShipLayout {
         textElements.forEach(el => {
             document.getElementById(el).remove();
         });
+        this._buttons.minusButton.dispose();
+        this._buttons.plusButton.dispose();
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
 
