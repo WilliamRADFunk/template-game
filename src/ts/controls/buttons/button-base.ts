@@ -15,7 +15,7 @@ export class ButtonBase {
     /**
      * Flag to track if element is currently supposed to be diabled.
      */
-    private _isEnabled: boolean;
+    private _isEnabled: boolean = true;
 
     /**
      * HTMLElement that is the button itself.

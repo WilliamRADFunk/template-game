@@ -42,7 +42,5 @@ export const textElements = [
     'dialogue-text',
     'left-panel-subtitle-text',
     'left-panel-title-text',
-    'ship-layout-screen-hover',
-    'reset-button',
-    'submit-button'
+    'ship-layout-screen-hover'
 ]

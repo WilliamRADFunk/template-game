@@ -30,6 +30,8 @@ import { MinusButton } from '../../controls/buttons/minus-button';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { ButtonColors } from '../../models/button-colors';
 import { PlusButton } from '../../controls/buttons/plus-button';
+import { PlayButton } from '../../controls/buttons/play-button';
+import { ResetButton } from '../../controls/buttons/reset-button';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -126,28 +128,18 @@ export class ShipLayout {
     private _buttons: { [key: string]: ButtonBase } = {
         // HTML button for decreasing tech point on a specific ship section.
         minusButton: null,
+        // HTML button for submitting point distribution in ship layout section.
+        playButton: null,
         // HTML button for increasing tech point on a specific ship section.
         plusButton: null,
-        resetButton: null,
-        submitButton: null
+        // HTML button for restting point distribution in ship layout section.
+        resetButton: null
     };
 
     /**
      * Cloned version of the techPoints object to allow for resetting.
      */
-    private _cloneTechPoints: TechPoints = JSON.parse(JSON.stringify(techPoints));
-
-    /**
-     * Text for hovered room at bottom of screen.
-     */
-    private _dialogueText: DialogueText = {
-        counter: 1,
-        currentIndex: 0,
-        element: null,
-        font: null,
-        isFinished: false,
-        sentence: dialogues['']
-    };
+    private _cloneTechPoints: { [key: string]: TechPoints } = JSON.parse(JSON.stringify(techPoints));
 
     /**
      * Flag to signal user has completed layout specs.
@@ -158,18 +150,6 @@ export class ShipLayout {
      * Mesh for box user has hovered over.
      */
     private _hoveredBox: Mesh = null;
-
-    /**
-     * Text for hovered room at bottom of screen.
-     */
-    private _hoverText: FadableText = {
-        counter: 1,
-        element: null,
-        holdCount: -1, // Hold until replaced
-        isFadeIn: true,
-        isHolding: false,
-        sentence: ''
-    };
 
     /**
      * Reference to _onWindowResize so that it can be removed later.
@@ -187,23 +167,6 @@ export class ShipLayout {
     private _points: number = 10;
 
     /**
-     * Text for points to spend at top left of screen.
-     */
-    private _pointsText: FadableText = {
-        counter: 1,
-        element: null,
-        holdCount: -1, // Hold until replaced
-        isFadeIn: true,
-        isHolding: false,
-        sentence: ''
-    };
-
-    /**
-     * HTML button for restting point distribution in ship layout section.
-     */
-    private _resetButton: HTMLElement = null;
-
-    /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
     private _scene: Scene;
@@ -214,31 +177,56 @@ export class ShipLayout {
     private _selectedBox: Mesh = null;
 
     /**
-     * Text for selected room at top left of screen.
-     */
-    private _selectionText: FadableText = {
-        counter: 1,
-        element: null,
-        holdCount: -1, // Hold until replaced
-        isFadeIn: true,
-        isHolding: false,
-        sentence: ''
-    };
-
-    /**
      * Stars in background.
      */
     private _stars: Mesh[] = [];
 
     /**
-     * HTML button for submitting point distribution in ship layout section.
-     */
-    private _submitButton: HTMLElement = null;
-
-    /**
      * Meshes for all the tech pellets.
      */
     private _techPellentMeshMap: Mesh[] = [];
+
+    /**
+     * Groups of text elements
+     */
+    private _textElements: { [key: string]: (DialogueText | FadableText) } = {
+        // Text for hovered room at bottom of screen.
+        dialogueText: {
+            counter: 1,
+            currentIndex: 0,
+            element: null,
+            font: null,
+            isFinished: false,
+            sentence: dialogues['']
+        },
+        // Text for hovered room at bottom of screen.
+        hoverText: {
+            counter: 1,
+            element: null,
+            holdCount: -1, // Hold until replaced
+            isFadeIn: true,
+            isHolding: false,
+            sentence: ''
+        },
+        // Text for points to spend at top left of screen.
+        pointsText: {
+            counter: 1,
+            element: null,
+            holdCount: -1, // Hold until replaced
+            isFadeIn: true,
+            isHolding: false,
+            sentence: ''
+        },
+        // Text for selected room at top left of screen.
+        selectionText: {
+            counter: 1,
+            element: null,
+            holdCount: -1, // Hold until replaced
+            isFadeIn: true,
+            isHolding: false,
+            sentence: ''
+        }
+    };
 
     /**
      * Constructor for the Intro (Scene) class
@@ -255,7 +243,7 @@ export class ShipLayout {
         dialogueTexture: Texture) {
         this._scene = scene.scene;
 
-        this._onWindowResize();
+        this._onInitialize();
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
 
@@ -310,11 +298,11 @@ export class ShipLayout {
                     (this._meshMap[hit.name].material as any).color.set(selectedColor);
                     SoundinatorSingleton.playClick();
 
-                    this._selectionText.sentence = hit.name;
-                    this._selectionText.element.innerHTML = this._selectionText.sentence;
-                    this._selectionText.isFadeIn = true;
-                    this._selectionText.isHolding = false;
-                    this._selectionText.counter = 1;
+                    this._textElements.selectionText.sentence = hit.name;
+                    this._textElements.selectionText.element.innerHTML = this._textElements.selectionText.sentence;
+                    (<FadableText>this._textElements.selectionText).isFadeIn = true;
+                    (<FadableText>this._textElements.selectionText).isHolding = false;
+                    this._textElements.selectionText.counter = 1;
                     this._makeSelectionText();
 
                     !this._techPellentMeshMap[0].visible ? this._techPellentMeshMap.forEach(x => x.visible = true) : null;
@@ -323,10 +311,10 @@ export class ShipLayout {
                     this._buttons.minusButton.show();
                     this._buttons.plusButton.show();
 
-                    this._dialogueText.sentence = dialogues[hit.name];
-                    this._dialogueText.counter = -1;
-                    this._dialogueText.currentIndex = 0;
-                    this._dialogueText.isFinished = false;
+                    this._textElements.dialogueText.sentence = dialogues[hit.name];
+                    this._textElements.dialogueText.counter = -1;
+                    (<DialogueText>this._textElements.dialogueText).currentIndex = 0;
+                    (<DialogueText>this._textElements.dialogueText).isFinished = false;
                     this._makeDialogueText();
                 }
             });
@@ -349,41 +337,45 @@ export class ShipLayout {
                         (this._meshMap[el.object.name].material as any).color.set(highlightedColor);
                     } else if (selectedName === hit.name) {
                         isHovering = true;
-                        if (!compareRGBValues(this._hoverText.element.style.color.toString().trim(), selectedColorRgb)) {
-                            this._hoverText.sentence = hit.name;
-                            this._hoverText.element.innerHTML = this._hoverText.sentence;
-                            this._hoverText.isFadeIn = true;
-                            this._hoverText.isHolding = false;
-                            this._hoverText.counter = 1;
+                        if (!compareRGBValues(this._textElements.hoverText.element.style.color.toString().trim(), selectedColorRgb)) {
+                            this._textElements.hoverText.sentence = hit.name;
+                            this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
+                            (<FadableText>this._textElements.hoverText).isFadeIn = true;
+                            (<FadableText>this._textElements.hoverText).isHolding = false;
+                            this._textElements.hoverText.counter = 1;
                             this._makeHoverText();
                         }
                     }
 
                     if (hit.name !== hoverName && hit.name !== selectedName) {
-                        this._hoverText.sentence = hit.name;
-                        this._hoverText.element.innerHTML = this._hoverText.sentence;
-                        this._hoverText.isFadeIn = true;
-                        this._hoverText.isHolding = false;
-                        this._hoverText.counter = 1;
+                        this._textElements.hoverText.sentence = hit.name;
+                        this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
+                        (<FadableText>this._textElements.hoverText).isFadeIn = true;
+                        (<FadableText>this._textElements.hoverText).isHolding = false;
+                        this._textElements.hoverText.counter = 1;
                         this._makeHoverText();
                     }
                     return;
                 }
             });
-            if (!isHovering && this._hoverText.sentence) {
-                this._hoveredBox = null;
-                this._hoverText.sentence = '';
-                this._hoverText.element.innerHTML = this._hoverText.sentence;
-                this._hoverText.isFadeIn = true;
-                this._hoverText.isHolding = false;
-                this._hoverText.counter = 1;
+            if (!isHovering && this._textElements.hoverText.sentence) {
+                this._textElements.hoveredBox = null;
+                this._textElements.hoverText.sentence = '';
+                this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
+                (<FadableText>this._textElements.hoverText).isFadeIn = true;
+                (<FadableText>this._textElements.hoverText).isHolding = false;
+                this._textElements.hoverText.counter = 1;
                 this._makeHoverText();
             }
             this._clearMeshMap();
         };
     }
 
-    private _adjustTechPoints(pointSpreads: { current: number; max: number; min: number; start: number; }[]): void {
+    /**
+     * Cycles through the series of tech points objects and adjusts their color schemes, and related buttons.
+     * @param pointSpreads current tech points objects to adjust
+     */
+    private _adjustTechPoints(pointSpreads: TechPoints[]): void {
         pointSpreads.forEach(pointSpread => {
             for (let i = 0; i < this._techPellentMeshMap.length; i++) {
                 if (i < pointSpread.min) {
@@ -407,26 +399,29 @@ export class ShipLayout {
                 this._buttons.plusButton.enable();
             }
         });
-        this._pointsText.sentence = `You have <span style="color: ${neutralColor};">${this._points}</span> tech points to spend`;
-        this._pointsText.element.innerHTML = this._pointsText.sentence;
-        this._pointsText.isFadeIn = true;
-        this._pointsText.isHolding = false;
-        this._pointsText.counter = 20;
+        this._textElements.pointsText.sentence = `You have <span style="color: ${neutralColor};">${this._points}</span> tech points to spend`;
+        this._textElements.pointsText.element.innerHTML = this._textElements.pointsText.sentence;
+        (<FadableText>this._textElements.pointsText).isFadeIn = true;
+        (<FadableText>this._textElements.pointsText).isHolding = false;
+        this._textElements.pointsText.counter = 20;
         this._makePointsText();
 
         if (this._points === 0) {
-            this._submitButton.style.visibility = 'visible';
+            this._buttons.playButton.show();
         } else {
-            this._submitButton.style.visibility = 'hidden';
+            this._buttons.playButton.hide();
         }
 
         if (this._points !== startingPoints) {
-            this._resetButton.style.visibility = 'visible';
+            this._buttons.resetButton.show();
         } else {
-            this._resetButton.style.visibility = 'hidden';
+            this._buttons.resetButton.hide();
         }
     }
 
+    /**
+     * Sets all interactable boxes to default colors if user isn't interacting with them.
+     */
     private _clearMeshMap(): void {
         const selectedName = this._selectedBox && this._selectedBox.name;
         const hoveredName = this._hoveredBox && this._hoveredBox.name;
@@ -444,6 +439,9 @@ export class ShipLayout {
         }
     }
 
+    /**
+     * Creates the illusion of stars in the background.
+     */
     private _createStars(): void {
         const material = new MeshBasicMaterial({
             color: 0xFFFFFF,
@@ -471,23 +469,23 @@ export class ShipLayout {
      * Builds the text and graphics for the text dialogue at top right of screen.
      */
     private _makeDialogueText(): void {
-        if (this._dialogueText.isFinished) {
+        if ((<DialogueText>this._textElements.dialogueText).isFinished) {
             return;
         }
-        this._dialogueText.counter++;
-        if (this._dialogueText.counter % 3 === 0 && this._dialogueText.currentIndex < this._dialogueText.sentence.length) {
-            this._dialogueText.currentIndex++;
-            if (this._dialogueText.sentence.charAt(this._dialogueText.currentIndex - 1) === '<') {
-                this._dialogueText.currentIndex += 3;
-            }if (this._dialogueText.sentence.charAt(this._dialogueText.currentIndex - 1) === '&') {
-                this._dialogueText.currentIndex += 11;
+        this._textElements.dialogueText.counter++;
+        if (this._textElements.dialogueText.counter % 3 === 0 && (<DialogueText>this._textElements.dialogueText).currentIndex < this._textElements.dialogueText.sentence.length) {
+            (<DialogueText>this._textElements.dialogueText).currentIndex++;
+            if (this._textElements.dialogueText.sentence.charAt((<DialogueText>this._textElements.dialogueText).currentIndex - 1) === '<') {
+                (<DialogueText>this._textElements.dialogueText).currentIndex += 3;
+            }if (this._textElements.dialogueText.sentence.charAt((<DialogueText>this._textElements.dialogueText).currentIndex - 1) === '&') {
+                (<DialogueText>this._textElements.dialogueText).currentIndex += 11;
             }
-            if (this._dialogueText.element) {
-                this._dialogueText.element.innerHTML = this._dialogueText.sentence.slice(0, this._dialogueText.currentIndex);
+            if (this._textElements.dialogueText.element) {
+                this._textElements.dialogueText.element.innerHTML = this._textElements.dialogueText.sentence.slice(0, (<DialogueText>this._textElements.dialogueText).currentIndex);
             }
         }
-        if (this._dialogueText.currentIndex >= this._dialogueText.sentence.length) {
-            this._dialogueText.isFinished = true;
+        if ((<DialogueText>this._textElements.dialogueText).currentIndex >= this._textElements.dialogueText.sentence.length) {
+            (<DialogueText>this._textElements.dialogueText).isFinished = true;
         }
     }
 
@@ -496,17 +494,17 @@ export class ShipLayout {
      */
     private _makeHoverText(): void {
         const name = this._selectedBox && this._selectedBox.name;
-        const color = name === this._hoverText.sentence ? selectedColor : defaultColor;
-        if (this._hoverText.isFadeIn && this._hoverText.counter > 20) {
-            this._hoverText.isFadeIn = false;
-            this._hoverText.isHolding = true;
-            this._hoverText.counter = 1;
+        const color = name === this._textElements.hoverText.sentence ? selectedColor : defaultColor;
+        if ((<FadableText>this._textElements.hoverText).isFadeIn && this._textElements.hoverText.counter > 20) {
+            (<FadableText>this._textElements.hoverText).isFadeIn = false;
+            (<FadableText>this._textElements.hoverText).isHolding = true;
+            this._textElements.hoverText.counter = 1;
         }
 
-        if (this._hoverText.isFadeIn) {
-            this._hoverText.element.style.opacity = (this._hoverText.counter / 20) + '';
-            this._hoverText.counter++;
-            this._hoverText.element.style.color = color;
+        if ((<FadableText>this._textElements.hoverText).isFadeIn) {
+            this._textElements.hoverText.element.style.opacity = (this._textElements.hoverText.counter / 20) + '';
+            this._textElements.hoverText.counter++;
+            this._textElements.hoverText.element.style.color = color;
         }
     }
 
@@ -514,18 +512,18 @@ export class ShipLayout {
      * Builds the text and graphics for the text dialogue for points at top left of screen.
      */
     private _makePointsText(): void {
-        if (this._pointsText.isHolding) {
+        if ((<FadableText>this._textElements.pointsText).isHolding) {
             return;
         }
-        if (this._pointsText.isFadeIn && this._pointsText.counter > 20) {
-            this._pointsText.isFadeIn = false;
-            this._pointsText.isHolding = true;
-            this._pointsText.counter = 1;
+        if ((<FadableText>this._textElements.pointsText).isFadeIn && this._textElements.pointsText.counter > 20) {
+            (<FadableText>this._textElements.pointsText).isFadeIn = false;
+            (<FadableText>this._textElements.pointsText).isHolding = true;
+            this._textElements.pointsText.counter = 1;
         }
 
-        if (this._pointsText.isFadeIn) {
-            this._pointsText.element.style.opacity = (this._pointsText.counter / 20) + '';
-            this._pointsText.counter++;
+        if ((<FadableText>this._textElements.pointsText).isFadeIn) {
+            this._textElements.pointsText.element.style.opacity = (this._textElements.pointsText.counter / 20) + '';
+            this._textElements.pointsText.counter++;
         }
     }
 
@@ -533,79 +531,154 @@ export class ShipLayout {
      * Builds the text and graphics for the text dialogue at top left of screen.
      */
     private _makeSelectionText(): void {
-        if (this._selectionText.isHolding) {
+        if ((<FadableText>this._textElements.selectionText).isHolding) {
             return;
         }
-        if (this._selectionText.isFadeIn && this._selectionText.counter > 20) {
-            this._selectionText.isFadeIn = false;
-            this._selectionText.isHolding = true;
-            this._selectionText.counter = 1;
+        if ((<FadableText>this._textElements.selectionText).isFadeIn && this._textElements.selectionText.counter > 20) {
+            (<FadableText>this._textElements.selectionText).isFadeIn = false;
+            (<FadableText>this._textElements.selectionText).isHolding = true;
+            this._textElements.selectionText.counter = 1;
         }
 
-        if (this._selectionText.isFadeIn) {
-            this._selectionText.element.style.opacity = (this._selectionText.counter / 20) + '';
-            this._selectionText.counter++;
+        if ((<FadableText>this._textElements.selectionText).isFadeIn) {
+            this._textElements.selectionText.element.style.opacity = (this._textElements.selectionText.counter / 20) + '';
+            this._textElements.selectionText.counter++;
         }
     }
 
-    private _onWindowResize(): void {
-        // Get new window dimmensions
-        let WIDTH = window.innerWidth * 0.99;
-        let HEIGHT = window.innerHeight * 0.99;
-        if ( WIDTH < HEIGHT ) {
-            HEIGHT = WIDTH;
-        } else {
-            WIDTH = HEIGHT;
-        }
-        const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
-        const width = WIDTH;
-        const height = HEIGHT;
+    /**
+     * Creates all of the html elements for the first time on scene creation.
+     */
+    private _onInitialize(): void {
+        // Get window dimmensions
+        let width = window.innerWidth * 0.99;
+        let height = window.innerHeight * 0.99;
+        width < height ? height = width : width = height;
+        const left = (((window.innerWidth * 0.99) - width) / 2);
 
         // Sets up the minus button, or adjusts it.
-        if (!this._buttons.minusButton) {
-            const onClick = () => {
-                const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-                if (pointSpread.current > pointSpread.min) {
-                    this._points++;
-                    pointSpread.current--;
-                    this._adjustTechPoints([pointSpread]);
-                }
-                if (pointSpread.current <= pointSpread.min) {
-                    this._buttons.minusButton.disable();
-                }
-            };
+        let onClick = () => {
+            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
+            if (pointSpread.current > pointSpread.min) {
+                this._points++;
+                pointSpread.current--;
+                this._adjustTechPoints([pointSpread]);
+            }
+            if (pointSpread.current <= pointSpread.min) {
+                this._buttons.minusButton.disable();
+            }
+        };
 
-            this._buttons.minusButton = new MinusButton(
-                { left: left + (0.02 * width), height, top: (0.15 * height), width },
-                buttonColors,
-                onClick,
-                !!this._selectedBox);
-        } else {
-            this._buttons.minusButton.resize({ left: left + (0.02 * width), height, top: (0.15 * height), width });
-        }
+        this._buttons.minusButton = new MinusButton(
+            { left: left + (0.02 * width), height, top: (0.15 * height), width },
+            buttonColors,
+            onClick,
+            !!this._selectedBox);
 
         // Sets up the plus button, or adjusts it.
-        if (!this._buttons.plusButton) {
-            const onClick = () => {
-                const pointSpread = this._cloneTechPoints[this._selectedBox.name];
-                if (this._points > 0 && pointSpread.current < pointSpread.max) {
-                    this._points--;
-                    pointSpread.current++;
-                    this._adjustTechPoints([pointSpread]);
-                }
-                if (this._points <= 0 || pointSpread.current <= pointSpread.min) {
-                    this._buttons.plusButton.disable();
-                }
-            };
+        onClick = () => {
+            const pointSpread = this._cloneTechPoints[this._selectedBox.name];
+            if (this._points > 0 && pointSpread.current < pointSpread.max) {
+                this._points--;
+                pointSpread.current++;
+                this._adjustTechPoints([pointSpread]);
+            }
+            if (this._points <= 0 || pointSpread.current <= pointSpread.min) {
+                this._buttons.plusButton.disable();
+            }
+        };
 
-            this._buttons.plusButton = new PlusButton(
-                { left: left + (0.395 * width), height, top: (0.15 * height), width },
-                buttonColors,
-                onClick,
-                !!this._selectedBox);
-        } else {
-            this._buttons.plusButton.resize({ left: left + (0.395 * width), height, top: (0.15 * height), width });
-        }
+        this._buttons.plusButton = new PlusButton(
+            { left: left + (0.395 * width), height, top: (0.15 * height), width },
+            buttonColors,
+            onClick,
+            !!this._selectedBox);
+
+        // Sets up the play button, or adjusts it.
+        onClick = () => {
+            if (!this._hasSubmitted) {
+                this._buttons.playButton.disable();
+                setTimeout(() => {
+                    this._hasSubmitted = true;
+                }, 100);
+            }
+        };
+
+        this._buttons.playButton = new PlayButton(
+            { left: left + (0.85 * width), height, top: height - (0.04 * height), width },
+            buttonColors,
+            onClick,
+            this._points === 0);
+
+        // Sets up the reset button, or adjusts it.
+        onClick = () => {
+            if (!this._hasSubmitted) {
+                this._resetPoints();
+                setTimeout(() => {
+                    this._adjustTechPoints(Object.values(this._cloneTechPoints));
+                }, 10);
+            }
+        };
+
+        this._buttons.resetButton = new ResetButton(
+            { left: left + (0.65 * width), height, top: height - (0.04 * height), width },
+            buttonColors,
+            onClick,
+            this._points !== startingPoints);
+
+        // Create the various texts
+        this._textElements.dialogueText.element = createRightPanelText(
+            { left, height, width },
+            this._textElements.dialogueText.sentence.slice(0, (<DialogueText>this._textElements.dialogueText).currentIndex),
+            border,
+            neutralColor);
+
+        this._textElements.selectionText.element = createLeftPanelTitleText(
+            { left, height, width },
+            this._textElements.selectionText.sentence,
+            border,
+            neutralColor);
+
+        this._textElements.pointsText.element = createLeftPanelSubtitleText(
+            { left, height, width },
+            this._textElements.pointsText.sentence,
+            border,
+            selectedColor);
+
+        this._textElements.hoverText.element = document.createElement('div');
+        this._textElements.hoverText.element.id = 'ship-layout-screen-hover';
+        this._textElements.hoverText.element.style.fontFamily = 'Luckiest Guy';
+        this._textElements.hoverText.element.style.color = neutralColor;
+        this._textElements.hoverText.element.style.position = 'absolute';
+        this._textElements.hoverText.element.style.maxWidth = `${0.50 * width}px`;
+        this._textElements.hoverText.element.style.width = `${0.50 * width}px`;
+        this._textElements.hoverText.element.style.maxHeight = `${0.04 * height}px`;
+        this._textElements.hoverText.element.style.height = `${0.04 * height}px`;
+        this._textElements.hoverText.element.style.backgroundColor = 'transparent';
+        this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
+        this._textElements.hoverText.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
+        this._textElements.hoverText.element.style.left = `${left + (0.02 * width)}px`;
+        this._textElements.hoverText.element.style.overflowY = 'hidden';
+        this._textElements.hoverText.element.style.textAlign = 'left';
+        this._textElements.hoverText.element.style.fontSize = `${0.03 * width}px`;
+        this._textElements.hoverText.element.style.border = border;
+        document.body.appendChild(this._textElements.hoverText.element);
+    }
+
+    /**
+     * When the browser window changes in size, all html elements are updated in kind.
+     */
+    private _onWindowResize(): void {
+        // Get new window dimmensions
+        let width = window.innerWidth * 0.99;
+        let height = window.innerHeight * 0.99;
+        width < height ? height = width : width = height;
+        const left = (((window.innerWidth * 0.99) - width) / 2);
+
+        this._buttons.minusButton.resize({ left: left + (0.02 * width), height, top: (0.15 * height), width });
+        this._buttons.plusButton.resize({ left: left + (0.395 * width), height, top: (0.15 * height), width });
+        this._buttons.playButton.resize({ left: left + (0.85 * width), height, top: height - (0.04 * height), width });
+        this._buttons.resetButton.resize({ left: left + (0.65 * width), height, top: height - (0.04 * height), width });
 
         if (this._selectedBox) {
             this._adjustTechPoints([this._cloneTechPoints[this._selectedBox.name]]);
@@ -620,162 +693,47 @@ export class ShipLayout {
         });
 
         // Create the various texts
-        this._dialogueText.element = createRightPanelText(
+        this._textElements.dialogueText.element = createRightPanelText(
             { left, height, width },
-            this._dialogueText.sentence.slice(0, this._dialogueText.currentIndex),
+            this._textElements.dialogueText.sentence.slice(0, (<DialogueText>this._textElements.dialogueText).currentIndex),
             border,
             neutralColor);
 
-        this._selectionText.element = createLeftPanelTitleText(
+        this._textElements.selectionText.element = createLeftPanelTitleText(
             { left, height, width },
-            this._selectionText.sentence,
+            this._textElements.selectionText.sentence,
             border,
             neutralColor);
 
-        this._pointsText.element = createLeftPanelSubtitleText(
+        this._textElements.pointsText.element = createLeftPanelSubtitleText(
             { left, height, width },
-            this._pointsText.sentence,
+            this._textElements.pointsText.sentence,
             border,
             selectedColor);
 
-        this._hoverText.element = document.createElement('div');
-        this._hoverText.element.id = 'ship-layout-screen-hover';
-        this._hoverText.element.style.fontFamily = 'Luckiest Guy';
-        this._hoverText.element.style.color = neutralColor;
-        this._hoverText.element.style.position = 'absolute';
-        this._hoverText.element.style.maxWidth = `${0.50 * width}px`;
-        this._hoverText.element.style.width = `${0.50 * width}px`;
-        this._hoverText.element.style.maxHeight = `${0.04 * height}px`;
-        this._hoverText.element.style.height = `${0.04 * height}px`;
-        this._hoverText.element.style.backgroundColor = 'transparent';
-        this._hoverText.element.innerHTML = this._hoverText.sentence;
-        this._hoverText.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
-        this._hoverText.element.style.left = `${left + (0.02 * width)}px`;
-        this._hoverText.element.style.overflowY = 'hidden';
-        this._hoverText.element.style.textAlign = 'left';
-        this._hoverText.element.style.fontSize = `${0.03 * width}px`;
-        this._hoverText.element.style.border = border;
-        document.body.appendChild(this._hoverText.element);
-
-        this._resetButton = document.createElement('button');
-        this._resetButton.innerHTML = 'Reset Points';
-        this._resetButton.id = 'reset-button';
-        this._resetButton.style.outline = 'none';
-        this._resetButton.style.backgroundColor = selectedColor;
-        this._resetButton.style.color = neutralColor;
-        this._resetButton.style.position = 'absolute';
-        this._resetButton.style.maxWidth = `${0.18 * width}px`;
-        this._resetButton.style.width = `${0.18 * width}px`;
-        this._resetButton.style.maxHeight = `${0.03 * height}px`;
-        this._resetButton.style.height = `${0.03 * height}px`;
-        this._resetButton.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
-        this._resetButton.style.left = `${left + (0.65 * width)}px`;
-        this._resetButton.style.overflowY = 'hidden';
-        this._resetButton.style.textAlign = 'center';
-        this._resetButton.style.border = borderSizeAndStyle + neutralColor;
-        this._resetButton.style.borderRadius = '5px';
-        this._resetButton.style.fontSize = `${0.022 * width}px`;
-        this._resetButton.style.boxSizing = 'border-box';
-        this._resetButton.style.visibility = this._points !== startingPoints ? 'visible' : 'hidden';
-        document.body.appendChild(this._resetButton);
-
-        const resetHover = () => {
-            if (!this._hasSubmitted) {
-                this._resetButton.style.backgroundColor = defaultColor;
-                this._resetButton.style.color = neutralColor;
-                this._resetButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._resetButton.onmouseover = resetHover.bind(this);
-        const resetExit = () => {
-            if (!this._hasSubmitted) {
-                this._resetButton.style.backgroundColor = selectedColor;
-                this._resetButton.style.color = neutralColor;
-                this._resetButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._resetButton.onmouseleave = resetExit.bind(this);
-        const resetMouseDown = () => {
-            if (!this._hasSubmitted) {
-                this._resetButton.style.backgroundColor = defaultColor;
-                this._resetButton.style.color = selectedColor;
-                this._resetButton.style.border = borderSizeAndStyle + selectedColor;
-            }
-        };
-        this._resetButton.onmousedown = resetMouseDown.bind(this);
-        const resetMouseUp = () => {
-            if (!this._hasSubmitted) {
-                this._resetButton.style.backgroundColor = selectedColor;
-                this._resetButton.style.color = neutralColor;
-                this._resetButton.style.border = borderSizeAndStyle + neutralColor;
-                this._resetPoints();
-                setTimeout(() => {
-                    this._adjustTechPoints(Object.values(this._cloneTechPoints));
-                }, 10);
-            }
-        };
-        this._resetButton.onmouseup = resetMouseUp.bind(this);
-
-        this._submitButton = document.createElement('button');
-        this._submitButton.innerHTML = 'Play';
-        this._submitButton.id = 'submit-button';
-        this._submitButton.style.outline = 'none';
-        this._submitButton.style.backgroundColor = selectedColor;
-        this._submitButton.style.color = neutralColor;
-        this._submitButton.style.position = 'absolute';
-        this._submitButton.style.maxWidth = `${0.12 * width}px`;
-        this._submitButton.style.width = `${0.12 * width}px`;
-        this._submitButton.style.maxHeight = `${0.03 * height}px`;
-        this._submitButton.style.height = `${0.03 * height}px`;
-        this._submitButton.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
-        this._submitButton.style.left = `${left + (0.85 * width)}px`;
-        this._submitButton.style.overflowY = 'hidden';
-        this._submitButton.style.textAlign = 'center';
-        this._submitButton.style.border = borderSizeAndStyle + neutralColor;
-        this._submitButton.style.borderRadius = '5px';
-        this._submitButton.style.fontSize = `${0.022 * width}px`;
-        this._submitButton.style.boxSizing = 'border-box';
-        this._submitButton.style.visibility = this._points === 0 ? 'visible' : 'hidden';
-        document.body.appendChild(this._submitButton);
-
-        const submitHover = () => {
-            if (!this._hasSubmitted) {
-                this._submitButton.style.backgroundColor = defaultColor;
-                this._submitButton.style.color = neutralColor;
-                this._submitButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._submitButton.onmouseover = submitHover.bind(this);
-        const submitExit = () => {
-            if (!this._hasSubmitted) {
-                this._submitButton.style.backgroundColor = selectedColor;
-                this._submitButton.style.color = neutralColor;
-                this._submitButton.style.border = borderSizeAndStyle + neutralColor;
-            }
-        };
-        this._submitButton.onmouseleave = submitExit.bind(this);
-        const submitMouseDown = () => {
-            if (!this._hasSubmitted) {
-                this._submitButton.style.backgroundColor = defaultColor;
-                this._submitButton.style.color = selectedColor;
-                this._submitButton.style.border = borderSizeAndStyle + selectedColor;
-            }
-        };
-        this._submitButton.onmousedown = submitMouseDown.bind(this);
-        const submitMouseUp = () => {
-            if (!this._hasSubmitted) {
-                this._submitButton.style.backgroundColor = selectedColor;
-                this._submitButton.style.color = neutralColor;
-                this._submitButton.style.border = borderSizeAndStyle + neutralColor;
-                this._submitButton.style.opacity = disabledOpacity;
-                setTimeout(() => {
-                    this._hasSubmitted = true;
-                }, 100);
-            }
-        };
-        this._submitButton.onmouseup = submitMouseUp.bind(this);
+        this._textElements.hoverText.element = document.createElement('div');
+        this._textElements.hoverText.element.id = 'ship-layout-screen-hover';
+        this._textElements.hoverText.element.style.fontFamily = 'Luckiest Guy';
+        this._textElements.hoverText.element.style.color = neutralColor;
+        this._textElements.hoverText.element.style.position = 'absolute';
+        this._textElements.hoverText.element.style.maxWidth = `${0.50 * width}px`;
+        this._textElements.hoverText.element.style.width = `${0.50 * width}px`;
+        this._textElements.hoverText.element.style.maxHeight = `${0.04 * height}px`;
+        this._textElements.hoverText.element.style.height = `${0.04 * height}px`;
+        this._textElements.hoverText.element.style.backgroundColor = 'transparent';
+        this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
+        this._textElements.hoverText.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
+        this._textElements.hoverText.element.style.left = `${left + (0.02 * width)}px`;
+        this._textElements.hoverText.element.style.overflowY = 'hidden';
+        this._textElements.hoverText.element.style.textAlign = 'left';
+        this._textElements.hoverText.element.style.fontSize = `${0.03 * width}px`;
+        this._textElements.hoverText.element.style.border = border;
+        document.body.appendChild(this._textElements.hoverText.element);
     };
 
+    /**
+     * Uses original tech points to overwrite current tech points.
+     */
     private _resetPoints(): void {
         this._cloneTechPoints = JSON.parse(JSON.stringify(techPoints));
         this._points = startingPoints;
@@ -790,8 +748,7 @@ export class ShipLayout {
         textElements.forEach(el => {
             document.getElementById(el).remove();
         });
-        this._buttons.minusButton.dispose();
-        this._buttons.plusButton.dispose();
+        Object.keys(this._buttons).forEach(x => x && this._buttons[x].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
 
