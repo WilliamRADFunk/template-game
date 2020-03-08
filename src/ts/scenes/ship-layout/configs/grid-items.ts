@@ -37,10 +37,3 @@ export const textBoxes = [
     { widthIn: 6, widthOut: 6.2, x: 2.9, z: -4.45, name: 'Profile Dialogue' },
     { widthIn: 5.5, widthOut: 5.7, x: -3.15, z: -4.45, name: 'Selection' },
 ];
-
-export const textElements = [
-    'dialogue-text',
-    'left-panel-subtitle-text',
-    'left-panel-title-text',
-    'ship-layout-screen-hover'
-]

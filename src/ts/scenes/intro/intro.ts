@@ -6,9 +6,7 @@ import {
     PlaneGeometry,
     MeshBasicMaterial,
     DoubleSide,
-    TextGeometry,
-    Font,
-    MeshLambertMaterial } from 'three';
+    Font } from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -31,8 +29,8 @@ import { createGeminiStation } from './actors/createGeminiStation';
 import { createEntryEffect } from './actors/create-entry-effect';
 import { SceneType } from '../../models/scene-type';
 
-// let border: string = '1px solid #FFF';
-let border: string = 'none';
+// const border: string = '1px solid #FFF';
+const border: string = 'none';
 
 /**
  * @class

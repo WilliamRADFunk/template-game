@@ -8,22 +8,17 @@ import {
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
-import { FadableText } from '../../models/fadable-text';
 import { createShip } from './actors/create-ship';
 import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
 import { createProfile } from './actors/create-profile';
-import { DialogueText } from '../../models/dialogue-text';
 import { compareRGBValues } from '../../utils/compare-rgb-values';
 import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
-import { techPellets, rectangleBoxes, textBoxes, textElements } from './configs/grid-items';
+import { techPellets, rectangleBoxes, textBoxes } from './configs/grid-items';
 import { createShipLayoutGrid } from '../../utils/create-ship-layout-grid';
-import { createRightPanelText } from '../../utils/create-right-panel-text';
-import { createLeftPanelTitleText } from '../../utils/create-left-panel-title-text';
-import { createLeftPanelSubtitleText } from '../../utils/create-left-panel-subtitle-text';
 import { createTextPanels } from '../../utils/create-text-panels';
 import { TechPoints } from '../../models/tech-points';
 import { MinusButton } from '../../controls/buttons/minus-button';
@@ -32,6 +27,11 @@ import { ButtonColors } from '../../models/button-colors';
 import { PlusButton } from '../../controls/buttons/plus-button';
 import { PlayButton } from '../../controls/buttons/play-button';
 import { ResetButton } from '../../controls/buttons/reset-button';
+import { FooterText } from '../../controls/text/footer-text';
+import { TextType } from '../../controls/text/text-type';
+import { LeftTopTitleText } from '../../controls/text/left-top-title-text';
+import { LeftTopSubtitleText } from '../../controls/text/left-top-subtitle-text';
+import { RightTopDialogueText } from '../../controls/text/right-top-dialogue-text';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -189,43 +189,15 @@ export class ShipLayout {
     /**
      * Groups of text elements
      */
-    private _textElements: { [key: string]: (DialogueText | FadableText) } = {
+    private _textElements: { [key: string]: (RightTopDialogueText | LeftTopSubtitleText | LeftTopTitleText | FooterText) } = {
         // Text for hovered room at bottom of screen.
-        dialogueText: {
-            counter: 1,
-            currentIndex: 0,
-            element: null,
-            font: null,
-            isFinished: false,
-            sentence: dialogues['']
-        },
+        dialogueText: null,
         // Text for hovered room at bottom of screen.
-        hoverText: {
-            counter: 1,
-            element: null,
-            holdCount: -1, // Hold until replaced
-            isFadeIn: true,
-            isHolding: false,
-            sentence: ''
-        },
+        hoverText:  null,
         // Text for points to spend at top left of screen.
-        pointsText: {
-            counter: 1,
-            element: null,
-            holdCount: -1, // Hold until replaced
-            isFadeIn: true,
-            isHolding: false,
-            sentence: ''
-        },
+        pointsText: null,
         // Text for selected room at top left of screen.
-        selectionText: {
-            counter: 1,
-            element: null,
-            holdCount: -1, // Hold until replaced
-            isFadeIn: true,
-            isHolding: false,
-            sentence: ''
-        }
+        selectionText: null
     };
 
     /**
@@ -298,12 +270,7 @@ export class ShipLayout {
                     (this._meshMap[hit.name].material as any).color.set(selectedColor);
                     SoundinatorSingleton.playClick();
 
-                    this._textElements.selectionText.sentence = hit.name;
-                    this._textElements.selectionText.element.innerHTML = this._textElements.selectionText.sentence;
-                    (<FadableText>this._textElements.selectionText).isFadeIn = true;
-                    (<FadableText>this._textElements.selectionText).isHolding = false;
-                    this._textElements.selectionText.counter = 1;
-                    this._makeSelectionText();
+                    this._textElements.selectionText.update(hit.name);
 
                     !this._techPellentMeshMap[0].visible ? this._techPellentMeshMap.forEach(x => x.visible = true) : null;
                     this._adjustTechPoints([this._cloneTechPoints[hit.name]]);
@@ -311,11 +278,7 @@ export class ShipLayout {
                     this._buttons.minusButton.show();
                     this._buttons.plusButton.show();
 
-                    this._textElements.dialogueText.sentence = dialogues[hit.name];
-                    this._textElements.dialogueText.counter = -1;
-                    (<DialogueText>this._textElements.dialogueText).currentIndex = 0;
-                    (<DialogueText>this._textElements.dialogueText).isFinished = false;
-                    this._makeDialogueText();
+                    this._textElements.dialogueText.update(dialogues[hit.name]);
                 }
             });
         };
@@ -337,35 +300,19 @@ export class ShipLayout {
                         (this._meshMap[el.object.name].material as any).color.set(highlightedColor);
                     } else if (selectedName === hit.name) {
                         isHovering = true;
-                        if (!compareRGBValues(this._textElements.hoverText.element.style.color.toString().trim(), selectedColorRgb)) {
-                            this._textElements.hoverText.sentence = hit.name;
-                            this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
-                            (<FadableText>this._textElements.hoverText).isFadeIn = true;
-                            (<FadableText>this._textElements.hoverText).isHolding = false;
-                            this._textElements.hoverText.counter = 1;
-                            this._makeHoverText();
+                        if (!compareRGBValues(this._textElements.hoverText.color.toString().trim(), selectedColorRgb)) {
+                            this._textElements.hoverText.update(hit.name);
                         }
                     }
 
                     if (hit.name !== hoverName && hit.name !== selectedName) {
-                        this._textElements.hoverText.sentence = hit.name;
-                        this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
-                        (<FadableText>this._textElements.hoverText).isFadeIn = true;
-                        (<FadableText>this._textElements.hoverText).isHolding = false;
-                        this._textElements.hoverText.counter = 1;
-                        this._makeHoverText();
+                        this._textElements.hoverText.update(hit.name);
                     }
                     return;
                 }
             });
             if (!isHovering && this._textElements.hoverText.sentence) {
-                this._textElements.hoveredBox = null;
-                this._textElements.hoverText.sentence = '';
-                this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
-                (<FadableText>this._textElements.hoverText).isFadeIn = true;
-                (<FadableText>this._textElements.hoverText).isHolding = false;
-                this._textElements.hoverText.counter = 1;
-                this._makeHoverText();
+                this._textElements.hoverText.update('');
             }
             this._clearMeshMap();
         };
@@ -399,12 +346,7 @@ export class ShipLayout {
                 this._buttons.plusButton.enable();
             }
         });
-        this._textElements.pointsText.sentence = `You have <span style="color: ${neutralColor};">${this._points}</span> tech points to spend`;
-        this._textElements.pointsText.element.innerHTML = this._textElements.pointsText.sentence;
-        (<FadableText>this._textElements.pointsText).isFadeIn = true;
-        (<FadableText>this._textElements.pointsText).isHolding = false;
-        this._textElements.pointsText.counter = 20;
-        this._makePointsText();
+        this._textElements.pointsText.update(`You have <span style="color: ${neutralColor};">${this._points}</span> tech points to spend`);
 
         if (this._points === 0) {
             this._buttons.playButton.show();
@@ -462,87 +404,6 @@ export class ShipLayout {
             mesh.name = `Star-${i}`;
             this._scene.add(mesh);
             this._stars[i] = mesh;
-        }
-    }
-
-    /**
-     * Builds the text and graphics for the text dialogue at top right of screen.
-     */
-    private _makeDialogueText(): void {
-        if ((<DialogueText>this._textElements.dialogueText).isFinished) {
-            return;
-        }
-        this._textElements.dialogueText.counter++;
-        if (this._textElements.dialogueText.counter % 3 === 0 && (<DialogueText>this._textElements.dialogueText).currentIndex < this._textElements.dialogueText.sentence.length) {
-            (<DialogueText>this._textElements.dialogueText).currentIndex++;
-            if (this._textElements.dialogueText.sentence.charAt((<DialogueText>this._textElements.dialogueText).currentIndex - 1) === '<') {
-                (<DialogueText>this._textElements.dialogueText).currentIndex += 3;
-            }if (this._textElements.dialogueText.sentence.charAt((<DialogueText>this._textElements.dialogueText).currentIndex - 1) === '&') {
-                (<DialogueText>this._textElements.dialogueText).currentIndex += 11;
-            }
-            if (this._textElements.dialogueText.element) {
-                this._textElements.dialogueText.element.innerHTML = this._textElements.dialogueText.sentence.slice(0, (<DialogueText>this._textElements.dialogueText).currentIndex);
-            }
-        }
-        if ((<DialogueText>this._textElements.dialogueText).currentIndex >= this._textElements.dialogueText.sentence.length) {
-            (<DialogueText>this._textElements.dialogueText).isFinished = true;
-        }
-    }
-
-    /**
-     * Builds the text and graphics for the text dialogue at bottom of screen.
-     */
-    private _makeHoverText(): void {
-        const name = this._selectedBox && this._selectedBox.name;
-        const color = name === this._textElements.hoverText.sentence ? selectedColor : defaultColor;
-        if ((<FadableText>this._textElements.hoverText).isFadeIn && this._textElements.hoverText.counter > 20) {
-            (<FadableText>this._textElements.hoverText).isFadeIn = false;
-            (<FadableText>this._textElements.hoverText).isHolding = true;
-            this._textElements.hoverText.counter = 1;
-        }
-
-        if ((<FadableText>this._textElements.hoverText).isFadeIn) {
-            this._textElements.hoverText.element.style.opacity = (this._textElements.hoverText.counter / 20) + '';
-            this._textElements.hoverText.counter++;
-            this._textElements.hoverText.element.style.color = color;
-        }
-    }
-
-    /**
-     * Builds the text and graphics for the text dialogue for points at top left of screen.
-     */
-    private _makePointsText(): void {
-        if ((<FadableText>this._textElements.pointsText).isHolding) {
-            return;
-        }
-        if ((<FadableText>this._textElements.pointsText).isFadeIn && this._textElements.pointsText.counter > 20) {
-            (<FadableText>this._textElements.pointsText).isFadeIn = false;
-            (<FadableText>this._textElements.pointsText).isHolding = true;
-            this._textElements.pointsText.counter = 1;
-        }
-
-        if ((<FadableText>this._textElements.pointsText).isFadeIn) {
-            this._textElements.pointsText.element.style.opacity = (this._textElements.pointsText.counter / 20) + '';
-            this._textElements.pointsText.counter++;
-        }
-    }
-
-    /**
-     * Builds the text and graphics for the text dialogue at top left of screen.
-     */
-    private _makeSelectionText(): void {
-        if ((<FadableText>this._textElements.selectionText).isHolding) {
-            return;
-        }
-        if ((<FadableText>this._textElements.selectionText).isFadeIn && this._textElements.selectionText.counter > 20) {
-            (<FadableText>this._textElements.selectionText).isFadeIn = false;
-            (<FadableText>this._textElements.selectionText).isHolding = true;
-            this._textElements.selectionText.counter = 1;
-        }
-
-        if ((<FadableText>this._textElements.selectionText).isFadeIn) {
-            this._textElements.selectionText.element.style.opacity = (this._textElements.selectionText.counter / 20) + '';
-            this._textElements.selectionText.counter++;
         }
     }
 
@@ -627,42 +488,34 @@ export class ShipLayout {
             this._points !== startingPoints);
 
         // Create the various texts
-        this._textElements.dialogueText.element = createRightPanelText(
-            { left, height, width },
-            this._textElements.dialogueText.sentence.slice(0, (<DialogueText>this._textElements.dialogueText).currentIndex),
+        this._textElements.dialogueText = new RightTopDialogueText(
+            dialogues[''],
+            { left, height, top: null, width },
+            neutralColor,
             border,
-            neutralColor);
+            TextType.DIALOGUE);
 
-        this._textElements.selectionText.element = createLeftPanelTitleText(
-            { left, height, width },
-            this._textElements.selectionText.sentence,
+        this._textElements.selectionText = new LeftTopTitleText(
+            '',
+            { left, height, top: null, width },
+            selectedColor,
             border,
-            neutralColor);
+            TextType.FADABLE);
 
-        this._textElements.pointsText.element = createLeftPanelSubtitleText(
-            { left, height, width },
-            this._textElements.pointsText.sentence,
+        this._textElements.pointsText = new LeftTopSubtitleText(
+            '',
+            { left, height, top: null, width },
+            selectedColor,
             border,
-            selectedColor);
+            TextType.STATIC);
 
-        this._textElements.hoverText.element = document.createElement('div');
-        this._textElements.hoverText.element.id = 'ship-layout-screen-hover';
-        this._textElements.hoverText.element.style.fontFamily = 'Luckiest Guy';
-        this._textElements.hoverText.element.style.color = neutralColor;
-        this._textElements.hoverText.element.style.position = 'absolute';
-        this._textElements.hoverText.element.style.maxWidth = `${0.50 * width}px`;
-        this._textElements.hoverText.element.style.width = `${0.50 * width}px`;
-        this._textElements.hoverText.element.style.maxHeight = `${0.04 * height}px`;
-        this._textElements.hoverText.element.style.height = `${0.04 * height}px`;
-        this._textElements.hoverText.element.style.backgroundColor = 'transparent';
-        this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
-        this._textElements.hoverText.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
-        this._textElements.hoverText.element.style.left = `${left + (0.02 * width)}px`;
-        this._textElements.hoverText.element.style.overflowY = 'hidden';
-        this._textElements.hoverText.element.style.textAlign = 'left';
-        this._textElements.hoverText.element.style.fontSize = `${0.03 * width}px`;
-        this._textElements.hoverText.element.style.border = border;
-        document.body.appendChild(this._textElements.hoverText.element);
+        this._textElements.hoverText = new FooterText(
+            '',
+            { left: left + (0.02 * width), height, top: height - (0.04 * height), width },
+            neutralColor,
+            'left',
+            border,
+            TextType.FADABLE);
     }
 
     /**
@@ -684,51 +537,11 @@ export class ShipLayout {
             this._adjustTechPoints([this._cloneTechPoints[this._selectedBox.name]]);
         }
 
-        // Destroy old text
-        textElements.forEach(el => {
-            const element = document.getElementById(el);
-            if (element) {
-                element.remove();
-            }
-        });
-
-        // Create the various texts
-        this._textElements.dialogueText.element = createRightPanelText(
-            { left, height, width },
-            this._textElements.dialogueText.sentence.slice(0, (<DialogueText>this._textElements.dialogueText).currentIndex),
-            border,
-            neutralColor);
-
-        this._textElements.selectionText.element = createLeftPanelTitleText(
-            { left, height, width },
-            this._textElements.selectionText.sentence,
-            border,
-            neutralColor);
-
-        this._textElements.pointsText.element = createLeftPanelSubtitleText(
-            { left, height, width },
-            this._textElements.pointsText.sentence,
-            border,
-            selectedColor);
-
-        this._textElements.hoverText.element = document.createElement('div');
-        this._textElements.hoverText.element.id = 'ship-layout-screen-hover';
-        this._textElements.hoverText.element.style.fontFamily = 'Luckiest Guy';
-        this._textElements.hoverText.element.style.color = neutralColor;
-        this._textElements.hoverText.element.style.position = 'absolute';
-        this._textElements.hoverText.element.style.maxWidth = `${0.50 * width}px`;
-        this._textElements.hoverText.element.style.width = `${0.50 * width}px`;
-        this._textElements.hoverText.element.style.maxHeight = `${0.04 * height}px`;
-        this._textElements.hoverText.element.style.height = `${0.04 * height}px`;
-        this._textElements.hoverText.element.style.backgroundColor = 'transparent';
-        this._textElements.hoverText.element.innerHTML = this._textElements.hoverText.sentence;
-        this._textElements.hoverText.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
-        this._textElements.hoverText.element.style.left = `${left + (0.02 * width)}px`;
-        this._textElements.hoverText.element.style.overflowY = 'hidden';
-        this._textElements.hoverText.element.style.textAlign = 'left';
-        this._textElements.hoverText.element.style.fontSize = `${0.03 * width}px`;
-        this._textElements.hoverText.element.style.border = border;
-        document.body.appendChild(this._textElements.hoverText.element);
+        // Update the various texts
+        this._textElements.dialogueText.resize({ left, height, top: null, width });
+        this._textElements.selectionText.resize({ left: left + (0.02 * width), height, top: 0.01 * height, width });
+        this._textElements.pointsText.resize({ left, height, top: null, width });
+        this._textElements.hoverText.resize({ left: left + (0.02 * width), height, top: height - (0.04 * height), width });
     };
 
     /**
@@ -745,9 +558,7 @@ export class ShipLayout {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
-        textElements.forEach(el => {
-            document.getElementById(el).remove();
-        });
+        Object.keys(this._textElements).forEach(x => x && this._textElements[x].dispose());
         Object.keys(this._buttons).forEach(x => x && this._buttons[x].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
@@ -764,10 +575,13 @@ export class ShipLayout {
             });
             return chosenLayout;
         }
-        this._makeDialogueText();
-        this._makeHoverText();
-        this._makePointsText();
-        this._makeSelectionText();
+
+        const name = this._selectedBox && this._selectedBox.name;
+        const color = name === this._textElements.hoverText.sentence ? selectedColor : defaultColor;
+        this._textElements.hoverText.cycle(color);
+        this._textElements.selectionText.cycle();
+        this._textElements.pointsText.cycle();
+        this._textElements.dialogueText.cycle();
         return null;
     }
 }
