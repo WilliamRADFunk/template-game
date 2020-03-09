@@ -2,9 +2,14 @@ import { TextBase } from "./text-base";
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { TextType } from "./text-type";
 
+/**
+ * @class
+ * Text class for text that will appear in the top right corner box, on the box's left side.
+ */
 export class RightTopDialogueText extends TextBase {
     /**
      * Constructor for the right top dialogue text sub class
+     * @param sentence starting text content.
      * @param position height, width, left and top position of the button.
      * @param color color of the text.
      * @param border debug border around the text.

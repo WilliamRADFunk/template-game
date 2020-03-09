@@ -2,9 +2,14 @@ import { TextBase } from "./text-base";
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { TextType } from "./text-type";
 
+/**
+ * @class
+ * Text class for text that will appear in the top left corner box, on the box's top.
+ */
 export class LeftTopTitleText extends TextBase {
     /**
      * Constructor for the left top title text sub class
+     * @param sentence starting text content.
      * @param position height, width, left and top position of the button.
      * @param color color of the text.
      * @param border debug border around the text.

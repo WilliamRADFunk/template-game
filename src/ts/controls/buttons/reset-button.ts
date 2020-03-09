@@ -2,6 +2,10 @@ import { ButtonBase } from "./button-base";
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { ButtonColors } from "../../models/button-colors";
 
+/**
+ * @class
+ * Button that says Reset.
+ */
 export class ResetButton extends ButtonBase {
     /**
      * Scale to apply to button dimensions.
@@ -32,7 +36,7 @@ export class ResetButton extends ButtonBase {
      * Sets the height, width, left and top positioning of the element.
      * @param position height, width, left and top position of the button.
      */
-    public resize(position: HTMLElementPosition) {
+    public resize(position: HTMLElementPosition): void {
         this.element.style.maxWidth = `${this._scale * (0.18 * position.width)}px`;
         this.element.style.width = `${this._scale * (0.18 * position.width)}px`;
         this.element.style.maxHeight = `${this._scale * (0.03 * position.height)}px`;

@@ -1,6 +1,10 @@
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { TextType } from "./text-type";
 
+/**
+ * @class
+ * Base class for text anywhere in the game.
+ */
 export class TextBase {
     /**
      * Cycle counter
@@ -48,7 +52,7 @@ export class TextBase {
     public readonly element: HTMLElement;
 
     /**
-     * id attribute on the element.
+     * Id attribute on the element.
      */
     public readonly id: string;
 
@@ -59,7 +63,11 @@ export class TextBase {
 
     /**
      * Constructor for the text base class
-     * @param _id id attribute on the element.
+     * @param id id attribute on the element.
+     * @param color color attribute on the element.
+     * @param align test align attribute on the element.
+     * @param border border attribute on the element.
+     * @param type type of text on the element.
      */
     constructor(id: string, color: string, align: string, border: string, type: TextType) {
         this.element = document.createElement('div');

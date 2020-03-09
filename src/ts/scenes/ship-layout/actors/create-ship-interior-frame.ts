@@ -4,9 +4,12 @@ import {
     MeshPhongMaterial,
     PlaneGeometry,
     Texture } from "three";
-
 import { createActor } from "../../../utils/create-actor";
 
+/**
+ * Creates the rectangle image of the ship's interior.
+ * @param dialogueTexture texture for the ship interior image.
+ */
 export function createShipInteriorFrame(shipTexture: Texture) {
     const ship = createActor();
     ship.originalStartingPoint = [0, 3];

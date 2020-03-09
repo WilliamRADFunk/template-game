@@ -1,3 +1,6 @@
+/**
+ * Chunks of dialogue to be displayed as text when user selects a section of ship.
+ */
 export const dialogues: { [key: string]: string } = {
     '': `"Click a blue box to select<br>
  a room and assign<br>

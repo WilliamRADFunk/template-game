@@ -1,6 +1,10 @@
 import { ButtonColors } from "../../models/button-colors";
 import { HTMLElementPosition } from "../../models/html-element-position";
 
+/**
+ * @class
+ * Base class for all buttons in the game.
+ */
 export class ButtonBase {
     /**
      * Callback for onClick event.
@@ -23,13 +27,16 @@ export class ButtonBase {
     public readonly element: HTMLElement;
 
     /**
-     * id attribute on the element.
+     * Id attribute on the element.
      */
     public readonly id: string;
 
     /**
      * Constructor for the button base class
-     * @param _id id attribute on the element.
+     * @param id id attribute on the element.
+     * @param colors colors of the buttons at the different stages of its lifecycle.
+     * @param onClick callback for onClick event.
+     * @param visible whether or not to start the button in a visible state.
      */
     constructor(id: string, colors: ButtonColors, onClick: () => void, visible: boolean) {
         this.element = document.createElement('button');
@@ -55,7 +62,7 @@ export class ButtonBase {
     /**
      * Sets the opacity lower on the button to give it the disabled look, and prevents interaction.
      */
-    public disable() {
+    public disable(): void {
         this._isEnabled = false;
         this.element.style.opacity = '0.4';
     }
@@ -63,7 +70,7 @@ export class ButtonBase {
     /**
      * Sets the opacity higher on the button to give it the enabled look, and allows interaction.
      */
-    public enable() {
+    public enable(): void {
         this._isEnabled = true;
         this.element.style.opacity = '1';
     }
@@ -71,14 +78,14 @@ export class ButtonBase {
     /**
      * Remove the element from the DOM
      */
-    public dispose() {
+    public dispose(): void {
         this.element && this.element.remove();
     }
 
     /**
      * Hides the button from visibility.
      */
-    public hide() {
+    public hide(): void {
         this.element.style.visibility = 'hidden';
     }
 

@@ -5,7 +5,7 @@ import {
     MeshBasicMaterial,
     Scene } from "three";
 
-import { createBoxWithRoundedEdges } from "./create-box-with-rounded-edges";
+import { createBoxWithRoundedEdges } from "../../../utils/create-box-with-rounded-edges";
 
 export function createShipLayoutGrid(
     scene: Scene,

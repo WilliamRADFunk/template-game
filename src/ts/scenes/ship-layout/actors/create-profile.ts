@@ -4,9 +4,12 @@ import {
     MeshPhongMaterial,
     PlaneGeometry,
     Texture } from "three";
-
 import { createActor } from "../../../utils/create-actor";
 
+/**
+ * Creates the rectangle image of an engineer in the upper right box.
+ * @param dialogueTexture texture for the engineer's image.
+ */
 export function createProfile(dialogueTexture: Texture) {
     const profile = createActor();
     profile.originalStartingPoint = [4.48, -4.45];

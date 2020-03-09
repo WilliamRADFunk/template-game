@@ -18,7 +18,7 @@ import { compareRGBValues } from '../../utils/compare-rgb-values';
 import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
 import { techPellets, rectangleBoxes, textBoxes } from './configs/grid-items';
-import { createShipLayoutGrid } from '../../utils/create-ship-layout-grid';
+import { createShipLayoutGrid } from './helpers/create-ship-layout-grid';
 import { createTextPanels } from '../../utils/create-text-panels';
 import { TechPoints } from '../../models/tech-points';
 import { MinusButton } from '../../controls/buttons/minus-button';
@@ -37,34 +37,20 @@ import { RightTopDialogueText } from '../../controls/text/right-top-dialogue-tex
 const border: string = 'none';
 
 /**
- * Border size and style string to avoid string create repetition.
+ * Colors used repeatedly throught ship layout screen.
  */
-const borderSizeAndStyle: string = '1px solid ';
-
-/**
- * Color for boxes used for anything non-specific.
- */
-const defaultColor = '#00B39F';
-
-/**
- * Opacity level when button is disabled.
- */
-const disabledOpacity: string = '0.4';
-
-/**
- * Color for boxes user is hovering over.
- */
-const highlightedColor = '#00FF00';
-
-/**
- * Gold text color.
- */
-const neutralColor = '#FFD700';
-
-/**
- * Color for boxes user has clicked.
- */
-const selectedColor = '#F1149A';
+const colors: { [key: string]: string } = {
+    // Color for boxes used for anything non-specific.
+    default: '#00B39F',
+    // Color for boxes user is hovering over.
+    highlighted: '#00FF00',
+    // Gold text color.
+    neutral: '#FFD700',
+    // Color for boxes user has clicked.
+    selected: '#F1149A',
+    // Color for boxes user is not hovering over (neutral).
+    unhighlighted: '#87D3F8'
+}
 
 /**
  * Color in rgb for boxes user has clicked.
@@ -77,44 +63,39 @@ const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt
 const startingPoints = 10;
 
 /**
- * Color for boxes user is not hovering over (neutral).
- */
-const unhighlightedColor = '#87D3F8';
-
-/**
  * Color scheme for all lifecycle events of a button.
  */
 const buttonColors: ButtonColors = {
     default: {
-        backgroundColor: selectedColor,
-        color: neutralColor,
-        border: neutralColor
+        backgroundColor: colors.selected,
+        color: colors.neutral,
+        border: colors.neutral
     },
     onExit: {
-        backgroundColor: selectedColor,
-        color: neutralColor,
-        border: neutralColor
+        backgroundColor: colors.selected,
+        color: colors.neutral,
+        border: colors.neutral
     },
     onHover: {
-        backgroundColor: defaultColor,
-        color: neutralColor,
-        border: neutralColor
+        backgroundColor: colors.default,
+        color: colors.neutral,
+        border: colors.neutral
     },
     onMouseDown: {
-        backgroundColor: defaultColor,
-        color: selectedColor,
-        border: selectedColor
+        backgroundColor: colors.default,
+        color: colors.selected,
+        border: colors.selected
     },
     onMouseUp: {
-        backgroundColor: selectedColor,
-        color: neutralColor,
-        border: neutralColor
+        backgroundColor: colors.selected,
+        color: colors.neutral,
+        border: colors.neutral
     }
 };
 
 /**
  * @class
- * Slow moving debris object that is sometimes on the path towards planet.
+ * Screen dedicated to letting user choose their initial ship layout.
  */
 export class ShipLayout {
     /**
@@ -201,12 +182,11 @@ export class ShipLayout {
     };
 
     /**
-     * Constructor for the Intro (Scene) class
+     * Constructor for the Ship Layout (Scene) class
      * @param scene             graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param shipIntTexture    texture for the ship in cut profile.
      * @param shipTexture       texture for the ship.
      * @param dialogueTexture   texture for the profile image.
-     * @param introFont         loaded font to use for help display text.
      */
     constructor(
         scene: SceneType,
@@ -233,7 +213,7 @@ export class ShipLayout {
 
         techPellets.forEach(pellet => {
             const pelletMaterial = new MeshBasicMaterial({
-                color: unhighlightedColor,
+                color: colors.unhighlighted,
                 opacity: 0.5,
                 transparent: true,
                 side: DoubleSide
@@ -248,7 +228,7 @@ export class ShipLayout {
             this._techPellentMeshMap.push(barrier);
         });
 
-        const intersectableThings = createShipLayoutGrid(this._scene, rectangleBoxes, this._meshMap, unhighlightedColor);
+        const intersectableThings = createShipLayoutGrid(this._scene, rectangleBoxes, this._meshMap, colors.unhighlighted);
 
         createTextPanels(this._scene, textBoxes);
 
@@ -263,11 +243,11 @@ export class ShipLayout {
                 });
                 if (hit && hit.name !== (this._selectedBox && this._selectedBox.name)) {
                     Object.keys(this._meshMap).forEach(key => {
-                        (this._meshMap[key].material as any).color.set(unhighlightedColor);
+                        (this._meshMap[key].material as any).color.set(colors.unhighlighted);
                     });
 
                     this._selectedBox = this._meshMap[hit.name];
-                    (this._meshMap[hit.name].material as any).color.set(selectedColor);
+                    (this._meshMap[hit.name].material as any).color.set(colors.selected);
                     SoundinatorSingleton.playClick();
 
                     this._textElements.selectionText.update(hit.name);
@@ -297,7 +277,7 @@ export class ShipLayout {
                     if (selectedName !== hit.name) {
                         isHovering = true;
                         this._hoveredBox = this._meshMap[el.object.name];
-                        (this._meshMap[el.object.name].material as any).color.set(highlightedColor);
+                        (this._meshMap[el.object.name].material as any).color.set(colors.highlighted);
                     } else if (selectedName === hit.name) {
                         isHovering = true;
                         if (!compareRGBValues(this._textElements.hoverText.color.toString().trim(), selectedColorRgb)) {
@@ -325,15 +305,17 @@ export class ShipLayout {
     private _adjustTechPoints(pointSpreads: TechPoints[]): void {
         pointSpreads.forEach(pointSpread => {
             for (let i = 0; i < this._techPellentMeshMap.length; i++) {
+                let color;
                 if (i < pointSpread.min) {
-                    (this._techPellentMeshMap[i].material as any).color.set(neutralColor);
+                    color = colors.neutral;
                 } else if (i < pointSpread.current) {
-                    (this._techPellentMeshMap[i].material as any).color.set(selectedColor);
+                    color = colors.selected;
                 } else if (i < pointSpread.max) {
-                    (this._techPellentMeshMap[i].material as any).color.set(unhighlightedColor);
+                    color = colors.unhighlighted;
                 } else {
-                    (this._techPellentMeshMap[i].material as any).color.set(defaultColor);
+                    color = colors.default;
                 }
+                (this._techPellentMeshMap[i].material as any).color.set(color);
             }
             if (pointSpread.current > pointSpread.min) {
                 this._buttons.minusButton.enable();
@@ -346,7 +328,7 @@ export class ShipLayout {
                 this._buttons.plusButton.enable();
             }
         });
-        this._textElements.pointsText.update(`You have <span style="color: ${neutralColor};">${this._points}</span> tech points to spend`);
+        this._textElements.pointsText.update(`You have <span style="color: ${colors.neutral};">${this._points}</span> tech points to spend`);
 
         if (this._points === 0) {
             this._buttons.playButton.show();
@@ -369,15 +351,11 @@ export class ShipLayout {
         const hoveredName = this._hoveredBox && this._hoveredBox.name;
         // If no selected box, don't bother with the extra conditional check.
         if (!selectedName && !hoveredName) {
-            Object.keys(this._meshMap).forEach(key => {
-                (this._meshMap[key].material as any).color.set(unhighlightedColor);
-            });
+            Object.keys(this._meshMap).forEach(key => (this._meshMap[key].material as any).color.set(colors.unhighlighted));
         } else {
-            Object.keys(this._meshMap).forEach(key => {
-                if (key !== selectedName && key !== hoveredName) {
-                    (this._meshMap[key].material as any).color.set(unhighlightedColor);
-                }
-            });
+            Object.keys(this._meshMap)
+                .filter(key => key !== selectedName && key !== hoveredName)
+                .forEach(key => (this._meshMap[key].material as any).color.set(colors.unhighlighted));
         }
     }
 
@@ -491,28 +469,28 @@ export class ShipLayout {
         this._textElements.dialogueText = new RightTopDialogueText(
             dialogues[''],
             { left, height, top: null, width },
-            neutralColor,
+            colors.neutral,
             border,
             TextType.DIALOGUE);
 
         this._textElements.selectionText = new LeftTopTitleText(
             '',
             { left, height, top: null, width },
-            selectedColor,
+            colors.selected,
             border,
             TextType.FADABLE);
 
         this._textElements.pointsText = new LeftTopSubtitleText(
             '',
             { left, height, top: null, width },
-            selectedColor,
+            colors.selected,
             border,
             TextType.STATIC);
 
         this._textElements.hoverText = new FooterText(
             '',
             { left: left + (0.02 * width), height, top: height - (0.04 * height), width },
-            neutralColor,
+            colors.neutral,
             'left',
             border,
             TextType.FADABLE);
@@ -528,6 +506,7 @@ export class ShipLayout {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
+        // Update the various buttons
         this._buttons.minusButton.resize({ left: left + (0.02 * width), height, top: (0.15 * height), width });
         this._buttons.plusButton.resize({ left: left + (0.395 * width), height, top: (0.15 * height), width });
         this._buttons.playButton.resize({ left: left + (0.85 * width), height, top: height - (0.04 * height), width });
@@ -570,14 +549,12 @@ export class ShipLayout {
     public endCycle(): { [key: string]: number } {
         if (this._hasSubmitted) {
             const chosenLayout: { [key: string]: number } = {};
-            Object.keys(this._cloneTechPoints).forEach(tp => {
-                chosenLayout[tp] = this._cloneTechPoints[tp].current;
-            });
+            Object.keys(this._cloneTechPoints).forEach(tp => chosenLayout[tp] = this._cloneTechPoints[tp].current);
             return chosenLayout;
         }
 
         const name = this._selectedBox && this._selectedBox.name;
-        const color = name === this._textElements.hoverText.sentence ? selectedColor : defaultColor;
+        const color = name === this._textElements.hoverText.sentence ? colors.selected : colors.default;
         this._textElements.hoverText.cycle(color);
         this._textElements.selectionText.cycle();
         this._textElements.pointsText.cycle();
