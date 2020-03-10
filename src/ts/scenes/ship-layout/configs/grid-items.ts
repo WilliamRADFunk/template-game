@@ -37,11 +37,3 @@ export const techPellets: { height: number; width: number; x: number; z: number;
     { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-9' },
     { height: 0.9, width: 0.3, x: techPelletStartX += 0.35, z: -3.83, radius: 0.07, name: 'Tech Point-10' }
 ];
-
-/**
- * Size and position for the two text box sections at top of screen.
- */
-export const textBoxes = [
-    { widthIn: 6, widthOut: 6.2, x: 2.9, z: -4.45, name: 'Profile Dialogue' },
-    { widthIn: 5.5, widthOut: 5.7, x: -3.15, z: -4.45, name: 'Selection' },
-];

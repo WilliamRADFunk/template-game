@@ -237,7 +237,7 @@ export class Menu {
         this.pointLight = new PointLight(0x66FF66, 1);
         this.pointLight.position.set(15, 2, 0);
         this.scene.add(this.pointLight);
-        
+
         this.menuMaterial = new MeshLambertMaterial({
             color: 0x0066FF,
             opacity: 1,
@@ -666,7 +666,7 @@ export class Menu {
         this.createDifficultyButtons(1, this.menuMaterial, true);
         this.createDifficultyButtons(2, this.menuMaterial, true);
         this.createDifficultyButtons(3, this.menuMaterial, true);
-        
+
         this.createDifficultyButtons(this.difficultyLevel, this.menuSelectedMaterial, true);
     }
     /**

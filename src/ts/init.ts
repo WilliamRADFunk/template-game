@@ -24,6 +24,7 @@ import { SoundinatorSingleton } from './soundinator';
 import { Menu } from './scenes/main-menu/menu';
 import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
+import { DevMenu } from './scenes/dev-menu/dev-menu';
 
 /**
  * Loads the graphic for asteroid.
@@ -87,6 +88,14 @@ const marsLoader = new TextureLoader();
 let marsTexture: Texture;
 
 const scenes: { [ key: string ]: SceneType } = {
+    devMenu: {
+        active: false,
+        camera: null,
+        instance: null,
+        raycaster: null,
+        renderer: null,
+        scene: null
+    },
     intro: {
         active: false,
         camera: null,
@@ -307,6 +316,107 @@ const checkAssetsLoaded = () => {
         loadIntroScene();
     }
 };
+const loadDevMenu = () => {
+    scenes.devMenu.active = true;
+    // Establish initial window size.
+    let WIDTH: number = window.innerWidth * 0.99;
+    let HEIGHT: number = window.innerHeight * 0.99;
+    // Create ThreeJS scene.
+    scenes.devMenu.scene = new Scene();
+    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
+    scenes.devMenu.renderer = ((window as any)['WebGLRenderingContext']) ?
+        new WebGLRenderer() : new CanvasRenderer();
+    // Make it black and size it to window.
+    (scenes.devMenu.renderer as any).setClearColor(0x000000, 0);
+    scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
+    (scenes.devMenu.renderer as any).autoClear = false;
+    // Render to the html container.
+    const container = document.getElementById('mainview');
+	container.appendChild( (scenes.devMenu.renderer as any).domElement );
+    // Set up player's ability to see the game, and focus center on planet.
+    scenes.devMenu.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
+	scenes.devMenu.camera.position.set(0, -20, 0);
+    scenes.devMenu.camera.lookAt(scenes.devMenu.scene.position);
+    scenes.devMenu.camera.add(audioListener);
+    /**
+     * Gracefully handles a change in window size, by recalculating shape and updating scenes.devMenu.camera and scenes.devMenu.renderer.
+     */
+    const onWindowResize = () => {
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
+        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        document.getElementById('mainview').style.width = WIDTH + 'px';
+        document.getElementById('mainview').style.height = HEIGHT + 'px';
+    };
+    onWindowResize();
+    window.addEventListener( 'resize', onWindowResize, false);
+    // Click event listener that activates certain menu options.
+    const raycaster = new Raycaster();
+    document.onclick = event => {
+        const mouse = new Vector2();
+        event.preventDefault();
+        // Gets accurate click positions using css and raycasting.
+        const position = {
+            left: container.offsetLeft,
+            top: container.offsetTop
+        };
+        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
+        if (event.clientX !== undefined) {
+            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
+            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
+        }
+        raycaster.setFromCamera(mouse, scenes.devMenu.camera);
+        const thingsTouched = raycaster.intersectObjects(scenes.devMenu.scene.children);
+        // Detection for player clicked on planet for shield manipulation.
+        thingsTouched.forEach(el => {
+            if (el.object.name === 'Start') {
+                const difficulty = scenes.devMenu.instance.pressedStart();
+                setTimeout(() => {
+                    scenes.devMenu.active = false;
+                    window.removeEventListener( 'resize', onWindowResize, false);
+                    container.removeChild( (scenes.devMenu.renderer as any).domElement );
+                    loadShipLayoutScene();
+                }, 750);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Load Code') {
+                setTimeout(() => {
+                    scenes.devMenu.active = false;
+                    window.removeEventListener( 'resize', onWindowResize, false);
+                    container.removeChild( (scenes.devMenu.renderer as any).domElement );
+                    // loadGame(1);
+                }, 250);
+                SoundinatorSingleton.playClick();
+                return;
+            } else if (el.object.name === 'Easy') {
+                scenes.devMenu.instance.changeDifficulty(0);
+                SoundinatorSingleton.playClick();
+                return;
+            }
+        });
+    };
+    scenes.devMenu.instance = new DevMenu(scenes.devMenu);
+    scenes.devMenu.raycaster = raycaster;
+    startDevMenuRendering();
+};
+const startDevMenuRendering = () => {
+    /**
+     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
+     */
+    const render = () => {
+        if (scenes.devMenu.active) {
+            scenes.devMenu.instance.endCycle();
+            scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
+            requestAnimationFrame( render );
+        }
+    };
+    // Kick off the first render loop iteration.
+    scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
+	requestAnimationFrame( render );
+};
 const loadMenu = () => {
     scenes.menu.active = true;
     // Establish initial window size.
@@ -516,7 +626,7 @@ const loadIntroScene = () => {
             if (el.object.name === 'Click Barrier') {
                 SoundinatorSingleton.playClick();
                 scenes.intro.active = false;
-                loadMenu();
+                loadDevMenu();
                 return;
             }
         });
@@ -552,7 +662,7 @@ const loadIntroScene = () => {
                 scenes.intro.raycaster = null;
                 scenes.intro.renderer = null;
                 scenes.intro.scene = null;
-                loadMenu();
+                loadDevMenu();
                 return;
             }
         }
@@ -651,7 +761,7 @@ const loadShipLayoutScene = () => {
                 scenes.shipLayout.renderer = null;
                 scenes.shipLayout.scene = null;
                 setTimeout(() => {
-                    loadMenu();
+                    loadDevMenu();
                 }, 10);
                 return;
             }

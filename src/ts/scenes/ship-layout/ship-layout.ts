@@ -17,9 +17,8 @@ import { createProfile } from './actors/create-profile';
 import { compareRGBValues } from '../../utils/compare-rgb-values';
 import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
-import { techPellets, rectangleBoxes, textBoxes } from './configs/grid-items';
+import { techPellets, rectangleBoxes } from './configs/grid-items';
 import { createShipLayoutGrid } from './helpers/create-ship-layout-grid';
-import { createTextPanels } from '../../utils/create-text-panels';
 import { TechPoints } from '../../models/tech-points';
 import { MinusButton } from '../../controls/buttons/minus-button';
 import { ButtonBase } from '../../controls/buttons/button-base';
@@ -32,6 +31,8 @@ import { TextType } from '../../controls/text/text-type';
 import { LeftTopTitleText } from '../../controls/text/left-top-title-text';
 import { LeftTopSubtitleText } from '../../controls/text/left-top-subtitle-text';
 import { RightTopDialogueText } from '../../controls/text/right-top-dialogue-text';
+import { LeftTopPanel } from '../../controls/panels/left-top-panel';
+import { RightTopPanel } from '../../controls/panels/right-top-panel';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -230,7 +231,8 @@ export class ShipLayout {
 
         const intersectableThings = createShipLayoutGrid(this._scene, rectangleBoxes, this._meshMap, colors.unhighlighted);
 
-        createTextPanels(this._scene, textBoxes);
+        const leftTopPanel = new LeftTopPanel(this._scene);
+        const rightTopPanel = new RightTopPanel(this._scene);
 
         const container = document.getElementById('mainview');
         document.onclick = event => {
