@@ -1,6 +1,5 @@
 import { Scene } from "three";
 
-import { SoundinatorSingleton } from '../../soundinator';
 import { SceneType } from "../../models/scene-type";
 import { LeftTopPanel } from "../../controls/panels/left-top-panel";
 import { RightTopPanel } from "../../controls/panels/right-top-panel";
@@ -101,7 +100,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         let onClick = () => {
-            SoundinatorSingleton.playClick();
             this._buttons.launchGameMenuButton.disable();
             callbacks.activateGameMenu();
         };
@@ -121,7 +119,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         onClick = () => {
-            SoundinatorSingleton.playClick();
             this._buttons.launchIntroSceneButton.disable();
             callbacks.activateIntroScene();
         };
@@ -141,7 +138,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         onClick = () => {
-            SoundinatorSingleton.playClick();
             this._buttons.launchShipLayoutSceneButton.disable();
             callbacks.activateShipLayoutScene();
         };
@@ -161,7 +157,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         onClick = () => {
-            SoundinatorSingleton.playClick();
             this._buttons.launchRepairSceneButton.disable();
             callbacks.activateRepairScene();
         };
@@ -181,7 +176,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         onClick = () => {
-            SoundinatorSingleton.playClick();
             this._buttons.launchTravelSceneButton.disable();
             callbacks.activateTravelScene();
         };
@@ -201,7 +195,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         onClick = () => {
-            SoundinatorSingleton.playClick();
             this._buttons.launchVertexMapSceneButton.disable();
             callbacks.activateVertexMapScene();
         };
