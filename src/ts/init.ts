@@ -314,7 +314,7 @@ const checkAssetsLoaded = () => {
         shipLayoutDialogueTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
-        loadIntroScene();
+        loadMenu();
     }
 };
 const loadDevMenu = () => {
@@ -355,20 +355,36 @@ const loadDevMenu = () => {
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
     // Click event listeners that activates certain menu options.
+    const activateIntroScene = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            loadIntroScene();
+        }, 100);
+    };
+    const activateGameMenu = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            loadGameMenu();
+        }, 100);
+    };
     const activateShipLayoutScene = () => {
         scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            scenes.devMenu.active = false;
-            window.removeEventListener( 'resize', onWindowResize, false);
-            container.removeChild( (scenes.devMenu.renderer as any).domElement );
             loadShipLayoutScene();
-        }, 200);
-        SoundinatorSingleton.playClick();
+        }, 100);
     };
     const raycaster = new Raycaster();
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
         {
+            activateGameMenu,
+            activateIntroScene,
             activateShipLayoutScene
         });
     scenes.devMenu.raycaster = raycaster;
@@ -383,6 +399,13 @@ const startDevMenuRendering = () => {
             scenes.devMenu.instance.endCycle();
             scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
             requestAnimationFrame( render );
+        } else {
+            scenes.devMenu.instance.dispose();
+            scenes.devMenu.camera = null;
+            scenes.devMenu.instance = null;
+            scenes.devMenu.raycaster = null;
+            scenes.devMenu.renderer = null;
+            scenes.devMenu.scene = null;
         }
     };
     // Kick off the first render loop iteration.
