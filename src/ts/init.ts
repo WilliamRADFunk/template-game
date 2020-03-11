@@ -361,7 +361,7 @@ const loadDevMenu = () => {
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadIntroScene();
-        }, 100);
+        }, 50);
     };
     const activateGameMenu = () => {
         scenes.devMenu.active = false;
@@ -369,7 +369,15 @@ const loadDevMenu = () => {
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadGameMenu();
-        }, 100);
+        }, 50);
+    };
+    const activateRepairScene = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            // loadRepairScene();
+        }, 50);
     };
     const activateShipLayoutScene = () => {
         scenes.devMenu.active = false;
@@ -377,7 +385,7 @@ const loadDevMenu = () => {
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadShipLayoutScene();
-        }, 100);
+        }, 50);
     };
     const raycaster = new Raycaster();
     scenes.devMenu.instance = new DevMenu(
@@ -385,6 +393,7 @@ const loadDevMenu = () => {
         {
             activateGameMenu,
             activateIntroScene,
+            activateRepairScene,
             activateShipLayoutScene
         });
     scenes.devMenu.raycaster = raycaster;

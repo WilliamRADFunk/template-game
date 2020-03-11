@@ -17,6 +17,8 @@ import { COLORS } from "../../styles/colors";
 import { TextType } from "../../controls/text/text-type";
 import { ButtonBase } from "../../controls/buttons/button-base";
 import { RightTopTitleText } from "../../controls/text/right-top-title-text";
+import { LeftTopMiddleTitleText } from "../../controls/text/left-top-middle-title-text";
+import { RightTopMiddleTitleText } from "../../controls/text/right-top-middle-title-text";
 
 const border: string = '1px solid #FFF';
 // const border: string = 'none';
@@ -32,8 +34,10 @@ export class DevMenu {
      * List of buttons
      */
     private _buttons: { [key: string]: ButtonBase } = {
-        launchIntroSceneButton: null,
         launchGameMenuButton: null,
+        launchIntroSceneButton: null,
+        launchRepairSceneButton: null,
+        launchShipLayoutSceneButton: null,
     };
 
     /**
@@ -49,8 +53,10 @@ export class DevMenu {
     /**
      * Groups of text elements
      */
-    private _textElements: { [key: string]: (LeftTopTitleText | RightTopTitleText) } = {
+    private _textElements: { [key: string]: (LeftTopTitleText | LeftTopMiddleTitleText | RightTopTitleText | RightTopMiddleTitleText) } = {
+        leftTopMiddleTitleText: null,
         leftTopTitleText: null,
+        launchRepairSceneButton: null,
         rightTopTitleText: null,
     }
 
@@ -120,6 +126,46 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
+
+        this._textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
+            'Load Ship Layout Scene',
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.FADABLE);
+
+        onClick = () => {
+            SoundinatorSingleton.playClick();
+            this._buttons.launchShipLayoutSceneButton.disable();
+            callbacks.activateShipLayoutScene();
+        };
+
+        this._buttons.launchShipLayoutSceneButton = new LoadButton(
+            { left: left + (0.115 * width), height, top: 0.375 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            buttonScale);
+
+        this._textElements.rightTopMiddleTitleText = new RightTopMiddleTitleText(
+            'Load Repair Scene',
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.FADABLE);
+
+        onClick = () => {
+            SoundinatorSingleton.playClick();
+            this._buttons.launchRepairSceneButton.disable();
+            callbacks.activateRepairScene();
+        };
+
+        this._buttons.launchRepairSceneButton = new LoadButton(
+            { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            buttonScale);
     }
 
     /**
@@ -135,10 +181,14 @@ export class DevMenu {
         // Update the various buttons
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.115 * width), height, top: 0.1 * height, width });
+        this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
+        this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });
 
         // Update the various texts
         this._textElements.leftTopTitleText.resize({ left, height, top: null, width });
         this._textElements.rightTopTitleText.resize({ left, height, top: null, width });
+        this._textElements.leftTopMiddleTitleText.resize({ left, height, top: null, width });
+        this._textElements.rightTopMiddleTitleText.resize({ left, height, top: null, width });
     };
 
     /**
@@ -147,8 +197,8 @@ export class DevMenu {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
-        Object.keys(this._textElements).forEach(x => x && this._textElements[x].dispose());
-        Object.keys(this._buttons).forEach(x => x && this._buttons[x].dispose());
+        Object.keys(this._textElements).forEach(x => this._textElements[x] && this._textElements[x].dispose());
+        Object.keys(this._buttons).forEach(x => this._buttons[x] && this._buttons[x].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
 
