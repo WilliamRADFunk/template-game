@@ -1,3 +1,4 @@
+import { SoundinatorSingleton } from '../../soundinator';
 import { ButtonColors } from "../../models/button-colors";
 import { HTMLElementPosition } from "../../models/html-element-position";
 
@@ -130,6 +131,8 @@ export class ButtonBase {
             this.element.style.backgroundColor = this._colorTheme.onMouseUp.backgroundColor;
             this.element.style.color = this._colorTheme.onMouseUp.color;
             this.element.style.border = '1px solid ' + this._colorTheme.onMouseUp.border;
+
+            SoundinatorSingleton.playClick();
 
             this._callback();
         }

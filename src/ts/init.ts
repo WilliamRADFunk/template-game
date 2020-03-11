@@ -387,6 +387,22 @@ const loadDevMenu = () => {
             loadShipLayoutScene();
         }, 50);
     };
+    const activateTravelScene = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            // loadTravelScene();
+        }, 50);
+    };
+    const activateVertexMapScene = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            // loadVertexMapScene();
+        }, 50);
+    };
     const raycaster = new Raycaster();
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
@@ -394,7 +410,9 @@ const loadDevMenu = () => {
             activateGameMenu,
             activateIntroScene,
             activateRepairScene,
-            activateShipLayoutScene
+            activateShipLayoutScene,
+            activateTravelScene,
+            activateVertexMapScene
         });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();

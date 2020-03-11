@@ -19,6 +19,8 @@ import { ButtonBase } from "../../controls/buttons/button-base";
 import { RightTopTitleText } from "../../controls/text/right-top-title-text";
 import { LeftTopMiddleTitleText } from "../../controls/text/left-top-middle-title-text";
 import { RightTopMiddleTitleText } from "../../controls/text/right-top-middle-title-text";
+import { LeftBottomMiddleTitleText } from "../../controls/text/left-bottom-middle-title-text";
+import { RightBottomMiddleTitleText } from "../../controls/text/right-bottom-middle-title-text";
 
 const border: string = '1px solid #FFF';
 // const border: string = 'none';
@@ -38,6 +40,8 @@ export class DevMenu {
         launchIntroSceneButton: null,
         launchRepairSceneButton: null,
         launchShipLayoutSceneButton: null,
+        launchTravelSceneButton: null,
+        launchVertexMapSceneButton: null
     };
 
     /**
@@ -53,10 +57,12 @@ export class DevMenu {
     /**
      * Groups of text elements
      */
-    private _textElements: { [key: string]: (LeftTopTitleText | LeftTopMiddleTitleText | RightTopTitleText | RightTopMiddleTitleText) } = {
+    private _textElements: { [key: string]: (LeftBottomMiddleTitleText | LeftTopTitleText | LeftTopMiddleTitleText | RightBottomMiddleTitleText | RightTopTitleText | RightTopMiddleTitleText) } = {
+        leftBottomMiddleTitleText: null,
         leftTopMiddleTitleText: null,
         leftTopTitleText: null,
-        launchRepairSceneButton: null,
+        rightBottomMiddleTitleText: null,
+        rightTopMiddleTitleText: null,
         rightTopTitleText: null,
     }
 
@@ -88,7 +94,7 @@ export class DevMenu {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         this._textElements.leftTopTitleText = new LeftTopTitleText(
-            'Load Game Menu',
+            'Game Menu',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
@@ -108,7 +114,7 @@ export class DevMenu {
             buttonScale);
 
         this._textElements.rightTopTitleText = new RightTopTitleText(
-            'Load Intro Scene',
+            'Intro Scene',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
@@ -128,7 +134,7 @@ export class DevMenu {
             buttonScale);
 
         this._textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
-            'Load Ship Layout Scene',
+            'Ship Layout Scene',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
@@ -148,7 +154,7 @@ export class DevMenu {
             buttonScale);
 
         this._textElements.rightTopMiddleTitleText = new RightTopMiddleTitleText(
-            'Load Repair Scene',
+            'Repair Scene',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
@@ -162,6 +168,46 @@ export class DevMenu {
 
         this._buttons.launchRepairSceneButton = new LoadButton(
             { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            buttonScale);
+
+        this._textElements.leftBottomMiddleTitleText = new LeftBottomMiddleTitleText(
+            'Travel Scene',
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.FADABLE);
+
+        onClick = () => {
+            SoundinatorSingleton.playClick();
+            this._buttons.launchTravelSceneButton.disable();
+            callbacks.activateTravelScene();
+        };
+
+        this._buttons.launchTravelSceneButton = new LoadButton(
+            { left: left + (0.115 * width), height, top: 0.61 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            buttonScale);
+
+        this._textElements.rightBottomMiddleTitleText = new RightBottomMiddleTitleText(
+            'Vertex Map Scene',
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.FADABLE);
+
+        onClick = () => {
+            SoundinatorSingleton.playClick();
+            this._buttons.launchVertexMapSceneButton.disable();
+            callbacks.activateVertexMapScene();
+        };
+
+        this._buttons.launchVertexMapSceneButton = new LoadButton(
+            { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -183,12 +229,16 @@ export class DevMenu {
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
         this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });
+        this._buttons.launchTravelSceneButton.resize({ left: left + (0.115 * width), height, top: 0.61 * height, width });
+        this._buttons.launchVertexMapSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width });
 
         // Update the various texts
-        this._textElements.leftTopTitleText.resize({ left, height, top: null, width });
-        this._textElements.rightTopTitleText.resize({ left, height, top: null, width });
+        this._textElements.rightBottomMiddleTitleText.resize({ left, height, top: null, width });
+        this._textElements.leftBottomMiddleTitleText.resize({ left, height, top: null, width });
         this._textElements.leftTopMiddleTitleText.resize({ left, height, top: null, width });
         this._textElements.rightTopMiddleTitleText.resize({ left, height, top: null, width });
+        this._textElements.leftTopTitleText.resize({ left, height, top: null, width });
+        this._textElements.rightTopTitleText.resize({ left, height, top: null, width });
     };
 
     /**
