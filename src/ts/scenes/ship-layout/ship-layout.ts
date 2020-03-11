@@ -243,6 +243,9 @@ export class ShipLayout {
                         return true;
                     }
                 });
+                if (hit) {
+                    SoundinatorSingleton.playClick();
+                }
                 if (hit && hit.name !== (this._selectedBox && this._selectedBox.name)) {
                     Object.keys(this._meshMap).forEach(key => {
                         (this._meshMap[key].material as any).color.set(colors.unhighlighted);
@@ -399,6 +402,7 @@ export class ShipLayout {
 
         // Sets up the minus button, or adjusts it.
         let onClick = () => {
+            SoundinatorSingleton.playClick();
             const pointSpread = this._cloneTechPoints[this._selectedBox.name];
             if (pointSpread.current > pointSpread.min) {
                 this._points++;
@@ -418,6 +422,7 @@ export class ShipLayout {
 
         // Sets up the plus button, or adjusts it.
         onClick = () => {
+            SoundinatorSingleton.playClick();
             const pointSpread = this._cloneTechPoints[this._selectedBox.name];
             if (this._points > 0 && pointSpread.current < pointSpread.max) {
                 this._points--;
@@ -437,6 +442,7 @@ export class ShipLayout {
 
         // Sets up the play button, or adjusts it.
         onClick = () => {
+            SoundinatorSingleton.playClick();
             if (!this._hasSubmitted) {
                 this._buttons.playButton.disable();
                 setTimeout(() => {
@@ -453,6 +459,7 @@ export class ShipLayout {
 
         // Sets up the reset button, or adjusts it.
         onClick = () => {
+            SoundinatorSingleton.playClick();
             if (!this._hasSubmitted) {
                 this._resetPoints();
                 setTimeout(() => {

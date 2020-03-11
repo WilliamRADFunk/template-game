@@ -25,6 +25,7 @@ import { Menu } from './scenes/main-menu/menu';
 import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
+import { ENVIRONMENT } from './environment';
 
 /**
  * Loads the graphic for asteroid.
@@ -353,52 +354,23 @@ const loadDevMenu = () => {
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
-    // Click event listener that activates certain menu options.
-    const raycaster = new Raycaster();
-    document.onclick = event => {
-        const mouse = new Vector2();
-        event.preventDefault();
-        // Gets accurate click positions using css and raycasting.
-        const position = {
-            left: container.offsetLeft,
-            top: container.offsetTop
-        };
-        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-        if (event.clientX !== undefined) {
-            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-        }
-        raycaster.setFromCamera(mouse, scenes.devMenu.camera);
-        const thingsTouched = raycaster.intersectObjects(scenes.devMenu.scene.children);
-        // Detection for player clicked on planet for shield manipulation.
-        thingsTouched.forEach(el => {
-            if (el.object.name === 'Start') {
-                const difficulty = scenes.devMenu.instance.pressedStart();
-                setTimeout(() => {
-                    scenes.devMenu.active = false;
-                    window.removeEventListener( 'resize', onWindowResize, false);
-                    container.removeChild( (scenes.devMenu.renderer as any).domElement );
-                    loadShipLayoutScene();
-                }, 750);
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Load Code') {
-                setTimeout(() => {
-                    scenes.devMenu.active = false;
-                    window.removeEventListener( 'resize', onWindowResize, false);
-                    container.removeChild( (scenes.devMenu.renderer as any).domElement );
-                    // loadGame(1);
-                }, 250);
-                SoundinatorSingleton.playClick();
-                return;
-            } else if (el.object.name === 'Easy') {
-                scenes.devMenu.instance.changeDifficulty(0);
-                SoundinatorSingleton.playClick();
-                return;
-            }
-        });
+    // Click event listeners that activates certain menu options.
+    const activateShipLayoutScene = () => {
+        scenes.devMenu.active = false;
+        setTimeout(() => {
+            scenes.devMenu.active = false;
+            window.removeEventListener( 'resize', onWindowResize, false);
+            container.removeChild( (scenes.devMenu.renderer as any).domElement );
+            loadShipLayoutScene();
+        }, 200);
+        SoundinatorSingleton.playClick();
     };
-    scenes.devMenu.instance = new DevMenu(scenes.devMenu);
+    const raycaster = new Raycaster();
+    scenes.devMenu.instance = new DevMenu(
+        scenes.devMenu,
+        {
+            activateShipLayoutScene
+        });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();
 };
@@ -417,7 +389,7 @@ const startDevMenuRendering = () => {
     scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
 	requestAnimationFrame( render );
 };
-const loadMenu = () => {
+const loadGameMenu = () => {
     scenes.menu.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
@@ -553,6 +525,11 @@ const startMenuRendering = () => {
 	requestAnimationFrame( render );
 };
 /**
+ * Environment specific menu.
+ * Dev environment loads Dev menu, while Prod environment loads regular menu.
+ */
+const loadMenu = ENVIRONMENT === 'production' ? loadGameMenu : loadDevMenu;
+/**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
 const loadIntroScene = () => {
@@ -626,7 +603,7 @@ const loadIntroScene = () => {
             if (el.object.name === 'Click Barrier') {
                 SoundinatorSingleton.playClick();
                 scenes.intro.active = false;
-                loadDevMenu();
+                loadMenu();
                 return;
             }
         });
@@ -662,7 +639,7 @@ const loadIntroScene = () => {
                 scenes.intro.raycaster = null;
                 scenes.intro.renderer = null;
                 scenes.intro.scene = null;
-                loadDevMenu();
+                loadMenu();
                 return;
             }
         }
@@ -761,7 +738,7 @@ const loadShipLayoutScene = () => {
                 scenes.shipLayout.renderer = null;
                 scenes.shipLayout.scene = null;
                 setTimeout(() => {
-                    loadDevMenu();
+                    loadMenu();
                 }, 10);
                 return;
             }

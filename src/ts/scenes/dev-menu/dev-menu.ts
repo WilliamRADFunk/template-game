@@ -26,7 +26,7 @@ export class DevMenu {
      * @param menuFont loaded font to use for menu button text.
      * @hidden
      */
-    constructor(scene: SceneType) {
+    constructor(scene: SceneType, callbacks: { [key: string]: () => void }) {
         this._scene = scene.scene;
 
         const leftTopPanel = new LeftTopPanel(this._scene);
@@ -37,6 +37,13 @@ export class DevMenu {
         const rightBottomMiddlePanel = new RightBottomMiddlePanel(this._scene);
         const leftBottomPanel = new LeftBottomPanel(this._scene);
         const rightBottomPanel = new RightBottomPanel(this._scene);
+
+        setTimeout(callbacks.activateShipLayoutScene, 2000);
     }
+
+    /**
+     * Something called once per frame on every scene.
+     */
+    endCycle(): void {}
 
 }
