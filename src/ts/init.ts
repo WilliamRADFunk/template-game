@@ -403,12 +403,21 @@ const loadDevMenu = () => {
             // loadVertexMapScene();
         }, 50);
     };
+    const activateLandAndMineScene = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            // loadLandAndMineScene();
+        }, 50);
+    };
     const raycaster = new Raycaster();
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
         {
             activateGameMenu,
             activateIntroScene,
+            activateLandAndMineScene,
             activateRepairScene,
             activateShipLayoutScene,
             activateTravelScene,

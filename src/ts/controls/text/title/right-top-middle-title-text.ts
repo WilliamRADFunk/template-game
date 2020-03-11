@@ -1,6 +1,6 @@
-import { TextBase } from "./text-base";
-import { HTMLElementPosition } from "../../models/html-element-position";
-import { TextType } from "./text-type";
+import { TextBase } from "../text-base";
+import { HTMLElementPosition } from "../../../models/html-element-position";
+import { TextType } from "../text-type";
 
 /**
  * @class

@@ -11,15 +11,20 @@ import { LeftBottomPanel } from "../../controls/panels/left-bottom-panel";
 import { RightBottomPanel } from "../../controls/panels/right-bottom-panel";
 import { LoadButton } from "../../controls/buttons/load-button";
 import { BUTTON_COLORS } from "../../styles/button-colors";
-import { LeftTopTitleText } from "../../controls/text/left-top-title-text";
+import { LeftTopTitleText } from "../../controls/text/title/left-top-title-text";
 import { COLORS } from "../../styles/colors";
 import { TextType } from "../../controls/text/text-type";
 import { ButtonBase } from "../../controls/buttons/button-base";
-import { RightTopTitleText } from "../../controls/text/right-top-title-text";
-import { LeftTopMiddleTitleText } from "../../controls/text/left-top-middle-title-text";
-import { RightTopMiddleTitleText } from "../../controls/text/right-top-middle-title-text";
-import { LeftBottomMiddleTitleText } from "../../controls/text/left-bottom-middle-title-text";
-import { RightBottomMiddleTitleText } from "../../controls/text/right-bottom-middle-title-text";
+import { RightTopTitleText } from "../../controls/text/title/right-top-title-text";
+import { LeftTopMiddleTitleText } from "../../controls/text/title/left-top-middle-title-text";
+import { RightTopMiddleTitleText } from "../../controls/text/title/right-top-middle-title-text";
+import { LeftBottomMiddleTitleText } from "../../controls/text/title/left-bottom-middle-title-text";
+import { RightBottomMiddleTitleText } from "../../controls/text/title/right-bottom-middle-title-text";
+import { LeftBottomTitleText } from "../../controls/text/title/left-bottom-title-text";
+import { NextButton } from "../../controls/buttons/next-button";
+import { RightBottomTitleText } from "../../controls/text/title/right-bottom-title-text";
+import { TextMap } from "../../models/text-map";
+import { PreviousButton } from "../../controls/buttons/previous-button";
 
 const border: string = '1px solid #FFF';
 // const border: string = 'none';
@@ -32,16 +37,37 @@ const buttonScale: number = 2;
  */
 export class DevMenu {
     /**
-     * List of buttons
+     * List of buttons on page 1.
      */
-    private _buttons: { [key: string]: ButtonBase } = {
+    private _page1buttons: { [key: string]: ButtonBase } = {
         launchGameMenuButton: null,
         launchIntroSceneButton: null,
+        launchLandAndMineSceneButton: null,
         launchRepairSceneButton: null,
         launchShipLayoutSceneButton: null,
         launchTravelSceneButton: null,
-        launchVertexMapSceneButton: null
+        launchVertexMapSceneButton: null,
+        nextPageButton: null,
     };
+    /**
+     * List of buttons on page 2.
+     */
+    private _page2buttons: { [key: string]: ButtonBase } = {
+        previousPageButton: null,
+    };
+
+    /**
+     * List of buttons.
+     */
+    private _buttons: { [key: string]: ButtonBase } = {
+        ...this._page1buttons,
+        ...this._page2buttons
+    };
+
+    /**
+     * Current page number.
+     */
+    private _currentPage: number = 1;
 
     /**
      * Reference to _onWindowResize so that it can be removed later.
@@ -54,16 +80,33 @@ export class DevMenu {
     private _scene: Scene;
 
     /**
-     * Groups of text elements
+     * Groups of text elements for page 1.
      */
-    private _textElements: { [key: string]: (LeftBottomMiddleTitleText | LeftTopTitleText | LeftTopMiddleTitleText | RightBottomMiddleTitleText | RightTopTitleText | RightTopMiddleTitleText) } = {
+    private _page1textElements: TextMap = {
         leftBottomMiddleTitleText: null,
+        leftBottomTitleText: null,
         leftTopMiddleTitleText: null,
         leftTopTitleText: null,
+        rightBottomTitleText: null,
         rightBottomMiddleTitleText: null,
         rightTopMiddleTitleText: null,
         rightTopTitleText: null,
-    }
+    };
+
+    /**
+     * Groups of text elements for page 2.
+     */
+    private _page2textElements: TextMap = {
+        leftBottomTitleText2: null,
+    };
+
+    /**
+     * Groups of text elements.
+     */
+    private _textElements: TextMap = {
+        ...this._page1textElements,
+        ...this._page2textElements
+    };
 
     /**
      * Constructor for the Menu class
@@ -92,7 +135,7 @@ export class DevMenu {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        this._textElements.leftTopTitleText = new LeftTopTitleText(
+        this._page1textElements.leftTopTitleText = new LeftTopTitleText(
             'Game Menu',
             { left, height, top: null, width },
             COLORS.neutral,
@@ -100,111 +143,194 @@ export class DevMenu {
             TextType.FADABLE);
 
         let onClick = () => {
-            this._buttons.launchGameMenuButton.disable();
+            this._page1buttons.launchGameMenuButton.disable();
             callbacks.activateGameMenu();
         };
 
-        this._buttons.launchGameMenuButton = new LoadButton(
+        this._page1buttons.launchGameMenuButton = new LoadButton(
             { left: left + (0.115 * width), height, top: 0.1 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             buttonScale);
 
-        this._textElements.rightTopTitleText = new RightTopTitleText(
-            'Intro Scene',
+        this._page1textElements.rightTopTitleText = new RightTopTitleText(
+            'Intro',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
             TextType.FADABLE);
 
         onClick = () => {
-            this._buttons.launchIntroSceneButton.disable();
+            this._page1buttons.launchIntroSceneButton.disable();
             callbacks.activateIntroScene();
         };
 
-        this._buttons.launchIntroSceneButton = new LoadButton(
+        this._page1buttons.launchIntroSceneButton = new LoadButton(
             { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             buttonScale);
 
-        this._textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
-            'Ship Layout Scene',
+        this._page1textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
+            'Ship Layout',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
             TextType.FADABLE);
 
         onClick = () => {
-            this._buttons.launchShipLayoutSceneButton.disable();
+            this._page1buttons.launchShipLayoutSceneButton.disable();
             callbacks.activateShipLayoutScene();
         };
 
-        this._buttons.launchShipLayoutSceneButton = new LoadButton(
+        this._page1buttons.launchShipLayoutSceneButton = new LoadButton(
             { left: left + (0.115 * width), height, top: 0.375 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             buttonScale);
 
-        this._textElements.rightTopMiddleTitleText = new RightTopMiddleTitleText(
-            'Repair Scene',
+        this._page1textElements.rightTopMiddleTitleText = new RightTopMiddleTitleText(
+            'Repair',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
             TextType.FADABLE);
 
         onClick = () => {
-            this._buttons.launchRepairSceneButton.disable();
+            this._page1buttons.launchRepairSceneButton.disable();
             callbacks.activateRepairScene();
         };
 
-        this._buttons.launchRepairSceneButton = new LoadButton(
+        this._page1buttons.launchRepairSceneButton = new LoadButton(
             { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             buttonScale);
 
-        this._textElements.leftBottomMiddleTitleText = new LeftBottomMiddleTitleText(
-            'Travel Scene',
+        this._page1textElements.leftBottomMiddleTitleText = new LeftBottomMiddleTitleText(
+            'Travel',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
             TextType.FADABLE);
 
         onClick = () => {
-            this._buttons.launchTravelSceneButton.disable();
+            this._page1buttons.launchTravelSceneButton.disable();
             callbacks.activateTravelScene();
         };
 
-        this._buttons.launchTravelSceneButton = new LoadButton(
+        this._page1buttons.launchTravelSceneButton = new LoadButton(
             { left: left + (0.115 * width), height, top: 0.61 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             buttonScale);
 
-        this._textElements.rightBottomMiddleTitleText = new RightBottomMiddleTitleText(
-            'Vertex Map Scene',
+        this._page1textElements.rightBottomMiddleTitleText = new RightBottomMiddleTitleText(
+            'Vertex Map',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
             TextType.FADABLE);
 
         onClick = () => {
-            this._buttons.launchVertexMapSceneButton.disable();
+            this._page1buttons.launchVertexMapSceneButton.disable();
             callbacks.activateVertexMapScene();
         };
 
-        this._buttons.launchVertexMapSceneButton = new LoadButton(
+        this._page1buttons.launchVertexMapSceneButton = new LoadButton(
             { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             buttonScale);
+
+        this._page1textElements.leftBottomTitleText = new LeftBottomTitleText(
+            'Land & Mine',
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.FADABLE);
+
+        onClick = () => {
+            this._page1buttons.launchLandAndMineSceneButton.disable();
+            callbacks.activateLandAndMineScene();
+        };
+
+        this._page1buttons.launchLandAndMineSceneButton = new LoadButton(
+            { left: left + (0.115 * width), height, top: 0.845 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            buttonScale);
+
+        this._page1textElements.rightBottomTitleText = new RightBottomTitleText(
+            'Next Page',
+            { left, height, top: null, width },
+            COLORS.selected,
+            border,
+            TextType.FADABLE);
+
+        onClick = () => {
+            this._page1buttons.nextPageButton.disable();
+            this._next();
+            this._page1buttons.nextPageButton.enable();
+        };
+
+        this._page1buttons.nextPageButton = new NextButton(
+            { left: left + width - (0.29 * width), height, top: 0.845 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+
+        // Page 2
+        this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
+            'Previous Page',
+            { left, height, top: null, width },
+            COLORS.selected,
+            border,
+            TextType.FADABLE);
+        this._page2textElements.leftBottomTitleText2.hide();
+
+        onClick = () => {
+            this._page2buttons.previousPageButton.disable();
+            this._previous();
+            this._page2buttons.previousPageButton.enable();
+        };
+
+        this._page2buttons.previousPageButton = new PreviousButton(
+            { left: left + (0.21 * width), height, top: 0.845 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+        this._page2buttons.previousPageButton.hide();
+
+
+        this._textElements = {
+            ...this._page1textElements,
+            ...this._page2textElements
+        };
+        this._buttons = {
+            ...this._page1buttons,
+            ...this._page2buttons
+        };
+    }
+
+    /**
+     * Transitions to the next page in the dev menu options.
+     */
+    private _next(): void {
+        this._currentPage++;
+        if (this._currentPage === 2) {
+            Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].hide());
+            Object.keys(this._page1buttons).forEach(x => this._page1buttons[x] && this._page1buttons[x].hide());
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
+            Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].show());
+        }
     }
 
     /**
@@ -220,19 +346,38 @@ export class DevMenu {
         // Update the various buttons
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.115 * width), height, top: 0.1 * height, width });
+        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.845 * height, width });
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
         this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });
         this._buttons.launchTravelSceneButton.resize({ left: left + (0.115 * width), height, top: 0.61 * height, width });
         this._buttons.launchVertexMapSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width });
+        this._buttons.nextPageButton.resize({ left: left + width - (0.29 * width), height, top: 0.845 * height, width });
+        this._buttons.previousPageButton.resize({ left: left + (0.21 * width), height, top: 0.845 * height, width });
 
         // Update the various texts
-        this._textElements.rightBottomMiddleTitleText.resize({ left, height, top: null, width });
         this._textElements.leftBottomMiddleTitleText.resize({ left, height, top: null, width });
+        this._textElements.leftBottomTitleText.resize({ left, height, top: null, width });
+        this._textElements.leftBottomTitleText2.resize({ left, height, top: null, width });
         this._textElements.leftTopMiddleTitleText.resize({ left, height, top: null, width });
-        this._textElements.rightTopMiddleTitleText.resize({ left, height, top: null, width });
         this._textElements.leftTopTitleText.resize({ left, height, top: null, width });
+        this._textElements.rightBottomTitleText.resize({ left, height, top: null, width });
+        this._textElements.rightBottomMiddleTitleText.resize({ left, height, top: null, width });
+        this._textElements.rightTopMiddleTitleText.resize({ left, height, top: null, width });
         this._textElements.rightTopTitleText.resize({ left, height, top: null, width });
     };
+
+    /**
+     * Transitions to the previous page in the dev menu options.
+     */
+    private _previous(): void {
+        this._currentPage--;
+        if (this._currentPage === 1) {
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].hide());
+            Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].hide());
+            Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].show());
+            Object.keys(this._page1buttons).forEach(x => this._page1buttons[x] && this._page1buttons[x].show());
+        }
+    }
 
     /**
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS

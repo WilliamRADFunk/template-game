@@ -1,14 +1,14 @@
-import { TextBase } from "./text-base";
-import { HTMLElementPosition } from "../../models/html-element-position";
-import { TextType } from "./text-type";
+import { TextBase } from "../text-base";
+import { HTMLElementPosition } from "../../../models/html-element-position";
+import { TextType } from "../text-type";
 
 /**
  * @class
- * Text class for text that will appear in the top left corner box, on the box's middle.
+ * Text class for text that will appear in the bottom left middle box, on the box's top.
  */
-export class LeftTopSubtitleText extends TextBase {
+export class LeftBottomMiddleTitleText extends TextBase {
     /**
-     * Constructor for the left top subtitle text sub class
+     * Constructor for the left bottom middle title text sub class
      * @param sentence starting text content.
      * @param position height, width, left and top position of the button.
      * @param color color of the text.
@@ -21,7 +21,7 @@ export class LeftTopSubtitleText extends TextBase {
         color: string,
         border: string,
         type: TextType) {
-        super('left-top-subtitle-text', color, 'center', border, type);
+        super('left-bottom-middle-title-text', color, 'center', border, type);
 
         this.element.innerHTML = sentence;
         document.body.appendChild(this.element);
@@ -36,10 +36,10 @@ export class LeftTopSubtitleText extends TextBase {
     public resize(position: HTMLElementPosition) {
         this.element.style.maxWidth = `${0.43 * position.width}px`;
         this.element.style.width = `${0.43 * position.width}px`;
-        this.element.style.maxHeight = `${0.03 * position.height}px`;
-        this.element.style.height = `${0.03 * position.height}px`;
-        this.element.style.top = `${0.09 * position.height}px`;
+        this.element.style.maxHeight = `${0.08 * position.height}px`;
+        this.element.style.height = `${0.08 * position.height}px`;
+        this.element.style.top = `${0.52 * position.height}px`;
         this.element.style.left = `${position.left + (0.02 * position.width)}px`;
-        this.element.style.fontSize = `${0.025 * position.width}px`;
+        this.element.style.fontSize = `${0.03 * position.width}px`;
     }
 }
