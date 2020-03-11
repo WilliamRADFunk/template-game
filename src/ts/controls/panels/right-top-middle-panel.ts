@@ -13,6 +13,6 @@ export class RightTopMiddlePanel extends PanelBase {
      * @hidden
      */
     constructor(scene: Scene) {
-        super( 'Right Top Panel', scene, 6, 6.2, 2.7, 2.9, -1.4 );
+        super( 'Right Top Middle Panel', scene, 6, 6.2, 2.7, 2.9, -1.4 );
     }
 }

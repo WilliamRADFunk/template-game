@@ -5,6 +5,10 @@ import { LeftTopPanel } from "../../controls/panels/left-top-panel";
 import { RightTopPanel } from "../../controls/panels/right-top-panel";
 import { LeftTopMiddlePanel } from "../../controls/panels/left-top-middle-panel";
 import { RightTopMiddlePanel } from "../../controls/panels/right-top-middle-panel";
+import { LeftBottomMiddlePanel } from "../../controls/panels/left-bottom-middle-panel";
+import { RightBottomMiddlePanel } from "../../controls/panels/right-bottom-middle-panel";
+import { LeftBottomPanel } from "../../controls/panels/left-bottom-panel";
+import { RightBottomPanel } from "../../controls/panels/right-bottom-panel";
 
 /**
  * @class
@@ -29,6 +33,10 @@ export class DevMenu {
         const rightTopPanel = new RightTopPanel(this._scene);
         const leftTopMiddlePanel = new LeftTopMiddlePanel(this._scene);
         const rightTopMiddlePanel = new RightTopMiddlePanel(this._scene);
+        const leftBottomMiddlePanel = new LeftBottomMiddlePanel(this._scene);
+        const rightBottomMiddlePanel = new RightBottomMiddlePanel(this._scene);
+        const leftBottomPanel = new LeftBottomPanel(this._scene);
+        const rightBottomPanel = new RightBottomPanel(this._scene);
     }
 
 }
