@@ -125,11 +125,11 @@ const scenes: { [ key: string ]: SceneType } = {
 /**
  * Loads the graphic for ship layout dialogue.
  */
-const shipLayoutDialogueLoader = new TextureLoader();
+const engineerProfileLoader = new TextureLoader();
 /**
  * The loaded texture, used for the ship layout dialogue.
  */
-let shipLayoutDialogueTexture: Texture;
+let engineerProfileTexture: Texture;
 /**
  * Loads the graphic for ship.
  */
@@ -269,8 +269,8 @@ const loadAssets = () => {
         checkAssetsLoaded();
     });
     // Callback function to set the ship layout dialogue texture once it is finished loading.
-    shipLayoutDialogueLoader.load( 'assets/images/ship-layout-profile.png', texture => {
-        shipLayoutDialogueTexture = texture;
+    engineerProfileLoader.load( 'assets/images/ship-layout-profile.png', texture => {
+        engineerProfileTexture = texture;
         checkAssetsLoaded();
     });
     // Callback function to set the ship texture once it is finished loading.
@@ -311,7 +311,7 @@ const checkAssetsLoaded = () => {
         marsTexture &&
         enceladusTexture &&
         enzmannOutsideTexture &&
-        shipLayoutDialogueTexture &&
+        engineerProfileTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadMenu();
@@ -422,6 +422,10 @@ const loadDevMenu = () => {
             activateShipLayoutScene,
             activateTravelScene,
             activateVertexMapScene
+        },
+        {
+            engineer: engineerProfileTexture,
+            enzmann: enzmannOutsideTexture
         });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();
@@ -763,7 +767,7 @@ const loadShipLayoutScene = () => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, shipLayoutDialogueTexture);
+    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, engineerProfileTexture);
     scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

@@ -13,7 +13,7 @@ import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
-import { createProfile } from './actors/create-profile';
+import { RightTopProfile } from '../../controls/profiles/right-top-profile';
 import { compareRGBValues } from '../../utils/compare-rgb-values';
 import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
@@ -162,9 +162,7 @@ export class ShipLayout {
         const shipInterior = createShipInteriorFrame(shipIntTexture);
         this._actors.push(shipInterior);
         this._scene.add(shipInterior.mesh);
-        const profile = createProfile(dialogueTexture);
-        this._actors.push(profile);
-        this._scene.add(profile.mesh);
+        this._actors.push(new RightTopProfile(this._scene, dialogueTexture).profile);
 
         techPellets.forEach(pellet => {
             const pelletMaterial = new MeshBasicMaterial({
