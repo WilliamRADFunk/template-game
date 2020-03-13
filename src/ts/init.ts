@@ -56,6 +56,22 @@ const enceladusLoader = new TextureLoader();
  */
 let enceladusTexture: Texture;
 /**
+ * Loads the graphic for ship layout dialogue.
+ */
+const engineerProfileLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the ship layout dialogue.
+ */
+let engineerProfileTexture: Texture;
+/**
+ * Loads the graphic for ship layout dialogue.
+ */
+const engineer2ProfileLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the ship layout dialogue.
+ */
+let engineer2ProfileTexture: Texture;
+/**
  * Loads the graphic for enzmann.
  */
 const enzmannLayoutLoader = new TextureLoader();
@@ -122,14 +138,6 @@ const scenes: { [ key: string ]: SceneType } = {
         scene: null
     }
 };
-/**
- * Loads the graphic for ship layout dialogue.
- */
-const engineerProfileLoader = new TextureLoader();
-/**
- * The loaded texture, used for the ship layout dialogue.
- */
-let engineerProfileTexture: Texture;
 /**
  * Loads the graphic for ship.
  */
@@ -253,6 +261,16 @@ const loadAssets = () => {
         enceladusTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the ship layout dialogue texture once it is finished loading.
+    engineerProfileLoader.load( 'assets/images/ship-layout-profile.png', texture => {
+        engineerProfileTexture = texture;
+        checkAssetsLoaded();
+    });
+    // Callback function to set the ship layout dialogue texture once it is finished loading.
+    engineer2ProfileLoader.load( 'assets/images/ship-layout-profile-2.png', texture => {
+        engineer2ProfileTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the enzmannLayout texture once it is finished loading.
     enzmannLayoutLoader.load( 'assets/images/enzmann-layout.png', texture => {
         enzmannLayoutTexture = texture;
@@ -266,11 +284,6 @@ const loadAssets = () => {
     // Callback function to set the mars texture once it is finished loading.
     marsLoader.load( 'assets/images/mars.png', texture => {
         marsTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the ship layout dialogue texture once it is finished loading.
-    engineerProfileLoader.load( 'assets/images/ship-layout-profile.png', texture => {
-        engineerProfileTexture = texture;
         checkAssetsLoaded();
     });
     // Callback function to set the ship texture once it is finished loading.
@@ -310,8 +323,9 @@ const checkAssetsLoaded = () => {
         earthTexture &&
         marsTexture &&
         enceladusTexture &&
-        enzmannOutsideTexture &&
         engineerProfileTexture &&
+        engineer2ProfileTexture &&
+        enzmannOutsideTexture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadMenu();
@@ -325,12 +339,15 @@ const loadDevMenu = () => {
     // Create ThreeJS scene.
     scenes.devMenu.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.devMenu.renderer = ((window as any)['WebGLRenderingContext']) ?
-        new WebGLRenderer() : new CanvasRenderer();
+    scenes.devMenu.renderer = ((window as any)['WebGLRenderingContext'])
+        ? new WebGLRenderer()
+        : new CanvasRenderer();
     // Make it black and size it to window.
     (scenes.devMenu.renderer as any).setClearColor(0x000000, 0);
     scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
     (scenes.devMenu.renderer as any).autoClear = false;
+    // An all around brightish light that hits everything equally.
+    scenes.devMenu.scene.add(new AmbientLight(0xCCCCCC));
     // Render to the html container.
     const container = document.getElementById('mainview');
 	container.appendChild( (scenes.devMenu.renderer as any).domElement );
@@ -425,6 +442,7 @@ const loadDevMenu = () => {
         },
         {
             engineer: engineerProfileTexture,
+            engineer2: engineer2ProfileTexture,
             enzmann: enzmannOutsideTexture
         });
     scenes.devMenu.raycaster = raycaster;

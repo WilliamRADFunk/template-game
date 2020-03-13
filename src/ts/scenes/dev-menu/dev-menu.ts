@@ -317,9 +317,10 @@ export class DevMenu {
             true);
 
         // Page 2
-        this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.enzmann);
+        this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2);
         this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer);
-        // this._page2profiles.leftTopProfile.hide();
+        this._page2profiles.leftTopProfile.hide();
+        this._page2profiles.rightTopProfile.hide();
 
 
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
