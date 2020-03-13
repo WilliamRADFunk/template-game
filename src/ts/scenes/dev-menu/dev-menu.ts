@@ -27,6 +27,8 @@ import { TextMap } from "../../models/text-map";
 import { PreviousButton } from "../../controls/buttons/previous-button";
 import { LeftTopProfile } from "../../controls/profiles/left-top-profile";
 import { RightTopProfile } from "../../controls/profiles/right-top-profile";
+import { RightTopMiddleProfile } from "../../controls/profiles/right-top-middle-profile";
+import { LeftTopMiddleProfile } from "../../controls/profiles/left-top-middle-profile";
 
 const border: string = '1px solid #FFF';
 // const border: string = 'none';
@@ -46,9 +48,11 @@ export class DevMenu {
     /**
      * List of profiles on page 2.
      */
-    private _page2profiles: { [key: string]: LeftTopProfile | RightTopProfile } = {
+    private _page2profiles: { [key: string]: LeftTopMiddleProfile | LeftTopProfile | RightTopMiddleProfile | RightTopProfile } = {
+        leftTopMiddleProfile: null,
         leftTopProfile: null,
-        rightTopProfile: null
+        rightTopProfile: null,
+        rightTopMiddleProfile: null
     };
 
     /**
@@ -317,9 +321,13 @@ export class DevMenu {
             true);
 
         // Page 2
+        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer2);
         this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer);
+        this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2);
+        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer2);
+        this._page2profiles.leftTopMiddleProfile.hide();
         this._page2profiles.leftTopProfile.hide();
+        this._page2profiles.rightTopMiddleProfile.hide();
         this._page2profiles.rightTopProfile.hide();
 
 
