@@ -64,12 +64,13 @@ export class TextBase {
     /**
      * Constructor for the text base class
      * @param id id attribute on the element.
+     * @param sentence text content in the element.
      * @param color color attribute on the element.
      * @param align test align attribute on the element.
      * @param border border attribute on the element.
      * @param type type of text on the element.
      */
-    constructor(id: string, color: string, align: string, border: string, type: TextType) {
+    constructor(id: string, sentence: string, color: string, align: string, border: string, type: TextType) {
         this.element = document.createElement('div');
         this.element.id = this.id = id;
         this.element.style.fontFamily = 'Luckiest Guy';
@@ -79,6 +80,9 @@ export class TextBase {
         this.element.style.overflowY = 'hidden';
         this.element.style.textAlign = align;
         this.element.style.border = border;
+
+        this.sentence = sentence;
+        this.element.innerHTML = sentence;
 
         this._type = type;
     }
@@ -112,7 +116,7 @@ export class TextBase {
             if (this._isFinished) {
                 return;
             }
-            this._counter++;
+            this._counter += 1;
             if (this._counter % 3 === 0 && this._currentIndex < this.sentence.length) {
                 this._currentIndex++;
                 if (this.sentence.charAt(this._currentIndex - 1) === '<') {
@@ -158,18 +162,21 @@ export class TextBase {
      * Makes the button visible.
      */
     public show() {
+        this.update();
         this.element.style.visibility = 'visible';
     }
 
     /**
      * Updates the content of the text.
      */
-    public update(sentence: string): void {
+    public update(sentence?: string): void {
         this._isFadeIn = true;
         this._isHolding = false;
         this._counter = 1;
         this._currentIndex = 0;
         this._isFinished = false;
-        this.element.innerHTML = this.sentence = sentence;
+        if (sentence) {
+            this.element.innerHTML = this.sentence = sentence;
+        }
     }
 }

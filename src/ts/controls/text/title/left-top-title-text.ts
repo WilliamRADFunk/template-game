@@ -21,9 +21,8 @@ export class LeftTopTitleText extends TextBase {
         color: string,
         border: string,
         type: TextType) {
-        super('left-top-title-text', color, 'center', border, type);
+        super('left-top-title-text', sentence, color, 'center', border, type);
 
-        this.element.innerHTML = sentence;
         document.body.appendChild(this.element);
 
         this.resize(position);

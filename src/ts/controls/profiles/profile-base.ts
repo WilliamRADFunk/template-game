@@ -43,7 +43,6 @@ export class ProfileBase {
         this.profile.currentPoint = [position[0], position[1]];
         this.profile.endingPoint = [position[0], position[1]];
         this.profile.geometry = new PlaneGeometry(size.width, size.height, 96, 96);
-        console.log(size.width, size.height, this.profile.geometry);
         this.profile.material = new MeshPhongMaterial();
         this.profile.material.map = texture;
         this.profile.material.map.minFilter = LinearFilter;

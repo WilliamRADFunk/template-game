@@ -33,6 +33,7 @@ import { LeftBottomMiddleProfile } from "../../controls/profiles/left-bottom-mid
 import { RightBottomMiddleProfile } from "../../controls/profiles/right-bottom-middle-profile";
 import { LeftBottomProfile } from "../../controls/profiles/left-bottom-profile";
 import { RightBottomProfile } from "../../controls/profiles/right-bottom-profile";
+import { LeftTopDialogueText } from "../../controls/text/dialogue/left-top-dialogue-text";
 
 const border: string = '1px solid #FFF';
 // const border: string = 'none';
@@ -110,7 +111,8 @@ export class DevMenu {
      */
     private _buttons: { [key: string]: ButtonBase } = {
         ...this._page1buttons,
-        ...this._page2buttons
+        ...this._page2buttons,
+        ...this._page3buttons
     };
 
     /**
@@ -147,6 +149,7 @@ export class DevMenu {
      */
     private _page2textElements: TextMap = {
         leftBottomTitleText2: null,
+        leftTopDialogueText2: null,
         rightBottomTitleText2: null
     };
 
@@ -353,17 +356,25 @@ export class DevMenu {
 
         // Page 2
         this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer2);
+        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer);
         this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2);
         this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, this._textures.engineer2);
         this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer2);
+        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer);
         this._page2profiles.leftBottomMiddleProfile.hide();
         this._page2profiles.leftTopMiddleProfile.hide();
         this._page2profiles.leftTopProfile.hide();
         this._page2profiles.rightBottomMiddleProfile.hide();
         this._page2profiles.rightTopMiddleProfile.hide();
         this._page2profiles.rightTopProfile.hide();
+
+        this._page2textElements.leftTopDialogueText2 = new LeftTopDialogueText(
+            `Pet right here, no not there, here, no fool, right here that other cat smells funny you should really give me all the treats because i smell the best and omg you finally got the right spot.`,
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.DIALOGUE);
+        this._page2textElements.leftTopDialogueText2.hide();
 
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
             'Previous Page',
@@ -419,7 +430,7 @@ export class DevMenu {
 
         // Page 3
         this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2);
-        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer2);
+        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer);
         this._page3profiles.leftBottomProfile3.hide();
         this._page3profiles.rightBottomProfile3.hide();
 
@@ -486,18 +497,12 @@ export class DevMenu {
         this._buttons.launchTravelSceneButton.resize({ left: left + (0.115 * width), height, top: 0.61 * height, width });
         this._buttons.launchVertexMapSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width });
         this._buttons.nextPageButton.resize({ left: left + width - (0.29 * width), height, top: 0.845 * height, width });
+        this._buttons.nextPageButton2.resize({ left: left + width - (0.29 * width), height, top: 0.845 * height, width });
         this._buttons.previousPageButton2.resize({ left: left + (0.21 * width), height, top: 0.845 * height, width });
+        this._buttons.previousPageButton3.resize({ left: left + (0.21 * width), height, top: 0.115 * height, width });
 
         // Update the various texts
-        this._textElements.leftBottomMiddleTitleText.resize({ left, height, top: null, width });
-        this._textElements.leftBottomTitleText.resize({ left, height, top: null, width });
-        this._textElements.leftBottomTitleText2.resize({ left, height, top: null, width });
-        this._textElements.leftTopMiddleTitleText.resize({ left, height, top: null, width });
-        this._textElements.leftTopTitleText.resize({ left, height, top: null, width });
-        this._textElements.rightBottomTitleText.resize({ left, height, top: null, width });
-        this._textElements.rightBottomMiddleTitleText.resize({ left, height, top: null, width });
-        this._textElements.rightTopMiddleTitleText.resize({ left, height, top: null, width });
-        this._textElements.rightTopTitleText.resize({ left, height, top: null, width });
+        Object.keys(this._textElements).forEach(el =>this._textElements[el] && this._textElements[el].resize({ left, height, top: null, width }));
     };
 
     /**
@@ -537,7 +542,10 @@ export class DevMenu {
      * Something called once per frame on every scene.
      */
     public endCycle(): void {
-        Object.keys(this._textElements).forEach(el => this._textElements[el] && this._textElements[el].cycle());
+        Object.keys(this._textElements).forEach(el =>
+            this._textElements[el]
+            && this._textElements[el].element.style.visibility === 'visible'
+            && this._textElements[el].cycle());
     }
 
 }

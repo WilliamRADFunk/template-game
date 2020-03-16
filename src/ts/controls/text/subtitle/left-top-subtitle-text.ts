@@ -21,9 +21,8 @@ export class LeftTopSubtitleText extends TextBase {
         color: string,
         border: string,
         type: TextType) {
-        super('left-top-subtitle-text', color, 'center', border, type);
+        super('left-top-subtitle-text', sentence, color, 'center', border, type);
 
-        this.element.innerHTML = sentence;
         document.body.appendChild(this.element);
 
         this.resize(position);

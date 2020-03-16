@@ -21,9 +21,8 @@ export class RightTopDialogueText extends TextBase {
         color: string,
         border: string,
         type: TextType) {
-        super('right-top-dialogue-text', color, 'left', border, type);
+        super('right-top-dialogue-text', sentence, color, 'left', border, type);
 
-        this.element.innerHTML = sentence;
         document.body.appendChild(this.element);
 
         this.resize(position);

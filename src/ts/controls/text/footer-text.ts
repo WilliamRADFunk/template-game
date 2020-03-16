@@ -30,11 +30,10 @@ export class FooterText extends TextBase {
         border: string,
         type: TextType,
         scale?: number) {
-        super('footer-text', color, align, border, type);
+        super('footer-text', sentence, color, align, border, type);
 
         this._scale = scale || 1;
 
-        this.element.innerHTML = sentence;
         document.body.appendChild(this.element);
 
         this.resize(position);

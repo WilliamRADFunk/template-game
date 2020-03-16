@@ -21,9 +21,8 @@ export class RightBottomMiddleTitleText extends TextBase {
         color: string,
         border: string,
         type: TextType) {
-        super('right-bottom-middle-title-text', color, 'center', border, type);
+        super('right-bottom-middle-title-text', sentence, color, 'center', border, type);
 
-        this.element.innerHTML = sentence;
         document.body.appendChild(this.element);
 
         this.resize(position);
