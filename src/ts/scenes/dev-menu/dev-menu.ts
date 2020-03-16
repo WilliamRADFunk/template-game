@@ -29,6 +29,10 @@ import { LeftTopProfile } from "../../controls/profiles/left-top-profile";
 import { RightTopProfile } from "../../controls/profiles/right-top-profile";
 import { RightTopMiddleProfile } from "../../controls/profiles/right-top-middle-profile";
 import { LeftTopMiddleProfile } from "../../controls/profiles/left-top-middle-profile";
+import { LeftBottomMiddleProfile } from "../../controls/profiles/left-bottom-middle-profile";
+import { RightBottomMiddleProfile } from "../../controls/profiles/right-bottom-middle-profile";
+import { LeftBottomProfile } from "../../controls/profiles/left-bottom-profile";
+import { RightBottomProfile } from "../../controls/profiles/right-bottom-profile";
 
 const border: string = '1px solid #FFF';
 // const border: string = 'none';
@@ -48,11 +52,21 @@ export class DevMenu {
     /**
      * List of profiles on page 2.
      */
-    private _page2profiles: { [key: string]: LeftTopMiddleProfile | LeftTopProfile | RightTopMiddleProfile | RightTopProfile } = {
+    private _page2profiles: { [key: string]: LeftBottomMiddleProfile | LeftTopMiddleProfile | LeftTopProfile | RightBottomMiddleProfile | RightTopMiddleProfile | RightTopProfile } = {
+        leftBottomMiddleProfile: null,
         leftTopMiddleProfile: null,
         leftTopProfile: null,
+        rightBottomMiddleProfile: null,
         rightTopProfile: null,
         rightTopMiddleProfile: null
+    };
+
+    /**
+     * List of profiles on page 3.
+     */
+    private _page3profiles: { [key: string]: LeftBottomProfile | RightBottomProfile } = {
+        leftBottomProfile3: null,
+        rightBottomProfile3: null
     };
 
     /**
@@ -60,7 +74,8 @@ export class DevMenu {
      */
     private _profiles: { [key: string]: LeftTopProfile | RightTopProfile } = {
         ...this._page1profiles,
-        ...this._page2profiles
+        ...this._page2profiles,
+        ...this._page3profiles
     };
 
     /**
@@ -80,7 +95,14 @@ export class DevMenu {
      * List of buttons on page 2.
      */
     private _page2buttons: { [key: string]: ButtonBase } = {
-        previousPageButton: null,
+        nextPageButton2: null,
+        previousPageButton2: null,
+    };
+    /**
+     * List of buttons on page 3.
+     */
+    private _page3buttons: { [key: string]: ButtonBase } = {
+        previousPageButton3: null,
     };
 
     /**
@@ -125,6 +147,14 @@ export class DevMenu {
      */
     private _page2textElements: TextMap = {
         leftBottomTitleText2: null,
+        rightBottomTitleText2: null
+    };
+
+    /**
+     * Groups of text elements for page 3.
+     */
+    private _page3textElements: TextMap = {
+        leftBottomTitleText3: null
     };
 
     /**
@@ -132,7 +162,8 @@ export class DevMenu {
      */
     private _textElements: TextMap = {
         ...this._page1textElements,
-        ...this._page2textElements
+        ...this._page2textElements,
+        ...this._page3textElements
     };
 
     /**
@@ -321,15 +352,18 @@ export class DevMenu {
             true);
 
         // Page 2
+        this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2);
         this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer2);
         this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2);
+        this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, this._textures.engineer2);
         this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2);
         this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer2);
+        this._page2profiles.leftBottomMiddleProfile.hide();
         this._page2profiles.leftTopMiddleProfile.hide();
         this._page2profiles.leftTopProfile.hide();
+        this._page2profiles.rightBottomMiddleProfile.hide();
         this._page2profiles.rightTopMiddleProfile.hide();
         this._page2profiles.rightTopProfile.hide();
-
 
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
             'Previous Page',
@@ -340,17 +374,38 @@ export class DevMenu {
         this._page2textElements.leftBottomTitleText2.hide();
 
         onClick = () => {
-            this._page2buttons.previousPageButton.disable();
+            this._page2buttons.previousPageButton2.disable();
             this._previous();
-            this._page2buttons.previousPageButton.enable();
+            this._page2buttons.previousPageButton2.enable();
         };
 
-        this._page2buttons.previousPageButton = new PreviousButton(
+        this._page2buttons.previousPageButton2 = new PreviousButton(
             { left: left + (0.21 * width), height, top: 0.845 * height, width },
             BUTTON_COLORS,
             onClick,
             true);
-        this._page2buttons.previousPageButton.hide();
+        this._page2buttons.previousPageButton2.hide();
+
+        this._page2textElements.rightBottomTitleText2 = new RightBottomTitleText(
+            'Next Page',
+            { left, height, top: null, width },
+            COLORS.selected,
+            border,
+            TextType.FADABLE);
+        this._page2textElements.rightBottomTitleText2.hide();
+
+        onClick = () => {
+            this._page2buttons.nextPageButton.disable();
+            this._next();
+            this._page2buttons.nextPageButton.enable();
+        };
+
+        this._page2buttons.nextPageButton = new NextButton(
+            { left: left + width - (0.29 * width), height, top: 0.845 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+        this._page2buttons.nextPageButton.hide();
 
 
         this._textElements = {
@@ -361,6 +416,33 @@ export class DevMenu {
             ...this._page1buttons,
             ...this._page2buttons
         };
+
+        // Page 3
+        this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2);
+        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer2);
+        this._page3profiles.leftBottomProfile3.hide();
+        this._page3profiles.rightBottomProfile3.hide();
+
+        this._page3textElements.leftTopTitleText3 = new LeftTopTitleText(
+            'Previous Page',
+            { left, height, top: null, width },
+            COLORS.selected,
+            border,
+            TextType.FADABLE);
+        this._page3textElements.leftTopTitleText3.hide();
+
+        onClick = () => {
+            this._page3buttons.previousPageButton3.disable();
+            this._previous();
+            this._page3buttons.previousPageButton3.enable();
+        };
+
+        this._page3buttons.previousPageButton3 = new PreviousButton(
+            { left: left + (0.21 * width), height, top: 0.115 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+        this._page3buttons.previousPageButton3.hide();
     }
 
     /**
@@ -375,6 +457,13 @@ export class DevMenu {
             Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
             Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].show());
             Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].show());
+        } else if (this._currentPage === 3) {
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].hide());
+            Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].hide());
+            Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].hide());
+            Object.keys(this._page3textElements).forEach(x => this._page3textElements[x] && this._page3textElements[x].show());
+            Object.keys(this._page3buttons).forEach(x => this._page3buttons[x] && this._page3buttons[x].show());
+            Object.keys(this._page3profiles).forEach(x => this._page3profiles[x] && this._page3profiles[x].show());
         }
     }
 
@@ -397,7 +486,7 @@ export class DevMenu {
         this._buttons.launchTravelSceneButton.resize({ left: left + (0.115 * width), height, top: 0.61 * height, width });
         this._buttons.launchVertexMapSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width });
         this._buttons.nextPageButton.resize({ left: left + width - (0.29 * width), height, top: 0.845 * height, width });
-        this._buttons.previousPageButton.resize({ left: left + (0.21 * width), height, top: 0.845 * height, width });
+        this._buttons.previousPageButton2.resize({ left: left + (0.21 * width), height, top: 0.845 * height, width });
 
         // Update the various texts
         this._textElements.leftBottomMiddleTitleText.resize({ left, height, top: null, width });
@@ -423,6 +512,13 @@ export class DevMenu {
             Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].show());
             Object.keys(this._page1buttons).forEach(x => this._page1buttons[x] && this._page1buttons[x].show());
             Object.keys(this._page1profiles).forEach(x => this._page1profiles[x] && this._page1profiles[x].show());
+        } else if (this._currentPage === 2) {
+            Object.keys(this._page3textElements).forEach(x => this._page3textElements[x] && this._page3textElements[x].hide());
+            Object.keys(this._page3buttons).forEach(x => this._page3buttons[x] && this._page3buttons[x].hide());
+            Object.keys(this._page3profiles).forEach(x => this._page3profiles[x] && this._page3profiles[x].hide());
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
+            Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].show());
+            Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].show());
         }
     }
 
