@@ -428,6 +428,14 @@ const loadDevMenu = () => {
             // loadLandAndMineScene();
         }, 50);
     };
+    const activatePlanetRaid = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            // loadPlanetRaidScene();
+        }, 50);
+    };
     const raycaster = new Raycaster();
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
@@ -435,6 +443,7 @@ const loadDevMenu = () => {
             activateGameMenu,
             activateIntroScene,
             activateLandAndMineScene,
+            activatePlanetRaid,
             activateRepairScene,
             activateShipLayoutScene,
             activateTravelScene,

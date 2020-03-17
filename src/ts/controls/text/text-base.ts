@@ -9,7 +9,7 @@ export class TextBase {
     /**
      * Cycle counter
      */
-    private _counter: number = 1;
+    private _counter: number = 2;
 
     /**
      * Tracks which index of the sentence string cycle is currently on.
@@ -85,6 +85,13 @@ export class TextBase {
         this.element.innerHTML = sentence;
 
         this._type = type;
+
+        this.element.onclick = () => {
+            this.element.innerHTML = sentence;
+            this._isFinished = true;
+            this.element.style.opacity = '1';
+            this._isHolding = true;
+        };
     }
 
     /**
@@ -148,7 +155,7 @@ export class TextBase {
         }
 
         if (color) {
-            this.element.style.color = color;
+            this.element.style.color = this.color = color;
         }
     }
 
@@ -177,6 +184,13 @@ export class TextBase {
         this._isFinished = false;
         if (sentence) {
             this.element.innerHTML = this.sentence = sentence;
+
+            this.element.onclick = () => {
+                this.element.innerHTML = sentence;
+                this._isFinished = true;
+                this.element.style.opacity = '1';
+                this._isHolding = true;
+            };
         }
     }
 }

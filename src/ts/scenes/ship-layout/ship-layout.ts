@@ -14,7 +14,6 @@ import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { createBoxWithRoundedEdges } from '../../utils/create-box-with-rounded-edges';
 import { RightTopProfile } from '../../controls/profiles/right-top-profile';
-import { compareRGBValues } from '../../utils/compare-rgb-values';
 import { dialogues } from './configs/dialogues';
 import { techPoints } from './configs/tech-points';
 import { techPellets, rectangleBoxes } from './configs/grid-items';
@@ -37,11 +36,6 @@ import { COLORS } from '../../styles/colors';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
-
-/**
- * Color in rgb for boxes user has clicked.
- */
-const selectedColorRgb: [number, number, number] = [parseInt('F1', 16), parseInt('14', 16), parseInt('9A', 16)];
 
 /**
  * Number of points user can have to use initially.
@@ -207,6 +201,7 @@ export class ShipLayout {
                     (this._meshMap[hit.name].material as any).color.set(COLORS.selected);
                     SoundinatorSingleton.playClick();
 
+                    this._textElements.hoverText.update(hit.name);
                     this._textElements.selectionText.update(hit.name);
 
                     !this._techPellentMeshMap[0].visible ? this._techPellentMeshMap.forEach(x => x.visible = true) : null;
@@ -237,7 +232,7 @@ export class ShipLayout {
                         (this._meshMap[el.object.name].material as any).color.set(COLORS.highlighted);
                     } else if (selectedName === hit.name) {
                         isHovering = true;
-                        if (!compareRGBValues(this._textElements.hoverText.color.toString().trim(), selectedColorRgb)) {
+                        if (this._textElements.hoverText.color.toString().trim() !== COLORS.selected) {
                             this._textElements.hoverText.update(hit.name);
                         }
                     }

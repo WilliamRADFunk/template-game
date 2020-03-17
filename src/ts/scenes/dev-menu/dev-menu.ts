@@ -96,6 +96,7 @@ export class DevMenu {
      * List of buttons on page 2.
      */
     private _page2buttons: { [key: string]: ButtonBase } = {
+        launchPlanetRaidSceneButton: null,
         nextPageButton2: null,
         previousPageButton2: null,
     };
@@ -109,11 +110,7 @@ export class DevMenu {
     /**
      * List of buttons.
      */
-    private _buttons: { [key: string]: ButtonBase } = {
-        ...this._page1buttons,
-        ...this._page2buttons,
-        ...this._page3buttons
-    };
+    private _buttons: { [key: string]: ButtonBase };
 
     /**
      * Current page number.
@@ -163,11 +160,7 @@ export class DevMenu {
     /**
      * Groups of text elements.
      */
-    private _textElements: TextMap = {
-        ...this._page1textElements,
-        ...this._page2textElements,
-        ...this._page3textElements
-    };
+    private _textElements: TextMap;
 
     /**
      * Groups of text texture.
@@ -376,6 +369,18 @@ export class DevMenu {
             TextType.DIALOGUE);
         this._page2textElements.leftTopDialogueText2.hide();
 
+        onClick = () => {
+            this._page2buttons.launchPlanetRaidSceneButton.disable();
+            callbacks.activatePlanetRaid();
+        };
+
+        this._page2buttons.launchPlanetRaidSceneButton = new LoadButton(
+            { left: left + (0.29 * width), height, top: 0.20 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+        this._page2buttons.launchPlanetRaidSceneButton.hide();
+
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
             'Previous Page',
             { left, height, top: null, width },
@@ -406,27 +411,17 @@ export class DevMenu {
         this._page2textElements.rightBottomTitleText2.hide();
 
         onClick = () => {
-            this._page2buttons.nextPageButton.disable();
+            this._page2buttons.nextPageButton2.disable();
             this._next();
-            this._page2buttons.nextPageButton.enable();
+            this._page2buttons.nextPageButton2.enable();
         };
 
-        this._page2buttons.nextPageButton = new NextButton(
+        this._page2buttons.nextPageButton2 = new NextButton(
             { left: left + width - (0.29 * width), height, top: 0.845 * height, width },
             BUTTON_COLORS,
             onClick,
             true);
-        this._page2buttons.nextPageButton.hide();
-
-
-        this._textElements = {
-            ...this._page1textElements,
-            ...this._page2textElements
-        };
-        this._buttons = {
-            ...this._page1buttons,
-            ...this._page2buttons
-        };
+        this._page2buttons.nextPageButton2.hide();
 
         // Page 3
         this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2);
@@ -454,6 +449,17 @@ export class DevMenu {
             onClick,
             true);
         this._page3buttons.previousPageButton3.hide();
+
+        this._textElements = {
+            ...this._page1textElements,
+            ...this._page2textElements,
+            ...this._page3textElements
+        };
+        this._buttons = {
+            ...this._page1buttons,
+            ...this._page2buttons,
+            ...this._page3buttons
+        };
     }
 
     /**
@@ -490,8 +496,9 @@ export class DevMenu {
 
         // Update the various buttons
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
-        this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.115 * width), height, top: 0.1 * height, width });
+        this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.845 * height, width });
+        this._buttons.launchPlanetRaidSceneButton.resize({ left: left + (0.29 * width), height, top: 0.20 * height, width });
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
         this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });
         this._buttons.launchTravelSceneButton.resize({ left: left + (0.115 * width), height, top: 0.61 * height, width });
