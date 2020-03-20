@@ -362,7 +362,7 @@ export class DevMenu {
         this._page2profiles.rightTopProfile.hide();
 
         this._page2textElements.leftTopDialogueText2 = new LeftTopDialogueText(
-            `Pet right here, no not there, here, no fool, right here that other cat smells funny you should really give me all the treats because i smell the best and omg you finally got the right spot.`,
+            `This is the launching point for PLANET RAID scene. Click load button to launch it.`,
             { left, height, top: null, width },
             COLORS.neutral,
             border,

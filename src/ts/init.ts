@@ -26,6 +26,7 @@ import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
+import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
 
 /**
  * Loads the graphic for asteroid.
@@ -114,6 +115,14 @@ const scenes: { [ key: string ]: SceneType } = {
         scene: null
     },
     intro: {
+        active: false,
+        camera: null,
+        instance: null,
+        raycaster: null,
+        renderer: null,
+        scene: null
+    },
+    landAndMine: {
         active: false,
         camera: null,
         instance: null,
@@ -425,7 +434,7 @@ const loadDevMenu = () => {
         window.removeEventListener( 'resize', onWindowResize, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            // loadLandAndMineScene();
+            loadLandAndMineScene();
         }, 50);
     };
     const activatePlanetRaid = () => {
@@ -740,6 +749,112 @@ const loadIntroScene = () => {
     scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
 	requestAnimationFrame( render );
 };
+
+/**
+ * Game's intro scene. Only starts when all assets are finished loading.
+ */
+const loadLandAndMineScene = () => {
+    scenes.landAndMine.active = true;
+    // Establish initial window size.
+    let WIDTH: number = window.innerWidth * 0.99;
+    let HEIGHT: number = window.innerHeight * 0.99;
+    // Create ThreeJS scene.
+    scenes.landAndMine.scene = new Scene();
+    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
+    scenes.landAndMine.renderer = ((window as any)['WebGLRenderingContext'])
+        ? new WebGLRenderer()
+        : new CanvasRenderer();
+    // Make it black and size it to window.
+    (scenes.landAndMine.renderer as any).setClearColor(0x000000, 0);
+    scenes.landAndMine.renderer.setSize( WIDTH, HEIGHT );
+    (scenes.landAndMine.renderer as any).autoClear = false;
+    // An all around brightish light that hits everything equally.
+    scenes.landAndMine.scene.add(new AmbientLight(0xCCCCCC));
+    // Render to the html container.
+    const container = document.getElementById('mainview');
+	container.appendChild( (scenes.landAndMine.renderer as any).domElement );
+    // Set up player's ability to see the game, and focus center on planet.
+    scenes.landAndMine.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
+	scenes.landAndMine.camera.position.set(0, -20, 0);
+    scenes.landAndMine.camera.lookAt(scenes.landAndMine.scene.position);
+    scenes.landAndMine.camera.add(audioListener);
+    /**
+     * Gracefully handles a change in window size, by recalculating shape and updating scenes.landAndMine.camera and scenes.landAndMine.renderer.
+     */
+    const onWindowResize = () => {
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        scenes.landAndMine.renderer.setSize( WIDTH, HEIGHT );
+        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        document.getElementById('mainview').style.width = WIDTH + 'px';
+        document.getElementById('mainview').style.height = HEIGHT + 'px';
+    };
+    onWindowResize();
+    window.addEventListener( 'resize', onWindowResize, false);
+    // Create the click collision layer
+    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
+    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
+    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
+    clickBarrier.name = 'Click Barrier';
+    clickBarrier.position.set(0, 50, 0);
+    clickBarrier.rotation.set(1.5708, 0, 0);
+    scenes.landAndMine.scene.add(clickBarrier);
+
+    // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
+    const raycaster = new Raycaster();
+    const landAndMine = new LandAndMine(
+        scenes.landAndMine,
+        shipTexture,
+        {
+            gravity: 0.0001
+        });
+    scenes.landAndMine.raycaster = raycaster;
+    /**
+     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
+     */
+    const render = () => {
+        if (!scenes.landAndMine.active) {
+            landAndMine.dispose();
+            // Remove renderer from the html container, and remove event listeners.
+            window.removeEventListener( 'resize', onWindowResize, false);
+            container.removeChild( (scenes.landAndMine.renderer as any).domElement );
+            // Clear up memory used by landAndMine scene.
+            scenes.landAndMine.camera = null;
+            scenes.landAndMine.instance = null;
+            scenes.landAndMine.raycaster = null;
+            scenes.landAndMine.renderer = null;
+            scenes.landAndMine.scene = null;
+            return;
+        } else {
+            const layout = landAndMine.endCycle();
+            if (layout) {
+                landAndMine.dispose();
+                scenes.landAndMine.active = false;
+                // Remove renderer from the html container, and remove event listeners.
+                window.removeEventListener( 'resize', onWindowResize, false);
+                container.removeChild( (scenes.landAndMine.renderer as any).domElement );
+                // Clear up memory used by landAndMine scene.
+                scenes.landAndMine.camera = null;
+                scenes.landAndMine.instance = null;
+                scenes.landAndMine.raycaster = null;
+                scenes.landAndMine.renderer = null;
+                scenes.landAndMine.scene = null;
+                setTimeout(() => {
+                    loadMenu();
+                }, 10);
+                return;
+            }
+        }
+        scenes.landAndMine.renderer.render( scenes.landAndMine.scene, scenes.landAndMine.camera );
+        requestAnimationFrame( render );
+    };
+    // Kick off the first render loop iteration.
+    scenes.landAndMine.renderer.render( scenes.landAndMine.scene, scenes.landAndMine.camera );
+	requestAnimationFrame( render );
+};
+
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
@@ -840,6 +955,7 @@ const loadShipLayoutScene = () => {
     scenes.shipLayout.renderer.render( scenes.shipLayout.scene, scenes.shipLayout.camera );
 	requestAnimationFrame( render );
 };
+
 /**
  * Called by DOM when page is finished loading. Now load assets, then the game.
  */
