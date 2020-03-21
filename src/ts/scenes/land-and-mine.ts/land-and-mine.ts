@@ -14,11 +14,20 @@ import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
 import { PlanetSpecifications } from '../../models/planet-specification';
+import { Thruster } from './actors/thruster';
+import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
+import { COLORS } from '../../styles/colors';
+import { TextType } from '../../controls/text/text-type';
+import { LeftTopStatsText2 } from '../../controls/text/stats/left-top-stats-text-2';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
 const HORIZONTAL_THRUST: number = 0.0001;
+
+const THRUSTER_Y_OFFSET: number = 5;
+
+const THRUSTER_Z_OFFSET: number = 0.23;
 
 const VERTICAL_THRUST: number = 0.0002;
 
@@ -37,7 +46,7 @@ export class LandAndMine {
      */
     private _buttons: { [key: string]: ButtonBase } = { };
 
-    private _currentLanderHorizontalSpeed: number = 0.001;
+    private _currentLanderHorizontalSpeed: number = 0.01;
 
     private _currentLanderVerticalSpeed: number = 0.001;
 
@@ -47,12 +56,16 @@ export class LandAndMine {
 
     private _isVerticalThrusting: boolean = false;
 
+    private _landed: boolean = false;
+
     private _lander: Actor;
 
     /**
      * Reference to _onWindowResize so that it can be removed later.
      */
     private _listenerRef: () => void;
+
+    private _mainThruster: Thruster;
 
     private _planetSpecifications: PlanetSpecifications;
 
@@ -70,11 +83,13 @@ export class LandAndMine {
      * Constructor for the Land and Mine (Scene) class
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param landerTexture             texture for the lander.
+     * @param landerTexture             texture for thruster fire.
      * @param planetSpecifications      details about the planet used to operate the scene.
      */
     constructor(
         scene: SceneType,
         landerTexture: Texture,
+        fireTexture: Texture,
         planetSpecifications: PlanetSpecifications) {
         this._scene = scene.scene;
         this._planetSpecifications = planetSpecifications;
@@ -102,30 +117,33 @@ export class LandAndMine {
         };
         document.onkeydown = event => {
             console.log('onkeydown', event.keyCode, event);
-            if (event.keyCode === 87) {
+            if (event.keyCode === 87 || event.keyCode === 38) {
                 this._isVerticalThrusting = true;
                 return;
-            } else if (event.keyCode === 65) {
+            } else if (event.keyCode === 65 || event.keyCode === 37) {
                 this._isLeftThrusting = true;
                 return;
-            } else if (event.keyCode === 68) {
+            } else if (event.keyCode === 68 || event.keyCode === 39) {
                 this._isRightThrusting = true;
                 return;
             }
         };
         document.onkeyup = event => {
             console.log('onkeyup', event.keyCode, event);
-            if (event.keyCode === 87) {
+            if (event.keyCode === 87 || event.keyCode === 38) {
                 this._isVerticalThrusting = false;
                 return;
-            } else if (event.keyCode === 65) {
+            } else if (event.keyCode === 65 || event.keyCode === 37) {
                 this._isLeftThrusting = false;
                 return;
-            } else if (event.keyCode === 68) {
+            } else if (event.keyCode === 68 || event.keyCode === 39) {
                 this._isRightThrusting = false;
                 return;
             }
         };
+        const currPos = this._lander.mesh.position;
+
+        this._mainThruster = new Thruster(this._scene, [currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET]);
     }
 
     /**
@@ -138,6 +156,19 @@ export class LandAndMine {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
+        this._textElements.leftTopStatsText1 = new LeftTopStatsText1(
+            `Horizontal Speed: ${this._currentLanderHorizontalSpeed}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.leftTopStatsText2 = new LeftTopStatsText2(
+            `Vertical Speed: ${this._currentLanderVerticalSpeed}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
     }
 
     /**
@@ -150,6 +181,8 @@ export class LandAndMine {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
+        this._textElements.leftTopStatsText1.resize({ height, left: left, top: null, width });
+        this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
     };
 
     /**
@@ -174,6 +207,9 @@ export class LandAndMine {
         const currPos = this._lander.mesh.position;
         if (this._isVerticalThrusting) {
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
+            this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], true);
+        } else {
+            this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
         }
         if (this._isLeftThrusting) {
             this._currentLanderHorizontalSpeed -= HORIZONTAL_THRUST;
@@ -188,11 +224,49 @@ export class LandAndMine {
         if (currPos.x > 6.2) {
             this._lander.mesh.position.set(-6, currPos.y, currPos.z);
         }
+        if (currPos.z >= 5.8 && !this._landed) {
+            this._lander.mesh.position.set(currPos.x, currPos.y, 5.8001);
+            this._currentLanderHorizontalSpeed = 0;
+            this._currentLanderVerticalSpeed = 0;
+            this._landed = true;
+            this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
+            this._textElements.leftTopStatsText1.update(`Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`);
+            if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
+                this._textElements.leftTopStatsText1.cycle(COLORS.selected);
+            } else if (Math.abs(this._currentLanderHorizontalSpeed) < 0.001 && this._textElements.leftTopStatsText1.color === COLORS.selected) {
+                this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
+            }
+
+            this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+            if (Math.abs(this._currentLanderVerticalSpeed) >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
+                this._textElements.leftTopStatsText2.cycle(COLORS.selected);
+            } else if (Math.abs(this._currentLanderVerticalSpeed) < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
+                this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
+            }
+
+            return null;
+        }
+
+        this._landed = false;
+
+        this._textElements.leftTopStatsText1.update(`Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`);
+        if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
+            this._textElements.leftTopStatsText1.cycle(COLORS.selected);
+        } else if (Math.abs(this._currentLanderHorizontalSpeed) < 0.001 && this._textElements.leftTopStatsText1.color === COLORS.selected) {
+            this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
+        }
+
+        this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+        if (Math.abs(this._currentLanderVerticalSpeed) >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
+            this._textElements.leftTopStatsText2.cycle(COLORS.selected);
+        } else if (Math.abs(this._currentLanderVerticalSpeed) < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
+            this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
+        }
 
         this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
         this._currentLanderVerticalSpeed += this._planetSpecifications.gravity;
 
-        // Object.keys(this._textElements).forEach(x => x && this._textElements[x].cycle());
+        Object.keys(this._textElements).forEach(x => x && this._textElements[x].cycle());
         return null;
     }
 }

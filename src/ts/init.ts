@@ -89,6 +89,14 @@ const enzmannOutsideLoader = new TextureLoader();
  */
 let enzmannOutsideTexture: Texture;
 /**
+ * Loads the graphic for fire.
+ */
+const fireLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the fire.
+ */
+let fireTexture: Texture;
+/**
  * Loads the font from a json file.
  */
 const fontLoader = new FontLoader();
@@ -290,6 +298,11 @@ const loadAssets = () => {
         enzmannOutsideTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the fire texture once it is finished loading.
+    fireLoader.load( 'assets/images/fire.png', texture => {
+        fireTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the mars texture once it is finished loading.
     marsLoader.load( 'assets/images/mars.png', texture => {
         marsTexture = texture;
@@ -330,6 +343,7 @@ const checkAssetsLoaded = () => {
         asteroidTexture &&
         shipTexture &&
         earthTexture &&
+        fireTexture &&
         marsTexture &&
         enceladusTexture &&
         engineerProfileTexture &&
@@ -807,6 +821,7 @@ const loadLandAndMineScene = () => {
     const landAndMine = new LandAndMine(
         scenes.landAndMine,
         shipTexture,
+        fireTexture,
         {
             gravity: 0.0001
         });
