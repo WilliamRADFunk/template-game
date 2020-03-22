@@ -19,6 +19,8 @@ import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text
 import { COLORS } from '../../styles/colors';
 import { TextType } from '../../controls/text/text-type';
 import { LeftTopStatsText2 } from '../../controls/text/stats/left-top-stats-text-2';
+import { LeftTopStatsText3 } from '../../controls/text/stats/left-top-stats-text-3';
+import { LeftTopStatsText4 } from '../../controls/text/stats/left-top-stats-text-4';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -46,9 +48,13 @@ export class LandAndMine {
      */
     private _buttons: { [key: string]: ButtonBase } = { };
 
+    private _currentFuelLevel: number = 100;
+
     private _currentLanderHorizontalSpeed: number = 0.01;
 
     private _currentLanderVerticalSpeed: number = 0.001;
+
+    private _currentOxygenLevel: number = 100;
 
     private _isLeftThrusting: boolean = false;
 
@@ -169,6 +175,20 @@ export class LandAndMine {
             COLORS.neutral,
             border,
             TextType.STATIC);
+
+        this._textElements.leftTopStatsText3 = new LeftTopStatsText3(
+            `Oxygen Level: ${this._currentOxygenLevel}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.leftTopStatsText4 = new LeftTopStatsText4(
+            `Fuel Level: ${this._currentFuelLevel}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
     }
 
     /**
@@ -183,6 +203,8 @@ export class LandAndMine {
 
         this._textElements.leftTopStatsText1.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
+        this._textElements.leftTopStatsText3.resize({ height, left: left, top: null, width });
+        this._textElements.leftTopStatsText4.resize({ height, left: left, top: null, width });
     };
 
     /**
@@ -201,21 +223,34 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { substance: string, quantity: number }[] {
-        // if (done) {
-        //     return finishedObjectOrArray;
-        // }
+        if (this._currentOxygenLevel > 0) {
+            this._currentOxygenLevel -= 0.01;
+            this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
+            if (Math.abs(this._currentOxygenLevel) < 20 && this._textElements.leftTopStatsText3.color === COLORS.neutral) {
+                this._textElements.leftTopStatsText3.cycle(COLORS.selected);
+            }
+        }
+
         const currPos = this._lander.mesh.position;
-        if (this._isVerticalThrusting) {
+        if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
+            this._currentFuelLevel -= 0.05;
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
             this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], true);
         } else {
             this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
         }
-        if (this._isLeftThrusting) {
+        if (this._isLeftThrusting && this._currentFuelLevel > 0) {
+            this._currentFuelLevel -= 0.05;
             this._currentLanderHorizontalSpeed -= HORIZONTAL_THRUST;
         }
-        if (this._isRightThrusting) {
+        if (this._isRightThrusting && this._currentFuelLevel > 0) {
+            this._currentFuelLevel -= 0.05;
             this._currentLanderHorizontalSpeed += HORIZONTAL_THRUST;
+        }
+
+        this._textElements.leftTopStatsText4.update(`Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
+        if (Math.abs(this._currentFuelLevel) < 20 && this._textElements.leftTopStatsText4.color === COLORS.neutral) {
+            this._textElements.leftTopStatsText4.cycle(COLORS.selected);
         }
 
         if (currPos.x < -6.2) {
