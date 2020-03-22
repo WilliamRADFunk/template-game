@@ -14,7 +14,7 @@ import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
 import { PlanetSpecifications } from '../../models/planet-specification';
-import { Thruster } from './actors/thruster';
+import { MainThruster } from './actors/main-thruster';
 import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
 import { COLORS } from '../../styles/colors';
 import { TextType } from '../../controls/text/text-type';
@@ -71,7 +71,7 @@ export class LandAndMine {
      */
     private _listenerRef: () => void;
 
-    private _mainThruster: Thruster;
+    private _mainThruster: MainThruster;
 
     private _planetSpecifications: PlanetSpecifications;
 
@@ -149,7 +149,7 @@ export class LandAndMine {
         };
         const currPos = this._lander.mesh.position;
 
-        this._mainThruster = new Thruster(this._scene, [currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET]);
+        this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET]);
     }
 
     /**

@@ -12,7 +12,7 @@ const YELLOW: string = '#FFFE00';
  * @class
  * An creates and updates flame particles.
  */
-export class Thruster {
+export class MainThruster {
     /**
      * Controls the overall rendering of the particle
      */
