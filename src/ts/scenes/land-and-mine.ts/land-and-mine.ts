@@ -28,9 +28,13 @@ const border: string = 'none';
 
 const HORIZONTAL_THRUST: number = 0.0001;
 
-const THRUSTER_Y_OFFSET: number = 5;
+const SIDE_THRUSTER_Y_OFFSET: number = 5;
 
-const THRUSTER_Z_OFFSET: number = 0.23;
+const SIDE_THRUSTER_Z_OFFSET: number = 0;
+
+const MAIN_THRUSTER_Y_OFFSET: number = 5;
+
+const MAIN_THRUSTER_Z_OFFSET: number = 0.23;
 
 const VERTICAL_THRUST: number = 0.0002;
 
@@ -127,7 +131,6 @@ export class LandAndMine {
 
         };
         document.onkeydown = event => {
-            console.log('onkeydown', event.keyCode, event);
             if (event.keyCode === 87 || event.keyCode === 38) {
                 this._isVerticalThrusting = true;
                 return;
@@ -140,7 +143,6 @@ export class LandAndMine {
             }
         };
         document.onkeyup = event => {
-            console.log('onkeyup', event.keyCode, event);
             if (event.keyCode === 87 || event.keyCode === 38) {
                 this._isVerticalThrusting = false;
                 return;
@@ -154,8 +156,9 @@ export class LandAndMine {
         };
         const currPos = this._lander.mesh.position;
 
-        this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET]);
-        this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET]);
+        this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
+        this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
+        this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
     }
 
     /**
@@ -241,22 +244,25 @@ export class LandAndMine {
         if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
-            this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], true);
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
         } else {
-            this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
         }
 
         if (this._isLeftThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             this._currentLanderHorizontalSpeed -= HORIZONTAL_THRUST;
-            this._leftThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], true);
+            this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], true);
         } else {
-            this._leftThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
+            this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         }
 
         if (this._isRightThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             this._currentLanderHorizontalSpeed += HORIZONTAL_THRUST;
+            this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], true);
+        } else {
+            this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         }
 
         this._textElements.leftTopStatsText4.update(`Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
@@ -275,8 +281,9 @@ export class LandAndMine {
             this._currentLanderHorizontalSpeed = 0;
             this._currentLanderVerticalSpeed = 0;
             this._landed = true;
-            this._mainThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
-            this._leftThruster.endCycle([currPos.x, currPos.y + THRUSTER_Y_OFFSET, currPos.z + THRUSTER_Z_OFFSET], false);
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+            this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
 
             this._textElements.leftTopStatsText1.update(`Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`);
             if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {

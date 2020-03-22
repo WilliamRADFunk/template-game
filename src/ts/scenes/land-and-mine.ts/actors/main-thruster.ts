@@ -118,7 +118,6 @@ export class MainThruster {
     endCycle(position: [number, number, number], isBurning?: boolean): void {
         if (isBurning) {
             if (!this._flames[0].visible) {
-                console.log('isBurning');
                 this._flames.forEach(flame => {
                     flame.visible = true;
                     flame.updateMatrix();
@@ -134,7 +133,6 @@ export class MainThruster {
             });
         } else {
             if (this._flames[0].visible) {
-                console.log('!isBurning');
                 this._flames.forEach(flame => {
                     flame.visible = false;
                     flame.updateMatrix();
