@@ -1,7 +1,14 @@
-import { Face3, Geometry, Mesh, MeshBasicMaterial, Scene, Triangle, Vector3 } from 'three';
+import {
+    Face3,
+    Geometry,
+    Mesh,
+    MeshBasicMaterial,
+    Scene,
+    Triangle,
+    Vector3 } from 'three';
 
 /**
- * Static index to help name one flame particle differenly than another.
+ * Static index to help name one main thruster differenly than another.
  */
 let index: number = 0;
 
@@ -10,53 +17,68 @@ const RED: string = '#FFA000';
 const YELLOW: string = '#FFFE00';
 /**
  * @class
- * An creates and updates flame particles.
+ * Creates and updates main thrusters.
  */
 export class MainThruster {
     /**
-     * Controls the overall rendering of the particle
+     * Controls the overall rendering of the various flames.
      */
+
     private _flames: Mesh[] = [];
     /**
-     * Reference to the scene, used to remove projectile from rendering cycle once destroyed.
+     * Reference to the scene, used to and and remove flames from rendering cycle once finished.
      */
     private _scene: Scene;
 
+    /**
+     * Orange color in the main thruster's flame.
+     */
     private _orangeFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
         color: ORANGE,
         opacity: 0.2,
         transparent: true
     });
 
+    /**
+     * Red color in the main thruster's flame.
+     */
     private _redFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
         color: RED,
         opacity: 0.5,
         transparent: true
     });
 
+    /**
+     * Yellow color in the main thruster's flame.
+     */
     private _yellowFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
         color: YELLOW,
         opacity: 0.8,
         transparent: true
     });
+
     /**
      * Constructor for the Thruster class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param x coordinate on x-axis where explosion should instantiate.
-     * @param z coordinate on z-axis where explosion should instantiate.
+     * @param position x, y, z coordinate for base of flames.
      * @hidden
      */
     constructor(scene: Scene, position: [number, number, number]) {
         this._scene = scene;
-        this._createParticle(position);
+        this._createFlames(position);
     }
-    private _createParticle(position: [number, number, number]): void {
+
+    /**
+     * Instantiates the flames of the thruster.
+     * @param position x, y, z coordinate for base of flames.
+     */
+    private _createFlames(position: [number, number, number]): void {
         index++;
 
         const geometry = new Geometry();
-        const v1 = new Vector3(-0.1,0,0);   // Vector3 used to specify position
-        const v2 = new Vector3(0.1,0,0);
-        const v3 = new Vector3(0,0,0.3);   // 2d = all vertices in the same plane.. z = 0
+        const v1 = new Vector3(-0.1, 0, 0);
+        const v2 = new Vector3(0.1, 0, 0);
+        const v3 = new Vector3(0, 0, 0.3);
 
         const triangle = new Triangle( v1, v2, v3 );
         const normal = triangle.getNormal(new Vector3(1, 1, 1));
@@ -88,6 +110,7 @@ export class MainThruster {
         this._scene.add(meshOrange);
         meshOrange.visible = false;
     }
+
     /**
      * At the end of each loop iteration, rotate each flame color's opacity a little.
      * @returns boolean that means very little neither true or false will have any meaning.
