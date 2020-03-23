@@ -61,6 +61,8 @@ export class LandAndMine {
 
     private _currentOxygenLevel: number = 100;
 
+    private _grid: number[][] = [];
+
     private _isLeftThrusting: boolean = false;
 
     private _isRightThrusting: boolean = false;
@@ -124,110 +126,31 @@ export class LandAndMine {
          * 10: Water or ice
          */
 
-        const grid: number[][] = [];
-        for (let row = 0; row < 121; row++) {
-            grid[row] = [];
-            for (let col = 0; col < 121; col++) {
-                const rando = Math.random();
-                // Escape Zone
-                if (row > 110) {
-                    grid[row][col] = 1;
-                // Escape Zone Line
-                } else if (row === 110) {
-                    grid[row][col] = 2;
-                // Empty Sky
-                } else if (60 < row && row < 110) {
-                    grid[row][col] = 0;
-                // Generates unbroken solid terrain (bedrock)
-                } else if (row <= 10) {
-                    grid[row][col] = 4;
-                // High mixture of (bedrock) and dark base colors
-                } else if (row <= 13) {
-                    if (rando <= 0.2) { // 90% Bedrock
-                        grid[row][col] = 4;
-                    } else if (rando <= 0.95) { // 5% common rock
-                        grid[row][col] = 8;
-                    } else if (rando <= 0.99) { // 4% lava if lava (destructive, ie. acid), or empty
-                        grid[row][col] = 9;
-                    } else { // 1% ore type 3
-                        grid[row][col] = 7;
-                    }
-                // High mixture of common rock and dark base colors
-                } else if (row <= 20) {
-                    if (rando <= 0.1) { // 20% Bedrock
-                        grid[row][col] = 4;
-                    } else if (rando <= 0.70) { // 50% common rock
-                        grid[row][col] = 8;
-                    } else if (rando <= 0.78) { // 8% lava if lava (destructive, ie. acid), or empty
-                        grid[row][col] = 9;
-                    } else if (rando <= 0.82) { // 4% ore type 3
-                        grid[row][col] = 7;
-                    } else if (rando <= 0.88) { // 6% ore type 2
-                        grid[row][col] = 6;
-                    } else if (rando <= 0.96) { // 8% ore type 1
-                        grid[row][col] = 5;
-                    } else { // 4% water (ice if cold) if water, or empty.
-                        grid[row][col] = 10;
-                    }
-                // Spread mix of all, but high in common rock.
-                } else if (row <= 40) {
-                    if (rando <= 0.05) { // 5% Bedrock
-                        grid[row][col] = 4;
-                    } else if (rando <= 0.6) { // 30% common rock
-                        grid[row][col] = 8;
-                    } else if (rando <= 0.62) { // 10% lava if lava (destructive, ie. acid), or empty
-                        grid[row][col] = 9;
-                    } else if (rando <= 0.65) { // 8% ore type 3
-                        grid[row][col] = 7;
-                    } else if (rando <= 0.70) { // 12% ore type 2
-                        grid[row][col] = 6;
-                    } else if (rando <= 0.76) { // 15% ore type 1
-                        grid[row][col] = 5;
-                    } else if (rando <= 0.98) { // 10% empty
-                        grid[row][col] = 0;
-                    } else { // 10% water (ice if cold) if water, or empty.
-                        grid[row][col] = 10;
-                    }
-                // Spread mix of all..
-                } else if (row <= 50) {
-                    if (rando <= 0.01) { // 1% Bedrock
-                        grid[row][col] = 4;
-                    } else if (rando <= 0.40) { // 30% common rock
-                        grid[row][col] = 8;
-                    } else if (rando <= 0.42) { // 10% lava if lava (destructive, ie. acid), or empty
-                        grid[row][col] = 9;
-                    } else if (rando <= 0.45) { // 5% ore type 3
-                        grid[row][col] = 7;
-                    } else if (rando <= 0.50) { // 10% ore type 2
-                        grid[row][col] = 6;
-                    } else if (rando <= 0.56) { // 15% ore type 1
-                        grid[row][col] = 5;
-                    } else if (rando <= 0.91) { // 20% empty
-                        grid[row][col] = 0;
-                    } else { // 9% water (ice if cold) if water, or empty.
-                        grid[row][col] = 10;
-                    }
-                // Landing zones preferences
-                } else {
-                    if (rando <= 0.25) { // 1% Bedrock
-                        grid[row][col] = 8;
-                    } else if (rando <= 0.30) {
-                        grid[row][col] = 10;
-                    } else {
-                        grid[row][col] = 0;
-                    }
-                    // Check planetary preferences
-                    // If flat, make 10 landing zones
-                    // If moderately flat make 7 landing zones
-                    // IF mildly flat make 4
-                    // If rough make 2
-                    // If extreme make 1.
+        const maxPeakValley = 10;
+        for (let i = 0; i < 121; i++) {
+            this._grid[i] = [];
+        }
+        let startY = Math.floor((Math.random() / 2) * 100) + 20
+        startY = startY <= 50 ? startY : 50;
+        console.log('startY', startY);
 
-                    // If landing zone, must have next two spaces as landing zone,
-                    // with diminishing flatness % for each next.
-                    // Must clear space above, and large enough path to outside.
-                }
+        this._grid[startY][0] = 8;
+        this._downPopulate(0, startY);
+        let lastY = startY;
+        for (let col = 1; col < 121; col++) {
+            const cantAscend = (lastY - startY) >= maxPeakValley;
+            const cantDescend = (startY - lastY) >= maxPeakValley;
+            const elevRando = Math.floor(Math.random() * 100);
+            if (!cantAscend && elevRando <= (25 + maxPeakValley)) { // Elevate
+                this._grid[lastY + 1][col] = 8;
+                lastY++;
+            } else if (!cantDescend && elevRando >= (76 - maxPeakValley)) { // Descend
+                this._grid[lastY - 1][col] = 8;
+                lastY--;
+            } else { // Level out
+                this._grid[lastY][col] = 8;
             }
+            this._downPopulate(col, lastY);
         }
 
         const escapeLineMat = new MeshBasicMaterial({
@@ -281,29 +204,29 @@ export class LandAndMine {
         const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
 
         const meshGrid: Mesh[][] = [];
-        for (let row = 0; row < grid.length; row++) {
+        for (let row = 0; row < this._grid.length; row++) {
             meshGrid[row] = [];
-            for (let col = 0; col < grid[row].length; col++) {
+            for (let col = 0; col < this._grid[row].length; col++) {
                 let material;
-                console.log('row/col', row, col, grid[row][col]);
-                if (grid[row][col] <= 1) {
+                console.log('row/col', row, col, this._grid[row][col]);
+                if (this._grid[row][col] <= 1) {
                     // Empty space
                     continue;
-                } else if (grid[row][col] === 2) {
+                } else if (this._grid[row][col] === 2) {
                     material = escapeLineMat;
-                } else if (grid[row][col] === 4) {
+                } else if (this._grid[row][col] === 4) {
                     material = impenetrableMat;
-                } else if (grid[row][col] === 5) {
+                } else if (this._grid[row][col] === 5) {
                     material = oreType1Mat;
-                } else if (grid[row][col] === 6) {
+                } else if (this._grid[row][col] === 6) {
                     material = oreType2Mat;
-                } else if (grid[row][col] === 7) {
+                } else if (this._grid[row][col] === 7) {
                     material = oreType3Mat;
-                } else if (grid[row][col] === 8) {
+                } else if (this._grid[row][col] === 8) {
                     material = commonRockMat;
-                } else if (grid[row][col] === 9) {
+                } else if (this._grid[row][col] === 9) {
                     material = dangerMat;
-                } else if (grid[row][col] === 10) {
+                } else if (this._grid[row][col] === 10) {
                     material = waterMat;
                 }
 
@@ -366,6 +289,23 @@ export class LandAndMine {
         this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
+    }
+
+    private _downPopulate(x: number, y: number): void {
+        for (let row = y - 1; row >= 0; row--) {
+            const rando = Math.random() * 100;
+            if (rando < 0.5) {
+                this._grid[row][x] = 9;
+            } else if (rando < 1) {
+                this._grid[row][x] = 5;
+            } else if (rando < 1.5) {
+                this._grid[row][x] = 6;
+            } else if (rando < 2) {
+                this._grid[row][x] = 7;
+            } else {
+                this._grid[row][x] = 8;
+            }
+        }
     }
 
     /**
@@ -483,8 +423,13 @@ export class LandAndMine {
         if (currPos.x > 6.2) {
             this._lander.mesh.position.set(-6, currPos.y, currPos.z);
         }
-        if (currPos.z >= 5.8 && !this._landed) {
-            this._lander.mesh.position.set(currPos.x, currPos.y, 5.8001);
+        const midRow = Math.floor((-10 * currPos.z) + 60) + 3;
+        const gridRow = this._grid[midRow];
+        const midCol = Math.floor((10 * currPos.x) + 60);
+        console.log(midRow, midCol, gridRow[midCol], (midRow - 63) / -10 + 0.001);
+        if (gridRow[midCol] && !this._landed) {
+            console.log('Found it');
+            this._lander.mesh.position.set(currPos.x, currPos.y, (midRow - 57) / -10 + 0.001);
             this._currentLanderHorizontalSpeed = 0;
             this._currentLanderVerticalSpeed = 0;
             this._landed = true;
