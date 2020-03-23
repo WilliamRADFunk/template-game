@@ -109,6 +109,213 @@ export class LandAndMine {
         this._scene = scene.scene;
         this._planetSpecifications = planetSpecifications;
 
+        /*
+         * Grid Values
+         * 00: Empty space/sky. Null values
+         * 01: Escape Zone. Contact means exit
+         * 02: Escape Zone Line. Ship Bottom must be above.
+         * 03: Landing Area. Must have 3 flat squares with no obstructions. Must be connected.
+         * 04: Impenetrable to drill.
+         * 05: Ore type 1
+         * 06: Ore type 2
+         * 07: Ore type 3
+         * 08: Common Rock
+         * 09: Danger square: lava, acid, explosive gas, etc.
+         * 10: Water or ice
+         */
+
+        const grid: number[][] = [];
+        for (let row = 0; row < 121; row++) {
+            grid[row] = [];
+            for (let col = 0; col < 121; col++) {
+                const rando = Math.random();
+                // Escape Zone
+                if (row > 110) {
+                    grid[row][col] = 1;
+                // Escape Zone Line
+                } else if (row === 110) {
+                    grid[row][col] = 2;
+                // Empty Sky
+                } else if (60 < row && row < 110) {
+                    grid[row][col] = 0;
+                // Generates unbroken solid terrain (bedrock)
+                } else if (row <= 10) {
+                    grid[row][col] = 4;
+                // High mixture of (bedrock) and dark base colors
+                } else if (row <= 13) {
+                    if (rando <= 0.2) { // 90% Bedrock
+                        grid[row][col] = 4;
+                    } else if (rando <= 0.95) { // 5% common rock
+                        grid[row][col] = 8;
+                    } else if (rando <= 0.99) { // 4% lava if lava (destructive, ie. acid), or empty
+                        grid[row][col] = 9;
+                    } else { // 1% ore type 3
+                        grid[row][col] = 7;
+                    }
+                // High mixture of common rock and dark base colors
+                } else if (row <= 20) {
+                    if (rando <= 0.1) { // 20% Bedrock
+                        grid[row][col] = 4;
+                    } else if (rando <= 0.70) { // 50% common rock
+                        grid[row][col] = 8;
+                    } else if (rando <= 0.78) { // 8% lava if lava (destructive, ie. acid), or empty
+                        grid[row][col] = 9;
+                    } else if (rando <= 0.82) { // 4% ore type 3
+                        grid[row][col] = 7;
+                    } else if (rando <= 0.88) { // 6% ore type 2
+                        grid[row][col] = 6;
+                    } else if (rando <= 0.96) { // 8% ore type 1
+                        grid[row][col] = 5;
+                    } else { // 4% water (ice if cold) if water, or empty.
+                        grid[row][col] = 10;
+                    }
+                // Spread mix of all, but high in common rock.
+                } else if (row <= 40) {
+                    if (rando <= 0.05) { // 5% Bedrock
+                        grid[row][col] = 4;
+                    } else if (rando <= 0.6) { // 30% common rock
+                        grid[row][col] = 8;
+                    } else if (rando <= 0.62) { // 10% lava if lava (destructive, ie. acid), or empty
+                        grid[row][col] = 9;
+                    } else if (rando <= 0.65) { // 8% ore type 3
+                        grid[row][col] = 7;
+                    } else if (rando <= 0.70) { // 12% ore type 2
+                        grid[row][col] = 6;
+                    } else if (rando <= 0.76) { // 15% ore type 1
+                        grid[row][col] = 5;
+                    } else if (rando <= 0.98) { // 10% empty
+                        grid[row][col] = 0;
+                    } else { // 10% water (ice if cold) if water, or empty.
+                        grid[row][col] = 10;
+                    }
+                // Spread mix of all..
+                } else if (row <= 50) {
+                    if (rando <= 0.01) { // 1% Bedrock
+                        grid[row][col] = 4;
+                    } else if (rando <= 0.40) { // 30% common rock
+                        grid[row][col] = 8;
+                    } else if (rando <= 0.42) { // 10% lava if lava (destructive, ie. acid), or empty
+                        grid[row][col] = 9;
+                    } else if (rando <= 0.45) { // 5% ore type 3
+                        grid[row][col] = 7;
+                    } else if (rando <= 0.50) { // 10% ore type 2
+                        grid[row][col] = 6;
+                    } else if (rando <= 0.56) { // 15% ore type 1
+                        grid[row][col] = 5;
+                    } else if (rando <= 0.91) { // 20% empty
+                        grid[row][col] = 0;
+                    } else { // 9% water (ice if cold) if water, or empty.
+                        grid[row][col] = 10;
+                    }
+                // Landing zones preferences
+                } else {
+                    if (rando <= 0.25) { // 1% Bedrock
+                        grid[row][col] = 8;
+                    } else if (rando <= 0.30) {
+                        grid[row][col] = 10;
+                    } else {
+                        grid[row][col] = 0;
+                    }
+                    // Check planetary preferences
+                    // If flat, make 10 landing zones
+                    // If moderately flat make 7 landing zones
+                    // IF mildly flat make 4
+                    // If rough make 2
+                    // If extreme make 1.
+
+                    // If landing zone, must have next two spaces as landing zone,
+                    // with diminishing flatness % for each next.
+                    // Must clear space above, and large enough path to outside.
+                }
+            }
+        }
+
+        const escapeLineMat = new MeshBasicMaterial({
+            color: 0x008080,
+            opacity: 0.5,
+            transparent: true,
+            side: DoubleSide
+        });
+        const impenetrableMat = new MeshBasicMaterial({
+            color: 0x57595D,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const oreType1Mat = new MeshBasicMaterial({
+            color: 0xFFFF66,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const oreType2Mat = new MeshBasicMaterial({
+            color: 0xAAF0D1,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const oreType3Mat = new MeshBasicMaterial({
+            color: 0xFF6EFF,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const commonRockMat = new MeshBasicMaterial({
+            color: 0xB94E48,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const dangerMat = new MeshBasicMaterial({
+            color: 0xFFAA1D,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const waterMat = new MeshBasicMaterial({
+            color: 0x5DADEC,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+
+        const meshGrid: Mesh[][] = [];
+        for (let row = 0; row < grid.length; row++) {
+            meshGrid[row] = [];
+            for (let col = 0; col < grid[row].length; col++) {
+                let material;
+                console.log('row/col', row, col, grid[row][col]);
+                if (grid[row][col] <= 1) {
+                    // Empty space
+                    continue;
+                } else if (grid[row][col] === 2) {
+                    material = escapeLineMat;
+                } else if (grid[row][col] === 4) {
+                    material = impenetrableMat;
+                } else if (grid[row][col] === 5) {
+                    material = oreType1Mat;
+                } else if (grid[row][col] === 6) {
+                    material = oreType2Mat;
+                } else if (grid[row][col] === 7) {
+                    material = oreType3Mat;
+                } else if (grid[row][col] === 8) {
+                    material = commonRockMat;
+                } else if (grid[row][col] === 9) {
+                    material = dangerMat;
+                } else if (grid[row][col] === 10) {
+                    material = waterMat;
+                }
+
+                const block = new Mesh( geo, material );
+                block.name = `${Math.random()} - ground - `;
+                block.position.set(-6 + (col/10), 15, 6 - row/10);
+                block.rotation.set(1.5708, 0, 0);
+                this._scene.add(block);
+                meshGrid[row][col] = block;
+            }
+        }
+
         this._onInitialize();
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
