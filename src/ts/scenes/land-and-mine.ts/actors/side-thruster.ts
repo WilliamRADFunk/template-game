@@ -154,11 +154,18 @@ export class SideThruster {
         topPuff.visible = false;
     }
 
+    public dispose():void {
+        this._plumes.forEach(plume => plume && this._scene.remove(plume));
+        this._plumes.length = 0;
+        this._puffs.forEach(puff => puff && this._scene.remove(puff));
+        this._puffs.length = 0;
+    }
+
     /**
      * At the end of each loop iteration, rotate each plume color's opacity a little.
      * @returns boolean that means very little neither true or false will have any meaning.
      */
-    endCycle(position: [number, number, number], isBurning?: boolean): void {
+    public endCycle(position: [number, number, number], isBurning?: boolean): void {
         if (isBurning) {
             if (!this._plumes[0].visible) {
                 this._plumes.forEach(plume => {

@@ -22,6 +22,7 @@ import { LeftTopStatsText2 } from '../../controls/text/stats/left-top-stats-text
 import { LeftTopStatsText3 } from '../../controls/text/stats/left-top-stats-text-3';
 import { LeftTopStatsText4 } from '../../controls/text/stats/left-top-stats-text-4';
 import { SideThruster } from './actors/side-thruster';
+import { Explosion } from '../../weapons/explosion';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -34,7 +35,7 @@ const SIDE_THRUSTER_Z_OFFSET: number = 0;
 
 const MAIN_THRUSTER_Y_OFFSET: number = 5;
 
-const MAIN_THRUSTER_Z_OFFSET: number = 0.23;
+const MAIN_THRUSTER_Z_OFFSET: number = 0.18;
 
 const VERTICAL_THRUST: number = 0.0002;
 
@@ -53,6 +54,8 @@ export class LandAndMine {
      */
     private _buttons: { [key: string]: ButtonBase } = { };
 
+    private _crashed: boolean = false;
+
     private _currentFuelLevel: number = 100;
 
     private _currentLanderHorizontalSpeed: number = 0.01;
@@ -60,6 +63,8 @@ export class LandAndMine {
     private _currentLanderVerticalSpeed: number = 0.001;
 
     private _currentOxygenLevel: number = 100;
+
+    private _explosion: Explosion = null;
 
     private _grid: number[][] = [];
 
@@ -81,6 +86,8 @@ export class LandAndMine {
     private _listenerRef: () => void;
 
     private _mainThruster: MainThruster;
+
+    private _meshGrid: Mesh[][] = [];
 
     private _planetSpecifications: PlanetSpecifications;
 
@@ -203,12 +210,10 @@ export class LandAndMine {
         });
         const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
 
-        const meshGrid: Mesh[][] = [];
         for (let row = 0; row < this._grid.length; row++) {
-            meshGrid[row] = [];
+            this._meshGrid[row] = [];
             for (let col = 0; col < this._grid[row].length; col++) {
                 let material;
-                console.log('row/col', row, col, this._grid[row][col]);
                 if (this._grid[row][col] <= 1) {
                     // Empty space
                     continue;
@@ -235,7 +240,7 @@ export class LandAndMine {
                 block.position.set(-6 + (col/10), 15, 6 - row/10);
                 block.rotation.set(1.5708, 0, 0);
                 this._scene.add(block);
-                meshGrid[row][col] = block;
+                this._meshGrid[row][col] = block;
             }
         }
 
@@ -379,6 +384,14 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { substance: string, quantity: number }[] {
+        if (this._crashed) {
+            this._explosion.endCycle();
+            this._scene.remove(this._lander.mesh);
+            this._mainThruster.dispose();
+            this._leftThruster.dispose();
+            this._rightThruster.dispose();
+            return;
+        }
         if (this._currentOxygenLevel > 0) {
             this._currentOxygenLevel -= 0.01;
             this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
@@ -417,19 +430,53 @@ export class LandAndMine {
             this._textElements.leftTopStatsText4.cycle(COLORS.selected);
         }
 
-        if (currPos.x < -6.2) {
+        if (currPos.x < -6.1) {
             this._lander.mesh.position.set(6, currPos.y, currPos.z);
         }
-        if (currPos.x > 6.2) {
+        if (currPos.x > 6.1) {
             this._lander.mesh.position.set(-6, currPos.y, currPos.z);
         }
-        const midRow = Math.floor((-10 * currPos.z) + 60) + 3;
-        const gridRow = this._grid[midRow];
-        const midCol = Math.floor((10 * currPos.x) + 60);
-        console.log(midRow, midCol, gridRow[midCol], (midRow - 63) / -10 + 0.001);
-        if (gridRow[midCol] && !this._landed) {
-            console.log('Found it');
-            this._lander.mesh.position.set(currPos.x, currPos.y, (midRow - 57) / -10 + 0.001);
+
+        const landerBottom = currPos.z + 0.15;
+
+        const landerRow = Math.floor((-10 * landerBottom) + 60);
+        const gridBottomRow = this._grid[landerRow];
+        const gridMiddleRow = this._grid[landerRow + 1];
+        const gridTopRow = this._grid[landerRow + 2];
+        const landerCol = ((100 * currPos.x) % 10) < 5 ? Math.floor((10 * currPos.x) + 60) : Math.ceil((10 * currPos.x) + 60);
+        const landerBottomLeft = gridBottomRow[landerCol !== 0 ? landerCol - 1 : 120];
+        const landerBottomRight = gridBottomRow[landerCol !== 120 ? landerCol + 1 : 0];
+        const landerMiddleLeft = gridMiddleRow[landerCol !== 0 ? landerCol - 1 : 120];
+        const landerMiddleRight = gridMiddleRow[landerCol !== 120 ? landerCol + 1 : 0];
+        const landerTopLeft = gridTopRow[landerCol !== 0 ? landerCol - 1 : 120];
+        const landerTopRight = gridTopRow[landerCol !== 120 ? landerCol + 1 : 0];
+
+        if (!gridBottomRow[landerCol] && (landerBottomLeft || landerMiddleLeft || landerTopLeft|| landerBottomRight || landerMiddleRight || landerTopRight)) {
+            console.log('Kaboom', landerBottomLeft, landerMiddleLeft, landerTopLeft|| landerBottomRight, landerMiddleRight, landerTopRight);
+            this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
+            this._crashed = true;
+        }
+
+        if (gridBottomRow[landerCol] && !this._landed) {
+            if (!this._crashed) {
+                const meshCenter = this._meshGrid[landerRow][landerCol];
+                const meshLeft = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120];
+                const meshRight = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0];
+                if (!landerBottomLeft || !landerBottomRight) {
+                    console.log('Kaboom', landerBottomLeft, landerBottomRight);
+                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
+                    this._crashed = true;
+                } else if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 || this._currentLanderVerticalSpeed >= 0.01) {
+                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
+                    this._crashed = true;
+                } else {
+                    this._scene.remove(meshLeft);
+                    this._scene.remove(meshRight);
+                    this._scene.remove(meshCenter);
+                }
+            }
+
+            this._lander.mesh.position.set(currPos.x, currPos.y, ((landerRow - 60) / -10) - 0.250000001);
             this._currentLanderHorizontalSpeed = 0;
             this._currentLanderVerticalSpeed = 0;
             this._landed = true;
@@ -445,9 +492,9 @@ export class LandAndMine {
             }
 
             this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
-            if (Math.abs(this._currentLanderVerticalSpeed) >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
+            if (this._currentLanderVerticalSpeed >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText2.cycle(COLORS.selected);
-            } else if (Math.abs(this._currentLanderVerticalSpeed) < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
+            } else if (this._currentLanderVerticalSpeed < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
                 this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
             }
 
@@ -464,9 +511,9 @@ export class LandAndMine {
         }
 
         this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
-        if (Math.abs(this._currentLanderVerticalSpeed) >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
+        if (this._currentLanderVerticalSpeed >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
             this._textElements.leftTopStatsText2.cycle(COLORS.selected);
-        } else if (Math.abs(this._currentLanderVerticalSpeed) < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
+        } else if (this._currentLanderVerticalSpeed < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
             this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
         }
 

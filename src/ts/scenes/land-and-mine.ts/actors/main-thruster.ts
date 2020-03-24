@@ -111,11 +111,16 @@ export class MainThruster {
         meshOrange.visible = false;
     }
 
+    public dispose():void {
+        this._flames.forEach(flame => flame && this._scene.remove(flame));
+        this._flames.length = 0;
+    }
+
     /**
      * At the end of each loop iteration, rotate each flame color's opacity a little.
      * @returns boolean that means very little neither true or false will have any meaning.
      */
-    endCycle(position: [number, number, number], isBurning?: boolean): void {
+    public endCycle(position: [number, number, number], isBurning?: boolean): void {
         if (isBurning) {
             if (!this._flames[0].visible) {
                 this._flames.forEach(flame => {

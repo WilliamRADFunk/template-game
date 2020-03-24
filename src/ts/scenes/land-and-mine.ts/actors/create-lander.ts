@@ -1,9 +1,11 @@
 import {
-    CircleGeometry,
+    DoubleSide,
     LinearFilter,
     Mesh,
     MeshPhongMaterial,
-    Texture } from "three";
+    Texture,
+    MeshBasicMaterial,
+    CircleGeometry} from "three";
 import { createActor } from "../../../utils/create-actor";
 
 /**
@@ -15,7 +17,7 @@ export function createLander(landerTexture: Texture) {
     lander.originalStartingPoint = [0, -4];
     lander.currentPoint = [0, -4];
     lander.endingPoint = [0, -4];
-    lander.geometry = new CircleGeometry(0.25, 16, 16);
+    lander.geometry = new CircleGeometry( 0.2, 10, 10 );
     lander.material = new MeshPhongMaterial();
     lander.material.map = landerTexture;
     lander.material.map.minFilter = LinearFilter;
