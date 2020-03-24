@@ -27,6 +27,7 @@ import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
 import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
+import { PlanetSpecifications } from './models/planet-specification';
 
 /**
  * Loads the graphic for asteroid.
@@ -448,7 +449,12 @@ const loadDevMenu = () => {
         window.removeEventListener( 'resize', onWindowResize, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            loadLandAndMineScene();
+            loadLandAndMineScene({
+                gravity: 0.0001,
+                hasWater: true,
+                isFrozen: true,
+                peakElevation: 15
+            });
         }, 50);
     };
     const activatePlanetRaid = () => {
@@ -767,7 +773,7 @@ const loadIntroScene = () => {
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
-const loadLandAndMineScene = () => {
+const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
     scenes.landAndMine.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
@@ -818,13 +824,7 @@ const loadLandAndMineScene = () => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const landAndMine = new LandAndMine(
-        scenes.landAndMine,
-        shipTexture,
-        fireTexture,
-        {
-            gravity: 0.0001
-        });
+    const landAndMine = new LandAndMine(scenes.landAndMine, shipTexture, fireTexture, planetSpec);
     scenes.landAndMine.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

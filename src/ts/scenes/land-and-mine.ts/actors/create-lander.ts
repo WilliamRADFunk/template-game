@@ -1,11 +1,9 @@
 import {
-    DoubleSide,
+    CircleGeometry,
     LinearFilter,
     Mesh,
     MeshPhongMaterial,
-    Texture,
-    MeshBasicMaterial,
-    CircleGeometry} from "three";
+    Texture } from "three";
 import { createActor } from "../../../utils/create-actor";
 
 /**

@@ -125,15 +125,12 @@ export class LandAndMine {
          * 02: Escape Zone Line. Ship Bottom must be above.
          * 03: Landing Area. Must have 3 flat squares with no obstructions. Must be connected.
          * 04: Impenetrable to drill.
-         * 05: Ore type 1
-         * 06: Ore type 2
-         * 07: Ore type 3
-         * 08: Common Rock
-         * 09: Danger square: lava, acid, explosive gas, etc.
-         * 10: Water or ice
+         * 05: Ore type
+         * 06: Common Rock
+         * 07: Danger square: lava, acid, explosive gas, etc.
+         * 08: Water or ice
          */
 
-        const maxPeakValley = 10;
         for (let i = 0; i < 121; i++) {
             this._grid[i] = [];
         }
@@ -141,21 +138,21 @@ export class LandAndMine {
         startY = startY <= 50 ? startY : 50;
         console.log('startY', startY);
 
-        this._grid[startY][0] = 8;
+        this._grid[startY][0] = 6;
         this._downPopulate(0, startY);
         let lastY = startY;
         for (let col = 1; col < 121; col++) {
-            const cantAscend = (lastY - startY) >= maxPeakValley;
-            const cantDescend = (startY - lastY) >= maxPeakValley;
+            const cantAscend = (lastY - startY) >= planetSpecifications.peakElevation;
+            const cantDescend = (startY - lastY) >= planetSpecifications.peakElevation;
             const elevRando = Math.floor(Math.random() * 100);
-            if (!cantAscend && elevRando <= (25 + maxPeakValley)) { // Elevate
-                this._grid[lastY + 1][col] = 8;
+            if (!cantAscend && elevRando <= (25 + planetSpecifications.peakElevation)) { // Elevate
+                this._grid[lastY + 1][col] = 6;
                 lastY++;
-            } else if (!cantDescend && elevRando >= (76 - maxPeakValley)) { // Descend
-                this._grid[lastY - 1][col] = 8;
+            } else if (!cantDescend && elevRando >= (76 - planetSpecifications.peakElevation)) { // Descend
+                this._grid[lastY - 1][col] = 6;
                 lastY--;
             } else { // Level out
-                this._grid[lastY][col] = 8;
+                this._grid[lastY][col] = 6;
             }
             this._downPopulate(col, lastY);
         }
@@ -172,20 +169,8 @@ export class LandAndMine {
             transparent: true,
             side: DoubleSide
         });
-        const oreType1Mat = new MeshBasicMaterial({
+        const oreTypeMat = new MeshBasicMaterial({
             color: 0xFFFF66,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
-        const oreType2Mat = new MeshBasicMaterial({
-            color: 0xAAF0D1,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
-        const oreType3Mat = new MeshBasicMaterial({
-            color: 0xFF6EFF,
             opacity: 1,
             transparent: true,
             side: DoubleSide
@@ -222,16 +207,12 @@ export class LandAndMine {
                 } else if (this._grid[row][col] === 4) {
                     material = impenetrableMat;
                 } else if (this._grid[row][col] === 5) {
-                    material = oreType1Mat;
+                    material = oreTypeMat;
                 } else if (this._grid[row][col] === 6) {
-                    material = oreType2Mat;
-                } else if (this._grid[row][col] === 7) {
-                    material = oreType3Mat;
-                } else if (this._grid[row][col] === 8) {
                     material = commonRockMat;
-                } else if (this._grid[row][col] === 9) {
+                } else if (this._grid[row][col] === 7) {
                     material = dangerMat;
-                } else if (this._grid[row][col] === 10) {
+                } else if (this._grid[row][col] === 8) {
                     material = waterMat;
                 }
 
@@ -296,19 +277,79 @@ export class LandAndMine {
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
     }
 
+    private _destroyTiles(col: number, row: number): void {
+        const left = col !== 0 ? col - 1 : 120;
+        const right = col !== 120 ? col + 1 : 0;
+        const destroyedTiles = [
+            this._meshGrid[row + 3][col],
+            this._meshGrid[row + 3][left],
+            this._meshGrid[row + 3][right],
+            this._meshGrid[row + 3][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row + 3][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row + 2][col],
+            this._meshGrid[row + 2][left],
+            this._meshGrid[row + 2][right],
+            this._meshGrid[row + 2][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row + 2][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row + 2][left !== 1 ? left - 2 : 120],
+            this._meshGrid[row + 2][right !== 119 ? right + 2 : 0],
+            this._meshGrid[row + 1][col],
+            this._meshGrid[row + 1][left],
+            this._meshGrid[row + 1][right],
+            this._meshGrid[row + 1][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row + 1][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row + 1][left !== 1 ? left - 2 : 120],
+            this._meshGrid[row + 1][right !== 119 ? right + 2 : 0],
+            this._meshGrid[row + 1][left !== 2 ? left - 3 : 120],
+            this._meshGrid[row + 1][right !== 118 ? right + 3 : 0],
+            this._meshGrid[row][col],
+            this._meshGrid[row][left],
+            this._meshGrid[row][right],
+            this._meshGrid[row][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row][left !== 1 ? left - 2 : 120],
+            this._meshGrid[row][right !== 119 ? right + 2 : 0],
+            this._meshGrid[row][left !== 2 ? left - 3 : 120],
+            this._meshGrid[row][right !== 118 ? right + 3 : 0],
+            this._meshGrid[row][left !== 3 ? left - 4 : 120],
+            this._meshGrid[row][right !== 117 ? right + 4 : 0],
+            this._meshGrid[row - 1][col],
+            this._meshGrid[row - 1][left],
+            this._meshGrid[row - 1][right],
+            this._meshGrid[row - 1][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row - 1][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row - 1][left !== 1 ? left - 2 : 120],
+            this._meshGrid[row - 1][right !== 119 ? right + 2 : 0],
+            this._meshGrid[row - 1][left !== 2 ? left - 3 : 120],
+            this._meshGrid[row - 1][right !== 118 ? right + 3 : 0],
+            this._meshGrid[row - 2][col],
+            this._meshGrid[row - 2][left],
+            this._meshGrid[row - 2][right],
+            this._meshGrid[row - 2][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row - 2][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row - 2][left !== 1 ? left - 2 : 120],
+            this._meshGrid[row - 2][right !== 119 ? right + 2 : 0],
+            this._meshGrid[row - 3][col],
+            this._meshGrid[row - 3][left],
+            this._meshGrid[row - 3][right],
+            this._meshGrid[row - 3][left !== 0 ? left - 1 : 120],
+            this._meshGrid[row - 3][right !== 120 ? right + 1 : 0],
+            this._meshGrid[row - 4][col],
+            this._meshGrid[row - 4][left],
+            this._meshGrid[row - 4][right]
+        ];
+        destroyedTiles.forEach(tile => tile && this._scene.remove(tile));
+    }
+
     private _downPopulate(x: number, y: number): void {
         for (let row = y - 1; row >= 0; row--) {
             const rando = Math.random() * 100;
             if (rando < 0.5) {
                 this._grid[row][x] = 9;
-            } else if (rando < 1) {
+            } else if (rando < 3.5) {
                 this._grid[row][x] = 5;
-            } else if (rando < 1.5) {
-                this._grid[row][x] = 6;
-            } else if (rando < 2) {
-                this._grid[row][x] = 7;
             } else {
-                this._grid[row][x] = 8;
+                this._grid[row][x] = 6;
             }
         }
     }
@@ -452,9 +493,9 @@ export class LandAndMine {
         const landerTopRight = gridTopRow[landerCol !== 120 ? landerCol + 1 : 0];
 
         if (!gridBottomRow[landerCol] && (landerBottomLeft || landerMiddleLeft || landerTopLeft|| landerBottomRight || landerMiddleRight || landerTopRight)) {
-            console.log('Kaboom', landerBottomLeft, landerMiddleLeft, landerTopLeft|| landerBottomRight, landerMiddleRight, landerTopRight);
             this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
             this._crashed = true;
+            this._destroyTiles(landerCol, landerRow);
         }
 
         if (gridBottomRow[landerCol] && !this._landed) {
@@ -463,16 +504,17 @@ export class LandAndMine {
                 const meshLeft = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120];
                 const meshRight = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0];
                 if (!landerBottomLeft || !landerBottomRight) {
-                    console.log('Kaboom', landerBottomLeft, landerBottomRight);
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
                     this._crashed = true;
+                    this._destroyTiles(landerCol, landerRow);
                 } else if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 || this._currentLanderVerticalSpeed >= 0.01) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
                     this._crashed = true;
+                    this._destroyTiles(landerCol, landerRow);
                 } else {
-                    this._scene.remove(meshLeft);
-                    this._scene.remove(meshRight);
-                    this._scene.remove(meshCenter);
+                    // this._scene.remove(meshLeft);
+                    // this._scene.remove(meshRight);
+                    // this._scene.remove(meshCenter);
                 }
             }
 
@@ -510,7 +552,7 @@ export class LandAndMine {
             this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
         }
 
-        this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+        this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed > 0.0001 ? this._currentLanderVerticalSpeed.toFixed(4) : Number(0).toFixed(4)}`);
         if (this._currentLanderVerticalSpeed >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
             this._textElements.leftTopStatsText2.cycle(COLORS.selected);
         } else if (this._currentLanderVerticalSpeed < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
