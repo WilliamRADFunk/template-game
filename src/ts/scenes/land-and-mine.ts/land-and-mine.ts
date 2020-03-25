@@ -25,6 +25,19 @@ import { SideThruster } from './actors/side-thruster';
 import { Explosion } from '../../weapons/explosion';
 import { colorLuminance } from '../../utils/color-shader';
 
+/*
+ * Grid Values
+ * 00: Empty space/sky. Null values
+ * 01: Escape Zone. Contact means exit
+ * 02: Escape Zone Line. Ship Bottom must be above.
+ * 03: Water or ice
+ * 04: Impenetrable to drill.
+ * 05: Ore type
+ * 06: Common Rock
+ * 07: Danger square: lava, acid, explosive gas, etc.
+ * 08: Life (plants mostly)
+ */
+
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
@@ -110,62 +123,48 @@ export class LandAndMine {
      * Constructor for the Land and Mine (Scene) class
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param landerTexture             texture for the lander.
-     * @param landerTexture             texture for thruster fire.
      * @param planetSpecifications      details about the planet used to operate the scene.
      */
     constructor(
         scene: SceneType,
         landerTexture: Texture,
-        fireTexture: Texture,
         planetSpecifications: PlanetSpecifications) {
         this._scene = scene.scene;
         this._planetSpecifications = planetSpecifications;
 
-        /*
-         * Grid Values
-         * 00: Empty space/sky. Null values
-         * 01: Escape Zone. Contact means exit
-         * 02: Escape Zone Line. Ship Bottom must be above.
-         * 03: Water or ice
-         * 04: Impenetrable to drill.
-         * 05: Ore type
-         * 06: Common Rock
-         * 07: Danger square: lava, acid, explosive gas, etc.
-         * 08: Life (plants mostly)
-         */
-
-        for (let i = 0; i < 121; i++) {
-            this._grid[i] = [];
-        }
+        // Choose random surface starting point.
         let startY = Math.floor((Math.random() / 2) * 100) + 20
         startY = startY <= 50 ? startY : 50;
         console.log('startY', startY);
 
-        this._grid[startY][0] = 6;
-        this._downPopulate(0, startY);
-        let lastY = startY;
-        for (let col = 1; col < 121; col++) {
-            const cantAscend = (lastY - startY) >= planetSpecifications.peakElevation;
-            const cantDescend = (startY - lastY) >= planetSpecifications.peakElevation;
-            const isWater = planetSpecifications.hasWater && Math.random() < 0.05;
-            const isLife = Math.random() < 0.40;
-            const elevRando = Math.floor(Math.random() * 100);
-            if (!cantAscend && elevRando <= (25 + planetSpecifications.peakElevation)) { // Elevate
-                this._grid[lastY + 1][col] = isLife ? 8 : 6;
-                lastY++;
-            } else if (!cantDescend && elevRando >= (76 - planetSpecifications.peakElevation)) { // Descend
-                this._grid[lastY - 1][col] = isLife ? 8 : 6;
-                lastY--;
-            } else { // Level out
-                this._grid[lastY][col] = isLife ? 8 : 6;
-            }
+        // Grid values
+        this._buildTerrain(startY);
+        this._buildSky();
+        this._waterFlow();
+        this._enforceMinLanding(startY);
 
-            if (isWater) {
-                this._grid[lastY][col] = 3;
-            }
-            this._downPopulate(col, lastY, isWater);
-        }
+        // Mesh Values
+        this._createEnvironmentMeshes();
 
+        // Text, Button, and Event Listeners
+        this._onInitialize(scene);
+        this._listenerRef = this._onWindowResize.bind(this);
+        window.addEventListener('resize', this._listenerRef, false);
+
+        // Create lander module
+        const lander = createLander(landerTexture);
+        this._lander = lander;
+        this._actors.push(lander);
+        this._scene.add(lander.mesh);
+
+        // Create lander module thrusters
+        const currPos = this._lander.mesh.position;
+        this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
+        this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
+        this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
+    }
+
+    private _buildSky(): void {
         for (let row = 120; row > 110; row--) {
             for (let col = 0; col < 121; col++) {
                 this._grid[row][col] = 1;
@@ -183,13 +182,44 @@ export class LandAndMine {
                 }
             }
         }
+    }
 
-        this._waterFlow();
+    private _buildTerrain(startY: number): void {
+        for (let i = 0; i < 121; i++) {
+            this._grid[i] = [];
+        }
 
+        this._grid[startY][0] = 6;
+        this._downPopulate(0, startY);
+        let lastY = startY;
+        for (let col = 1; col < 121; col++) {
+            const cantAscend = (lastY - startY) >= this._planetSpecifications.peakElevation;
+            const cantDescend = (startY - lastY) >= this._planetSpecifications.peakElevation;
+            const isWater = this._planetSpecifications.hasWater && Math.random() < 0.05;
+            const isLife = Math.random() < 0.40;
+            const elevRando = Math.floor(Math.random() * 100);
+            if (!cantAscend && elevRando <= (25 + this._planetSpecifications.peakElevation)) { // Elevate
+                this._grid[lastY + 1][col] = isLife ? 8 : 6;
+                lastY++;
+            } else if (!cantDescend && elevRando >= (76 - this._planetSpecifications.peakElevation)) { // Descend
+                this._grid[lastY - 1][col] = isLife ? 8 : 6;
+                lastY--;
+            } else { // Level out
+                this._grid[lastY][col] = isLife ? 8 : 6;
+            }
+
+            if (isWater) {
+                this._grid[lastY][col] = 3;
+            }
+            this._downPopulate(col, lastY, isWater);
+        }
+    }
+
+    private _createEnvironmentMeshes(): void {
         const skyMats: MeshBasicMaterial[] = [];
         for (let i = 0; i < 9; i++) {
             const skyMat = new MeshBasicMaterial({
-                color: colorLuminance(planetSpecifications.skyBase, i / 10),
+                color: colorLuminance(this._planetSpecifications.skyBase, i / 10),
                 opacity: 1,
                 transparent: true,
                 side: DoubleSide
@@ -217,7 +247,7 @@ export class LandAndMine {
         const commonRockMats: MeshBasicMaterial[] = [];
         for (let i = 0; i < 7; i++) {
             const commonRockMat = new MeshBasicMaterial({
-                color: colorLuminance(planetSpecifications.planetBase, i / 10),
+                color: colorLuminance(this._planetSpecifications.planetBase, i / 10),
                 opacity: 1,
                 transparent: true,
                 side: DoubleSide
@@ -232,7 +262,7 @@ export class LandAndMine {
             side: DoubleSide
         });
         const waterMat = new MeshBasicMaterial({
-            color: planetSpecifications.isFrozen ? 0xEEEEEE : 0x006FCE,
+            color: this._planetSpecifications.isFrozen ? 0xEEEEEE : 0x006FCE,
             opacity: 1,
             transparent: true,
             side: DoubleSide
@@ -285,101 +315,6 @@ export class LandAndMine {
                 this._scene.add(block);
                 this._meshGrid[row][col] = block;
             }
-        }
-
-        this._onInitialize();
-        this._listenerRef = this._onWindowResize.bind(this);
-        window.addEventListener('resize', this._listenerRef, false);
-
-        const lander = createLander(landerTexture);
-        this._lander = lander;
-        this._actors.push(lander);
-        this._scene.add(lander.mesh);
-
-        // DOM Events
-        const container = document.getElementById('mainview');
-        document.onclick = event => {
-            event.preventDefault();
-            // Three JS object intersections.
-            getIntersections(event, container, scene).forEach(el => {
-
-            });
-        };
-        document.onmousemove = event => {
-
-        };
-        document.onkeydown = event => {
-            if (event.keyCode === 87 || event.keyCode === 38) {
-                this._isVerticalThrusting = true;
-                return;
-            } else if (event.keyCode === 65 || event.keyCode === 37) {
-                this._isLeftThrusting = true;
-                return;
-            } else if (event.keyCode === 68 || event.keyCode === 39) {
-                this._isRightThrusting = true;
-                return;
-            }
-        };
-        document.onkeyup = event => {
-            if (event.keyCode === 87 || event.keyCode === 38) {
-                this._isVerticalThrusting = false;
-                return;
-            } else if (event.keyCode === 65 || event.keyCode === 37) {
-                this._isLeftThrusting = false;
-                return;
-            } else if (event.keyCode === 68 || event.keyCode === 39) {
-                this._isRightThrusting = false;
-                return;
-            }
-        };
-        const currPos = this._lander.mesh.position;
-
-        this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
-        this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
-        this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
-    }
-
-    private _waterFlow():void {
-        let changeMade = false;
-
-        // Remove weird free-standing water cliffs.
-        for (let row = 109; row > 0; row--) {
-            for (let col = 0; col < 121; col++) {
-                if (this._grid[row][col] === 3 && !this._grid[row - 1][col]) {
-                    this._grid[row][col] = 0;
-                    changeMade = true;
-                }
-            }
-        }
-
-        // Let water flow horizontally
-        for (let row = 109; row > 0; row--) {
-            for (let col = 1; col < 120; col++) {
-                if (this._grid[row][col] === 3 && !this._grid[row][col + 1] && this._grid[row - 1][col + 1] > 3) {
-                    this._grid[row][col + 1] = 3;
-                    changeMade = true;
-                } else if (this._grid[row][col] === 3 && !this._grid[row][col - 1] && this._grid[row - 1][col - 1] > 3) {
-                    this._grid[row][col - 1] = 3;
-                    changeMade = true;
-                }
-            }
-        }
-
-        // Let water flow downhill
-        for (let row = 109; row > 0; row--) {
-            for (let col = 1; col < 120; col++) {
-                if (this._grid[row][col] === 3 && !this._grid[row][col + 1] && !this._grid[row - 1][col + 1] && this._grid[row - 2][col + 1]) {
-                    this._grid[row - 1][col + 1] = 3;
-                    changeMade = true;
-                } else if (this._grid[row][col] === 3 && !this._grid[row][col - 1] && !this._grid[row - 1][col - 1] && this._grid[row - 2][col - 1]) {
-                    this._grid[row - 1][col - 1] = 3;
-                    changeMade = true;
-                }
-            }
-        }
-
-        if (changeMade) {
-            this._waterFlow();
         }
     }
 
@@ -486,12 +421,48 @@ export class LandAndMine {
         }
     }
 
-    private _sidePopulate(x: number, y: number, direction: number) {
-        const waterTileCheck = Math.random() * 100;
-        if (waterTileCheck < 80) {
-            this._grid[y][x] = 3;
-            if (x > 0 && x < 120) {
-                this._sidePopulate(x + direction, y, direction);
+    private _enforceMinLanding(startY: number): void {
+        let prevY = startY;
+        let count = 1;
+        let hasLanding = false;
+        for (let col = 1; col < 121; col++) {
+            const tile = this._grid[prevY][col];
+            // If current tile is water, can't be a landing.
+            if (tile === 3) {
+                count = 0;
+                continue;
+            // If current tile is empty, reset landing, and drop the row level.
+            } else if (tile < 3) {
+                prevY--;
+                count = 0;
+            // If current tile is solid and tile above is not, add to landing.
+            } else if (this._grid[prevY + 1][col] < 3) {
+                count++;
+            } else {
+                prevY++;
+                count = 0;
+            }
+            if (count >= 4) {
+                console.log('Found it!', prevY, col);
+                hasLanding = true;
+                break;
+            }
+        }
+
+        if (!hasLanding) {
+            const chosenCol = Math.floor(Math.random() * 117);
+            let chosenRow;
+            for (let row = 109; row > 0; row--) {
+                if (this._grid[row][chosenCol] >= 3) {
+                    chosenRow = row;
+                    break;
+                }
+            }
+            for (let col = chosenCol; col < chosenCol + 4; col++) {
+                for (let row = 109; row > chosenRow; row--) {
+                    this._grid[row][col] = 0;
+                }
+                this._grid[chosenRow][col] = 6;
             }
         }
     }
@@ -499,7 +470,44 @@ export class LandAndMine {
     /**
      * Creates all of the html elements for the first time on scene creation.
      */
-    private _onInitialize(): void {
+    private _onInitialize(sceneType: SceneType): void {
+        // DOM Events
+        const container = document.getElementById('mainview');
+        document.onclick = event => {
+            event.preventDefault();
+            // Three JS object intersections.
+            getIntersections(event, container, sceneType).forEach(el => {
+
+            });
+        };
+        document.onmousemove = event => {
+
+        };
+        document.onkeydown = event => {
+            if (event.keyCode === 87 || event.keyCode === 38) {
+                this._isVerticalThrusting = true;
+                return;
+            } else if (event.keyCode === 65 || event.keyCode === 37) {
+                this._isLeftThrusting = true;
+                return;
+            } else if (event.keyCode === 68 || event.keyCode === 39) {
+                this._isRightThrusting = true;
+                return;
+            }
+        };
+        document.onkeyup = event => {
+            if (event.keyCode === 87 || event.keyCode === 38) {
+                this._isVerticalThrusting = false;
+                return;
+            } else if (event.keyCode === 65 || event.keyCode === 37) {
+                this._isLeftThrusting = false;
+                return;
+            } else if (event.keyCode === 68 || event.keyCode === 39) {
+                this._isRightThrusting = false;
+                return;
+            }
+        };
+
         // Get window dimmensions
         let width = window.innerWidth * 0.99;
         let height = window.innerHeight * 0.99;
@@ -549,7 +557,61 @@ export class LandAndMine {
         this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText3.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText4.resize({ height, left: left, top: null, width });
-    };
+    }
+
+    private _sidePopulate(x: number, y: number, direction: number) {
+        const waterTileCheck = Math.random() * 100;
+        if (waterTileCheck < 80) {
+            this._grid[y][x] = 3;
+            if (x > 0 && x < 120) {
+                this._sidePopulate(x + direction, y, direction);
+            }
+        }
+    }
+
+    private _waterFlow():void {
+        let changeMade = false;
+
+        // Remove weird free-standing water cliffs.
+        for (let row = 109; row > 0; row--) {
+            for (let col = 0; col < 121; col++) {
+                if (this._grid[row][col] === 3 && !this._grid[row - 1][col]) {
+                    this._grid[row][col] = 0;
+                    changeMade = true;
+                }
+            }
+        }
+
+        // Let water flow horizontally
+        for (let row = 109; row > 0; row--) {
+            for (let col = 1; col < 120; col++) {
+                if (this._grid[row][col] === 3 && !this._grid[row][col + 1] && this._grid[row - 1][col + 1] > 3) {
+                    this._grid[row][col + 1] = 3;
+                    changeMade = true;
+                } else if (this._grid[row][col] === 3 && !this._grid[row][col - 1] && this._grid[row - 1][col - 1] > 3) {
+                    this._grid[row][col - 1] = 3;
+                    changeMade = true;
+                }
+            }
+        }
+
+        // Let water flow downhill
+        for (let row = 109; row > 0; row--) {
+            for (let col = 1; col < 120; col++) {
+                if (this._grid[row][col] === 3 && !this._grid[row][col + 1] && !this._grid[row - 1][col + 1] && this._grid[row - 2][col + 1]) {
+                    this._grid[row - 1][col + 1] = 3;
+                    changeMade = true;
+                } else if (this._grid[row][col] === 3 && !this._grid[row][col - 1] && !this._grid[row - 1][col - 1] && this._grid[row - 2][col - 1]) {
+                    this._grid[row - 1][col - 1] = 3;
+                    changeMade = true;
+                }
+            }
+        }
+
+        if (changeMade) {
+            this._waterFlow();
+        }
+    }
 
     /**
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
@@ -658,12 +720,7 @@ export class LandAndMine {
             && (landerBottomLeft || landerMiddleLeft || landerTopLeft || landerBottomRight || landerMiddleRight || landerTopRight)) {
             this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
             this._crashed = true;
-            setTimeout(() => {
-                this._destroyTiles(landerCol, landerRow);
-                setTimeout(() => {
-                    this._waterFlow();
-                }, 100);
-            }, 900);
+            setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
         }
 
         if (landerRow < 100 && gridBottomRow[landerCol] && !this._landed) {
@@ -671,30 +728,15 @@ export class LandAndMine {
                 if (landerBottomLeft < 3 || landerBottomRight < 3) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
                     this._crashed = true;
-                    setTimeout(() => {
-                        this._destroyTiles(landerCol, landerRow);
-                        setTimeout(() => {
-                            this._waterFlow();
-                        }, 100);
-                    }, 900);
+                    setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
                 } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
                     this._crashed = true;
-                    setTimeout(() => {
-                        this._destroyTiles(landerCol, landerRow);
-                        setTimeout(() => {
-                            this._waterFlow();
-                        }, 100);
-                    }, 900);
+                    setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
                 } else if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 || this._currentLanderVerticalSpeed >= 0.01) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
                     this._crashed = true;
-                    setTimeout(() => {
-                        this._destroyTiles(landerCol, landerRow);
-                        setTimeout(() => {
-                            this._waterFlow();
-                        }, 100);
-                    }, 900);
+                    setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
                 } else { }
             }
 

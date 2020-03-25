@@ -827,7 +827,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const landAndMine = new LandAndMine(scenes.landAndMine, shipTexture, fireTexture, planetSpec);
+    const landAndMine = new LandAndMine(scenes.landAndMine, shipTexture, planetSpec);
     scenes.landAndMine.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
