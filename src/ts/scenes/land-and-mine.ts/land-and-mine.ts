@@ -23,6 +23,7 @@ import { LeftTopStatsText3 } from '../../controls/text/stats/left-top-stats-text
 import { LeftTopStatsText4 } from '../../controls/text/stats/left-top-stats-text-4';
 import { SideThruster } from './actors/side-thruster';
 import { Explosion } from '../../weapons/explosion';
+import { colorLuminance } from '../../utils/color-shader';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -63,6 +64,8 @@ export class LandAndMine {
     private _currentLanderVerticalSpeed: number = 0.001;
 
     private _currentOxygenLevel: number = 100;
+
+    private _escaped: boolean = false;
 
     private _explosion: Explosion = null;
 
@@ -123,12 +126,12 @@ export class LandAndMine {
          * 00: Empty space/sky. Null values
          * 01: Escape Zone. Contact means exit
          * 02: Escape Zone Line. Ship Bottom must be above.
-         * 03: Landing Area. Must have 3 flat squares with no obstructions. Must be connected.
+         * 03: Water or ice
          * 04: Impenetrable to drill.
          * 05: Ore type
          * 06: Common Rock
          * 07: Danger square: lava, acid, explosive gas, etc.
-         * 08: Water or ice
+         * 08: Life (plants mostly)
          */
 
         for (let i = 0; i < 121; i++) {
@@ -144,19 +147,55 @@ export class LandAndMine {
         for (let col = 1; col < 121; col++) {
             const cantAscend = (lastY - startY) >= planetSpecifications.peakElevation;
             const cantDescend = (startY - lastY) >= planetSpecifications.peakElevation;
+            const isWater = planetSpecifications.hasWater && Math.random() < 0.05;
+            const isLife = Math.random() < 0.40;
             const elevRando = Math.floor(Math.random() * 100);
             if (!cantAscend && elevRando <= (25 + planetSpecifications.peakElevation)) { // Elevate
-                this._grid[lastY + 1][col] = 6;
+                this._grid[lastY + 1][col] = isLife ? 8 : 6;
                 lastY++;
             } else if (!cantDescend && elevRando >= (76 - planetSpecifications.peakElevation)) { // Descend
-                this._grid[lastY - 1][col] = 6;
+                this._grid[lastY - 1][col] = isLife ? 8 : 6;
                 lastY--;
             } else { // Level out
-                this._grid[lastY][col] = 6;
+                this._grid[lastY][col] = isLife ? 8 : 6;
             }
-            this._downPopulate(col, lastY);
+
+            if (isWater) {
+                this._grid[lastY][col] = 3;
+            }
+            this._downPopulate(col, lastY, isWater);
         }
 
+        for (let row = 120; row > 110; row--) {
+            for (let col = 0; col < 121; col++) {
+                this._grid[row][col] = 1;
+            }
+        }
+
+        for (let col = 0; col < 121; col++) {
+            this._grid[110][col] = 2;
+        }
+
+        for (let row = 109; row >= 0; row--) {
+            for (let col = 0; col < 121; col++) {
+                if (!this._grid[row][col]) {
+                    this._grid[row][col] = 0;
+                }
+            }
+        }
+
+        this._waterFlow();
+
+        const skyMats: MeshBasicMaterial[] = [];
+        for (let i = 0; i < 9; i++) {
+            const skyMat = new MeshBasicMaterial({
+                color: colorLuminance(planetSpecifications.skyBase, i / 10),
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            skyMats.push(skyMat);
+        }
         const escapeLineMat = new MeshBasicMaterial({
             color: 0x008080,
             opacity: 0.5,
@@ -175,45 +214,68 @@ export class LandAndMine {
             transparent: true,
             side: DoubleSide
         });
-        const commonRockMat = new MeshBasicMaterial({
-            color: 0xB94E48,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
+        const commonRockMats: MeshBasicMaterial[] = [];
+        for (let i = 0; i < 7; i++) {
+            const commonRockMat = new MeshBasicMaterial({
+                color: colorLuminance(planetSpecifications.planetBase, i / 10),
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            commonRockMats.push(commonRockMat);
+        }
+
         const dangerMat = new MeshBasicMaterial({
-            color: 0xFFAA1D,
+            color: 0xFF3333,
             opacity: 1,
             transparent: true,
             side: DoubleSide
         });
         const waterMat = new MeshBasicMaterial({
-            color: 0x5DADEC,
+            color: planetSpecifications.isFrozen ? 0xEEEEEE : 0x006FCE,
             opacity: 1,
             transparent: true,
             side: DoubleSide
         });
+
+        const lifeMats: MeshBasicMaterial[] = [];
+        const lifeMatColorBase = '008000';
+        for (let i = 0; i < 5; i++) {
+            const lifeMat = new MeshBasicMaterial({
+                color: colorLuminance(lifeMatColorBase, i / 10),
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            lifeMats.push(lifeMat);
+        }
+
         const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
 
         for (let row = 0; row < this._grid.length; row++) {
             this._meshGrid[row] = [];
             for (let col = 0; col < this._grid[row].length; col++) {
                 let material;
-                if (this._grid[row][col] <= 1) {
-                    // Empty space
+                if (!this._grid[row][col]) {
+                    material = skyMats[Math.floor(row / 10) % 9];
+                }
+                if (this._grid[row][col] === 1) {
+                    // Exit space
                     continue;
                 } else if (this._grid[row][col] === 2) {
                     material = escapeLineMat;
+                } else if (this._grid[row][col] === 3) {
+                    material = waterMat;
                 } else if (this._grid[row][col] === 4) {
                     material = impenetrableMat;
                 } else if (this._grid[row][col] === 5) {
                     material = oreTypeMat;
                 } else if (this._grid[row][col] === 6) {
-                    material = commonRockMat;
+                    material = commonRockMats[Math.floor(row / 10) % 7];
                 } else if (this._grid[row][col] === 7) {
                     material = dangerMat;
                 } else if (this._grid[row][col] === 8) {
-                    material = waterMat;
+                    material = lifeMats[Math.floor(row / 10) % 5];
                 }
 
                 const block = new Mesh( geo, material );
@@ -277,79 +339,159 @@ export class LandAndMine {
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
     }
 
+    private _waterFlow():void {
+        let changeMade = false;
+
+        // Remove weird free-standing water cliffs.
+        for (let row = 109; row > 0; row--) {
+            for (let col = 0; col < 121; col++) {
+                if (this._grid[row][col] === 3 && !this._grid[row - 1][col]) {
+                    this._grid[row][col] = 0;
+                    changeMade = true;
+                }
+            }
+        }
+
+        // Let water flow horizontally
+        for (let row = 109; row > 0; row--) {
+            for (let col = 1; col < 120; col++) {
+                if (this._grid[row][col] === 3 && !this._grid[row][col + 1] && this._grid[row - 1][col + 1] > 3) {
+                    this._grid[row][col + 1] = 3;
+                    changeMade = true;
+                } else if (this._grid[row][col] === 3 && !this._grid[row][col - 1] && this._grid[row - 1][col - 1] > 3) {
+                    this._grid[row][col - 1] = 3;
+                    changeMade = true;
+                }
+            }
+        }
+
+        // Let water flow downhill
+        for (let row = 109; row > 0; row--) {
+            for (let col = 1; col < 120; col++) {
+                if (this._grid[row][col] === 3 && !this._grid[row][col + 1] && !this._grid[row - 1][col + 1] && this._grid[row - 2][col + 1]) {
+                    this._grid[row - 1][col + 1] = 3;
+                    changeMade = true;
+                } else if (this._grid[row][col] === 3 && !this._grid[row][col - 1] && !this._grid[row - 1][col - 1] && this._grid[row - 2][col - 1]) {
+                    this._grid[row - 1][col - 1] = 3;
+                    changeMade = true;
+                }
+            }
+        }
+
+        if (changeMade) {
+            this._waterFlow();
+        }
+    }
+
     private _destroyTiles(col: number, row: number): void {
         const left = col !== 0 ? col - 1 : 120;
         const right = col !== 120 ? col + 1 : 0;
         const destroyedTiles = [
-            this._meshGrid[row + 3][col],
-            this._meshGrid[row + 3][left],
-            this._meshGrid[row + 3][right],
-            this._meshGrid[row + 3][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row + 3][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row + 2][col],
-            this._meshGrid[row + 2][left],
-            this._meshGrid[row + 2][right],
-            this._meshGrid[row + 2][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row + 2][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row + 2][left !== 1 ? left - 2 : 120],
-            this._meshGrid[row + 2][right !== 119 ? right + 2 : 0],
-            this._meshGrid[row + 1][col],
-            this._meshGrid[row + 1][left],
-            this._meshGrid[row + 1][right],
-            this._meshGrid[row + 1][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row + 1][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row + 1][left !== 1 ? left - 2 : 120],
-            this._meshGrid[row + 1][right !== 119 ? right + 2 : 0],
-            this._meshGrid[row + 1][left !== 2 ? left - 3 : 120],
-            this._meshGrid[row + 1][right !== 118 ? right + 3 : 0],
-            this._meshGrid[row][col],
-            this._meshGrid[row][left],
-            this._meshGrid[row][right],
-            this._meshGrid[row][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row][left !== 1 ? left - 2 : 120],
-            this._meshGrid[row][right !== 119 ? right + 2 : 0],
-            this._meshGrid[row][left !== 2 ? left - 3 : 120],
-            this._meshGrid[row][right !== 118 ? right + 3 : 0],
-            this._meshGrid[row][left !== 3 ? left - 4 : 120],
-            this._meshGrid[row][right !== 117 ? right + 4 : 0],
-            this._meshGrid[row - 1][col],
-            this._meshGrid[row - 1][left],
-            this._meshGrid[row - 1][right],
-            this._meshGrid[row - 1][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row - 1][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row - 1][left !== 1 ? left - 2 : 120],
-            this._meshGrid[row - 1][right !== 119 ? right + 2 : 0],
-            this._meshGrid[row - 1][left !== 2 ? left - 3 : 120],
-            this._meshGrid[row - 1][right !== 118 ? right + 3 : 0],
-            this._meshGrid[row - 2][col],
-            this._meshGrid[row - 2][left],
-            this._meshGrid[row - 2][right],
-            this._meshGrid[row - 2][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row - 2][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row - 2][left !== 1 ? left - 2 : 120],
-            this._meshGrid[row - 2][right !== 119 ? right + 2 : 0],
-            this._meshGrid[row - 3][col],
-            this._meshGrid[row - 3][left],
-            this._meshGrid[row - 3][right],
-            this._meshGrid[row - 3][left !== 0 ? left - 1 : 120],
-            this._meshGrid[row - 3][right !== 120 ? right + 1 : 0],
-            this._meshGrid[row - 4][col],
-            this._meshGrid[row - 4][left],
-            this._meshGrid[row - 4][right]
+            [row + 3, col],
+            [row + 3, left],
+            [row + 3, right],
+            [row + 3, left !== 0 ? left - 1 : 120],
+            [row + 3, right !== 120 ? right + 1 : 0],
+            [row + 3, left !== 1 ? left - 2 : 120],
+            [row + 3, right !== 119 ? right + 2 : 0],
+            [row + 2, col],
+            [row + 2, left],
+            [row + 2, right],
+            [row + 2, left !== 0 ? left - 1 : 120],
+            [row + 2, right !== 120 ? right + 1 : 0],
+            [row + 2, left !== 1 ? left - 2 : 120],
+            [row + 2, right !== 119 ? right + 2 : 0],
+            [row + 2, left !== 2 ? left - 3 : 120],
+            [row + 2, right !== 118 ? right + 3 : 0],
+            [row + 1, col],
+            [row + 1, left],
+            [row + 1, right],
+            [row + 1, left !== 0 ? left - 1 : 120],
+            [row + 1, right !== 120 ? right + 1 : 0],
+            [row + 1, left !== 1 ? left - 2 : 120],
+            [row + 1, right !== 119 ? right + 2 : 0],
+            [row + 1, left !== 2 ? left - 3 : 120],
+            [row + 1, right !== 118 ? right + 3 : 0],
+            [row + 1, left !== 3 ? left - 4 : 120],
+            [row + 1, right !== 117 ? right + 4 : 0],
+            [row, col],
+            [row, left],
+            [row, right],
+            [row, left !== 0 ? left - 1 : 120],
+            [row, right !== 120 ? right + 1 : 0],
+            [row, left !== 1 ? left - 2 : 120],
+            [row, right !== 119 ? right + 2 : 0],
+            [row, left !== 2 ? left - 3 : 120],
+            [row, right !== 118 ? right + 3 : 0],
+            [row, left !== 3 ? left - 4 : 120],
+            [row, right !== 117 ? right + 4 : 0],
+            [row - 1, col],
+            [row - 1, left],
+            [row - 1, right],
+            [row - 1, left !== 0 ? left - 1 : 120],
+            [row - 1, right !== 120 ? right + 1 : 0],
+            [row - 1, left !== 1 ? left - 2 : 120],
+            [row - 1, right !== 119 ? right + 2 : 0],
+            [row - 1, left !== 2 ? left - 3 : 120],
+            [row - 1, right !== 118 ? right + 3 : 0],
+            [row - 2, col],
+            [row - 2, left],
+            [row - 2, right],
+            [row - 2, left !== 0 ? left - 1 : 120],
+            [row - 2, right !== 120 ? right + 1 : 0],
+            [row - 2, left !== 1 ? left - 2 : 120],
+            [row - 2, right !== 119 ? right + 2 : 0],
+            [row - 3, col],
+            [row - 3, left],
+            [row - 3, right],
+            [row - 3, left !== 0 ? left - 1 : 120],
+            [row - 3, right !== 120 ? right + 1 : 0],
+            [row - 4, col],
+            [row - 4, left],
+            [row - 4, right]
         ];
-        destroyedTiles.forEach(tile => tile && this._scene.remove(tile));
+        destroyedTiles.forEach(tile => {
+            if (this._grid[tile[0]][tile[1]] > 2) {
+                this._meshGrid[tile[0]][tile[1]] && this._scene.remove(this._meshGrid[tile[0]][tile[1]]);
+                this._grid[tile[0]][tile[1]] = 0;
+                this._meshGrid[tile[0]][tile[1]] = null;
+            }
+        });
     }
 
-    private _downPopulate(x: number, y: number): void {
+    private _downPopulate(x: number, y: number, isWater?: boolean): void {
+        let waterAbove = isWater;
         for (let row = y - 1; row >= 0; row--) {
-            const rando = Math.random() * 100;
-            if (rando < 0.5) {
-                this._grid[row][x] = 9;
-            } else if (rando < 3.5) {
+            // Prefilled water tile.
+            if (this._grid[row][x]) {
+                continue;
+            }
+
+            const randomTileCheck = Math.random() * 100;
+            const waterTileCheck = Math.random() * 100;
+            if (waterAbove && waterTileCheck < 80) {
+                this._grid[row][x] = 3;
+                this._sidePopulate(x - 1, row, -1);
+                this._sidePopulate(x + 1, row, 1);
+            } else if (randomTileCheck < 0.5) {
+                this._grid[row][x] = 7;
+                waterAbove = false;
+            } else if (randomTileCheck < 3.5) {
                 this._grid[row][x] = 5;
+                waterAbove = false;
             } else {
                 this._grid[row][x] = 6;
+                waterAbove = false;
+            }
+        }
+    }
+
+    private _sidePopulate(x: number, y: number, direction: number) {
+        const waterTileCheck = Math.random() * 100;
+        if (waterTileCheck < 80) {
+            this._grid[y][x] = 3;
+            if (x > 0 && x < 120) {
+                this._sidePopulate(x + direction, y, direction);
             }
         }
     }
@@ -415,7 +557,7 @@ export class LandAndMine {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
-        // Object.keys(this._textElements).forEach(x => x && this._textElements[x].dispose());
+        Object.keys(this._textElements).forEach(x => x && this._textElements[x].dispose());
         // Object.keys(this._buttons).forEach(x => x && this._buttons[x].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
@@ -433,6 +575,24 @@ export class LandAndMine {
             this._rightThruster.dispose();
             return;
         }
+        const currPos = this._lander.mesh.position;
+        const landerBottom = currPos.z + 0.11;
+        const landerRow = Math.floor((-10 * landerBottom) + 60);
+        if (this._escaped) {
+            this._isLeftThrusting = false;
+            this._isRightThrusting = false;
+            this._isVerticalThrusting = true;
+            this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
+            this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+
+            if (landerRow > 120) {
+                return [];
+            }
+            return;
+        }
+
         if (this._currentOxygenLevel > 0) {
             this._currentOxygenLevel -= 0.01;
             this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
@@ -441,7 +601,6 @@ export class LandAndMine {
             }
         }
 
-        const currPos = this._lander.mesh.position;
         if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
@@ -471,16 +630,18 @@ export class LandAndMine {
             this._textElements.leftTopStatsText4.cycle(COLORS.selected);
         }
 
-        if (currPos.x < -6.1) {
-            this._lander.mesh.position.set(6, currPos.y, currPos.z);
+        if (currPos.x < -6) {
+            this._lander.mesh.position.set(5.9, currPos.y, currPos.z);
         }
-        if (currPos.x > 6.1) {
-            this._lander.mesh.position.set(-6, currPos.y, currPos.z);
+        if (currPos.x > 6) {
+            this._lander.mesh.position.set(-5.9, currPos.y, currPos.z);
         }
 
-        const landerBottom = currPos.z + 0.15;
+        if (landerRow >= 110) {
+            this._escaped = true;
+            return;
+        }
 
-        const landerRow = Math.floor((-10 * landerBottom) + 60);
         const gridBottomRow = this._grid[landerRow];
         const gridMiddleRow = this._grid[landerRow + 1];
         const gridTopRow = this._grid[landerRow + 2];
@@ -492,33 +653,52 @@ export class LandAndMine {
         const landerTopLeft = gridTopRow[landerCol !== 0 ? landerCol - 1 : 120];
         const landerTopRight = gridTopRow[landerCol !== 120 ? landerCol + 1 : 0];
 
-        if (!gridBottomRow[landerCol] && (landerBottomLeft || landerMiddleLeft || landerTopLeft|| landerBottomRight || landerMiddleRight || landerTopRight)) {
-            this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
+        if (landerRow < 100
+            && gridBottomRow[landerCol] < 3
+            && (landerBottomLeft || landerMiddleLeft || landerTopLeft || landerBottomRight || landerMiddleRight || landerTopRight)) {
+            this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
             this._crashed = true;
-            this._destroyTiles(landerCol, landerRow);
+            setTimeout(() => {
+                this._destroyTiles(landerCol, landerRow);
+                setTimeout(() => {
+                    this._waterFlow();
+                }, 100);
+            }, 900);
         }
 
-        if (gridBottomRow[landerCol] && !this._landed) {
+        if (landerRow < 100 && gridBottomRow[landerCol] && !this._landed) {
             if (!this._crashed) {
-                const meshCenter = this._meshGrid[landerRow][landerCol];
-                const meshLeft = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120];
-                const meshRight = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0];
-                if (!landerBottomLeft || !landerBottomRight) {
+                if (landerBottomLeft < 3 || landerBottomRight < 3) {
+                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
+                    this._crashed = true;
+                    setTimeout(() => {
+                        this._destroyTiles(landerCol, landerRow);
+                        setTimeout(() => {
+                            this._waterFlow();
+                        }, 100);
+                    }, 900);
+                } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
                     this._crashed = true;
-                    this._destroyTiles(landerCol, landerRow);
+                    setTimeout(() => {
+                        this._destroyTiles(landerCol, landerRow);
+                        setTimeout(() => {
+                            this._waterFlow();
+                        }, 100);
+                    }, 900);
                 } else if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 || this._currentLanderVerticalSpeed >= 0.01) {
-                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
+                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
                     this._crashed = true;
-                    this._destroyTiles(landerCol, landerRow);
-                } else {
-                    // this._scene.remove(meshLeft);
-                    // this._scene.remove(meshRight);
-                    // this._scene.remove(meshCenter);
-                }
+                    setTimeout(() => {
+                        this._destroyTiles(landerCol, landerRow);
+                        setTimeout(() => {
+                            this._waterFlow();
+                        }, 100);
+                    }, 900);
+                } else { }
             }
 
-            this._lander.mesh.position.set(currPos.x, currPos.y, ((landerRow - 60) / -10) - 0.250000001);
+            this._lander.mesh.position.set(currPos.x, currPos.y, ((landerRow - 60) / -10) - 0.21000001);
             this._currentLanderHorizontalSpeed = 0;
             this._currentLanderVerticalSpeed = 0;
             this._landed = true;

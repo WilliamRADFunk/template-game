@@ -37,7 +37,7 @@ export class LeftTopStatsText1 extends TextBase {
         this.element.style.width = `${0.43 * position.width}px`;
         this.element.style.maxHeight = `${0.08 * position.height}px`;
         this.element.style.height = `${0.08 * position.height}px`;
-        this.element.style.top = `${0.01 * position.height}px`;
+        this.element.style.top = `${0.005 * position.height}px`;
         this.element.style.left = `${position.left + (0.01 * position.width)}px`;
         this.element.style.fontSize = `${0.015 * position.width}px`;
     }

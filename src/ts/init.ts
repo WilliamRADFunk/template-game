@@ -452,8 +452,11 @@ const loadDevMenu = () => {
             loadLandAndMineScene({
                 gravity: 0.0001,
                 hasWater: true,
-                isFrozen: true,
-                peakElevation: 15
+                isFrozen: false,
+                isLife: true,
+                peakElevation: 15,
+                planetBase: "b94e48",
+                skyBase: "0081ce"
             });
         }, 50);
     };
