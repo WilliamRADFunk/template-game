@@ -42,8 +42,8 @@ import { MinusButton } from "../../controls/buttons/minus-button";
 import { PlusButton } from "../../controls/buttons/plus-button";
 import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-button";
 
-const border: string = '1px solid #FFF';
-// const border: string = 'none';
+// const border: string = '1px solid #FFF';
+const border: string = 'none';
 
 const buttonScale: number = 2;
 
@@ -365,7 +365,7 @@ export class DevMenu {
         };
 
         this._page1buttons.launchLandAndMineSceneButton = new LoadButton(
-            { left: left + (0.115 * width), height, top: 0.845 * height, width },
+            { left: left + (0.115 * width), height, top: 0.795 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -695,7 +695,7 @@ export class DevMenu {
         // Update various buttons and freestyle texts.
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
-        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.845 * height, width });
+        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.795 * height, width });
 
         const groupLeftStart = 0.015;
         let row1Left = groupLeftStart;

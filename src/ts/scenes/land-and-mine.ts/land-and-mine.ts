@@ -4,7 +4,8 @@ import {
     MeshBasicMaterial,
     PlaneGeometry,
     Scene,
-    Texture } from 'three';
+    Texture,
+    Object3D} from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -53,6 +54,13 @@ const MAIN_THRUSTER_Z_OFFSET: number = 0.18;
 
 const VERTICAL_THRUST: number = 0.0002;
 
+export enum LandAndMineState {
+    'crashed' = 0,
+    'escaped' = 1,
+    'flying' = 2,
+    'landed' = 3
+}
+
 /**
  * @class
  * Screen dedicated to landing the lander on planetary surface to mine.
@@ -68,8 +76,6 @@ export class LandAndMine {
      */
     private _buttons: { [key: string]: ButtonBase } = { };
 
-    private _crashed: boolean = false;
-
     private _currentFuelLevel: number = 100;
 
     private _currentLanderHorizontalSpeed: number = 0.01;
@@ -77,8 +83,6 @@ export class LandAndMine {
     private _currentLanderVerticalSpeed: number = 0.001;
 
     private _currentOxygenLevel: number = 100;
-
-    private _escaped: boolean = false;
 
     private _explosion: Explosion = null;
 
@@ -89,8 +93,6 @@ export class LandAndMine {
     private _isRightThrusting: boolean = false;
 
     private _isVerticalThrusting: boolean = false;
-
-    private _landed: boolean = false;
 
     private _lander: Actor;
 
@@ -113,6 +115,8 @@ export class LandAndMine {
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
+
+    private _state: LandAndMineState = LandAndMineState.flying as LandAndMineState;
 
     /**
      * Groups of text elements
@@ -262,7 +266,7 @@ export class LandAndMine {
             side: DoubleSide
         });
         const waterMat = new MeshBasicMaterial({
-            color: this._planetSpecifications.isFrozen ? 0xEEEEEE : 0x006FCE,
+            color: 0x006FCE,
             opacity: 1,
             transparent: true,
             side: DoubleSide
@@ -316,6 +320,8 @@ export class LandAndMine {
                 this._meshGrid[row][col] = block;
             }
         }
+
+        this._freezeWater();
     }
 
     private _destroyTiles(col: number, row: number): void {
@@ -463,6 +469,59 @@ export class LandAndMine {
                     this._grid[row][col] = 0;
                 }
                 this._grid[chosenRow][col] = 6;
+            }
+        }
+    }
+
+    private _freezeWater(): void {
+        if (!this._planetSpecifications.isFrozen) {
+            return;
+        }
+
+        const outerGeo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+        const iceMat = new MeshBasicMaterial({
+            color: 0xEEEEEE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
+        const innerGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
+        const waterMat = new MeshBasicMaterial({
+            color: 0x006FCE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
+        for (let col = 0; col < 121; col++) {
+            for (let row = 109; row > 0; row--) {
+                if (this._grid[row][col] === 3) {
+                    // Remove water block
+                    this._meshGrid[row][col] && this._scene.remove(this._meshGrid[row][col]);
+                    this._meshGrid[row][col] = null;
+
+                    const iceBlock = new Object3D();
+                    // Ice border
+                    let block = new Mesh( outerGeo, iceMat );
+                    block.name = `${Math.random()} - ground - `;
+                    block.position.set(-6 + (col/10), 15.5, 6 - row/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    iceBlock.add(block);
+                    // Watery center
+                    block = new Mesh( innerGeo, waterMat );
+                    block.name = `${Math.random()} - ground - `;
+                    block.position.set(-6 + (col/10), 15, 6 - row/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    iceBlock.add(block);
+
+                    // Place new ice block in mesh grid
+                    this._scene.add(iceBlock);
+                    this._meshGrid[row][col] = iceBlock as Mesh;
+                    break;
+                } else if (this._grid[row][col] > 3) {
+                    break;
+                }
             }
         }
     }
@@ -629,7 +688,7 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { substance: string, quantity: number }[] {
-        if (this._crashed) {
+        if (this._state === LandAndMineState.crashed) {
             this._explosion.endCycle();
             this._scene.remove(this._lander.mesh);
             this._mainThruster.dispose();
@@ -637,10 +696,14 @@ export class LandAndMine {
             this._rightThruster.dispose();
             return;
         }
+        if (this._state === LandAndMineState.landed) {
+            this._state = !this._isVerticalThrusting ? LandAndMineState.landed : LandAndMineState.flying;
+            return;
+        }
         const currPos = this._lander.mesh.position;
         const landerBottom = currPos.z + 0.11;
         const landerRow = Math.floor((-10 * landerBottom) + 60);
-        if (this._escaped) {
+        if (this._state === LandAndMineState.escaped) {
             this._isLeftThrusting = false;
             this._isRightThrusting = false;
             this._isVerticalThrusting = true;
@@ -693,10 +756,10 @@ export class LandAndMine {
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         }
 
-        if (this._planetSpecifications.wind > 0 && !this._isLeftThrusting) {
-            this._currentLanderHorizontalSpeed += HORIZONTAL_THRUST + drag;
-        } else if (this._planetSpecifications.wind < 0 && !this._isRightThrusting) {
-            this._currentLanderHorizontalSpeed -= HORIZONTAL_THRUST + drag;
+        if (this._planetSpecifications.wind > 0 && !this._isLeftThrusting && !this._isRightThrusting) {
+            this._currentLanderHorizontalSpeed += this._currentLanderHorizontalSpeed > drag ? 0 : HORIZONTAL_THRUST + drag;
+        } else if (this._planetSpecifications.wind < 0 && !this._isLeftThrusting && !this._isRightThrusting) {
+            this._currentLanderHorizontalSpeed -= this._currentLanderHorizontalSpeed < -drag ? 0 : HORIZONTAL_THRUST + drag;
         }
 
         if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
@@ -720,7 +783,7 @@ export class LandAndMine {
         }
 
         if (landerRow >= 110) {
-            this._escaped = true;
+            this._state = LandAndMineState.escaped;
             return;
         }
 
@@ -735,40 +798,52 @@ export class LandAndMine {
         const landerTopLeft = gridTopRow[landerCol !== 0 ? landerCol - 1 : 120];
         const landerTopRight = gridTopRow[landerCol !== 120 ? landerCol + 1 : 0];
 
+        let horizontalSpeedText = `Horizontal Speed: ${
+            this._currentLanderHorizontalSpeed < 0 ? '<span class="fa fa-long-arrow-left"></span>' : ''
+        } ${
+            Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)
+        } ${
+            this._currentLanderHorizontalSpeed > 0 ? '<span class="fa fa-long-arrow-right"></span>' : ''
+        }`;
+
         if (landerRow < 100
             && gridBottomRow[landerCol] < 3
             && (landerBottomLeft || landerMiddleLeft || landerTopLeft || landerBottomRight || landerMiddleRight || landerTopRight)) {
             this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-            this._crashed = true;
+            this._state = LandAndMineState.crashed;
             setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
         }
 
-        if (landerRow < 100 && gridBottomRow[landerCol] && !this._landed) {
-            if (!this._crashed) {
+        if (landerRow < 100 && gridBottomRow[landerCol] && this._state !== LandAndMineState.landed as LandAndMineState) {
+            if (this._state !== LandAndMineState.crashed) {
                 if (landerBottomLeft < 3 || landerBottomRight < 3) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-                    this._crashed = true;
+                    this._state = LandAndMineState.crashed;
                     setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+                    return;
                 } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
-                    this._crashed = true;
+                    this._state = LandAndMineState.crashed;
                     setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+                    return;
                 } else if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 || this._currentLanderVerticalSpeed >= 0.01) {
                     this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-                    this._crashed = true;
+                    this._state = LandAndMineState.crashed;
                     setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
-                } else { }
+                    return;
+                }
             }
 
             this._lander.mesh.position.set(currPos.x, currPos.y, ((landerRow - 60) / -10) - 0.21000001);
             this._currentLanderHorizontalSpeed = 0;
             this._currentLanderVerticalSpeed = 0;
-            this._landed = true;
+            this._state = LandAndMineState.landed;
             this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
 
-            this._textElements.leftTopStatsText1.update(`Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`);
+            horizontalSpeedText = `Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`;
+            this._textElements.leftTopStatsText1.update(horizontalSpeedText);
             if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText1.cycle(COLORS.selected);
             } else if (Math.abs(this._currentLanderHorizontalSpeed) < 0.001 && this._textElements.leftTopStatsText1.color === COLORS.selected) {
@@ -785,9 +860,7 @@ export class LandAndMine {
             return null;
         }
 
-        this._landed = false;
-
-        this._textElements.leftTopStatsText1.update(`Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`);
+        this._textElements.leftTopStatsText1.update(horizontalSpeedText);
         if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
             this._textElements.leftTopStatsText1.cycle(COLORS.selected);
         } else if (Math.abs(this._currentLanderHorizontalSpeed) < 0.001 && this._textElements.leftTopStatsText1.color === COLORS.selected) {
