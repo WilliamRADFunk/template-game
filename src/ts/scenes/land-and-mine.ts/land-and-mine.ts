@@ -13,7 +13,7 @@ import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
-import { PlanetSpecifications } from '../../models/planet-specification';
+import { PlanetSpecifications, OreTypeColors } from '../../models/planet-specifications';
 import { MainThruster } from './actors/main-thruster';
 import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
 import { COLORS } from '../../styles/colors';
@@ -135,7 +135,7 @@ export class LandAndMine {
         // Choose random surface starting point.
         let startY = Math.floor((Math.random() / 2) * 100) + 20
         startY = startY <= 50 ? startY : 50;
-        console.log('startY', startY);
+        console.log('startY', startY, this._planetSpecifications);
 
         // Grid values
         this._buildTerrain(startY);
@@ -196,7 +196,7 @@ export class LandAndMine {
             const cantAscend = (lastY - startY) >= this._planetSpecifications.peakElevation;
             const cantDescend = (startY - lastY) >= this._planetSpecifications.peakElevation;
             const isWater = this._planetSpecifications.hasWater && Math.random() < 0.05;
-            const isLife = Math.random() < 0.40;
+            const isLife = this._planetSpecifications.isLife && Math.random() < 0.40;
             const elevRando = Math.floor(Math.random() * 100);
             if (!cantAscend && elevRando <= (25 + this._planetSpecifications.peakElevation)) { // Elevate
                 this._grid[lastY + 1][col] = isLife ? 8 : 6;
@@ -239,7 +239,7 @@ export class LandAndMine {
             side: DoubleSide
         });
         const oreTypeMat = new MeshBasicMaterial({
-            color: 0xFFFF66,
+            color: OreTypeColors[this._planetSpecifications.ore],
             opacity: 1,
             transparent: true,
             side: DoubleSide
@@ -256,7 +256,7 @@ export class LandAndMine {
         }
 
         const dangerMat = new MeshBasicMaterial({
-            color: 0xFF3333,
+            color: 0xFF0000,
             opacity: 1,
             transparent: true,
             side: DoubleSide
@@ -411,7 +411,7 @@ export class LandAndMine {
             } else if (randomTileCheck < 0.5) {
                 this._grid[row][x] = 7;
                 waterAbove = false;
-            } else if (randomTileCheck < 3.5) {
+            } else if (randomTileCheck < this._planetSpecifications.oreQuantity) {
                 this._grid[row][x] = 5;
                 waterAbove = false;
             } else {
@@ -663,17 +663,17 @@ export class LandAndMine {
             }
         }
 
-        if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
-            this._currentFuelLevel -= 0.05;
-            this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
-            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
-        } else {
-            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
-        }
+        const drag = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (Math.abs(this._planetSpecifications.wind) / 100)) : 0;
 
         if (this._isLeftThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
-            this._currentLanderHorizontalSpeed -= HORIZONTAL_THRUST;
+            let thrust = HORIZONTAL_THRUST;
+            if (this._planetSpecifications.wind < 0) {
+                thrust = HORIZONTAL_THRUST + drag;
+            } else if (this._planetSpecifications.wind > 0) {
+                thrust = HORIZONTAL_THRUST - drag;
+            }
+            this._currentLanderHorizontalSpeed -= thrust;
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], true);
         } else {
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
@@ -681,10 +681,30 @@ export class LandAndMine {
 
         if (this._isRightThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
-            this._currentLanderHorizontalSpeed += HORIZONTAL_THRUST;
+            let thrust = HORIZONTAL_THRUST;
+            if (this._planetSpecifications.wind < 0) {
+                thrust = HORIZONTAL_THRUST - drag;
+            } else if (this._planetSpecifications.wind > 0) {
+                thrust = HORIZONTAL_THRUST + drag;
+            }
+            this._currentLanderHorizontalSpeed += thrust;
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], true);
         } else {
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+        }
+
+        if (this._planetSpecifications.wind > 0 && !this._isLeftThrusting) {
+            this._currentLanderHorizontalSpeed += HORIZONTAL_THRUST + drag;
+        } else if (this._planetSpecifications.wind < 0 && !this._isRightThrusting) {
+            this._currentLanderHorizontalSpeed -= HORIZONTAL_THRUST + drag;
+        }
+
+        if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
+            this._currentFuelLevel -= 0.05;
+            this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
+        } else {
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
         }
 
         this._textElements.leftTopStatsText4.update(`Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);

@@ -12,9 +12,9 @@ import { createActor } from "../../../utils/create-actor";
  */
 export function createLander(landerTexture: Texture) {
     const lander = createActor();
-    lander.originalStartingPoint = [0, -4];
-    lander.currentPoint = [0, -4];
-    lander.endingPoint = [0, -4];
+    lander.originalStartingPoint = [-4, -4];
+    lander.currentPoint = [-4, -4];
+    lander.endingPoint = [-4, -4];
     lander.geometry = new CircleGeometry( 0.2, 10, 10 );
     lander.material = new MeshPhongMaterial();
     lander.material.map = landerTexture;

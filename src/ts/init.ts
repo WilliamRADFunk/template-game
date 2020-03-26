@@ -27,7 +27,7 @@ import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
 import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
-import { PlanetSpecifications } from './models/planet-specification';
+import { PlanetSpecifications } from './models/planet-specifications';
 
 /**
  * Loads the graphic for asteroid.
@@ -444,20 +444,12 @@ const loadDevMenu = () => {
             // loadVertexMapScene();
         }, 50);
     };
-    const activateLandAndMineScene = () => {
+    const activateLandAndMineScene = (planetSpec?: PlanetSpecifications) => {
         scenes.devMenu.active = false;
         window.removeEventListener( 'resize', onWindowResize, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            loadLandAndMineScene({
-                gravity: 0.0001,
-                hasWater: true,
-                isFrozen: false,
-                isLife: true,
-                peakElevation: 15,
-                planetBase: "b94e48",
-                skyBase: "0081ce"
-            });
+            loadLandAndMineScene(planetSpec);
         }, 50);
     };
     const activatePlanetRaid = () => {
