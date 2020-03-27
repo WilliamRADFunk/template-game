@@ -5,12 +5,13 @@ import {
     MeshPhongMaterial,
     Texture } from "three";
 import { createActor } from "../../../utils/create-actor";
+import { Actor } from "../../../models/actor";
 
 /**
  * Creates the rectangle image of the lander.
  * @param dialogueTexture texture for the lander image.
  */
-export function createLander(landerTexture: Texture) {
+export function createLander(landerTexture: Texture): Actor {
     const lander = createActor();
     lander.originalStartingPoint = [-4, -4];
     lander.currentPoint = [-4, -4];

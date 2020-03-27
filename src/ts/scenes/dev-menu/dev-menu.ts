@@ -34,7 +34,7 @@ import { RightBottomMiddleProfile } from "../../controls/profiles/right-bottom-m
 import { LeftBottomProfile } from "../../controls/profiles/left-bottom-profile";
 import { RightBottomProfile } from "../../controls/profiles/right-bottom-profile";
 import { LeftTopDialogueText } from "../../controls/text/dialogue/left-top-dialogue-text";
-import { PlanetSpecifications, OreTypes, OreQuantity, OreTypeColors } from "../../models/planet-specifications";
+import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandColors, SkyColors, SkyTypes, PlanetLandTypes } from "../../models/planet-specifications";
 import { ToggleBase } from "../../controls/buttons/toggle-base";
 import { SmallToggleButton } from "../../controls/buttons/small-toggle-button";
 import { FreestyleText } from "./custom-controls/freestyle-text";
@@ -60,8 +60,8 @@ export class DevMenu {
         ore: OreTypes.Gold,
         oreQuantity: OreQuantity.Average,
         peakElevation: 15,
-        planetBase: "b94e48",
-        skyBase: "0081ce",
+        planetBase: PlanetLandTypes.Red,
+        skyBase: SkyTypes.Blue,
         wind: 0
     };
     /**
@@ -103,6 +103,8 @@ export class DevMenu {
      */
     private _page1buttons: { [key: string]: ButtonBase | ToggleBase } = {
         changeOreTypeButton: null,
+        changeOreQuantityButton: null,
+        changeSkyTypeButton: null,
         gravityMinusButton: null,
         gravityPlusButton: null,
         isFrozenButton: null,
@@ -160,9 +162,12 @@ export class DevMenu {
     private _page1textElements: TextMap = {
         freestyleGravityText: null,
         freestyleGravityReadoutText: null,
+        freestyleOreTypeText: null,
+        freestyleOreQuantityText: null,
+        freestyleSkyColorReadoutText: null,
+        freestyleSkyColorText: null,
         freestyleWindText: null,
         freestyleWindReadoutText: null,
-        freestyleOreTypeText: null,
         leftBottomMiddleTitleText: null,
         leftBottomTitleText: null,
         leftTopMiddleTitleText: null,
@@ -226,7 +231,8 @@ export class DevMenu {
         let height = window.innerHeight * 0.99;
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
-
+//#region Page 1
+    //#region LaunchGameMenu
         this._page1textElements.leftTopTitleText = new LeftTopTitleText(
             'Game Menu',
             { left, height, top: null, width },
@@ -245,7 +251,8 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
-
+    //#endregion
+    //#region LaunchIntroScene
         this._page1textElements.rightTopTitleText = new RightTopTitleText(
             'Intro',
             { left, height, top: null, width },
@@ -264,7 +271,8 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
-
+    //#endregion
+    //#region LaunchShipLayout
         this._page1textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
             'Ship Layout',
             { left, height, top: null, width },
@@ -283,7 +291,8 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
-
+    //#endregion
+    //#region LaunchRepairScene
         this._page1textElements.rightTopMiddleTitleText = new RightTopMiddleTitleText(
             'Repair',
             { left, height, top: null, width },
@@ -302,7 +311,8 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
-
+    //#endregion
+    //#region LaunchTravelScene
         this._page1textElements.leftBottomMiddleTitleText = new LeftBottomMiddleTitleText(
             'Travel',
             { left, height, top: null, width },
@@ -321,7 +331,8 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
-
+    //#endregion
+    //#region LaunchVertexMapScene
         this._page1textElements.rightBottomMiddleTitleText = new RightBottomMiddleTitleText(
             'Vertex Map',
             { left, height, top: null, width },
@@ -340,7 +351,8 @@ export class DevMenu {
             onClick,
             true,
             buttonScale);
-
+    //#endregion
+    //#region LaunchLandAndMineScene
         this._page1textElements.leftBottomTitleText = new LeftBottomTitleText(
             'Land & Mine',
             { left, height, top: null, width },
@@ -378,9 +390,45 @@ export class DevMenu {
             border,
             TextType.FADABLE);
 
+        //#region LaunchLandAndMineScene Row 0
         const groupLeftStart = 0.015;
-        let row1Left = groupLeftStart;
+        let row0Left = groupLeftStart;
 
+        this._page1textElements.freestyleSkyColorText = new FreestyleText(
+            'Sky Color:',
+            { left: left + (row0Left * width), height, top: 0.875 * height, width },
+            COLORS.neutral,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let nextNum = this._landAndMinePlanetSpec.skyBase + 1;
+            if (nextNum > Object.keys(SkyTypes).length / 2) {
+                nextNum = 1;
+            }
+            this._landAndMinePlanetSpec.skyBase = nextNum;
+            this._page1textElements.freestyleSkyColorReadoutText.update(SkyTypes[this._landAndMinePlanetSpec.skyBase]);
+        };
+
+        row0Left += 0.095;
+        this._page1buttons.changeSkyTypeButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: 0.875 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-globe',
+            0.5);
+
+        row0Left += 0.035;
+        this._page1textElements.freestyleSkyColorReadoutText = new FreestyleText(
+            SkyTypes[this._landAndMinePlanetSpec.skyBase],
+            { left: left + (row0Left * width), height, top: 0.875 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        //#endregion
+        //#region LaunchLandAndMineScene Row 1
+        let row1Left = groupLeftStart;
         this._page1textElements.freestyleGravityText = new FreestyleText(
             'gravity:',
             { left: left + (row1Left * width), height, top: 0.915 * height, width },
@@ -479,7 +527,8 @@ export class DevMenu {
             onClick,
             true,
             0.5);
-
+        //#endregion
+        //#region LaunchLandAndMineScene Row 2
         let row2Left = groupLeftStart;
         this._page1buttons.isWaterButton = new SmallToggleButton(
             { left: left + (row2Left * width), height, top: 0.955 * height, width },
@@ -506,7 +555,7 @@ export class DevMenu {
         onClick = () => {
             let nextNum = this._landAndMinePlanetSpec.ore + 1;
             if (nextNum > Object.keys(OreTypes).length / 2) {
-                nextNum = 0;
+                nextNum = 1;
             }
             this._landAndMinePlanetSpec.ore = nextNum;
             this._page1textElements.freestyleOreTypeText.update(OreTypes[this._landAndMinePlanetSpec.ore]);
@@ -529,6 +578,34 @@ export class DevMenu {
             TextType.STATIC);
 
         onClick = () => {
+            let nextNum = this._landAndMinePlanetSpec.oreQuantity + 0.75;
+            if (nextNum > Object.keys(OreQuantity).length / 2) {
+                nextNum = 2;
+            }
+            this._landAndMinePlanetSpec.oreQuantity = nextNum;
+            this._page1textElements.freestyleOreQuantityText.update(OreQuantity[this._landAndMinePlanetSpec.oreQuantity]);
+        };
+
+        row2Left += 0.1;
+        this._page1buttons.changeOreQuantityButton = new FreestyleSquareButton(
+            { left: left + (row2Left * width), height, top: 0.955 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-plus',
+            0.5);
+
+        row2Left += 0.035;
+        this._page1textElements.freestyleOreQuantityText = new FreestyleText(
+            OreQuantity[this._landAndMinePlanetSpec.oreQuantity],
+            { left: left + (row2Left * width), height, top: 0.955 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        //#endregion
+    //#endregion
+//#region Page1 Next
+        onClick = () => {
             this._page1buttons.nextPageButton.disable();
             this._next();
             this._page1buttons.nextPageButton.enable();
@@ -539,6 +616,8 @@ export class DevMenu {
             BUTTON_COLORS,
             onClick,
             true);
+//#endregion
+//#endregion
 
 //#region Page 2
         this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2);
@@ -695,8 +774,8 @@ export class DevMenu {
         // Update various buttons and freestyle texts.
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
+//#region LaunchLandAndMine Row 1
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.795 * height, width });
-
         const groupLeftStart = 0.015;
         let row1Left = groupLeftStart;
         this._textElements.freestyleGravityText.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
@@ -714,7 +793,8 @@ export class DevMenu {
         this._textElements.freestyleWindReadoutText.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
         row1Left += 0.08;
         this._buttons.windPlusButton.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
-
+//#endregion
+//#region LaunchLandAndMine Row 2
         let row2Left = groupLeftStart;
         this._buttons.isWaterButton.resize({ left: left + (row2Left * width), height, top: 0.955 * height, width });
         row2Left += 0.035;
@@ -725,7 +805,11 @@ export class DevMenu {
         this._buttons.changeOreTypeButton.resize({ left: left + (row2Left * width), height, top: 0.955 * height, width });
         row2Left += 0.035;
         this._textElements.freestyleOreTypeText.resize({ left: left + (row2Left * width), height, top: 0.955 * height, width });
-
+        row2Left += 0.1;
+        this._buttons.changeOreQuantityButton.resize({ left: left + (row2Left * width), height, top: 0.955 * height, width });
+        row2Left += 0.035;
+        this._textElements.freestyleOreQuantityText.resize({ left: left + (row2Left * width), height, top: 0.955 * height, width });
+//#endregion
         this._buttons.launchPlanetRaidSceneButton.resize({ left: left + (0.29 * width), height, top: 0.20 * height, width });
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
         this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });

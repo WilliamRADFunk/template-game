@@ -1,11 +1,17 @@
 import {
+    AdditiveBlending,
     DoubleSide,
+    Geometry,
+    ImageUtils,
     Mesh,
     MeshBasicMaterial,
+    ParticleBasicMaterial,
+    ParticleSystem,
     PlaneGeometry,
     Scene,
     Texture,
-    Object3D} from 'three';
+    Object3D,
+    Vertex } from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -14,7 +20,7 @@ import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
-import { PlanetSpecifications, OreTypeColors } from '../../models/planet-specifications';
+import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors } from '../../models/planet-specifications';
 import { MainThruster } from './actors/main-thruster';
 import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
 import { COLORS } from '../../styles/colors';
@@ -25,6 +31,7 @@ import { LeftTopStatsText4 } from '../../controls/text/stats/left-top-stats-text
 import { SideThruster } from './actors/side-thruster';
 import { Explosion } from '../../weapons/explosion';
 import { colorLuminance } from '../../utils/color-shader';
+import { createWindParticles } from './actors/create-wind-particles';
 
 /*
  * Grid Values
@@ -107,6 +114,8 @@ export class LandAndMine {
 
     private _meshGrid: Mesh[][] = [];
 
+    private _windParticles: Mesh[] = [];
+
     private _planetSpecifications: PlanetSpecifications;
 
     private _rightThruster: SideThruster;
@@ -146,6 +155,10 @@ export class LandAndMine {
         this._buildSky();
         this._waterFlow();
         this._enforceMinLanding(startY);
+
+        if (this._planetSpecifications.wind) {
+            this._createWind();
+        }
 
         // Mesh Values
         this._createEnvironmentMeshes();
@@ -222,8 +235,9 @@ export class LandAndMine {
     private _createEnvironmentMeshes(): void {
         const skyMats: MeshBasicMaterial[] = [];
         for (let i = 0; i < 9; i++) {
+            console.log(SkyColors[this._planetSpecifications.skyBase], colorLuminance(SkyColors[this._planetSpecifications.skyBase], i / 10));
             const skyMat = new MeshBasicMaterial({
-                color: colorLuminance(this._planetSpecifications.skyBase, i / 10),
+                color: colorLuminance(SkyColors[this._planetSpecifications.skyBase], i / 10),
                 opacity: 1,
                 transparent: true,
                 side: DoubleSide
@@ -251,7 +265,7 @@ export class LandAndMine {
         const commonRockMats: MeshBasicMaterial[] = [];
         for (let i = 0; i < 7; i++) {
             const commonRockMat = new MeshBasicMaterial({
-                color: colorLuminance(this._planetSpecifications.planetBase, i / 10),
+                color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], i / 10),
                 opacity: 1,
                 transparent: true,
                 side: DoubleSide
@@ -322,6 +336,10 @@ export class LandAndMine {
         }
 
         this._freezeWater();
+    }
+
+    private _createWind(): void {
+        this._windParticles = createWindParticles(this._scene, '#000000');
     }
 
     private _destroyTiles(col: number, row: number): void {
@@ -688,6 +706,26 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { substance: string, quantity: number }[] {
+        const drag = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (Math.abs(this._planetSpecifications.wind) / 100)) : 0;
+
+        if (this._planetSpecifications.wind > 0) {
+            this._windParticles.forEach(particle => {
+                const particlePos = particle.position;
+                particle.position.set(particlePos.x + 0.1, particlePos.y, particlePos.z);
+                if (particle.position.x > 6) {
+                    particle.position.set(-6.1, particlePos.y, particlePos.z);
+                }
+            });
+        } else if(this._planetSpecifications.wind < 0) {
+            this._windParticles.forEach(particle => {
+                const particlePos = particle.position;
+                particle.position.set(particlePos.x - 0.1, particlePos.y, particlePos.z);
+                if (particle.position.x < -6) {
+                    particle.position.set(6.1, particlePos.y, particlePos.z);
+                }
+            });
+        }
+
         if (this._state === LandAndMineState.crashed) {
             this._explosion.endCycle();
             this._scene.remove(this._lander.mesh);
@@ -725,8 +763,6 @@ export class LandAndMine {
                 this._textElements.leftTopStatsText3.cycle(COLORS.selected);
             }
         }
-
-        const drag = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (Math.abs(this._planetSpecifications.wind) / 100)) : 0;
 
         if (this._isLeftThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
