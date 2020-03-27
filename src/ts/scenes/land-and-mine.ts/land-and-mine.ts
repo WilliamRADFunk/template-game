@@ -11,7 +11,8 @@ import {
     Scene,
     Texture,
     Object3D,
-    Vertex } from 'three';
+    Vertex,
+    Camera} from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -32,6 +33,9 @@ import { SideThruster } from './actors/side-thruster';
 import { Explosion } from '../../weapons/explosion';
 import { colorLuminance } from '../../utils/color-shader';
 import { createWindParticles } from './actors/create-wind-particles';
+import { StartButton } from '../../controls/buttons/start-button';
+import { BUTTON_COLORS } from '../../styles/button-colors';
+import { UnloadButton } from '../../controls/buttons/unload-button';
 
 /*
  * Grid Values
@@ -65,7 +69,9 @@ export enum LandAndMineState {
     'crashed' = 0,
     'escaped' = 1,
     'flying' = 2,
-    'landed' = 3
+    'landed' = 3,
+    'paused' = 4,
+    'walking' = 5
 }
 
 /**
@@ -81,7 +87,12 @@ export class LandAndMine {
     /**
      * List of buttons
      */
-    private _buttons: { [key: string]: ButtonBase } = { };
+    private _buttons: { [key: string]: ButtonBase } = {
+        startButton: null,
+        unloadButton: null
+    };
+
+    private _camera: Camera;
 
     private _currentFuelLevel: number = 100;
 
@@ -125,7 +136,7 @@ export class LandAndMine {
      */
     private _scene: Scene;
 
-    private _state: LandAndMineState = LandAndMineState.flying as LandAndMineState;
+    private _state: LandAndMineState = LandAndMineState.paused;
 
     /**
      * Groups of text elements
@@ -142,6 +153,7 @@ export class LandAndMine {
         scene: SceneType,
         landerTexture: Texture,
         planetSpecifications: PlanetSpecifications) {
+        this._camera = scene.camera;
         this._scene = scene.scene;
         this._planetSpecifications = planetSpecifications;
 
@@ -618,6 +630,40 @@ export class LandAndMine {
             COLORS.neutral,
             border,
             TextType.STATIC);
+
+        let onClick = () => {
+            if (this._state === LandAndMineState.paused) {
+                this._state = LandAndMineState.flying;
+                this._buttons.startButton.hide();
+            }
+        };
+
+        this._buttons.startButton = new StartButton(
+            { left: left + (0.425 * width), height, top: height - (0.75 * height), width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.75);
+
+        onClick = () => {
+            if (this._state === LandAndMineState.landed) {
+                this._state = LandAndMineState.walking;
+                this._buttons.unloadButton.hide();
+                const landerPos = this._lander.mesh.position;
+                setTimeout(() => {
+                    this._camera.position.set(landerPos.x, 5, landerPos.z);
+                }, 100);
+
+            }
+        };
+
+        this._buttons.unloadButton = new UnloadButton(
+            { left: left + (0.425 * width), height, top: height - (0.75 * height), width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.75);
+        this._buttons.unloadButton.hide();
     }
 
     /**
@@ -634,6 +680,7 @@ export class LandAndMine {
         this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText3.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText4.resize({ height, left: left, top: null, width });
+        this._buttons.startButton.resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width });
     }
 
     private _sidePopulate(x: number, y: number, direction: number) {
@@ -706,8 +753,15 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { substance: string, quantity: number }[] {
-        const drag = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (Math.abs(this._planetSpecifications.wind) / 100)) : 0;
+        if (this._state === LandAndMineState.paused) {
+            return;
+        }
 
+        if (this._state === LandAndMineState.walking) {
+            return;
+        }
+
+        const drag = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (Math.abs(this._planetSpecifications.wind) / 100)) : 0;
         if (this._planetSpecifications.wind > 0) {
             this._windParticles.forEach(particle => {
                 const particlePos = particle.position;
@@ -736,6 +790,7 @@ export class LandAndMine {
         }
         if (this._state === LandAndMineState.landed) {
             this._state = !this._isVerticalThrusting ? LandAndMineState.landed : LandAndMineState.flying;
+            this._state === LandAndMineState.flying ? this._buttons.unloadButton.hide() : null;
             return;
         }
         const currPos = this._lander.mesh.position;
@@ -874,6 +929,7 @@ export class LandAndMine {
             this._currentLanderHorizontalSpeed = 0;
             this._currentLanderVerticalSpeed = 0;
             this._state = LandAndMineState.landed;
+            this._buttons.unloadButton.show();
             this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);

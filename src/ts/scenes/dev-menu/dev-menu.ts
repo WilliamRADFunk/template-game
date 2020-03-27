@@ -118,6 +118,8 @@ export class DevMenu {
         launchTravelSceneButton: null,
         launchVertexMapSceneButton: null,
         nextPageButton: null,
+        peakElevationMinusButton: null,
+        peakElevationPlusButton: null,
         windMinusButton: null,
         windPlusButton: null,
     };
@@ -164,6 +166,8 @@ export class DevMenu {
         freestyleGravityReadoutText: null,
         freestyleOreTypeText: null,
         freestyleOreQuantityText: null,
+        freestylePeakElevationReadoutText: null,
+        freestylePeakElevationText: null,
         freestyleSkyColorReadoutText: null,
         freestyleSkyColorText: null,
         freestyleWindText: null,
@@ -377,11 +381,11 @@ export class DevMenu {
         };
 
         this._page1buttons.launchLandAndMineSceneButton = new LoadButton(
-            { left: left + (0.115 * width), height, top: 0.795 * height, width },
+            { left: left + (0.145 * width), height, top: 0.785 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
-            buttonScale);
+            buttonScale * 0.75);
 
         this._page1textElements.rightBottomTitleText = new RightBottomTitleText(
             'Next Page',
@@ -390,10 +394,61 @@ export class DevMenu {
             border,
             TextType.FADABLE);
 
-        //#region LaunchLandAndMineScene Row 0
         const groupLeftStart = 0.015;
-        let row0Left = groupLeftStart;
 
+        //#region LaunchLandAndMineScene Row -1
+        let rowSub1Left = groupLeftStart;
+        this._page1textElements.freestylePeakElevationText = new FreestyleText(
+            'peak elevation:',
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            COLORS.neutral,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let newPeakElevation = this._landAndMinePlanetSpec.peakElevation - 1;
+            if (newPeakElevation < 1) {
+                newPeakElevation = 1;
+            }
+            this._landAndMinePlanetSpec.peakElevation = newPeakElevation;
+            this._page1textElements.freestylePeakElevationReadoutText.update(this._landAndMinePlanetSpec.peakElevation.toFixed(0));
+        };
+
+        rowSub1Left += 0.14;
+        this._page1buttons.peakElevationMinusButton = new MinusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+
+        rowSub1Left += 0.035;
+        this._page1textElements.freestylePeakElevationReadoutText = new FreestyleText(
+            this._landAndMinePlanetSpec.peakElevation.toFixed(0),
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let newPeakElevation = this._landAndMinePlanetSpec.peakElevation + 1;
+            if (newPeakElevation > 20) {
+                newPeakElevation = 20;
+            }
+            this._landAndMinePlanetSpec.peakElevation = newPeakElevation;
+            this._page1textElements.freestylePeakElevationReadoutText.update(this._landAndMinePlanetSpec.peakElevation.toFixed(0));
+        };
+
+        rowSub1Left += 0.025;
+        this._page1buttons.peakElevationPlusButton = new PlusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+        //#endregion
+        //#region LaunchLandAndMineScene Row 0
+        let row0Left = groupLeftStart;
         this._page1textElements.freestyleSkyColorText = new FreestyleText(
             'Sky Color:',
             { left: left + (row0Left * width), height, top: 0.875 * height, width },
@@ -809,8 +864,18 @@ export class DevMenu {
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
 
-        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.795 * height, width });
+        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.145 * width), height, top: 0.785 * height, width });
         const groupLeftStart = 0.015;
+//#region LaunchLandAndMine Row -1
+        let rowSub1Left = groupLeftStart;
+        this._textElements.freestylePeakElevationText.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+        rowSub1Left += 0.14;
+        this._buttons.peakElevationMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+        rowSub1Left += 0.035;
+        this._textElements.freestylePeakElevationReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+        rowSub1Left += 0.025;
+        this._buttons.peakElevationPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+//#endregion
 //#region LaunchLandAndMine Row 0
         let row0Left = groupLeftStart;
         this._textElements.freestyleSkyColorText.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });

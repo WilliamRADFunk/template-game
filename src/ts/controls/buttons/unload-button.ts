@@ -4,30 +4,30 @@ import { ButtonColors } from "../../models/button-colors";
 
 /**
  * @class
- * Button that says Load.
+ * Button that says Unload.
  */
-export class LoadButton extends ButtonBase {
+export class UnloadButton extends ButtonBase {
     /**
      * Scale to apply to button dimensions.
      */
     private _scale: number;
 
     /**
-     * Constructor for the load button sub class
+     * Constructor for the unload button sub class
      * @param position height, width, left and top position of the button.
      * @param colors colors of the buttons at the different stages of its lifecycle.
      * @param onClick callback for onClick event.
-     * @param visible whether or not to start the button in a visible state.
+     * @param visible whether or not to unload the button in a visible state.
      * @param scale scale to apply to button dimensions.
      */
     constructor(position: HTMLElementPosition, colors: ButtonColors, onClick: () => void, visible: boolean, scale?: number) {
-        super('load-button', colors, onClick, visible);
+        super('unload-button', colors, onClick, visible);
 
         this._scale = scale || 1;
 
         this.element.style.borderRadius = '5px';
         this.element.style.fontFamily = 'Luckiest Guy';
-        this.element.innerHTML = 'Load';
+        this.element.innerHTML = 'Unload';
         document.body.appendChild(this.element);
 
         this.resize(position);
@@ -38,8 +38,8 @@ export class LoadButton extends ButtonBase {
      * @param position height, width, left and top position of the button.
      */
     public resize(position: HTMLElementPosition): void {
-        this.element.style.maxWidth = `${this._scale * (0.12 * position.width)}px`;
-        this.element.style.width = `${this._scale * (0.12 * position.width)}px`;
+        this.element.style.maxWidth = `${this._scale * (0.18 * position.width)}px`;
+        this.element.style.width = `${this._scale * (0.18 * position.width)}px`;
         this.element.style.maxHeight = `${this._scale * (0.03 * position.height)}px`;
         this.element.style.height = `${this._scale * (0.03 * position.height)}px`;
         this.element.style.top = `${position.top}px`;

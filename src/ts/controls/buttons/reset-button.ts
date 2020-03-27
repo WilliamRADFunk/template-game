@@ -26,6 +26,7 @@ export class ResetButton extends ButtonBase {
         this._scale = scale || 1;
 
         this.element.style.borderRadius = '5px';
+        this.element.style.fontFamily = 'Luckiest Guy';
         this.element.innerHTML = 'Reset';
         document.body.appendChild(this.element);
 
