@@ -813,17 +813,17 @@ export class DevMenu {
         const groupLeftStart = 0.015;
 //#region LaunchLandAndMine Row 0
         let row0Left = groupLeftStart;
-        this._textElements.freestyleSkyColorText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        this._textElements.freestyleSkyColorText.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });
         row0Left += 0.095;
-        this._buttons.changeSkyTypeButton.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        this._buttons.changeSkyTypeButton.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });
         row0Left += 0.035;
-        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });
         row0Left += 0.08;
-        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });
         row0Left += 0.105;
-        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });
         row0Left += 0.035;
-        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.875 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 1
         let row1Left = groupLeftStart;
@@ -840,7 +840,7 @@ export class DevMenu {
         this._buttons.windMinusButton.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
         row1Left += 0.035;
         this._textElements.freestyleWindReadoutText.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
-        row1Left += 0.08;
+        row1Left += 0.045;
         this._buttons.windPlusButton.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 2
