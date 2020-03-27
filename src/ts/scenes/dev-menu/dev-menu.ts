@@ -426,6 +426,40 @@ export class DevMenu {
             COLORS.default,
             'none',
             TextType.STATIC);
+
+        row0Left += 0.08;
+        this._page1textElements.freestylePlanetLandColorText = new FreestyleText(
+            'Land Color:',
+            { left: left + (row0Left * width), height, top: 0.875 * height, width },
+            COLORS.neutral,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let nextNum = this._landAndMinePlanetSpec.planetBase + 1;
+            if (nextNum > Object.keys(PlanetLandTypes).length / 2) {
+                nextNum = 1;
+            }
+            this._landAndMinePlanetSpec.planetBase = nextNum;
+            this._page1textElements.freestylePlanetLandColorReadoutText.update(PlanetLandTypes[this._landAndMinePlanetSpec.planetBase]);
+        };
+
+        row0Left += 0.105;
+        this._page1buttons.changePlanetLandTypeButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: 0.875 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-globe',
+            0.5);
+
+        row0Left += 0.035;
+        this._page1textElements.freestylePlanetLandColorReadoutText = new FreestyleText(
+            PlanetLandTypes[this._landAndMinePlanetSpec.planetBase],
+            { left: left + (row0Left * width), height, top: 0.875 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
         //#endregion
         //#region LaunchLandAndMineScene Row 1
         let row1Left = groupLeftStart;
@@ -774,9 +808,24 @@ export class DevMenu {
         // Update various buttons and freestyle texts.
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
-//#region LaunchLandAndMine Row 1
+
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.115 * width), height, top: 0.795 * height, width });
         const groupLeftStart = 0.015;
+//#region LaunchLandAndMine Row 0
+        let row0Left = groupLeftStart;
+        this._textElements.freestyleSkyColorText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        row0Left += 0.095;
+        this._buttons.changeSkyTypeButton.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        row0Left += 0.035;
+        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        row0Left += 0.08;
+        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        row0Left += 0.105;
+        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+        row0Left += 0.035;
+        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.915 * height, width });
+//#endregion
+//#region LaunchLandAndMine Row 1
         let row1Left = groupLeftStart;
         this._textElements.freestyleGravityText.resize({ left: left + (row1Left * width), height, top: 0.915 * height, width });
         row1Left += 0.08;
