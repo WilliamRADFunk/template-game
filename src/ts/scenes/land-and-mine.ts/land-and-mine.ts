@@ -792,25 +792,12 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { substance: string, quantity: number }[] {
+        // Game paused. Nothing should progress.
         if (this._state === LandAndMineState.paused) {
             return;
         }
 
-        if (this._state === LandAndMineState.walking) {
-            if (this._isMiningTeamMovingLeft) {
-                const astroLeftPos = this._astronauts[0].mesh.position
-                this._astronauts[0].mesh.position.set(astroLeftPos.x - 0.001, astroLeftPos.y, astroLeftPos.z);
-                const astroRightPos = this._astronauts[2].mesh.position
-                this._astronauts[2].mesh.position.set(astroRightPos.x - 0.001, astroRightPos.y, astroRightPos.z);
-            } else if (this._isMiningTeamMovingRight) {
-                const astroLeftPos = this._astronauts[0].mesh.position
-                this._astronauts[0].mesh.position.set(astroLeftPos.x + 0.001, astroLeftPos.y, astroLeftPos.z);
-                const astroRightPos = this._astronauts[2].mesh.position
-                this._astronauts[2].mesh.position.set(astroRightPos.x + 0.001, astroRightPos.y, astroRightPos.z);
-            }
-            return;
-        }
-
+        // Wind graphics keep on going in all states except paused.
         const drag = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (Math.abs(this._planetSpecifications.wind) / 100)) : 0;
         if (this._planetSpecifications.wind > 0) {
             this._windParticles.forEach(particle => {
@@ -830,6 +817,7 @@ export class LandAndMine {
             });
         }
 
+        // Player died. Nothing should progress.
         if (this._state === LandAndMineState.crashed) {
             this._explosion.endCycle();
             this._scene.remove(this._lander.mesh);
@@ -838,11 +826,8 @@ export class LandAndMine {
             this._rightThruster.dispose();
             return;
         }
-        if (this._state === LandAndMineState.landed) {
-            this._state = !this._isVerticalThrusting ? LandAndMineState.landed : LandAndMineState.flying;
-            this._state === LandAndMineState.flying ? this._buttons.unloadButton.hide() : null;
-            return;
-        }
+
+        // After successfully reaching escape velocity, no more fuel or oxygen should be spent.
         const currPos = this._lander.mesh.position;
         const landerBottom = currPos.z + 0.11;
         const landerRow = Math.floor((-10 * landerBottom) + 60);
@@ -861,6 +846,7 @@ export class LandAndMine {
             return;
         }
 
+        // All other states consume oxygen still.
         if (this._currentOxygenLevel > 0) {
             this._currentOxygenLevel -= 0.01;
             this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
@@ -869,6 +855,31 @@ export class LandAndMine {
             }
         }
 
+        // Mining team should move left and right, detect proximity to ship for loading, and nothing else while in walking mode.
+        if (this._state === LandAndMineState.walking) {
+            if (this._isMiningTeamMovingLeft) {
+                const astroLeftPos = this._astronauts[0].mesh.position
+                this._astronauts[0].mesh.position.set(astroLeftPos.x - 0.001, astroLeftPos.y, astroLeftPos.z);
+                const astroRightPos = this._astronauts[2].mesh.position
+                this._astronauts[2].mesh.position.set(astroRightPos.x - 0.001, astroRightPos.y, astroRightPos.z);
+            } else if (this._isMiningTeamMovingRight) {
+                const astroLeftPos = this._astronauts[0].mesh.position
+                this._astronauts[0].mesh.position.set(astroLeftPos.x + 0.001, astroLeftPos.y, astroLeftPos.z);
+                const astroRightPos = this._astronauts[2].mesh.position
+                this._astronauts[2].mesh.position.set(astroRightPos.x + 0.001, astroRightPos.y, astroRightPos.z);
+            }
+            return;
+        }
+
+        // If landed do nothing unless user kicks in the main thruster again.
+        if (this._state === LandAndMineState.landed) {
+            this._state = !this._isVerticalThrusting ? LandAndMineState.landed : LandAndMineState.flying;
+            this._state === LandAndMineState.flying ? this._buttons.unloadButton.hide() : null;
+            return;
+        }
+
+        // Calculate effects of horizontal thrusting and wind against the ship.
+        // Left thrust on
         if (this._isLeftThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             let thrust = HORIZONTAL_THRUST;
@@ -882,7 +893,7 @@ export class LandAndMine {
         } else {
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         }
-
+        // Right thrust on
         if (this._isRightThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             let thrust = HORIZONTAL_THRUST;
@@ -896,13 +907,22 @@ export class LandAndMine {
         } else {
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         }
-
+        // Left and Right thrust off.
         if (this._planetSpecifications.wind > 0 && !this._isLeftThrusting && !this._isRightThrusting) {
             this._currentLanderHorizontalSpeed += this._currentLanderHorizontalSpeed > drag ? 0 : HORIZONTAL_THRUST + drag;
         } else if (this._planetSpecifications.wind < 0 && !this._isLeftThrusting && !this._isRightThrusting) {
             this._currentLanderHorizontalSpeed -= this._currentLanderHorizontalSpeed < -drag ? 0 : HORIZONTAL_THRUST + drag;
         }
+        // Update horizontal speed text
+        let horizontalSpeedText = `Horizontal Speed: ${
+            this._currentLanderHorizontalSpeed < 0 ? '<span class="fa fa-long-arrow-left"></span>' : ''
+        } ${
+            Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)
+        } ${
+            this._currentLanderHorizontalSpeed > 0 ? '<span class="fa fa-long-arrow-right"></span>' : ''
+        }`;
 
+        // Calculate effects of vertical thrust.
         if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
@@ -911,11 +931,13 @@ export class LandAndMine {
             this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
         }
 
+        // Update Readout for remaining fuel
         this._textElements.leftTopStatsText4.update(`Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
         if (Math.abs(this._currentFuelLevel) < 20 && this._textElements.leftTopStatsText4.color === COLORS.neutral) {
             this._textElements.leftTopStatsText4.cycle(COLORS.selected);
         }
 
+        // If lander exceeds bounds, teleport them to the other side.
         if (currPos.x < -6) {
             this._lander.mesh.position.set(5.9, currPos.y, currPos.z);
         }
@@ -923,6 +945,7 @@ export class LandAndMine {
             this._lander.mesh.position.set(-5.9, currPos.y, currPos.z);
         }
 
+        // If ship reaches a certain altitude they've escaped.
         if (landerRow >= 110) {
             this._state = LandAndMineState.escaped;
             return;
@@ -939,14 +962,7 @@ export class LandAndMine {
         const landerTopLeft = gridTopRow[landerCol !== 0 ? landerCol - 1 : 120];
         const landerTopRight = gridTopRow[landerCol !== 120 ? landerCol + 1 : 0];
 
-        let horizontalSpeedText = `Horizontal Speed: ${
-            this._currentLanderHorizontalSpeed < 0 ? '<span class="fa fa-long-arrow-left"></span>' : ''
-        } ${
-            Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)
-        } ${
-            this._currentLanderHorizontalSpeed > 0 ? '<span class="fa fa-long-arrow-right"></span>' : ''
-        }`;
-
+        // Collision detection
         if (landerRow < 100
             && gridBottomRow[landerCol] < 3
             && (landerBottomLeft || landerMiddleLeft || landerTopLeft || landerBottomRight || landerMiddleRight || landerTopRight)) {
@@ -955,6 +971,7 @@ export class LandAndMine {
             setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
         }
 
+        // Check if ship is eligible for landing condition, or crashed condition
         if (landerRow < 100 && gridBottomRow[landerCol] && this._state !== LandAndMineState.landed as LandAndMineState) {
             if (this._state !== LandAndMineState.crashed) {
                 if (landerBottomLeft < 3 || landerBottomRight < 3) {
@@ -999,9 +1016,10 @@ export class LandAndMine {
                 this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
             }
 
-            return null;
+            return;
         }
 
+        // Change horizontal speed text color if it exceeds safe limits or back if it is within safe bounds.
         this._textElements.leftTopStatsText1.update(horizontalSpeedText);
         if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
             this._textElements.leftTopStatsText1.cycle(COLORS.selected);
@@ -1009,6 +1027,7 @@ export class LandAndMine {
             this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
         }
 
+        // Change vertical speed text color if it exceeds safe limits or back if it is within safe bounds.
         this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed > 0.0001 ? this._currentLanderVerticalSpeed.toFixed(4) : Number(0).toFixed(4)}`);
         if (this._currentLanderVerticalSpeed >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
             this._textElements.leftTopStatsText2.cycle(COLORS.selected);
@@ -1016,10 +1035,13 @@ export class LandAndMine {
             this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
         }
 
+        // Calculate gravity effect on ship.
         this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
         this._currentLanderVerticalSpeed += this._planetSpecifications.gravity;
 
+        // Run all texts through their cycles.
         Object.keys(this._textElements).forEach(x => x && this._textElements[x].cycle());
-        return null;
+
+        return;
     }
 }
