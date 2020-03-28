@@ -31,6 +31,7 @@ import { StartButton } from '../../controls/buttons/start-button';
 import { BUTTON_COLORS } from '../../styles/button-colors';
 import { UnloadButton } from '../../controls/buttons/unload-button';
 import { createMiningTeam } from './actors/create-mining-team';
+import { LoadButton } from '../../controls/buttons/load-button';
 
 /*
  * Grid Values
@@ -85,6 +86,7 @@ export class LandAndMine {
      * List of buttons
      */
     private _buttons: { [key: string]: ButtonBase } = {
+        loadButton: null,
         startButton: null,
         unloadButton: null
     };
@@ -674,6 +676,7 @@ export class LandAndMine {
             if (this._state === LandAndMineState.landed) {
                 this._state = LandAndMineState.walking;
                 this._buttons.unloadButton.hide();
+                this._buttons.loadButton.show();
                 const landerPos = this._lander.mesh.position;
                 const astroLeft = this._astronauts[0];
                 const astroRight = this._astronauts[2];
@@ -689,7 +692,7 @@ export class LandAndMine {
                 astroRight.mesh.position.set(astroRightPos.x, astroRight.mesh.position.y, astroRightPos.z);
                 astroRight.mesh.visible = true;
                 setTimeout(() => {
-                    this._camera.position.set(landerPos.x, this._camera.position.y, landerPos.z);
+                    this._camera.position.set((astroLeftPos.x + astroRightPos.x) / 2, this._camera.position.y, (astroLeftPos.z + astroRightPos.z) / 2);
                     this._camera.zoom = 4;
                     this._camera.updateProjectionMatrix();
                 }, 100);
@@ -703,6 +706,33 @@ export class LandAndMine {
             true,
             0.75);
         this._buttons.unloadButton.hide();
+
+        onClick = () => {
+            if (this._state === LandAndMineState.walking) {
+                this._state = LandAndMineState.landed;
+                this._buttons.loadButton.hide();
+                this._buttons.unloadButton.show();
+
+                this._astronauts.filter(astro => !!astro).forEach(astro => {
+                    this._scene.add(astro.mesh);
+                    astro.mesh.visible = false;
+                });
+
+                setTimeout(() => {
+                    this._camera.position.set(0, this._camera.position.y, 0);
+                    this._camera.zoom = 1;
+                    this._camera.updateProjectionMatrix();
+                }, 100);
+            }
+        };
+
+        this._buttons.loadButton = new LoadButton(
+            { left: left + (0.425 * width), height, top: height - (0.75 * height), width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.75);
+        this._buttons.loadButton.hide();
     }
 
     /**
@@ -862,11 +892,14 @@ export class LandAndMine {
                 this._astronauts[0].mesh.position.set(astroLeftPos.x - 0.001, astroLeftPos.y, astroLeftPos.z);
                 const astroRightPos = this._astronauts[2].mesh.position
                 this._astronauts[2].mesh.position.set(astroRightPos.x - 0.001, astroRightPos.y, astroRightPos.z);
+                this._camera.position.set((astroRightPos.x + astroLeftPos.x) / 2, this._camera.position.y, (astroRightPos.z + astroLeftPos.z) / 2);
+                this._camera.updateProjectionMatrix();
             } else if (this._isMiningTeamMovingRight) {
                 const astroLeftPos = this._astronauts[0].mesh.position
                 this._astronauts[0].mesh.position.set(astroLeftPos.x + 0.001, astroLeftPos.y, astroLeftPos.z);
                 const astroRightPos = this._astronauts[2].mesh.position
                 this._astronauts[2].mesh.position.set(astroRightPos.x + 0.001, astroRightPos.y, astroRightPos.z);
+                this._camera.position.set((astroRightPos.x + astroLeftPos.x) / 2, this._camera.position.y, (astroRightPos.z + astroLeftPos.z) / 2);
             }
             return;
         }
