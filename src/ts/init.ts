@@ -38,6 +38,14 @@ const asteroidLoader = new TextureLoader();
  */
 let asteroidTexture: Texture;
 /**
+ * Loads the graphic for astronaut1.
+ */
+const astronaut1Loader = new TextureLoader();
+/**
+ * The loaded texture, used for the astronaut1.
+ */
+let astronaut1Texture: Texture;
+/**
  * The thing that hears sound.
  */
 const audioListener: AudioListener = new AudioListener();
@@ -269,6 +277,11 @@ const loadAssets = () => {
         asteroidTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the astronaut1 texture once it is finished loading.
+    astronaut1Loader.load( 'assets/images/astronaut-01.png', texture => {
+        astronaut1Texture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the earth texture once it is finished loading.
     earthLoader.load( 'assets/images/earth.png', texture => {
         earthTexture = texture;
@@ -342,6 +355,7 @@ const loadAssets = () => {
 const checkAssetsLoaded = () => {
     if (gameFont &&
         asteroidTexture &&
+        astronaut1Texture &&
         shipTexture &&
         earthTexture &&
         fireTexture &&
@@ -819,7 +833,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const landAndMine = new LandAndMine(scenes.landAndMine, shipTexture, planetSpec);
+    const landAndMine = new LandAndMine(scenes.landAndMine, shipTexture, astronaut1Texture, planetSpec);
     scenes.landAndMine.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

@@ -59,7 +59,7 @@ export class DevMenu {
         isLife: true,
         ore: OreTypes.Gold,
         oreQuantity: OreQuantity.Average,
-        peakElevation: 15,
+        peakElevation: 3,
         planetBase: PlanetLandTypes.Red,
         skyBase: SkyTypes.Blue,
         wind: 0

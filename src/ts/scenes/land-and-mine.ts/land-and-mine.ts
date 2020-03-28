@@ -1,18 +1,12 @@
 import {
-    AdditiveBlending,
     DoubleSide,
-    Geometry,
-    ImageUtils,
     Mesh,
     MeshBasicMaterial,
-    ParticleBasicMaterial,
-    ParticleSystem,
     PlaneGeometry,
     Scene,
     Texture,
     Object3D,
-    Vertex,
-    Camera} from 'three';
+    OrthographicCamera } from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -36,6 +30,7 @@ import { createWindParticles } from './actors/create-wind-particles';
 import { StartButton } from '../../controls/buttons/start-button';
 import { BUTTON_COLORS } from '../../styles/button-colors';
 import { UnloadButton } from '../../controls/buttons/unload-button';
+import { createMiningTeam } from './actors/create-mining-team';
 
 /*
  * Grid Values
@@ -84,6 +79,8 @@ export class LandAndMine {
      */
     private _actors: Actor[] = [];
 
+    private _astronauts: Actor[] = [];
+
     /**
      * List of buttons
      */
@@ -92,7 +89,7 @@ export class LandAndMine {
         unloadButton: null
     };
 
-    private _camera: Camera;
+    private _camera: OrthographicCamera;
 
     private _currentFuelLevel: number = 100;
 
@@ -107,6 +104,10 @@ export class LandAndMine {
     private _grid: number[][] = [];
 
     private _isLeftThrusting: boolean = false;
+
+    private _isMiningTeamMovingLeft: boolean = false;
+
+    private _isMiningTeamMovingRight: boolean = false;
 
     private _isRightThrusting: boolean = false;
 
@@ -147,20 +148,21 @@ export class LandAndMine {
      * Constructor for the Land and Mine (Scene) class
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param landerTexture             texture for the lander.
+     * @param astronaut1Texture         texture for the astronaut.
      * @param planetSpecifications      details about the planet used to operate the scene.
      */
     constructor(
         scene: SceneType,
         landerTexture: Texture,
+        astronaut1Texture: Texture,
         planetSpecifications: PlanetSpecifications) {
-        this._camera = scene.camera;
+        this._camera = scene.camera as OrthographicCamera;
         this._scene = scene.scene;
         this._planetSpecifications = planetSpecifications;
 
         // Choose random surface starting point.
         let startY = Math.floor((Math.random() / 2) * 100) + 20
         startY = startY <= 50 ? startY : 50;
-        console.log('startY', startY, this._planetSpecifications);
 
         // Grid values
         this._buildTerrain(startY);
@@ -185,12 +187,17 @@ export class LandAndMine {
         this._lander = lander;
         this._actors.push(lander);
         this._scene.add(lander.mesh);
-
         // Create lander module thrusters
         const currPos = this._lander.mesh.position;
         this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
+        // Create astronaut mining team
+        this._astronauts = createMiningTeam(astronaut1Texture);
+        this._astronauts.filter(astro => !!astro).forEach(astro => {
+            this._scene.add(astro.mesh);
+            astro.mesh.visible = false;
+        });
     }
 
     private _buildSky(): void {
@@ -247,7 +254,6 @@ export class LandAndMine {
     private _createEnvironmentMeshes(): void {
         const skyMats: MeshBasicMaterial[] = [];
         for (let i = 0; i < 9; i++) {
-            console.log(SkyColors[this._planetSpecifications.skyBase], colorLuminance(SkyColors[this._planetSpecifications.skyBase], i / 10));
             const skyMat = new MeshBasicMaterial({
                 color: colorLuminance(SkyColors[this._planetSpecifications.skyBase], i / 10),
                 opacity: 1,
@@ -479,7 +485,6 @@ export class LandAndMine {
                 count = 0;
             }
             if (count >= 4) {
-                console.log('Found it!', prevY, col);
                 hasLanding = true;
                 break;
             }
@@ -573,27 +578,47 @@ export class LandAndMine {
 
         };
         document.onkeydown = event => {
-            if (event.keyCode === 87 || event.keyCode === 38) {
-                this._isVerticalThrusting = true;
-                return;
-            } else if (event.keyCode === 65 || event.keyCode === 37) {
-                this._isLeftThrusting = true;
-                return;
-            } else if (event.keyCode === 68 || event.keyCode === 39) {
-                this._isRightThrusting = true;
-                return;
+            if (this._state === LandAndMineState.flying || this._state === LandAndMineState.landed) {
+                if (event.keyCode === 87 || event.keyCode === 38) {
+                    this._isVerticalThrusting = true;
+                    return;
+                } else if (event.keyCode === 65 || event.keyCode === 37) {
+                    this._isLeftThrusting = true;
+                    return;
+                } else if (event.keyCode === 68 || event.keyCode === 39) {
+                    this._isRightThrusting = true;
+                    return;
+                }
+            } else if (this._state === LandAndMineState.walking) {
+                if (event.keyCode === 65 || event.keyCode === 37) {
+                    this._isMiningTeamMovingLeft = true;
+                    return;
+                } else if (event.keyCode === 68 || event.keyCode === 39) {
+                    this._isMiningTeamMovingRight = true;
+                    return;
+                }
             }
         };
         document.onkeyup = event => {
-            if (event.keyCode === 87 || event.keyCode === 38) {
-                this._isVerticalThrusting = false;
-                return;
-            } else if (event.keyCode === 65 || event.keyCode === 37) {
-                this._isLeftThrusting = false;
-                return;
-            } else if (event.keyCode === 68 || event.keyCode === 39) {
-                this._isRightThrusting = false;
-                return;
+            if (this._state === LandAndMineState.flying || this._state === LandAndMineState.landed) {
+                if (event.keyCode === 87 || event.keyCode === 38) {
+                    this._isVerticalThrusting = false;
+                    return;
+                } else if (event.keyCode === 65 || event.keyCode === 37) {
+                    this._isLeftThrusting = false;
+                    return;
+                } else if (event.keyCode === 68 || event.keyCode === 39) {
+                    this._isRightThrusting = false;
+                    return;
+                }
+            } else if (this._state === LandAndMineState.walking) {
+                if (event.keyCode === 65 || event.keyCode === 37) {
+                    this._isMiningTeamMovingLeft = false;
+                    return;
+                } else if (event.keyCode === 68 || event.keyCode === 39) {
+                    this._isMiningTeamMovingRight = false;
+                    return;
+                }
             }
         };
 
@@ -650,10 +675,24 @@ export class LandAndMine {
                 this._state = LandAndMineState.walking;
                 this._buttons.unloadButton.hide();
                 const landerPos = this._lander.mesh.position;
-                setTimeout(() => {
-                    this._camera.position.set(landerPos.x, 5, landerPos.z);
-                }, 100);
+                const astroLeft = this._astronauts[0];
+                const astroRight = this._astronauts[2];
 
+                const landerBottom = landerPos.z + 0.11;
+                const landerRow = Math.floor((-10 * landerBottom) + 60);
+                const landerCol = ((100 * landerPos.x) % 10) < 5 ? Math.floor((10 * landerPos.x) + 60) : Math.ceil((10 * landerPos.x) + 60);
+                const astroLeftPos = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120].position;
+                const astroRightPos = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0].position;
+
+                astroLeft.mesh.position.set(astroLeftPos.x, astroLeft.mesh.position.y, astroLeftPos.z);
+                astroLeft.mesh.visible = true;
+                astroRight.mesh.position.set(astroRightPos.x, astroRight.mesh.position.y, astroRightPos.z);
+                astroRight.mesh.visible = true;
+                setTimeout(() => {
+                    this._camera.position.set(landerPos.x, this._camera.position.y, landerPos.z);
+                    this._camera.zoom = 4;
+                    this._camera.updateProjectionMatrix();
+                }, 100);
             }
         };
 
@@ -758,6 +797,17 @@ export class LandAndMine {
         }
 
         if (this._state === LandAndMineState.walking) {
+            if (this._isMiningTeamMovingLeft) {
+                const astroLeftPos = this._astronauts[0].mesh.position
+                this._astronauts[0].mesh.position.set(astroLeftPos.x - 0.001, astroLeftPos.y, astroLeftPos.z);
+                const astroRightPos = this._astronauts[2].mesh.position
+                this._astronauts[2].mesh.position.set(astroRightPos.x - 0.001, astroRightPos.y, astroRightPos.z);
+            } else if (this._isMiningTeamMovingRight) {
+                const astroLeftPos = this._astronauts[0].mesh.position
+                this._astronauts[0].mesh.position.set(astroLeftPos.x + 0.001, astroLeftPos.y, astroLeftPos.z);
+                const astroRightPos = this._astronauts[2].mesh.position
+                this._astronauts[2].mesh.position.set(astroRightPos.x + 0.001, astroRightPos.y, astroRightPos.z);
+            }
             return;
         }
 
