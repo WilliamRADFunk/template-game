@@ -151,12 +151,16 @@ export class LandAndMine {
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param landerTexture             texture for the lander.
      * @param astronaut1Texture         texture for the astronaut.
+     * @param miningEquipment1Texture   texture for the mining equipment top.
+     * @param miningEquipment2Texture   texture for the mining equipment bottom.
      * @param planetSpecifications      details about the planet used to operate the scene.
      */
     constructor(
         scene: SceneType,
         landerTexture: Texture,
         astronaut1Texture: Texture,
+        miningEquipment1Texture: Texture,
+        miningEquipment2Texture: Texture,
         planetSpecifications: PlanetSpecifications) {
         this._camera = scene.camera as OrthographicCamera;
         this._scene = scene.scene;
@@ -195,7 +199,7 @@ export class LandAndMine {
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
         // Create astronaut mining team
-        this._astronauts = createMiningTeam(astronaut1Texture);
+        this._astronauts = createMiningTeam(astronaut1Texture, miningEquipment1Texture, miningEquipment2Texture);
         this._astronauts.filter(astro => !!astro).forEach(astro => {
             this._scene.add(astro.mesh);
             astro.mesh.visible = false;
@@ -679,20 +683,24 @@ export class LandAndMine {
                 this._buttons.loadButton.show();
                 const landerPos = this._lander.mesh.position;
                 const astroLeft = this._astronauts[0];
+                const miningEquipment = this._astronauts[1];
                 const astroRight = this._astronauts[2];
 
                 const landerBottom = landerPos.z + 0.11;
                 const landerRow = Math.floor((-10 * landerBottom) + 60);
                 const landerCol = ((100 * landerPos.x) % 10) < 5 ? Math.floor((10 * landerPos.x) + 60) : Math.ceil((10 * landerPos.x) + 60);
                 const astroLeftPos = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120].position;
+                const miningEquipmentPos = this._meshGrid[landerRow][landerCol].position;
                 const astroRightPos = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0].position;
 
                 astroLeft.mesh.position.set(astroLeftPos.x, astroLeft.mesh.position.y, astroLeftPos.z);
                 astroLeft.mesh.visible = true;
+                miningEquipment.mesh.position.set(miningEquipmentPos.x, miningEquipment.mesh.position.y, miningEquipmentPos.z);
+                miningEquipment.mesh.visible = true;
                 astroRight.mesh.position.set(astroRightPos.x, astroRight.mesh.position.y, astroRightPos.z);
                 astroRight.mesh.visible = true;
                 setTimeout(() => {
-                    this._camera.position.set((astroLeftPos.x + astroRightPos.x) / 2, this._camera.position.y, (astroLeftPos.z + astroRightPos.z) / 2);
+                    this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
                     this._camera.zoom = 4;
                     this._camera.updateProjectionMatrix();
                 }, 100);
@@ -714,7 +722,6 @@ export class LandAndMine {
                 this._buttons.unloadButton.show();
 
                 this._astronauts.filter(astro => !!astro).forEach(astro => {
-                    this._scene.add(astro.mesh);
                     astro.mesh.visible = false;
                 });
 
@@ -888,18 +895,23 @@ export class LandAndMine {
         // Mining team should move left and right, detect proximity to ship for loading, and nothing else while in walking mode.
         if (this._state === LandAndMineState.walking) {
             if (this._isMiningTeamMovingLeft) {
-                const astroLeftPos = this._astronauts[0].mesh.position
+                const astroLeftPos = this._astronauts[0].mesh.position;
                 this._astronauts[0].mesh.position.set(astroLeftPos.x - 0.001, astroLeftPos.y, astroLeftPos.z);
-                const astroRightPos = this._astronauts[2].mesh.position
+                const miningEquipmentPos = this._astronauts[1].mesh.position;
+                this._astronauts[1].mesh.position.set(miningEquipmentPos.x - 0.001, miningEquipmentPos.y, miningEquipmentPos.z);
+                const astroRightPos = this._astronauts[2].mesh.position;
                 this._astronauts[2].mesh.position.set(astroRightPos.x - 0.001, astroRightPos.y, astroRightPos.z);
-                this._camera.position.set((astroRightPos.x + astroLeftPos.x) / 2, this._camera.position.y, (astroRightPos.z + astroLeftPos.z) / 2);
+                this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
                 this._camera.updateProjectionMatrix();
             } else if (this._isMiningTeamMovingRight) {
-                const astroLeftPos = this._astronauts[0].mesh.position
+                const astroLeftPos = this._astronauts[0].mesh.position;
                 this._astronauts[0].mesh.position.set(astroLeftPos.x + 0.001, astroLeftPos.y, astroLeftPos.z);
-                const astroRightPos = this._astronauts[2].mesh.position
+                const miningEquipmentPos = this._astronauts[1].mesh.position;
+                this._astronauts[1].mesh.position.set(miningEquipmentPos.x + 0.001, miningEquipmentPos.y, miningEquipmentPos.z);
+                const astroRightPos = this._astronauts[2].mesh.position;
                 this._astronauts[2].mesh.position.set(astroRightPos.x + 0.001, astroRightPos.y, astroRightPos.z);
-                this._camera.position.set((astroRightPos.x + astroLeftPos.x) / 2, this._camera.position.y, (astroRightPos.z + astroLeftPos.z) / 2);
+                this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
+                this._camera.updateProjectionMatrix();
             }
             return;
         }
