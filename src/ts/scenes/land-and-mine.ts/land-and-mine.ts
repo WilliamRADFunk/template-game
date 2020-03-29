@@ -33,6 +33,7 @@ import { UnloadButton } from '../../controls/buttons/unload-button';
 import { createMiningTeam } from './actors/create-mining-team';
 import { LoadButton } from '../../controls/buttons/load-button';
 import { MineButton } from '../../controls/buttons/mine-button';
+import { PackItUpButton } from '../../controls/buttons/pack-it-up-button';
 
 /*
  * Grid Values
@@ -760,7 +761,7 @@ export class LandAndMine {
             if (this._state === LandAndMineState.walkingAwayFromLander) {
                 this._state = LandAndMineState.mining;
                 this._buttons.mineButton.hide();
-                // this._buttons.packUp.show();
+                this._buttons.packUpButton.show();
             }
         };
 
@@ -771,6 +772,22 @@ export class LandAndMine {
             true,
             0.75);
         this._buttons.mineButton.hide();
+
+        onClick = () => {
+            if (this._state === LandAndMineState.mining) {
+                this._state = LandAndMineState.walkingAwayFromLander;
+                this._buttons.packUpButton.hide();
+                this._buttons.mineButton.show();
+            }
+        };
+
+        this._buttons.packUpButton = new PackItUpButton(
+            { left: left + (0.425 * width), height, top: height - (0.75 * height), width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.75);
+        this._buttons.packUpButton.hide();
     }
 
     /**
@@ -787,7 +804,9 @@ export class LandAndMine {
         this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText3.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText4.resize({ height, left: left, top: null, width });
-        this._buttons.startButton.resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width });
+        Object.keys(this._buttons)
+            .filter(key => !!this._buttons[key])
+            .forEach(key => this._buttons[key].resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width }));
     }
 
     private _sidePopulate(x: number, y: number, direction: number) {
