@@ -2,6 +2,7 @@ import {
     DoubleSide,
     Mesh,
     MeshBasicMaterial,
+    MeshPhongMaterial,
     PlaneGeometry,
     Scene,
     Texture,
@@ -107,9 +108,15 @@ export class LandAndMine {
 
     private _currentOxygenLevel: number = 100;
 
+    private _drillBits: Mesh[] = [];
+
     private _explosion: Explosion = null;
 
     private _grid: number[][] = [];
+
+    private _isDrillingDown: boolean = false;
+
+    private _isDrillingUp: boolean = false;
 
     private _isLeftThrusting: boolean = false;
 
@@ -152,24 +159,21 @@ export class LandAndMine {
      */
     private _textElements: { [key: string]: TextBase } = { };
 
+    private _textures: { [key: string]: Texture } = {};
+
     /**
      * Constructor for the Land and Mine (Scene) class
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param landerTexture             texture for the lander.
-     * @param astronaut1Texture         texture for the astronaut.
-     * @param miningEquipment1Texture   texture for the mining equipment top.
-     * @param miningEquipment2Texture   texture for the mining equipment bottom.
+     * @param textures                  all the needed textures for land and mine.
      * @param planetSpecifications      details about the planet used to operate the scene.
      */
     constructor(
         scene: SceneType,
-        landerTexture: Texture,
-        astronaut1Texture: Texture,
-        miningEquipment1Texture: Texture,
-        miningEquipment2Texture: Texture,
+        textures: { [key: string]: Texture },
         planetSpecifications: PlanetSpecifications) {
         this._camera = scene.camera as OrthographicCamera;
         this._scene = scene.scene;
+        this._textures = textures;
         this._planetSpecifications = planetSpecifications;
 
         // Choose random surface starting point.
@@ -195,7 +199,7 @@ export class LandAndMine {
         window.addEventListener('resize', this._listenerRef, false);
 
         // Create lander module
-        const lander = createLander(landerTexture);
+        const lander = createLander(this._textures.shipTexture);
         this._lander = lander;
         this._actors.push(lander);
         this._scene.add(lander.mesh);
@@ -205,7 +209,7 @@ export class LandAndMine {
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
         // Create astronaut mining team
-        this._astronauts = createMiningTeam(astronaut1Texture, miningEquipment1Texture, miningEquipment2Texture);
+        this._astronauts = createMiningTeam(textures.astronaut1Texture, textures.miningEquipment1Texture, textures.miningEquipment2Texture);
         this._astronauts.filter(astro => !!astro).forEach(astro => {
             this._scene.add(astro.mesh);
             astro.mesh.visible = false;
@@ -609,6 +613,14 @@ export class LandAndMine {
                     this._isMiningTeamMovingRight = true;
                     return;
                 }
+            } else if (this._state === LandAndMineState.mining) {
+                if (event.keyCode === 87 || event.keyCode === 38) {
+                    this._isDrillingUp = true;
+                    return;
+                } else if (event.keyCode === 83 || event.keyCode === 40) {
+                    this._isDrillingDown = true;
+                    return;
+                }
             }
         };
         document.onkeyup = event => {
@@ -641,6 +653,14 @@ export class LandAndMine {
                 this._camera.position.set(newPos.middle[0], this._camera.position.y, newPos.middle[2]);
                 this._camera.updateProjectionMatrix();
                 return;
+            } else if (this._state === LandAndMineState.mining) {
+                if (event.keyCode === 87 || event.keyCode === 38) {
+                    this._isDrillingUp = false;
+                    return;
+                } else if (event.keyCode === 83 || event.keyCode === 40) {
+                    this._isDrillingDown = false;
+                    return;
+                }
             }
         };
 
@@ -762,6 +782,21 @@ export class LandAndMine {
                 this._state = LandAndMineState.mining;
                 this._buttons.mineButton.hide();
                 this._buttons.packUpButton.show();
+
+                const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
+                const drillMat = new MeshPhongMaterial({
+                    color: '#FFFFFF',
+                    map: this._textures.miningDrillTexture,
+                    shininess: 0,
+                    transparent: true
+                });
+                const miningEquipPos = this._astronauts[1].mesh.position;
+                const drillMesh = new Mesh(drillGeo, drillMat);
+                drillMesh.position.set(miningEquipPos.x, miningEquipPos.y - 3, miningEquipPos.z);
+                drillMesh.rotation.set(-1.5708, 0, 0);
+                drillMesh.name = 'Mining-Drill-1';
+                this._drillBits.push(drillMesh);
+                this._scene.add(drillMesh);
             }
         };
 
@@ -1053,6 +1088,15 @@ export class LandAndMine {
 
         // Mining team has unpacked, and is ready to drill.
         if (this._state === LandAndMineState.mining) {
+            if (this._isDrillingDown) {
+                const currentDrillBit = this._drillBits[this._drillBits.length - 1];
+                const currDrillPos = currentDrillBit.position;
+                currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+            } else if (this._isDrillingUp) {
+                const currentDrillBit = this._drillBits[this._drillBits.length - 1];
+                const currDrillPos = currentDrillBit.position;
+                currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z - 0.001);
+            }
             return;
         }
 

@@ -137,6 +137,22 @@ const miningEquipment2Loader = new TextureLoader();
  * The loaded texture, used for the miningEquipment2.
  */
 let miningEquipment2Texture: Texture;
+/**
+ * Loads the graphic for miningDrill.
+ */
+const miningDrillLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the miningDrill.
+ */
+let miningDrillTexture: Texture;
+/**
+ * Loads the graphic for minedSquare1.
+ */
+const minedSquare1Loader = new TextureLoader();
+/**
+ * The loaded texture, used for the minedSquare1.
+ */
+let minedSquare1Texture: Texture;
 
 const scenes: { [ key: string ]: SceneType } = {
     devMenu: {
@@ -348,6 +364,16 @@ const loadAssets = () => {
         miningEquipment2Texture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the miningDrill texture once it is finished loading.
+    miningDrillLoader.load( 'assets/images/mining-drill.png', texture => {
+        miningDrillTexture = texture;
+        checkAssetsLoaded();
+    });
+    // Callback function to set the minedSquare1 texture once it is finished loading.
+    minedSquare1Loader.load( 'assets/images/mined-square-01.png', texture => {
+        minedSquare1Texture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the ship texture once it is finished loading.
     shipLoader.load( 'assets/images/ship.png', texture => {
         shipTexture = texture;
@@ -392,6 +418,8 @@ const checkAssetsLoaded = () => {
         enzmannOutsideTexture &&
         miningEquipment1Texture &&
         miningEquipment2Texture &&
+        miningDrillTexture &&
+        minedSquare1Texture &&
         sounds.filter(s => s).length === soundLoaders.length) {
         SoundinatorSingleton.addSounds(sounds);
         loadMenu();
@@ -861,7 +889,17 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const landAndMine = new LandAndMine(scenes.landAndMine, shipTexture, astronaut1Texture, miningEquipment1Texture, miningEquipment2Texture, planetSpec);
+    const landAndMine = new LandAndMine(
+        scenes.landAndMine,
+        {
+            shipTexture,
+            astronaut1Texture,
+            miningEquipment1Texture,
+            miningEquipment2Texture,
+            miningDrillTexture,
+            minedSquare1Texture
+        },
+        planetSpec);
     scenes.landAndMine.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
