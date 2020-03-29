@@ -70,7 +70,7 @@ export function createMiningTeam(astronaut1Texture: Texture, miningEquipment1Tex
         transparent: true
     });
     const mbMesh = new Mesh(mbGeo, mbMat);
-    mbMesh.position.set(0, 1, 0);
+    mbMesh.position.set(0, 1, -0.02);
     mbMesh.rotation.set(-1.5708, 0, 0);
     mbMesh.name = 'Mining-Base';
 
@@ -78,7 +78,7 @@ export function createMiningTeam(astronaut1Texture: Texture, miningEquipment1Tex
     allEquip.add(mwMesh);
     allEquip.add(mbMesh);
     miningEquipment.mesh = allEquip;
-    miningEquipment.mesh.position.set(miningEquipment.currentPoint[0], 1, miningEquipment.currentPoint[1] - 0.02);
+    miningEquipment.mesh.position.set(miningEquipment.currentPoint[0], 1, miningEquipment.currentPoint[1]);
 
     return [astronautLeft, miningEquipment, astronautRight];
 }

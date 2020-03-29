@@ -67,7 +67,8 @@ export enum LandAndMineState {
     'flying' = 2,
     'landed' = 3,
     'paused' = 4,
-    'walking' = 5
+    'walking' = 5,
+    'mining' = 6
 }
 
 /**
@@ -896,20 +897,128 @@ export class LandAndMine {
         if (this._state === LandAndMineState.walking) {
             if (this._isMiningTeamMovingLeft) {
                 const astroLeftPos = this._astronauts[0].mesh.position;
-                this._astronauts[0].mesh.position.set(astroLeftPos.x - 0.001, astroLeftPos.y, astroLeftPos.z);
+                const astroLeftPosModifiers = [-0.001, 0, 0];
+                const astroLeftCol = Math.floor((10 * (astroLeftPos.x + 0.05)) + 60);
+                const astroLeftBottom = astroLeftPos.z - 0.02;
+                const astroLeftRow = Math.floor((-10 * astroLeftBottom) + 60);
+                if (this._grid[astroLeftRow - 1][astroLeftCol] < 3) {
+                    astroLeftPosModifiers[2] = this._meshGrid[astroLeftRow - 1][astroLeftCol].position.z - astroLeftPos.z;
+                } else if (astroLeftCol >= 0) {
+                    if (this._grid[astroLeftRow][astroLeftCol]) {
+                        astroLeftPosModifiers[2] = this._meshGrid[astroLeftRow + 1][astroLeftCol].position.z - astroLeftPos.z;
+                    }
+                } else {
+                    if (this._grid[astroLeftRow][120]) {
+                        const newPos = this._meshGrid[astroLeftRow + 1][120].position;
+                        astroLeftPosModifiers[0] = newPos.x - astroLeftPos.x;
+                        astroLeftPosModifiers[2] = astroLeftPos.z - newPos.z;
+                    }
+                }
+                this._astronauts[0].mesh.position.set(astroLeftPos.x + astroLeftPosModifiers[0], astroLeftPos.y, astroLeftPos.z + astroLeftPosModifiers[2]);
+
                 const miningEquipmentPos = this._astronauts[1].mesh.position;
-                this._astronauts[1].mesh.position.set(miningEquipmentPos.x - 0.001, miningEquipmentPos.y, miningEquipmentPos.z);
+                const miningEquipmentPosModifiers = [-0.001, 0, 0];
+                const miningEquipmentCol = Math.floor((10 * (miningEquipmentPos.x + 0.05)) + 60);
+                const miningEquipmentBottom = miningEquipmentPos.z - 0.02;
+                const miningEquipmentRow = Math.floor((-10 * miningEquipmentBottom) + 60);
+                if (this._grid[miningEquipmentRow - 1][miningEquipmentCol] < 3) {
+                    miningEquipmentPosModifiers[2] = this._meshGrid[miningEquipmentRow - 1][miningEquipmentCol].position.z - miningEquipmentPos.z;
+                } else if (miningEquipmentCol >= 0) {
+                    if (this._grid[miningEquipmentRow][miningEquipmentCol]) {
+                        miningEquipmentPosModifiers[2] = this._meshGrid[miningEquipmentRow + 1][miningEquipmentCol].position.z - miningEquipmentPos.z;
+                    }
+                } else {
+                    if (this._grid[miningEquipmentRow][120]) {
+                        const newPos = this._meshGrid[miningEquipmentRow + 1][120].position;
+                        miningEquipmentPosModifiers[0] = newPos.x - miningEquipmentPos.x;
+                        miningEquipmentPosModifiers[2] = miningEquipmentPos.z - newPos.z;
+                    }
+                }
+                this._astronauts[1].mesh.position.set(miningEquipmentPos.x + miningEquipmentPosModifiers[0], miningEquipmentPos.y, miningEquipmentPos.z + miningEquipmentPosModifiers[2]);
+
                 const astroRightPos = this._astronauts[2].mesh.position;
-                this._astronauts[2].mesh.position.set(astroRightPos.x - 0.001, astroRightPos.y, astroRightPos.z);
+                const astroRightPosModifiers = [-0.001, 0, 0];
+                const astroRightCol = Math.floor((10 * (astroRightPos.x + 0.05)) + 60);
+                const astroRightBottom = astroRightPos.z - 0.02;
+                const astroRightRow = Math.floor((-10 * astroRightBottom) + 60);
+                if (this._grid[astroRightRow - 1][astroRightCol] < 3) {
+                    astroRightPosModifiers[2] = this._meshGrid[astroRightRow - 1][astroRightCol].position.z - astroRightPos.z;
+                } else if (astroRightCol >= 0) {
+                    if (this._grid[astroRightRow][astroRightCol]) {
+                        astroRightPosModifiers[2] = this._meshGrid[astroRightRow + 1][astroRightCol].position.z - astroRightPos.z;
+                    }
+                } else {
+                    if (this._grid[astroRightRow][120]) {
+                        const newPos = this._meshGrid[astroRightRow + 1][120].position;
+                        astroRightPosModifiers[0] = newPos.x - astroRightPos.x;
+                        astroRightPosModifiers[2] = astroRightPos.z - newPos.z;
+                    }
+                }
+                this._astronauts[2].mesh.position.set(astroRightPos.x + astroRightPosModifiers[0], astroRightPos.y, astroRightPos.z + astroRightPosModifiers[2]);
+
                 this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
                 this._camera.updateProjectionMatrix();
             } else if (this._isMiningTeamMovingRight) {
                 const astroLeftPos = this._astronauts[0].mesh.position;
-                this._astronauts[0].mesh.position.set(astroLeftPos.x + 0.001, astroLeftPos.y, astroLeftPos.z);
+                const astroLeftPosModifiers = [0.001, 0, 0];
+                const astroLeftCol = Math.floor((10 * (astroLeftPos.x + 0.05)) + 60);
+                const astroLeftBottom = astroLeftPos.z - 0.02;
+                const astroLeftRow = Math.floor((-10 * astroLeftBottom) + 60);
+                if (this._grid[astroLeftRow - 1][astroLeftCol] < 3) {
+                    astroLeftPosModifiers[2] = this._meshGrid[astroLeftRow - 1][astroLeftCol].position.z - astroLeftPos.z;
+                } else if (astroLeftCol <= 120) {
+                    if (this._grid[astroLeftRow][astroLeftCol]) {
+                        astroLeftPosModifiers[2] = this._meshGrid[astroLeftRow + 1][astroLeftCol].position.z - astroLeftPos.z;
+                    }
+                } else {
+                    if (this._grid[astroLeftRow][0]) {
+                        const newPos = this._meshGrid[astroLeftRow + 1][0].position;
+                        astroLeftPosModifiers[0] = astroLeftPos.x - newPos.x;
+                        astroLeftPosModifiers[2] = astroLeftPos.z - newPos.z;
+                    }
+                }
+                this._astronauts[0].mesh.position.set(astroLeftPos.x + astroLeftPosModifiers[0], astroLeftPos.y, astroLeftPos.z + astroLeftPosModifiers[2]);
+
                 const miningEquipmentPos = this._astronauts[1].mesh.position;
-                this._astronauts[1].mesh.position.set(miningEquipmentPos.x + 0.001, miningEquipmentPos.y, miningEquipmentPos.z);
+                const miningEquipmentPosModifiers = [0.001, 0, 0];
+                const miningEquipmentCol = Math.floor((10 * (miningEquipmentPos.x + 0.05)) + 60);
+                const miningEquipmentBottom = miningEquipmentPos.z - 0.02;
+                const miningEquipmentRow = Math.floor((-10 * miningEquipmentBottom) + 60);
+                if (this._grid[miningEquipmentRow - 1][miningEquipmentCol] < 3) {
+                    miningEquipmentPosModifiers[2] = this._meshGrid[miningEquipmentRow - 1][miningEquipmentCol].position.z - miningEquipmentPos.z;
+                } else if (miningEquipmentCol <= 120) {
+                    if (this._grid[miningEquipmentRow][miningEquipmentCol]) {
+                        miningEquipmentPosModifiers[2] = this._meshGrid[miningEquipmentRow + 1][miningEquipmentCol].position.z - miningEquipmentPos.z;
+                    }
+                } else {
+                    if (this._grid[miningEquipmentRow][0]) {
+                        const newPos = this._meshGrid[miningEquipmentRow + 1][0].position;
+                        miningEquipmentPosModifiers[0] = miningEquipmentPos.x - newPos.x;
+                        miningEquipmentPosModifiers[2] = miningEquipmentPos.z - newPos.z;
+                    }
+                }
+                this._astronauts[1].mesh.position.set(miningEquipmentPos.x + miningEquipmentPosModifiers[0], miningEquipmentPos.y, miningEquipmentPos.z + miningEquipmentPosModifiers[2]);
+
                 const astroRightPos = this._astronauts[2].mesh.position;
-                this._astronauts[2].mesh.position.set(astroRightPos.x + 0.001, astroRightPos.y, astroRightPos.z);
+                const astroRightPosModifiers = [0.001, 0, 0];
+                const astroRightCol = Math.floor((10 * (astroRightPos.x + 0.05)) + 60);
+                const astroRightBottom = astroRightPos.z - 0.02;
+                const astroRightRow = Math.floor((-10 * astroRightBottom) + 60);
+                if (this._grid[astroRightRow - 1][astroRightCol] < 3) {
+                    astroRightPosModifiers[2] = this._meshGrid[astroRightRow - 1][astroRightCol].position.z - astroRightPos.z;
+                } else if (astroRightCol <= 120) {
+                    if (this._grid[astroRightRow][astroRightCol]) {
+                        astroRightPosModifiers[2] = this._meshGrid[astroRightRow + 1][astroRightCol].position.z - astroRightPos.z;
+                    }
+                } else {
+                    if (this._grid[astroRightRow][0]) {
+                        const newPos = this._meshGrid[astroRightRow + 1][0].position;
+                        astroRightPosModifiers[0] = astroRightPos.x - newPos.x;
+                        astroRightPosModifiers[2] = astroRightPos.z - newPos.z;
+                    }
+                }
+                this._astronauts[2].mesh.position.set(astroRightPos.x + astroRightPosModifiers[0], astroRightPos.y, astroRightPos.z + astroRightPosModifiers[2]);
+
                 this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
                 this._camera.updateProjectionMatrix();
             }
