@@ -122,6 +122,14 @@ const marsLoader = new TextureLoader();
  */
 let marsTexture: Texture;
 /**
+ * Loads the graphic for lander.
+ */
+const landerLoader = new TextureLoader();
+/**
+ * The loaded texture, used for the lander.
+ */
+let landerTexture: Texture;
+/**
  * Loads the graphic for miningEquipment1.
  */
 const miningEquipment1Loader = new TextureLoader();
@@ -324,6 +332,11 @@ const loadAssets = () => {
         enceladusTexture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the lander texture once it is finished loading.
+    landerLoader.load( 'assets/images/lander.png', texture => {
+        landerTexture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the ship layout dialogue texture once it is finished loading.
     engineerProfileLoader.load( 'assets/images/ship-layout-profile.png', texture => {
         engineerProfileTexture = texture;
@@ -416,6 +429,7 @@ const checkAssetsLoaded = () => {
         engineerProfileTexture &&
         engineer2ProfileTexture &&
         enzmannOutsideTexture &&
+        landerTexture &&
         miningEquipment1Texture &&
         miningEquipment2Texture &&
         miningDrillTexture &&
@@ -892,7 +906,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
     const landAndMine = new LandAndMine(
         scenes.landAndMine,
         {
-            shipTexture,
+            shipTexture: landerTexture,
             astronaut1Texture,
             miningEquipment1Texture,
             miningEquipment2Texture,

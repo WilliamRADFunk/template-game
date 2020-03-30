@@ -42,7 +42,7 @@ import { PackItUpButton } from '../../controls/buttons/pack-it-up-button';
  * 01: Escape Zone. Contact means exit
  * 02: Escape Zone Line. Ship Bottom must be above.
  * 03: Water or ice
- * 04: Impenetrable to drill.
+ * 04: Mined Block.
  * 05: Ore type
  * 06: Common Rock
  * 07: Danger square: lava, acid, explosive gas, etc.
@@ -138,6 +138,8 @@ export class LandAndMine {
     private _listenerRef: () => void;
 
     private _mainThruster: MainThruster;
+
+    private _maxDrillLength = 3;
 
     private _meshGrid: Mesh[][] = [];
 
@@ -284,12 +286,6 @@ export class LandAndMine {
             transparent: true,
             side: DoubleSide
         });
-        const impenetrableMat = new MeshBasicMaterial({
-            color: 0x57595D,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
         const oreTypeMat = new MeshBasicMaterial({
             color: OreTypeColors[this._planetSpecifications.ore],
             opacity: 1,
@@ -349,7 +345,7 @@ export class LandAndMine {
                 } else if (this._grid[row][col] === 3) {
                     material = waterMat;
                 } else if (this._grid[row][col] === 4) {
-                    material = impenetrableMat;
+                    // Mined Block
                 } else if (this._grid[row][col] === 5) {
                     material = oreTypeMat;
                 } else if (this._grid[row][col] === 6) {
@@ -813,6 +809,8 @@ export class LandAndMine {
                 this._state = LandAndMineState.walkingAwayFromLander;
                 this._buttons.packUpButton.hide();
                 this._buttons.mineButton.show();
+                this._scene.remove(this._drillBits[0]);
+                this._drillBits.length = 0;
             }
         };
 
@@ -1079,7 +1077,7 @@ export class LandAndMine {
 
         // All other states consume oxygen still.
         if (this._currentOxygenLevel > 0) {
-            this._currentOxygenLevel -= 0.01;
+            this._currentOxygenLevel -= 0.02;
             this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
             if (Math.abs(this._currentOxygenLevel) < 20 && this._textElements.leftTopStatsText3.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText3.cycle(COLORS.selected);
@@ -1091,11 +1089,68 @@ export class LandAndMine {
             if (this._isDrillingDown) {
                 const currentDrillBit = this._drillBits[this._drillBits.length - 1];
                 const currDrillPos = currentDrillBit.position;
-                currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+                const drillCol = Math.floor((10 * currDrillPos.x) + 60);
+                const tipRowBefore = Math.floor((-10 * (currDrillPos.z + 0.05)) + 60);
+                const tipDrillRowAfter = Math.floor((-10 * (currDrillPos.z + 0.051)) + 60);
+                const centerRowBefore = Math.floor((-10 * currDrillPos.z) + 60);
+                const centerDrillRowAfter = Math.floor((-10 * (currDrillPos.z + 0.001)) + 60);
+                if (tipRowBefore !== tipDrillRowAfter) {
+                    if (this._grid[tipDrillRowAfter][drillCol] !== 7) {
+                        currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+                    }
+                    if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
+                        this._grid[centerDrillRowAfter][drillCol] = 4;
+                        const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
+                        const minedBlockPos = minedBlock.position;
+
+                        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+                        const minedMat = new MeshPhongMaterial({
+                            color: '#FFFFFF',
+                            map: this._textures.minedSquare1Texture,
+                            shininess: 0,
+                            transparent: true
+                        });
+                        const minedMesh = new Mesh(geo, minedMat);
+                        minedMesh.position.set(minedBlockPos.x, minedBlockPos.y, minedBlockPos.z);
+                        minedMesh.rotation.set(-1.5708, 0, 0);
+                        minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
+
+                        this._scene.remove(minedBlock);
+                        this._scene.add(minedMesh);
+                    }
+                } else if (centerRowBefore !== centerDrillRowAfter) {
+                    this._buttons.packUpButton.hide();
+                    const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
+                    const drillMat = new MeshPhongMaterial({
+                        color: '#FFFFFF',
+                        map: this._textures.miningDrillTexture,
+                        shininess: 0,
+                        transparent: true
+                    });
+                    const drillMesh = new Mesh(drillGeo, drillMat);
+                    drillMesh.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+                    drillMesh.rotation.set(-1.5708, 0, 0);
+                    drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
+                    this._drillBits.push(drillMesh);
+                    this._scene.add(drillMesh);
+                } else {
+                    currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+                }
             } else if (this._isDrillingUp) {
                 const currentDrillBit = this._drillBits[this._drillBits.length - 1];
                 const currDrillPos = currentDrillBit.position;
-                currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z - 0.001);
+                const currDrillRowBefore = Math.floor((10 * currDrillPos.z) + 60);
+                const currDrillRowAfter = Math.floor((10 * (currDrillPos.z - 0.001)) + 60);
+                if (currDrillRowAfter !== currDrillRowBefore && this._drillBits.length > 1) {
+                    this._scene.remove(currentDrillBit);
+                    this._drillBits.pop();
+                } else {
+                    if (this._drillBits.length === 1) {
+                        this._buttons.packUpButton.show();
+                    } else {
+                        currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z - 0.001);
+                    }
+                }
             }
             return;
         }
