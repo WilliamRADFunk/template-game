@@ -76,9 +76,9 @@ export class MainThruster {
         index++;
 
         const geometry = new Geometry();
-        const v1 = new Vector3(-0.1, 0, 0);
-        const v2 = new Vector3(0.1, 0, 0);
-        const v3 = new Vector3(0, 0, 0.3);
+        const v1 = new Vector3(-0.05, 0, 0);
+        const v2 = new Vector3(0.05, 0, 0);
+        const v3 = new Vector3(0, 0, 0.2);
 
         const triangle = new Triangle( v1, v2, v3 );
         const normal = triangle.getNormal(new Vector3(1, 1, 1));

@@ -16,7 +16,7 @@ import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
-import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors } from '../../models/planet-specifications';
+import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors, OreTypes } from '../../models/planet-specifications';
 import { MainThruster } from './actors/main-thruster';
 import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
 import { COLORS } from '../../styles/colors';
@@ -60,7 +60,7 @@ const SIDE_THRUSTER_Z_OFFSET: number = 0;
 
 const MAIN_THRUSTER_Y_OFFSET: number = 5;
 
-const MAIN_THRUSTER_Z_OFFSET: number = 0.18;
+const MAIN_THRUSTER_Z_OFFSET: number = 0.16;
 
 const VERTICAL_THRUST: number = 0.0002;
 
@@ -137,9 +137,11 @@ export class LandAndMine {
      */
     private _listenerRef: () => void;
 
+    private _loot: { [key: number]: number } = {};
+
     private _mainThruster: MainThruster;
 
-    private _maxDrillLength = 3;
+    private _maxDrillLength = 5;
 
     private _meshGrid: Mesh[][] = [];
 
@@ -177,6 +179,10 @@ export class LandAndMine {
         this._scene = scene.scene;
         this._textures = textures;
         this._planetSpecifications = planetSpecifications;
+        this._loot[planetSpecifications.ore] = 0;
+        this._loot[-2] = 0; // -1 is surviving crew members
+        this._loot[-1] = 0; // -1 is food
+        this._loot[0] = 0; // 0 is water
 
         // Choose random surface starting point.
         let startY = Math.floor((Math.random() / 2) * 100) + 20
@@ -1020,7 +1026,7 @@ export class LandAndMine {
      * At the end of each loop iteration, check for end state.
      * @returns whether or not the scene is done.
      */
-    public endCycle(): { substance: string, quantity: number }[] {
+    public endCycle(): { [key: number]: number } {
         // Game paused. Nothing should progress.
         if (this._state === LandAndMineState.paused) {
             return;
@@ -1057,7 +1063,7 @@ export class LandAndMine {
         }
 
         // After successfully reaching escape velocity, no more fuel or oxygen should be spent.
-        const currPos = this._lander.mesh.position;
+        let currPos = this._lander.mesh.position;
         const landerBottom = currPos.z + 0.11;
         const landerRow = Math.floor((-10 * landerBottom) + 60);
         if (this._state === LandAndMineState.escaped) {
@@ -1070,7 +1076,7 @@ export class LandAndMine {
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
 
             if (landerRow > 120) {
-                return [];
+                return this._loot;
             }
             return;
         }
@@ -1099,6 +1105,13 @@ export class LandAndMine {
                         currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
                     }
                     if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
+                        if (this._grid[centerDrillRowAfter][drillCol] === 3) {
+                            this._loot[0] += 20;
+                        } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
+                            this._loot[this._planetSpecifications.ore] += 20;
+                        } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
+                            this._loot[-1] += 20;
+                        }
                         this._grid[centerDrillRowAfter][drillCol] = 4;
                         const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
                         const minedBlockPos = minedBlock.position;
@@ -1119,20 +1132,22 @@ export class LandAndMine {
                         this._scene.add(minedMesh);
                     }
                 } else if (centerRowBefore !== centerDrillRowAfter) {
-                    this._buttons.packUpButton.hide();
-                    const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
-                    const drillMat = new MeshPhongMaterial({
-                        color: '#FFFFFF',
-                        map: this._textures.miningDrillTexture,
-                        shininess: 0,
-                        transparent: true
-                    });
-                    const drillMesh = new Mesh(drillGeo, drillMat);
-                    drillMesh.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
-                    drillMesh.rotation.set(-1.5708, 0, 0);
-                    drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
-                    this._drillBits.push(drillMesh);
-                    this._scene.add(drillMesh);
+                    if (this._maxDrillLength !== this._drillBits.length) {
+                        this._buttons.packUpButton.hide();
+                        const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
+                        const drillMat = new MeshPhongMaterial({
+                            color: '#FFFFFF',
+                            map: this._textures.miningDrillTexture,
+                            shininess: 0,
+                            transparent: true
+                        });
+                        const drillMesh = new Mesh(drillGeo, drillMat);
+                        drillMesh.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+                        drillMesh.rotation.set(-1.5708, 0, 0);
+                        drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
+                        this._drillBits.push(drillMesh);
+                        this._scene.add(drillMesh);
+                    }
                 } else {
                     currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
                 }
@@ -1266,9 +1281,6 @@ export class LandAndMine {
         if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
             this._currentFuelLevel -= 0.05;
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
-            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
-        } else {
-            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
         }
 
         // Update Readout for remaining fuel
@@ -1378,6 +1390,14 @@ export class LandAndMine {
         // Calculate gravity effect on ship.
         this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
         this._currentLanderVerticalSpeed += this._planetSpecifications.gravity;
+
+        // Update main thruster position to match new lander position.
+        currPos = this._lander.mesh.position;
+        if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
+        } else {
+            this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+        }
 
         // Run all texts through their cycles.
         Object.keys(this._textElements).forEach(x => x && this._textElements[x].cycle());

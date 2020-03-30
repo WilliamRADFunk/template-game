@@ -27,7 +27,7 @@ import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
 import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
-import { PlanetSpecifications } from './models/planet-specifications';
+import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
 
 /**
  * Loads the graphic for asteroid.
@@ -932,8 +932,17 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
             scenes.landAndMine.scene = null;
             return;
         } else {
-            const layout = landAndMine.endCycle();
+            const layout: { [key: number]: number } = landAndMine.endCycle();
             if (layout) {
+                let output = `Loot received:
+                    Crew = ${layout[-2] > 0 ? '+': ''}${layout[-2]},
+                    Food = ${layout[-1]},
+                    Water = ${layout[0]}`;
+                Object.keys(layout).filter(key => Number(key) > 0).forEach(key => {
+                    output += `,
+                    ${OreTypes[Number(key)]} = ${layout[Number(key)]}`;
+                });
+                window.alert(output);
                 landAndMine.dispose();
                 scenes.landAndMine.active = false;
                 // Remove renderer from the html container, and remove event listeners.
