@@ -46,6 +46,22 @@ const astronaut1Loader = new TextureLoader();
  */
 let astronaut1Texture: Texture;
 /**
+ * Loads the graphic for astronaut2.
+ */
+const astronaut2Loader = new TextureLoader();
+/**
+ * The loaded texture, used for the astronaut2.
+ */
+let astronaut2Texture: Texture;
+/**
+ * Loads the graphic for astronaut3.
+ */
+const astronaut3Loader = new TextureLoader();
+/**
+ * The loaded texture, used for the astronaut3.
+ */
+let astronaut3Texture: Texture;
+/**
  * The thing that hears sound.
  */
 const audioListener: AudioListener = new AudioListener();
@@ -322,6 +338,16 @@ const loadAssets = () => {
         astronaut1Texture = texture;
         checkAssetsLoaded();
     });
+    // Callback function to set the astronaut2 texture once it is finished loading.
+    astronaut2Loader.load( 'assets/images/astronaut-02.png', texture => {
+        astronaut2Texture = texture;
+        checkAssetsLoaded();
+    });
+    // Callback function to set the astronaut3 texture once it is finished loading.
+    astronaut3Loader.load( 'assets/images/astronaut-03.png', texture => {
+        astronaut3Texture = texture;
+        checkAssetsLoaded();
+    });
     // Callback function to set the earth texture once it is finished loading.
     earthLoader.load( 'assets/images/earth.png', texture => {
         earthTexture = texture;
@@ -421,6 +447,8 @@ const checkAssetsLoaded = () => {
     if (gameFont &&
         asteroidTexture &&
         astronaut1Texture &&
+        astronaut2Texture &&
+        astronaut3Texture &&
         shipTexture &&
         earthTexture &&
         fireTexture &&
@@ -908,6 +936,8 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
         {
             shipTexture: landerTexture,
             astronaut1Texture,
+            astronaut2Texture,
+            astronaut3Texture,
             miningEquipment1Texture,
             miningEquipment2Texture,
             miningDrillTexture,

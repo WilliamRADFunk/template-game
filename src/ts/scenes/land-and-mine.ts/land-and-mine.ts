@@ -72,7 +72,9 @@ export enum LandAndMineState {
     'paused' = 4,
     'walkingByLander' = 5,
     'walkingAwayFromLander' = 6,
-    'mining' = 7
+    'mining' = 7,
+    'suffocating' = 8, // TODO: Suffocation sequence
+    'tutorial' = 9
 }
 
 /**
@@ -86,6 +88,8 @@ export class LandAndMine {
     private _actors: Actor[] = [];
 
     private _astronauts: Actor[] = [];
+
+    private _astronautWalkingCounter: number = 0;
 
     /**
      * List of buttons
@@ -175,6 +179,14 @@ export class LandAndMine {
         scene: SceneType,
         textures: { [key: string]: Texture },
         planetSpecifications: PlanetSpecifications) {
+
+        // TODO: Add shipSpecifications (
+        //     max drill bit length,
+        //     speed of fuel consumption,
+        //     speed of oxygen consumption,
+        //     margin for error in landing speed.
+        // )
+
         this._camera = scene.camera as OrthographicCamera;
         this._scene = scene.scene;
         this._textures = textures;
@@ -217,7 +229,16 @@ export class LandAndMine {
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
         // Create astronaut mining team
-        this._astronauts = createMiningTeam(textures.astronaut1Texture, textures.miningEquipment1Texture, textures.miningEquipment2Texture);
+        this._astronauts = createMiningTeam(
+            {
+                astronaut1Texture: textures.astronaut1Texture,
+                astronaut2Texture: textures.astronaut2Texture,
+                astronaut3Texture: textures.astronaut3Texture
+            },
+            {
+                miningEquipment1Texture: textures.miningEquipment1Texture,
+                miningEquipment2Texture: textures.miningEquipment2Texture
+            });
         this._astronauts.filter(astro => !!astro).forEach(astro => {
             this._scene.add(astro.mesh);
             astro.mesh.visible = false;
@@ -626,7 +647,6 @@ export class LandAndMine {
             }
         };
         document.onkeyup = event => {
-
             if (this._state === LandAndMineState.flying || this._state === LandAndMineState.landed) {
                 if (event.keyCode === 87 || event.keyCode === 38) {
                     this._isVerticalThrusting = false;
@@ -643,14 +663,37 @@ export class LandAndMine {
                 if (event.keyCode === 65 || event.keyCode === 37) {
                     newPos = this._getMiningTeamsPositions(true, false);
                     this._isMiningTeamMovingLeft = false;
+                    this._astronautWalkingCounter = 0;
+                    this._astronauts[0].mesh.visible = true;
+                    this._astronauts[3].mesh.visible = false;
+                    this._astronauts[6].mesh.visible = false;
+                    this._astronauts[2].mesh.visible = true;
+                    this._astronauts[5].mesh.visible = false;
+                    this._astronauts[6].mesh.visible = false;
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
                     newPos = this._getMiningTeamsPositions(false, true);
                     this._isMiningTeamMovingRight = false;
+                    this._astronautWalkingCounter = 0;
+                    this._astronauts[0].mesh.visible = true;
+                    this._astronauts[3].mesh.visible = false;
+                    this._astronauts[6].mesh.visible = false;
+                    this._astronauts[2].mesh.visible = true;
+                    this._astronauts[5].mesh.visible = false;
+                    this._astronauts[6].mesh.visible = false;
+                } else { // Some unrelated key
+                    return;
                 }
 
+                // Left astronaut
                 this._astronauts[0].mesh.position.set(newPos.left[0], newPos.left[1], newPos.left[2]);
+                this._astronauts[3].mesh.position.set(newPos.left[0], newPos.left[1], newPos.left[2]);
+                this._astronauts[6].mesh.position.set(newPos.left[0], newPos.left[1], newPos.left[2]);
+                // Mining Equipment
                 this._astronauts[1].mesh.position.set(newPos.middle[0], newPos.middle[1], newPos.middle[2]);
+                // Right astronaut
                 this._astronauts[2].mesh.position.set(newPos.right[0], newPos.right[1], newPos.right[2]);
+                this._astronauts[5].mesh.position.set(newPos.right[0], newPos.right[1], newPos.right[2]);
+                this._astronauts[8].mesh.position.set(newPos.right[0], newPos.right[1], newPos.right[2]);
 
                 this._camera.position.set(newPos.middle[0], this._camera.position.y, newPos.middle[2]);
                 this._camera.updateProjectionMatrix();
@@ -671,6 +714,10 @@ export class LandAndMine {
         let height = window.innerHeight * 0.99;
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
+
+        // TODO: Environmental readouts (ie. wind speed, ore type and quanitity, ore tiles, danger tiles, common tiles)
+
+        // TODO: Tutorial for how to play the game.
 
         this._textElements.leftTopStatsText1 = new LeftTopStatsText1(
             `Horizontal Speed: ${this._currentLanderHorizontalSpeed}`,
@@ -1017,8 +1064,12 @@ export class LandAndMine {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
-        Object.keys(this._textElements).forEach(x => x && this._textElements[x].dispose());
-        // Object.keys(this._buttons).forEach(x => x && this._buttons[x].dispose());
+        Object.keys(this._textElements)
+            .filter(key => !!this._textElements[key])
+            .forEach(key => this._textElements[key].dispose());
+        Object.keys(this._buttons)
+            .filter(key => !!this._buttons[key])
+            .forEach(key => this._buttons[key].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
 
@@ -1027,8 +1078,8 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { [key: number]: number } {
-        // Game paused. Nothing should progress.
-        if (this._state === LandAndMineState.paused) {
+        // Game paused, or in tutorial mode. Nothing should progress.
+        if (this._state === LandAndMineState.paused || this._state === LandAndMineState.tutorial) {
             return;
         }
 
@@ -1081,6 +1132,12 @@ export class LandAndMine {
             return;
         }
 
+        // If ship reaches a certain altitude they've escaped.
+        if (landerRow >= 110) {
+            this._state = LandAndMineState.escaped;
+            return;
+        }
+
         // All other states consume oxygen still.
         if (this._currentOxygenLevel > 0) {
             this._currentOxygenLevel -= 0.02;
@@ -1088,6 +1145,14 @@ export class LandAndMine {
             if (Math.abs(this._currentOxygenLevel) < 20 && this._textElements.leftTopStatsText3.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText3.cycle(COLORS.selected);
             }
+        } else {
+            // TODO: Activate suffocation sequence.
+        }
+
+        if (this._state === LandAndMineState.suffocating) {
+            // TODO: Run through suffocating sequence.
+            // TODO: When suffocating sequence finishes, flush resources mined, and switch to LandAndMineState.escaping
+            return;
         }
 
         // Mining team has unpacked, and is ready to drill.
@@ -1173,11 +1238,34 @@ export class LandAndMine {
         // Mining team should move left and right, detect proximity to ship for loading, and nothing else while in walking mode.
         if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
             if (this._isMiningTeamMovingLeft) {
+                this._astronautWalkingCounter++;
+                if (this._astronautWalkingCounter > 10) {
+                    this._astronautWalkingCounter = 0;
+                }
                 const positions = this._getMiningTeamsPositions(true, false);
                 this._astronauts[0].mesh.position.set(
                     positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x - 0.002,
                     positions.left[1],
                     positions.left[2]);
+                this._astronauts[3].mesh.position.set(
+                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x - 0.002,
+                    positions.left[1],
+                    positions.left[2]);
+                this._astronauts[6].mesh.position.set(
+                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x - 0.002,
+                    positions.left[1],
+                    positions.left[2]);
+                if (this._astronauts[0].mesh.visible) {
+                    this._astronautWalkingCounter = 0;
+                    this._astronauts[0].mesh.visible = false;
+                    this._astronauts[3].mesh.visible = true;
+                } else if (this._astronauts[3].mesh.visible && this._astronautWalkingCounter < 5) {
+                    this._astronauts[3].mesh.visible = false;
+                    this._astronauts[6].mesh.visible = true;
+                } else if (this._astronauts[6].mesh.visible && this._astronautWalkingCounter >= 5) {
+                    this._astronauts[6].mesh.visible = false;
+                    this._astronauts[3].mesh.visible = true;
+                }
                 this._astronauts[1].mesh.position.set(
                     positions.teleported[1] ? positions.middle[0] : this._astronauts[1].mesh.position.x - 0.002,
                     positions.middle[1],
@@ -1186,15 +1274,57 @@ export class LandAndMine {
                     positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x - 0.002,
                     positions.right[1],
                     positions.right[2]);
+                this._astronauts[5].mesh.position.set(
+                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x - 0.002,
+                    positions.right[1],
+                    positions.right[2]);
+                this._astronauts[8].mesh.position.set(
+                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x - 0.002,
+                    positions.right[1],
+                    positions.right[2]);
+                if (this._astronauts[2].mesh.visible) {
+                    this._astronautWalkingCounter = 0;
+                    this._astronauts[2].mesh.visible = false;
+                    this._astronauts[8].mesh.visible = true;
+                } else if (this._astronauts[5].mesh.visible && this._astronautWalkingCounter >= 5) {
+                    this._astronauts[5].mesh.visible = false;
+                    this._astronauts[8].mesh.visible = true;
+                } else if (this._astronauts[8].mesh.visible && this._astronautWalkingCounter < 5) {
+                    this._astronauts[8].mesh.visible = false;
+                    this._astronauts[5].mesh.visible = true;
+                }
 
                 this._camera.position.set(this._astronauts[1].mesh.position.x, this._camera.position.y, positions.middle[2]);
                 this._camera.updateProjectionMatrix();
             } else if (this._isMiningTeamMovingRight) {
+                this._astronautWalkingCounter++;
+                if (this._astronautWalkingCounter > 10) {
+                    this._astronautWalkingCounter = 0;
+                }
                 const positions = this._getMiningTeamsPositions(false, true);
                 this._astronauts[0].mesh.position.set(
                     positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x + 0.002,
                     positions.left[1],
                     positions.left[2]);
+                this._astronauts[3].mesh.position.set(
+                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x + 0.002,
+                    positions.left[1],
+                    positions.left[2]);
+                this._astronauts[6].mesh.position.set(
+                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x + 0.002,
+                    positions.left[1],
+                    positions.left[2]);
+                if (this._astronauts[0].mesh.visible) {
+                    this._astronautWalkingCounter = 0;
+                    this._astronauts[0].mesh.visible = false;
+                    this._astronauts[3].mesh.visible = true;
+                } else if (this._astronauts[3].mesh.visible && this._astronautWalkingCounter < 5) {
+                    this._astronauts[3].mesh.visible = false;
+                    this._astronauts[6].mesh.visible = true;
+                } else if (this._astronauts[6].mesh.visible && this._astronautWalkingCounter >= 5) {
+                    this._astronauts[6].mesh.visible = false;
+                    this._astronauts[3].mesh.visible = true;
+                }
                 this._astronauts[1].mesh.position.set(
                     positions.teleported[1] ? positions.middle[0] : this._astronauts[1].mesh.position.x + 0.002,
                     positions.middle[1],
@@ -1203,6 +1333,25 @@ export class LandAndMine {
                     positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x + 0.002,
                     positions.right[1],
                     positions.right[2]);
+                this._astronauts[5].mesh.position.set(
+                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x + 0.002,
+                    positions.right[1],
+                    positions.right[2]);
+                this._astronauts[8].mesh.position.set(
+                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x + 0.002,
+                    positions.right[1],
+                    positions.right[2]);
+                if (this._astronauts[2].mesh.visible) {
+                    this._astronautWalkingCounter = 0;
+                    this._astronauts[2].mesh.visible = false;
+                    this._astronauts[8].mesh.visible = true;
+                } else if (this._astronauts[5].mesh.visible && this._astronautWalkingCounter >= 5) {
+                    this._astronauts[5].mesh.visible = false;
+                    this._astronauts[8].mesh.visible = true;
+                } else if (this._astronauts[8].mesh.visible && this._astronautWalkingCounter < 5) {
+                    this._astronauts[8].mesh.visible = false;
+                    this._astronauts[5].mesh.visible = true;
+                }
 
                 this._camera.position.set(this._astronauts[1].mesh.position.x, this._camera.position.y, positions.middle[2]);
                 this._camera.updateProjectionMatrix();
@@ -1295,12 +1444,6 @@ export class LandAndMine {
         }
         if (currPos.x > 6) {
             this._lander.mesh.position.set(-5.9, currPos.y, currPos.z);
-        }
-
-        // If ship reaches a certain altitude they've escaped.
-        if (landerRow >= 110) {
-            this._state = LandAndMineState.escaped;
-            return;
         }
 
         const gridBottomRow = this._grid[landerRow];

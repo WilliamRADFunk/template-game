@@ -396,6 +396,13 @@ export class DevMenu {
 
         const groupLeftStart = 0.015;
 
+        // TODO: Add shipSpecifications (
+        //     max drill bit length,
+        //     speed of fuel consumption,
+        //     speed of oxygen consumption,
+        //     margin for error in landing speed.
+        // )
+
         //#region LaunchLandAndMineScene Row -1
         let rowSub1Left = groupLeftStart;
         this._page1textElements.freestylePeakElevationText = new FreestyleText(
