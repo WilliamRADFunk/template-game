@@ -214,7 +214,7 @@ export class DevMenu {
      * @param menuFont loaded font to use for menu button text.
      * @hidden
      */
-    constructor(scene: SceneType, callbacks: { [key: string]: (arg?: any) => void }, textures: { [key: string]: Texture }) {
+    constructor(scene: SceneType, callbacks: { [key: string]: (arg1?: any, arg2?: any) => void }, textures: { [key: string]: Texture }) {
         this._scene = scene.scene;
         this._textures = textures;
 
@@ -366,18 +366,26 @@ export class DevMenu {
 
         onClick = () => {
             this._page1buttons.launchLandAndMineSceneButton.disable();
-            callbacks.activateLandAndMineScene({
-                gravity: this._landAndMinePlanetSpec.gravity,
-                hasWater: (this._buttons.isWaterButton as ToggleBase).getState(),
-                isFrozen: (this._buttons.isFrozenButton as ToggleBase).getState(),
-                isLife: (this._buttons.isLifeButton as ToggleBase).getState(),
-                ore: this._landAndMinePlanetSpec.ore,
-                oreQuantity: this._landAndMinePlanetSpec.oreQuantity,
-                peakElevation: this._landAndMinePlanetSpec.peakElevation,
-                planetBase: this._landAndMinePlanetSpec.planetBase,
-                skyBase: this._landAndMinePlanetSpec.skyBase,
-                wind: this._landAndMinePlanetSpec.wind
-            });
+            callbacks.activateLandAndMineScene(
+                {
+                    gravity: this._landAndMinePlanetSpec.gravity,
+                    hasWater: (this._buttons.isWaterButton as ToggleBase).getState(),
+                    isFrozen: (this._buttons.isFrozenButton as ToggleBase).getState(),
+                    isLife: (this._buttons.isLifeButton as ToggleBase).getState(),
+                    ore: this._landAndMinePlanetSpec.ore,
+                    oreQuantity: this._landAndMinePlanetSpec.oreQuantity,
+                    peakElevation: this._landAndMinePlanetSpec.peakElevation,
+                    planetBase: this._landAndMinePlanetSpec.planetBase,
+                    skyBase: this._landAndMinePlanetSpec.skyBase,
+                    wind: this._landAndMinePlanetSpec.wind
+                },
+                {
+                    drillLength: 5,
+                    fuelBurn: 0.05,
+                    horizontalCrashMargin: 0.001,
+                    oxygenBurn: 0.02,
+                    verticalCrashMargin: 0.01
+                });
         };
 
         this._page1buttons.launchLandAndMineSceneButton = new LoadButton(
@@ -395,13 +403,6 @@ export class DevMenu {
             TextType.FADABLE);
 
         const groupLeftStart = 0.015;
-
-        // TODO: Add shipSpecifications (
-        //     max drill bit length,
-        //     speed of fuel consumption,
-        //     speed of oxygen consumption,
-        //     margin for error in landing speed.
-        // )
 
         //#region LaunchLandAndMineScene Row -1
         let rowSub1Left = groupLeftStart;

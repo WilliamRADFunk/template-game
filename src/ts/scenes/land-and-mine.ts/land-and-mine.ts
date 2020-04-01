@@ -35,6 +35,7 @@ import { createMiningTeam } from './actors/create-mining-team';
 import { LoadButton } from '../../controls/buttons/load-button';
 import { MineButton } from '../../controls/buttons/mine-button';
 import { PackItUpButton } from '../../controls/buttons/pack-it-up-button';
+import { LanderSpecifications } from '../../models/lander-specifications';
 
 /*
  * Grid Values
@@ -134,6 +135,8 @@ export class LandAndMine {
 
     private _lander: Actor;
 
+    private _landerSpecifications: LanderSpecifications;
+
     private _leftThruster: SideThruster;
 
     /**
@@ -144,8 +147,6 @@ export class LandAndMine {
     private _loot: { [key: number]: number } = {};
 
     private _mainThruster: MainThruster;
-
-    private _maxDrillLength = 5;
 
     private _meshGrid: Mesh[][] = [];
 
@@ -174,23 +175,19 @@ export class LandAndMine {
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param textures                  all the needed textures for land and mine.
      * @param planetSpecifications      details about the planet used to operate the scene.
+     * @param landerSpecifications      details about the lander used to operate the lander module and its mining crew.
      */
     constructor(
         scene: SceneType,
         textures: { [key: string]: Texture },
-        planetSpecifications: PlanetSpecifications) {
-
-        // TODO: Add shipSpecifications (
-        //     max drill bit length,
-        //     speed of fuel consumption,
-        //     speed of oxygen consumption,
-        //     margin for error in landing speed.
-        // )
+        planetSpecifications: PlanetSpecifications,
+        landerSpecifications: LanderSpecifications) {
 
         this._camera = scene.camera as OrthographicCamera;
         this._scene = scene.scene;
         this._textures = textures;
         this._planetSpecifications = planetSpecifications;
+        this._landerSpecifications = landerSpecifications;
         this._loot[planetSpecifications.ore] = 0;
         this._loot[-2] = 0; // -1 is surviving crew members
         this._loot[-1] = 0; // -1 is food
@@ -1140,13 +1137,14 @@ export class LandAndMine {
 
         // All other states consume oxygen still.
         if (this._currentOxygenLevel > 0) {
-            this._currentOxygenLevel -= 0.02;
+            this._currentOxygenLevel -= this._landerSpecifications.oxygenBurn;
             this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
             if (Math.abs(this._currentOxygenLevel) < 20 && this._textElements.leftTopStatsText3.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText3.cycle(COLORS.selected);
             }
         } else {
-            // TODO: Activate suffocation sequence.
+            this._state = LandAndMineState.suffocating;
+            return;
         }
 
         if (this._state === LandAndMineState.suffocating) {
@@ -1197,7 +1195,7 @@ export class LandAndMine {
                         this._scene.add(minedMesh);
                     }
                 } else if (centerRowBefore !== centerDrillRowAfter) {
-                    if (this._maxDrillLength !== this._drillBits.length) {
+                    if (this._landerSpecifications.drillLength !== this._drillBits.length) {
                         this._buttons.packUpButton.hide();
                         const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
                         const drillMat = new MeshPhongMaterial({
@@ -1385,7 +1383,7 @@ export class LandAndMine {
         // Calculate effects of horizontal thrusting and wind against the ship.
         // Left thrust on
         if (this._isLeftThrusting && this._currentFuelLevel > 0) {
-            this._currentFuelLevel -= 0.05;
+            this._currentFuelLevel -= this._landerSpecifications.fuelBurn;
             let thrust = HORIZONTAL_THRUST;
             if (this._planetSpecifications.wind < 0) {
                 thrust = HORIZONTAL_THRUST + drag;
@@ -1399,7 +1397,7 @@ export class LandAndMine {
         }
         // Right thrust on
         if (this._isRightThrusting && this._currentFuelLevel > 0) {
-            this._currentFuelLevel -= 0.05;
+            this._currentFuelLevel -= this._landerSpecifications.fuelBurn;
             let thrust = HORIZONTAL_THRUST;
             if (this._planetSpecifications.wind < 0) {
                 thrust = HORIZONTAL_THRUST - drag;
@@ -1428,7 +1426,7 @@ export class LandAndMine {
 
         // Calculate effects of vertical thrust.
         if (this._isVerticalThrusting && this._currentFuelLevel > 0) {
-            this._currentFuelLevel -= 0.05;
+            this._currentFuelLevel -= this._landerSpecifications.fuelBurn;
             this._currentLanderVerticalSpeed -= VERTICAL_THRUST;
         }
 
@@ -1450,6 +1448,7 @@ export class LandAndMine {
         const gridMiddleRow = this._grid[landerRow + 1];
         const gridTopRow = this._grid[landerRow + 2];
         const landerCol = ((100 * currPos.x) % 10) < 5 ? Math.floor((10 * currPos.x) + 60) : Math.ceil((10 * currPos.x) + 60);
+        const landerBottomCenter = gridBottomRow[landerCol];
         const landerBottomLeft = gridBottomRow[landerCol !== 0 ? landerCol - 1 : 120];
         const landerBottomRight = gridBottomRow[landerCol !== 120 ? landerCol + 1 : 0];
         const landerMiddleLeft = gridMiddleRow[landerCol !== 0 ? landerCol - 1 : 120];
@@ -1459,32 +1458,32 @@ export class LandAndMine {
 
         // Collision detection
         if (landerRow < 100
-            && gridBottomRow[landerCol] < 3
+            && landerBottomCenter < 3
             && (landerBottomLeft || landerMiddleLeft || landerTopLeft || landerBottomRight || landerMiddleRight || landerTopRight)) {
             this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
             this._state = LandAndMineState.crashed;
             setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+            return;
         }
 
         // Check if ship is eligible for landing condition, or crashed condition
-        if (landerRow < 100 && gridBottomRow[landerCol] && this._state !== LandAndMineState.landed as LandAndMineState) {
-            if (this._state !== LandAndMineState.crashed) {
-                if (landerBottomLeft < 3 || landerBottomRight < 3) {
-                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-                    this._state = LandAndMineState.crashed;
-                    setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
-                    return;
-                } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
-                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
-                    this._state = LandAndMineState.crashed;
-                    setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
-                    return;
-                } else if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 || this._currentLanderVerticalSpeed >= 0.01) {
-                    this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-                    this._state = LandAndMineState.crashed;
-                    setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
-                    return;
-                }
+        if (landerRow < 100 && landerBottomCenter) {
+            if (landerBottomLeft < 3 || landerBottomRight < 3) {
+                this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
+                this._state = LandAndMineState.crashed;
+                setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+                return;
+            } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
+                this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
+                this._state = LandAndMineState.crashed;
+                setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+                return;
+            } else if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
+                || this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin) {
+                this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
+                this._state = LandAndMineState.crashed;
+                setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+                return;
             }
 
             this._lander.mesh.position.set(currPos.x, currPos.y, ((landerRow - 60) / -10) - 0.21000001);
@@ -1498,16 +1497,20 @@ export class LandAndMine {
 
             horizontalSpeedText = `Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`;
             this._textElements.leftTopStatsText1.update(horizontalSpeedText);
-            if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
+            if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
+                && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText1.cycle(COLORS.selected);
-            } else if (Math.abs(this._currentLanderHorizontalSpeed) < 0.001 && this._textElements.leftTopStatsText1.color === COLORS.selected) {
+            } else if (Math.abs(this._currentLanderHorizontalSpeed) < this._landerSpecifications.horizontalCrashMargin
+                && this._textElements.leftTopStatsText1.color === COLORS.selected) {
                 this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
             }
 
             this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
-            if (this._currentLanderVerticalSpeed >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
+            if (this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin
+                && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
                 this._textElements.leftTopStatsText2.cycle(COLORS.selected);
-            } else if (this._currentLanderVerticalSpeed < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
+            } else if (this._currentLanderVerticalSpeed < this._landerSpecifications.verticalCrashMargin
+                && this._textElements.leftTopStatsText2.color === COLORS.selected) {
                 this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
             }
 
@@ -1516,17 +1519,21 @@ export class LandAndMine {
 
         // Change horizontal speed text color if it exceeds safe limits or back if it is within safe bounds.
         this._textElements.leftTopStatsText1.update(horizontalSpeedText);
-        if (Math.abs(this._currentLanderHorizontalSpeed) >= 0.001 && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
+        if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
+            && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
             this._textElements.leftTopStatsText1.cycle(COLORS.selected);
-        } else if (Math.abs(this._currentLanderHorizontalSpeed) < 0.001 && this._textElements.leftTopStatsText1.color === COLORS.selected) {
+        } else if (Math.abs(this._currentLanderHorizontalSpeed) < this._landerSpecifications.horizontalCrashMargin
+            && this._textElements.leftTopStatsText1.color === COLORS.selected) {
             this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
         }
 
         // Change vertical speed text color if it exceeds safe limits or back if it is within safe bounds.
         this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed > 0.0001 ? this._currentLanderVerticalSpeed.toFixed(4) : Number(0).toFixed(4)}`);
-        if (this._currentLanderVerticalSpeed >= 0.01 && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
+        if (this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin
+            && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
             this._textElements.leftTopStatsText2.cycle(COLORS.selected);
-        } else if (this._currentLanderVerticalSpeed < 0.01 && this._textElements.leftTopStatsText2.color === COLORS.selected) {
+        } else if (this._currentLanderVerticalSpeed < this._landerSpecifications.verticalCrashMargin
+            && this._textElements.leftTopStatsText2.color === COLORS.selected) {
             this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
         }
 

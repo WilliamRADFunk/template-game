@@ -26,8 +26,9 @@ import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
-import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
+import { LandAndMine, LandAndMineState } from './scenes/land-and-mine.ts/land-and-mine';
 import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
+import { LanderSpecifications } from './models/lander-specifications';
 
 /**
  * Loads the graphic for asteroid.
@@ -556,12 +557,12 @@ const loadDevMenu = () => {
             // loadVertexMapScene();
         }, 50);
     };
-    const activateLandAndMineScene = (planetSpec?: PlanetSpecifications) => {
+    const activateLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
         scenes.devMenu.active = false;
         window.removeEventListener( 'resize', onWindowResize, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            loadLandAndMineScene(planetSpec);
+            loadLandAndMineScene(planetSpec, landerSpec);
         }, 50);
     };
     const activatePlanetRaid = () => {
@@ -880,7 +881,7 @@ const loadIntroScene = () => {
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
-const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
+const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
     scenes.landAndMine.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
@@ -943,7 +944,8 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications) => {
             miningDrillTexture,
             minedSquare1Texture
         },
-        planetSpec);
+        planetSpec,
+        landerSpec);
     scenes.landAndMine.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
