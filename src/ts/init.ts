@@ -31,51 +31,37 @@ import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
 import { LanderSpecifications } from './models/lander-specifications';
 
 const TEXTURES: { [key: string]: [string, Texture] } = {
-    // The loaded texture, used for the asteroids.
-    asteroidTexture: ['assets/images/asteroid.png', null],
-    // The loaded texture, used for the astronaut1.
-    astronaut1Texture: ['assets/images/astronaut-01.png', null],
-    // The loaded texture, used for the astronaut2.
-    astronaut2Texture: ['assets/images/astronaut-02.png', null],
-    // The loaded texture, used for the astronaut3.
-    astronaut3Texture: ['assets/images/astronaut-03.png', null],
-    // The loaded texture, used for the earth.
-    earthTexture: ['assets/images/earth.png', null],
-    // The loaded texture, used for the enceladus.
-    enceladusTexture: ['assets/images/enceladus.png', null],
-    // The loaded texture, used for the ship layout dialogue engineer profile.
-    engineerProfileTexture: ['assets/images/ship-layout-profile.png', null],
-    // The loaded texture, used for the ship layout dialogue engineer profile.
-    engineer2ProfileTexture: ['assets/images/ship-layout-profile-2.png', null],
-    // The loaded texture, used for the enzmann interior.
-    enzmannLayoutTexture: ['assets/images/enzmann-layout.png', null],
-    // The loaded texture, used for the enzmann.
-    enzmannOutsideTexture: ['assets/images/enzmann-outside.png', null],
-    // The loaded texture, used for the fire.
-    fireTexture: ['assets/images/fire.png', null],
-    // The loaded texture, used for the mars.
-    marsTexture: ['assets/images/mars.png', null],
-    // The loaded texture, used for the lander.
-    landerTexture: ['assets/images/lander.png', null],
-    // The loaded texture, used for the miningEquipment1.
-    miningEquipment1Texture: ['assets/images/mining-equipment-01.png', null],
-    // The loaded texture, used for the miningEquipment2.
-    miningEquipment2Texture: ['assets/images/mining-equipment-02.png', null],
-    // The loaded texture, used for the miningDrill.
-    miningDrillTexture: ['assets/images/mining-drill.png', null],
-    // The loaded texture, used for the minedSquare1.
-    minedSquare1Texture: ['assets/images/mined-square-01.png', null],
-    // The loaded texture, used for the ships.
-    shipTexture: ['assets/images/ship.png', null]
+    asteroid: ['assets/images/asteroid.png', null],
+    astronaut1: ['assets/images/astronaut-01.png', null],
+    astronaut2: ['assets/images/astronaut-02.png', null],
+    astronaut3: ['assets/images/astronaut-03.png', null],
+    astronautSuffocation1: ['assets/images/astronaut-suffocation-01.png', null],
+    astronautSuffocation2: ['assets/images/astronaut-suffocation-02.png', null],
+    astronautSuffocation3: ['assets/images/astronaut-suffocation-03.png', null],
+    astronautSuffocation4: ['assets/images/astronaut-suffocation-04.png', null],
+    astronautSuffocation5: ['assets/images/astronaut-suffocation-05.png', null],
+    earth: ['assets/images/earth.png', null],
+    enceladus: ['assets/images/enceladus.png', null],
+    // The loaded texture, used for the ship layout dialogue engineer profile 1.
+    engineerProfile: ['assets/images/ship-layout-profile.png', null],
+    // The loaded texture, used for the ship layout dialogue engineer profile 2.
+    engineer2Profile: ['assets/images/ship-layout-profile-2.png', null],
+    // The loaded texture, used for the enzmann's interior.
+    enzmannLayout: ['assets/images/enzmann-layout.png', null],
+    enzmannOutside: ['assets/images/enzmann-outside.png', null],
+    fire: ['assets/images/fire.png', null],
+    mars: ['assets/images/mars.png', null],
+    lander: ['assets/images/lander.png', null],
+    miningEquipment1: ['assets/images/mining-equipment-01.png', null],
+    miningEquipment2: ['assets/images/mining-equipment-02.png', null],
+    miningDrill: ['assets/images/mining-drill.png', null],
+    minedSquare1: ['assets/images/mined-square-01.png', null],
+    ship: ['assets/images/ship.png', null]
 };
 /**
  * The thing that hears sound.
  */
 const AUDIO_LISTENER: AudioListener = new AudioListener();
-/**
- * Loads the font from a json file.
- */
-const fontLoader = new FontLoader();
 /**
  * The loaded font, used for the scoreboard.
  */
@@ -219,7 +205,7 @@ const loadAssets = () => {
         });
     });
     // Callback function to set the scoreboard font once it is finished loading.
-    fontLoader.load( 'assets/fonts/Luckiest_Guy_Regular.json', font => {
+    (new FontLoader()).load( 'assets/fonts/Luckiest_Guy_Regular.json', font => {
         gameFont = font;
         checkAssetsLoaded();
     });
@@ -370,9 +356,9 @@ const loadDevMenu = () => {
             activateVertexMapScene
         },
         {
-            engineer: TEXTURES.engineerProfileTexture[1],
-            engineer2: TEXTURES.engineer2ProfileTexture[1],
-            enzmann: TEXTURES.enzmannOutsideTexture[1]
+            engineer: TEXTURES.engineerProfile[1],
+            engineer2: TEXTURES.engineer2Profile[1],
+            enzmann: TEXTURES.enzmannOutside[1]
         });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();
@@ -620,11 +606,11 @@ const loadIntroScene = () => {
     };
     const intro = new Intro(
         scenes.intro,
-        TEXTURES.shipTexture[1],
-        TEXTURES.earthTexture[1],
-        TEXTURES.marsTexture[1],
-        TEXTURES.asteroidTexture[1],
-        TEXTURES.enceladusTexture[1],
+        TEXTURES.ship[1],
+        TEXTURES.earth[1],
+        TEXTURES.mars[1],
+        TEXTURES.asteroid[1],
+        TEXTURES.enceladus[1],
         gameFont);
     scenes.intro.raycaster = raycaster;
     /**
@@ -725,14 +711,14 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
     const landAndMine = new LandAndMine(
         scenes.landAndMine,
         {
-            shipTexture: TEXTURES.landerTexture[1],
-            astronaut1Texture: TEXTURES.astronaut1Texture[1],
-            astronaut2Texture: TEXTURES.astronaut2Texture[1],
-            astronaut3Texture: TEXTURES.astronaut3Texture[1],
-            miningEquipment1Texture: TEXTURES.miningEquipment1Texture[1],
-            miningEquipment2Texture: TEXTURES.miningEquipment2Texture[1],
-            miningDrillTexture: TEXTURES.miningDrillTexture[1],
-            minedSquare1Texture: TEXTURES.minedSquare1Texture[1]
+            ship: TEXTURES.lander[1],
+            astronaut1: TEXTURES.astronaut1[1],
+            astronaut2: TEXTURES.astronaut2[1],
+            astronaut3: TEXTURES.astronaut3[1],
+            miningEquipment1: TEXTURES.miningEquipment1[1],
+            miningEquipment2: TEXTURES.miningEquipment2[1],
+            miningDrill: TEXTURES.miningDrill[1],
+            minedSquare1: TEXTURES.minedSquare1[1]
         },
         planetSpec,
         landerSpec);
@@ -846,9 +832,9 @@ const loadShipLayoutScene = () => {
     const raycaster = new Raycaster();
     const shipLayout = new ShipLayout(
         scenes.shipLayout,
-        TEXTURES.enzmannLayoutTexture[1],
-        TEXTURES.enzmannOutsideTexture[1],
-        TEXTURES.engineerProfileTexture[1]);
+        TEXTURES.enzmannLayout[1],
+        TEXTURES.enzmannOutside[1],
+        TEXTURES.engineerProfile[1]);
     scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

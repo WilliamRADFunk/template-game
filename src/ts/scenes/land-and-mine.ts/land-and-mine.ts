@@ -16,7 +16,7 @@ import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
-import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors, OreTypes } from '../../models/planet-specifications';
+import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors } from '../../models/planet-specifications';
 import { MainThruster } from './actors/main-thruster';
 import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
 import { COLORS } from '../../styles/colors';
@@ -221,7 +221,7 @@ export class LandAndMine {
         window.addEventListener('resize', this._listenerRef, false);
 
         // Create lander module
-        const lander = createLander(this._textures.shipTexture);
+        const lander = createLander(this._textures.ship);
         this._lander = lander;
         this._actors.push(lander);
         this._scene.add(lander.mesh);
@@ -233,13 +233,13 @@ export class LandAndMine {
         // Create astronaut mining team
         this._astronauts = createMiningTeam(
             {
-                astronaut1Texture: textures.astronaut1Texture,
-                astronaut2Texture: textures.astronaut2Texture,
-                astronaut3Texture: textures.astronaut3Texture
+                astronaut1: textures.astronaut1,
+                astronaut2: textures.astronaut2,
+                astronaut3: textures.astronaut3
             },
             {
-                miningEquipment1Texture: textures.miningEquipment1Texture,
-                miningEquipment2Texture: textures.miningEquipment2Texture
+                miningEquipment1: textures.miningEquipment1,
+                miningEquipment2: textures.miningEquipment2
             });
         this._astronauts.filter(astro => !!astro).forEach(astro => {
             this._scene.add(astro.mesh);
@@ -837,7 +837,7 @@ export class LandAndMine {
                 const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
                 const drillMat = new MeshPhongMaterial({
                     color: '#FFFFFF',
-                    map: this._textures.miningDrillTexture,
+                    map: this._textures.miningDrill,
                     shininess: 0,
                     transparent: true
                 });
@@ -1197,7 +1197,7 @@ export class LandAndMine {
                         const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
                         const minedMat = new MeshPhongMaterial({
                             color: '#FFFFFF',
-                            map: this._textures.minedSquare1Texture,
+                            map: this._textures.minedSquare1,
                             shininess: 0,
                             transparent: true
                         });
@@ -1205,7 +1205,8 @@ export class LandAndMine {
                         minedMesh.position.set(minedBlockPos.x, minedBlockPos.y, minedBlockPos.z);
                         minedMesh.rotation.set(-1.5708, 0, 0);
                         minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
-
+                        // TODO: Need to use col/row from grid as position of removed block because of ice.
+                        // TODO: Need to add numbers when block is mined.
                         this._scene.remove(minedBlock);
                         this._scene.add(minedMesh);
                     }
@@ -1215,7 +1216,7 @@ export class LandAndMine {
                         const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
                         const drillMat = new MeshPhongMaterial({
                             color: '#FFFFFF',
-                            map: this._textures.miningDrillTexture,
+                            map: this._textures.miningDrill,
                             shininess: 0,
                             transparent: true
                         });

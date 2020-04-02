@@ -10,25 +10,26 @@ import { Actor } from "../../../models/actor";
 
 /**
  * Creates the rectangle image of the lander.
- * @param astronaut1Texture texture for the lander image.
+ * @param astronautTextures         textures for the astronaut images.
+ * @param miningEquipmentTextures   textures for the mining equipment images.
  */
 export function createMiningTeam(astronautTextures: { [key: string]: Texture }, miningEquipmentTextures: { [key: string]: Texture }): Actor[] {
     const astronautGeometry = new PlaneGeometry( 0.15, 0.15, 10, 10 );
     const astronautMaterialStanding = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronaut1Texture,
+        map: astronautTextures.astronaut1,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialWalking1 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronaut2Texture,
+        map: astronautTextures.astronaut2,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialWalking2 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronaut3Texture,
+        map: astronautTextures.astronaut3,
         shininess: 0,
         transparent: true
     });
@@ -91,7 +92,7 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
     const mwGeo = new CircleGeometry( 0.075, 10, 10 );
     const mwMat = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: miningEquipmentTextures.miningEquipment1Texture,
+        map: miningEquipmentTextures.miningEquipment1,
         shininess: 0,
         transparent: true
     });
@@ -103,7 +104,7 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
     const mbGeo = new PlaneGeometry( 0.15, 0.15, 10, 10 );
     const mbMat = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: miningEquipmentTextures.miningEquipment2Texture,
+        map: miningEquipmentTextures.miningEquipment2,
         shininess: 0,
         transparent: true
     });
