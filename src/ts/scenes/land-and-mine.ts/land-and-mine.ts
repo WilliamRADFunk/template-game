@@ -74,7 +74,7 @@ export enum LandAndMineState {
     'walkingByLander' = 5,
     'walkingAwayFromLander' = 6,
     'mining' = 7,
-    'suffocating' = 8, // TODO: Suffocation sequence
+    'suffocating' = 8,
     'tutorial' = 9
 }
 
@@ -90,8 +90,6 @@ export class LandAndMine {
 
     private _astronauts: Actor[] = [];
 
-    private _astronautWalkingCounter: number = 0;
-
     /**
      * List of buttons
      */
@@ -104,6 +102,13 @@ export class LandAndMine {
     };
 
     private _camera: OrthographicCamera;
+
+    private _counters: { [key: string]: number } = {
+        astronautWalkingCounter: 0,
+        astronautWalkingCounterClear: 10,
+        suffocatingCounter: 0,
+        suffocatingCounterClear: 100
+    };
 
     private _currentFuelLevel: number = 100;
 
@@ -660,7 +665,7 @@ export class LandAndMine {
                 if (event.keyCode === 65 || event.keyCode === 37) {
                     newPos = this._getMiningTeamsPositions(true, false);
                     this._isMiningTeamMovingLeft = false;
-                    this._astronautWalkingCounter = 0;
+                    this._counters.astronautWalkingCounter = 0;
                     this._astronauts[0].mesh.visible = true;
                     this._astronauts[3].mesh.visible = false;
                     this._astronauts[6].mesh.visible = false;
@@ -670,7 +675,7 @@ export class LandAndMine {
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
                     newPos = this._getMiningTeamsPositions(false, true);
                     this._isMiningTeamMovingRight = false;
-                    this._astronautWalkingCounter = 0;
+                    this._counters.astronautWalkingCounter = 0;
                     this._astronauts[0].mesh.visible = true;
                     this._astronauts[3].mesh.visible = false;
                     this._astronauts[6].mesh.visible = false;
@@ -1132,6 +1137,22 @@ export class LandAndMine {
         // If ship reaches a certain altitude they've escaped.
         if (landerRow >= 110) {
             this._state = LandAndMineState.escaped;
+            this._loot[-2] = 2; // Regain crew members.
+            return;
+        }
+
+        if (this._state === LandAndMineState.suffocating) {
+            // TODO: Run through suffocating sequence.
+            this._counters.suffocatingCounter++;
+
+            if (this._counters.suffocatingCounter > this._counters.suffocatingCounterClear) {
+                this._loot = {
+                    '-2': 0,
+                    '-1': 0,
+                    '0': 0
+                };
+                this._state = LandAndMineState.escaped;
+            }
             return;
         }
 
@@ -1144,12 +1165,6 @@ export class LandAndMine {
             }
         } else {
             this._state = LandAndMineState.suffocating;
-            return;
-        }
-
-        if (this._state === LandAndMineState.suffocating) {
-            // TODO: Run through suffocating sequence.
-            // TODO: When suffocating sequence finishes, flush resources mined, and switch to LandAndMineState.escaping
             return;
         }
 
@@ -1236,9 +1251,9 @@ export class LandAndMine {
         // Mining team should move left and right, detect proximity to ship for loading, and nothing else while in walking mode.
         if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
             if (this._isMiningTeamMovingLeft) {
-                this._astronautWalkingCounter++;
-                if (this._astronautWalkingCounter > 10) {
-                    this._astronautWalkingCounter = 0;
+                this._counters.astronautWalkingCounter++;
+                if (this._counters.astronautWalkingCounter > this._counters.astronautWalkingCounterClear) {
+                    this._counters.astronautWalkingCounter = 0;
                 }
                 const positions = this._getMiningTeamsPositions(true, false);
                 this._astronauts[0].mesh.position.set(
@@ -1254,13 +1269,13 @@ export class LandAndMine {
                     positions.left[1],
                     positions.left[2]);
                 if (this._astronauts[0].mesh.visible) {
-                    this._astronautWalkingCounter = 0;
+                    this._counters.astronautWalkingCounter = 0;
                     this._astronauts[0].mesh.visible = false;
                     this._astronauts[3].mesh.visible = true;
-                } else if (this._astronauts[3].mesh.visible && this._astronautWalkingCounter < 5) {
+                } else if (this._astronauts[3].mesh.visible && this._counters.astronautWalkingCounter < 5) {
                     this._astronauts[3].mesh.visible = false;
                     this._astronauts[6].mesh.visible = true;
-                } else if (this._astronauts[6].mesh.visible && this._astronautWalkingCounter >= 5) {
+                } else if (this._astronauts[6].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
                     this._astronauts[6].mesh.visible = false;
                     this._astronauts[3].mesh.visible = true;
                 }
@@ -1281,13 +1296,13 @@ export class LandAndMine {
                     positions.right[1],
                     positions.right[2]);
                 if (this._astronauts[2].mesh.visible) {
-                    this._astronautWalkingCounter = 0;
+                    this._counters.astronautWalkingCounter = 0;
                     this._astronauts[2].mesh.visible = false;
                     this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[5].mesh.visible && this._astronautWalkingCounter >= 5) {
+                } else if (this._astronauts[5].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
                     this._astronauts[5].mesh.visible = false;
                     this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[8].mesh.visible && this._astronautWalkingCounter < 5) {
+                } else if (this._astronauts[8].mesh.visible && this._counters.astronautWalkingCounter < 5) {
                     this._astronauts[8].mesh.visible = false;
                     this._astronauts[5].mesh.visible = true;
                 }
@@ -1295,9 +1310,9 @@ export class LandAndMine {
                 this._camera.position.set(this._astronauts[1].mesh.position.x, this._camera.position.y, positions.middle[2]);
                 this._camera.updateProjectionMatrix();
             } else if (this._isMiningTeamMovingRight) {
-                this._astronautWalkingCounter++;
-                if (this._astronautWalkingCounter > 10) {
-                    this._astronautWalkingCounter = 0;
+                this._counters.astronautWalkingCounter++;
+                if (this._counters.astronautWalkingCounter > this._counters.astronautWalkingCounterClear) {
+                    this._counters.astronautWalkingCounter = 0;
                 }
                 const positions = this._getMiningTeamsPositions(false, true);
                 this._astronauts[0].mesh.position.set(
@@ -1313,13 +1328,13 @@ export class LandAndMine {
                     positions.left[1],
                     positions.left[2]);
                 if (this._astronauts[0].mesh.visible) {
-                    this._astronautWalkingCounter = 0;
+                    this._counters.astronautWalkingCounter = 0;
                     this._astronauts[0].mesh.visible = false;
                     this._astronauts[3].mesh.visible = true;
-                } else if (this._astronauts[3].mesh.visible && this._astronautWalkingCounter < 5) {
+                } else if (this._astronauts[3].mesh.visible && this._counters.astronautWalkingCounter < 5) {
                     this._astronauts[3].mesh.visible = false;
                     this._astronauts[6].mesh.visible = true;
-                } else if (this._astronauts[6].mesh.visible && this._astronautWalkingCounter >= 5) {
+                } else if (this._astronauts[6].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
                     this._astronauts[6].mesh.visible = false;
                     this._astronauts[3].mesh.visible = true;
                 }
@@ -1340,13 +1355,13 @@ export class LandAndMine {
                     positions.right[1],
                     positions.right[2]);
                 if (this._astronauts[2].mesh.visible) {
-                    this._astronautWalkingCounter = 0;
+                    this._counters.astronautWalkingCounter = 0;
                     this._astronauts[2].mesh.visible = false;
                     this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[5].mesh.visible && this._astronautWalkingCounter >= 5) {
+                } else if (this._astronauts[5].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
                     this._astronauts[5].mesh.visible = false;
                     this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[8].mesh.visible && this._astronautWalkingCounter < 5) {
+                } else if (this._astronauts[8].mesh.visible && this._counters.astronautWalkingCounter < 5) {
                     this._astronauts[8].mesh.visible = false;
                     this._astronauts[5].mesh.visible = true;
                 }

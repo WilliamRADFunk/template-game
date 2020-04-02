@@ -26,102 +26,52 @@ import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
-import { LandAndMine, LandAndMineState } from './scenes/land-and-mine.ts/land-and-mine';
+import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
 import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
 import { LanderSpecifications } from './models/lander-specifications';
 
-/**
- * Loads the graphic for asteroid.
- */
-const asteroidLoader = new TextureLoader();
-/**
- * The loaded texture, used for the asteroids.
- */
-let asteroidTexture: Texture;
-/**
- * Loads the graphic for astronaut1.
- */
-const astronaut1Loader = new TextureLoader();
-/**
- * The loaded texture, used for the astronaut1.
- */
-let astronaut1Texture: Texture;
-/**
- * Loads the graphic for astronaut2.
- */
-const astronaut2Loader = new TextureLoader();
-/**
- * The loaded texture, used for the astronaut2.
- */
-let astronaut2Texture: Texture;
-/**
- * Loads the graphic for astronaut3.
- */
-const astronaut3Loader = new TextureLoader();
-/**
- * The loaded texture, used for the astronaut3.
- */
-let astronaut3Texture: Texture;
+const TEXTURES: { [key: string]: [string, Texture] } = {
+    // The loaded texture, used for the asteroids.
+    asteroidTexture: ['assets/images/asteroid.png', null],
+    // The loaded texture, used for the astronaut1.
+    astronaut1Texture: ['assets/images/astronaut-01.png', null],
+    // The loaded texture, used for the astronaut2.
+    astronaut2Texture: ['assets/images/astronaut-02.png', null],
+    // The loaded texture, used for the astronaut3.
+    astronaut3Texture: ['assets/images/astronaut-03.png', null],
+    // The loaded texture, used for the earth.
+    earthTexture: ['assets/images/earth.png', null],
+    // The loaded texture, used for the enceladus.
+    enceladusTexture: ['assets/images/enceladus.png', null],
+    // The loaded texture, used for the ship layout dialogue engineer profile.
+    engineerProfileTexture: ['assets/images/ship-layout-profile.png', null],
+    // The loaded texture, used for the ship layout dialogue engineer profile.
+    engineer2ProfileTexture: ['assets/images/ship-layout-profile-2.png', null],
+    // The loaded texture, used for the enzmann interior.
+    enzmannLayoutTexture: ['assets/images/enzmann-layout.png', null],
+    // The loaded texture, used for the enzmann.
+    enzmannOutsideTexture: ['assets/images/enzmann-outside.png', null],
+    // The loaded texture, used for the fire.
+    fireTexture: ['assets/images/fire.png', null],
+    // The loaded texture, used for the mars.
+    marsTexture: ['assets/images/mars.png', null],
+    // The loaded texture, used for the lander.
+    landerTexture: ['assets/images/lander.png', null],
+    // The loaded texture, used for the miningEquipment1.
+    miningEquipment1Texture: ['assets/images/mining-equipment-01.png', null],
+    // The loaded texture, used for the miningEquipment2.
+    miningEquipment2Texture: ['assets/images/mining-equipment-02.png', null],
+    // The loaded texture, used for the miningDrill.
+    miningDrillTexture: ['assets/images/mining-drill.png', null],
+    // The loaded texture, used for the minedSquare1.
+    minedSquare1Texture: ['assets/images/mined-square-01.png', null],
+    // The loaded texture, used for the ships.
+    shipTexture: ['assets/images/ship.png', null]
+};
 /**
  * The thing that hears sound.
  */
-const audioListener: AudioListener = new AudioListener();
-/**
- * Loads the graphic for earth.
- */
-const earthLoader = new TextureLoader();
-/**
- * The loaded texture, used for the earth.
- */
-let earthTexture: Texture;
-/**
- * Loads the graphic for enceladus.
- */
-const enceladusLoader = new TextureLoader();
-/**
- * The loaded texture, used for the enceladus.
- */
-let enceladusTexture: Texture;
-/**
- * Loads the graphic for ship layout dialogue.
- */
-const engineerProfileLoader = new TextureLoader();
-/**
- * The loaded texture, used for the ship layout dialogue.
- */
-let engineerProfileTexture: Texture;
-/**
- * Loads the graphic for ship layout dialogue.
- */
-const engineer2ProfileLoader = new TextureLoader();
-/**
- * The loaded texture, used for the ship layout dialogue.
- */
-let engineer2ProfileTexture: Texture;
-/**
- * Loads the graphic for enzmann.
- */
-const enzmannLayoutLoader = new TextureLoader();
-/**
- * The loaded texture, used for the enzmann.
- */
-let enzmannLayoutTexture: Texture;
-/**
- * Loads the graphic for enzmann.
- */
-const enzmannOutsideLoader = new TextureLoader();
-/**
- * The loaded texture, used for the enzmann.
- */
-let enzmannOutsideTexture: Texture;
-/**
- * Loads the graphic for fire.
- */
-const fireLoader = new TextureLoader();
-/**
- * The loaded texture, used for the fire.
- */
-let fireTexture: Texture;
+const AUDIO_LISTENER: AudioListener = new AudioListener();
 /**
  * Loads the font from a json file.
  */
@@ -130,54 +80,6 @@ const fontLoader = new FontLoader();
  * The loaded font, used for the scoreboard.
  */
 let gameFont: Font;
-/**
- * Loads the graphic for mars.
- */
-const marsLoader = new TextureLoader();
-/**
- * The loaded texture, used for the mars.
- */
-let marsTexture: Texture;
-/**
- * Loads the graphic for lander.
- */
-const landerLoader = new TextureLoader();
-/**
- * The loaded texture, used for the lander.
- */
-let landerTexture: Texture;
-/**
- * Loads the graphic for miningEquipment1.
- */
-const miningEquipment1Loader = new TextureLoader();
-/**
- * The loaded texture, used for the miningEquipment1.
- */
-let miningEquipment1Texture: Texture;
-/**
- * Loads the graphic for miningEquipment2.
- */
-const miningEquipment2Loader = new TextureLoader();
-/**
- * The loaded texture, used for the miningEquipment2.
- */
-let miningEquipment2Texture: Texture;
-/**
- * Loads the graphic for miningDrill.
- */
-const miningDrillLoader = new TextureLoader();
-/**
- * The loaded texture, used for the miningDrill.
- */
-let miningDrillTexture: Texture;
-/**
- * Loads the graphic for minedSquare1.
- */
-const minedSquare1Loader = new TextureLoader();
-/**
- * The loaded texture, used for the minedSquare1.
- */
-let minedSquare1Texture: Texture;
 
 const scenes: { [ key: string ]: SceneType } = {
     devMenu: {
@@ -222,17 +124,9 @@ const scenes: { [ key: string ]: SceneType } = {
     }
 };
 /**
- * Loads the graphic for ship.
- */
-const shipLoader = new TextureLoader();
-/**
- * The loaded texture, used for the ships.
- */
-let shipTexture: Texture;
-/**
  * Sound file paths
  */
-const soundPaths: string[] = [
+const SOUND_PATHS: string[] = [
     /**
      * Bomb Exploding Sound
      * http://soundbible.com/1986-Bomb-Exploding.html
@@ -307,117 +201,22 @@ const soundPaths: string[] = [
 /**
  * Loads the audio files.
  */
-const soundLoaders: AudioLoader[] = [
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader(),
-    new AudioLoader()
-];
+const SOUND_LOADERS: AudioLoader[] = SOUND_PATHS.map(x => new AudioLoader());
 /**
  * List of loaded audio files.
  */
-const sounds: Audio[] = [];
+const SOUNDS: Audio[] = [];
 /**
  * Passes the callback functions to font and texture loaders,
  * each fitted with their chance to check if all others are done.
  */
 const loadAssets = () => {
-    SoundinatorSingleton.addListener(audioListener);
-    // Callback function to set the asteroid texture once it is finished loading.
-    asteroidLoader.load( 'assets/images/asteroid.png', texture => {
-        asteroidTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the astronaut1 texture once it is finished loading.
-    astronaut1Loader.load( 'assets/images/astronaut-01.png', texture => {
-        astronaut1Texture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the astronaut2 texture once it is finished loading.
-    astronaut2Loader.load( 'assets/images/astronaut-02.png', texture => {
-        astronaut2Texture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the astronaut3 texture once it is finished loading.
-    astronaut3Loader.load( 'assets/images/astronaut-03.png', texture => {
-        astronaut3Texture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the earth texture once it is finished loading.
-    earthLoader.load( 'assets/images/earth.png', texture => {
-        earthTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the enceladus texture once it is finished loading.
-    enceladusLoader.load( 'assets/images/enceladus.png', texture => {
-        enceladusTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the lander texture once it is finished loading.
-    landerLoader.load( 'assets/images/lander.png', texture => {
-        landerTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the ship layout dialogue texture once it is finished loading.
-    engineerProfileLoader.load( 'assets/images/ship-layout-profile.png', texture => {
-        engineerProfileTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the ship layout dialogue texture once it is finished loading.
-    engineer2ProfileLoader.load( 'assets/images/ship-layout-profile-2.png', texture => {
-        engineer2ProfileTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the enzmannLayout texture once it is finished loading.
-    enzmannLayoutLoader.load( 'assets/images/enzmann-layout.png', texture => {
-        enzmannLayoutTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the enzmannOutside texture once it is finished loading.
-    enzmannOutsideLoader.load( 'assets/images/enzmann-outside.png', texture => {
-        enzmannOutsideTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the fire texture once it is finished loading.
-    fireLoader.load( 'assets/images/fire.png', texture => {
-        fireTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the mars texture once it is finished loading.
-    marsLoader.load( 'assets/images/mars.png', texture => {
-        marsTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the mars texture once it is finished loading.
-    miningEquipment1Loader.load( 'assets/images/mining-equipment-01.png', texture => {
-        miningEquipment1Texture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the miningEquipment2 texture once it is finished loading.
-    miningEquipment2Loader.load( 'assets/images/mining-equipment-02.png', texture => {
-        miningEquipment2Texture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the miningDrill texture once it is finished loading.
-    miningDrillLoader.load( 'assets/images/mining-drill.png', texture => {
-        miningDrillTexture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the minedSquare1 texture once it is finished loading.
-    minedSquare1Loader.load( 'assets/images/mined-square-01.png', texture => {
-        minedSquare1Texture = texture;
-        checkAssetsLoaded();
-    });
-    // Callback function to set the ship texture once it is finished loading.
-    shipLoader.load( 'assets/images/ship.png', texture => {
-        shipTexture = texture;
-        checkAssetsLoaded();
+    SoundinatorSingleton.addListener(AUDIO_LISTENER);
+    Object.keys(TEXTURES).forEach(key => {
+        (new TextureLoader()).load( TEXTURES[key][0], texture => {
+            TEXTURES[key][1] = texture;
+            checkAssetsLoaded();
+        });
     });
     // Callback function to set the scoreboard font once it is finished loading.
     fontLoader.load( 'assets/fonts/Luckiest_Guy_Regular.json', font => {
@@ -425,19 +224,19 @@ const loadAssets = () => {
         checkAssetsLoaded();
     });
     // Get the ball rolling on each of the sound file loads.
-    soundLoaders.forEach((loader, index) => {
-        soundLoaders[index].load(
-            soundPaths[index],
+    SOUND_LOADERS.forEach((loader, index) => {
+        SOUND_LOADERS[index].load(
+            SOUND_PATHS[index],
             (soundBuffer: AudioBuffer) => {
-                const sound = (new Audio(audioListener)).setBuffer(soundBuffer);
+                const sound = (new Audio(AUDIO_LISTENER)).setBuffer(soundBuffer);
                 sound.setLoop(false);
-                sounds[index] = sound;
+                SOUNDS[index] = sound;
                 checkAssetsLoaded();
             },
             (xhr: { loaded: number; total: number;}) => {
                 console.log((xhr.loaded / xhr.total * 100) + '% loaded');
             },
-            (error: string) => console.log(`Failed to load (${soundPaths[index].split('/').pop()}) sound file`, error)
+            (error: string) => console.log(`Failed to load (${SOUND_PATHS[index].split('/').pop()}) sound file`, error)
         );
     });
 };
@@ -446,25 +245,9 @@ const loadAssets = () => {
  */
 const checkAssetsLoaded = () => {
     if (gameFont &&
-        asteroidTexture &&
-        astronaut1Texture &&
-        astronaut2Texture &&
-        astronaut3Texture &&
-        shipTexture &&
-        earthTexture &&
-        fireTexture &&
-        marsTexture &&
-        enceladusTexture &&
-        engineerProfileTexture &&
-        engineer2ProfileTexture &&
-        enzmannOutsideTexture &&
-        landerTexture &&
-        miningEquipment1Texture &&
-        miningEquipment2Texture &&
-        miningDrillTexture &&
-        minedSquare1Texture &&
-        sounds.filter(s => s).length === soundLoaders.length) {
-        SoundinatorSingleton.addSounds(sounds);
+        !Object.keys(TEXTURES).some(key => !TEXTURES[key][1]) &&
+        SOUNDS.filter(s => s).length === SOUND_LOADERS.length) {
+        SoundinatorSingleton.addSounds(SOUNDS);
         loadMenu();
     }
 };
@@ -492,7 +275,7 @@ const loadDevMenu = () => {
     scenes.devMenu.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
 	scenes.devMenu.camera.position.set(0, -20, 0);
     scenes.devMenu.camera.lookAt(scenes.devMenu.scene.position);
-    scenes.devMenu.camera.add(audioListener);
+    scenes.devMenu.camera.add(AUDIO_LISTENER);
     /**
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.devMenu.camera and scenes.devMenu.renderer.
      */
@@ -587,9 +370,9 @@ const loadDevMenu = () => {
             activateVertexMapScene
         },
         {
-            engineer: engineerProfileTexture,
-            engineer2: engineer2ProfileTexture,
-            enzmann: enzmannOutsideTexture
+            engineer: TEXTURES.engineerProfileTexture[1],
+            engineer2: TEXTURES.engineer2ProfileTexture[1],
+            enzmann: TEXTURES.enzmannOutsideTexture[1]
         });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();
@@ -637,7 +420,7 @@ const loadGameMenu = () => {
     scenes.menu.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
 	scenes.menu.camera.position.set(0, -20, 0);
     scenes.menu.camera.lookAt(scenes.menu.scene.position);
-    scenes.menu.camera.add(audioListener);
+    scenes.menu.camera.add(AUDIO_LISTENER);
     /**
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.menu.camera and scenes.menu.renderer.
      */
@@ -783,7 +566,7 @@ const loadIntroScene = () => {
     scenes.intro.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
 	scenes.intro.camera.position.set(0, -20, 0);
     scenes.intro.camera.lookAt(scenes.intro.scene.position);
-    scenes.intro.camera.add(audioListener);
+    scenes.intro.camera.add(AUDIO_LISTENER);
     /**
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.intro.camera and scenes.intro.renderer.
      */
@@ -835,7 +618,14 @@ const loadIntroScene = () => {
             }
         });
     };
-    const intro = new Intro(scenes.intro, shipTexture, earthTexture, marsTexture, asteroidTexture, enceladusTexture, gameFont);
+    const intro = new Intro(
+        scenes.intro,
+        TEXTURES.shipTexture[1],
+        TEXTURES.earthTexture[1],
+        TEXTURES.marsTexture[1],
+        TEXTURES.asteroidTexture[1],
+        TEXTURES.enceladusTexture[1],
+        gameFont);
     scenes.intro.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
@@ -905,7 +695,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
     scenes.landAndMine.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
 	scenes.landAndMine.camera.position.set(0, -20, 0);
     scenes.landAndMine.camera.lookAt(scenes.landAndMine.scene.position);
-    scenes.landAndMine.camera.add(audioListener);
+    scenes.landAndMine.camera.add(AUDIO_LISTENER);
     /**
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.landAndMine.camera and scenes.landAndMine.renderer.
      */
@@ -935,14 +725,14 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
     const landAndMine = new LandAndMine(
         scenes.landAndMine,
         {
-            shipTexture: landerTexture,
-            astronaut1Texture,
-            astronaut2Texture,
-            astronaut3Texture,
-            miningEquipment1Texture,
-            miningEquipment2Texture,
-            miningDrillTexture,
-            minedSquare1Texture
+            shipTexture: TEXTURES.landerTexture[1],
+            astronaut1Texture: TEXTURES.astronaut1Texture[1],
+            astronaut2Texture: TEXTURES.astronaut2Texture[1],
+            astronaut3Texture: TEXTURES.astronaut3Texture[1],
+            miningEquipment1Texture: TEXTURES.miningEquipment1Texture[1],
+            miningEquipment2Texture: TEXTURES.miningEquipment2Texture[1],
+            miningDrillTexture: TEXTURES.miningDrillTexture[1],
+            minedSquare1Texture: TEXTURES.minedSquare1Texture[1]
         },
         planetSpec,
         landerSpec);
@@ -1027,7 +817,7 @@ const loadShipLayoutScene = () => {
     scenes.shipLayout.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
 	scenes.shipLayout.camera.position.set(0, -20, 0);
     scenes.shipLayout.camera.lookAt(scenes.shipLayout.scene.position);
-    scenes.shipLayout.camera.add(audioListener);
+    scenes.shipLayout.camera.add(AUDIO_LISTENER);
     /**
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.shipLayout.camera and scenes.shipLayout.renderer.
      */
@@ -1054,7 +844,11 @@ const loadShipLayoutScene = () => {
 
     // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
     const raycaster = new Raycaster();
-    const shipLayout = new ShipLayout(scenes.shipLayout, enzmannLayoutTexture, enzmannOutsideTexture, engineerProfileTexture);
+    const shipLayout = new ShipLayout(
+        scenes.shipLayout,
+        TEXTURES.enzmannLayoutTexture[1],
+        TEXTURES.enzmannOutsideTexture[1],
+        TEXTURES.engineerProfileTexture[1]);
     scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.

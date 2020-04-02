@@ -631,6 +631,8 @@ export class Intro {
      * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
     public dispose(): void {
+        document.onmousemove = () => {};
+        document.onclick = () => {};
         document.getElementById('intro-screen-sequence-labels').remove();
         window.removeEventListener( 'resize', this.listenerRef, false);
     }
