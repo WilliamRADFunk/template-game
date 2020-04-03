@@ -181,6 +181,9 @@ export class ShipLayout {
         const rightTopPanel = new RightTopPanel(this._scene);
 
         const container = document.getElementById('mainview');
+        document.oncontextmenu = event => {
+            return false;
+        };
         document.onclick = event => {
             event.preventDefault();
             getIntersections(event, container, scene).forEach(el => {
@@ -489,6 +492,7 @@ export class ShipLayout {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
+        document.oncontextmenu = () => {};
         Object.keys(this._textElements).forEach(x => x && this._textElements[x].dispose());
         Object.keys(this._buttons).forEach(x => x && this._buttons[x].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);

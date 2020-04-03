@@ -139,6 +139,10 @@ export class Intro {
         introFont: Font) {
         this.scene = scene.scene;
 
+        document.oncontextmenu = event => {
+            return false;
+        };
+
         this.onWindowResize();
         this.listenerRef = this.onWindowResize.bind(this);
         window.addEventListener('resize', this.listenerRef, false);
@@ -633,6 +637,7 @@ export class Intro {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
+        document.oncontextmenu = () => {};
         document.getElementById('intro-screen-sequence-labels').remove();
         window.removeEventListener( 'resize', this.listenerRef, false);
     }

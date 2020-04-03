@@ -608,6 +608,9 @@ export class LandAndMine {
     private _onInitialize(sceneType: SceneType): void {
         // DOM Events
         const container = document.getElementById('mainview');
+        document.oncontextmenu = event => {
+            return false;
+        };
         document.onclick = event => {
             event.preventDefault();
             // Three JS object intersections.
@@ -1066,6 +1069,7 @@ export class LandAndMine {
     public dispose(): void {
         document.onmousemove = () => {};
         document.onclick = () => {};
+        document.oncontextmenu = () => {};
         Object.keys(this._textElements)
             .filter(key => !!this._textElements[key])
             .forEach(key => this._textElements[key].dispose());
@@ -1202,10 +1206,9 @@ export class LandAndMine {
                             transparent: true
                         });
                         const minedMesh = new Mesh(geo, minedMat);
-                        minedMesh.position.set(minedBlockPos.x, minedBlockPos.y, minedBlockPos.z);
+                        minedMesh.position.set(currDrillPos.x, minedBlockPos.y, currDrillPos.z + 0.051);
                         minedMesh.rotation.set(-1.5708, 0, 0);
                         minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
-                        // TODO: Need to use col/row from grid as position of removed block because of ice.
                         // TODO: Need to add numbers when block is mined.
                         this._scene.remove(minedBlock);
                         this._scene.add(minedMesh);
