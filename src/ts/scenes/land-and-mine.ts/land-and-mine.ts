@@ -235,7 +235,12 @@ export class LandAndMine {
             {
                 astronaut1: textures.astronaut1,
                 astronaut2: textures.astronaut2,
-                astronaut3: textures.astronaut3
+                astronaut3: textures.astronaut3,
+                astronautSuffocation1: textures.astronautSuffocation1,
+                astronautSuffocation2: textures.astronautSuffocation2,
+                astronautSuffocation3: textures.astronautSuffocation3,
+                astronautSuffocation4: textures.astronautSuffocation4,
+                astronautSuffocation5: textures.astronautSuffocation5
             },
             {
                 miningEquipment1: textures.miningEquipment1,
@@ -1147,15 +1152,32 @@ export class LandAndMine {
 
         if (this._state === LandAndMineState.suffocating) {
             // TODO: Run through suffocating sequence.
+            if (this._counters.suffocatingCounter % 20 === 0) {
+                this._astronauts.filter(astro => !!astro).forEach((astro, index) => {
+                    if (index !== 1) {
+                        astro.mesh.visible = false;
+                    }
+                });
+                const astroIndex = Math.floor(this._counters.suffocatingCounter / 20) + 9;
+                const astroPos = this._astronauts[0].mesh.position;
+                const newAstro = this._astronauts[astroIndex].mesh;
+                newAstro.position.set(astroPos.x, astroPos.y, astroPos.z);
+                newAstro.visible = true;
+            }
+
             this._counters.suffocatingCounter++;
 
-            if (this._counters.suffocatingCounter > this._counters.suffocatingCounterClear) {
+            if (this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear) {
                 this._loot = {
                     '-2': 0,
                     '-1': 0,
                     '0': 0
                 };
                 this._state = LandAndMineState.escaped;
+                const landerPos = this._lander.mesh.position;
+                this._camera.position.set(landerPos.x, this._camera.position.y, landerPos.z);
+                this._camera.zoom = 1;
+                this._camera.updateProjectionMatrix();
             }
             return;
         }
