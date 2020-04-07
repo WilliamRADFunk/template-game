@@ -404,6 +404,8 @@ export class DevMenu {
 
         const groupLeftStart = 0.015;
 
+        // TODO: Lander specifications buttons.
+
         //#region LaunchLandAndMineScene Row -1
         let rowSub1Left = groupLeftStart;
         this._page1textElements.freestylePeakElevationText = new FreestyleText(

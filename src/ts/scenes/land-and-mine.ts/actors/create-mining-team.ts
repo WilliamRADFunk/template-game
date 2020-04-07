@@ -151,50 +151,95 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
         transparent: true
     });
 
-    const astronautSuffocation1 = createActor();
-    astronautSuffocation1.originalStartingPoint = [-4, -4];
-    astronautSuffocation1.currentPoint = [-4, -4];
-    astronautSuffocation1.endingPoint = [-4, -4];
-    astronautSuffocation1.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation1);
-    astronautSuffocation1.mesh.position.set(astronautSuffocation1.currentPoint[0], 1, astronautSuffocation1.currentPoint[1] + 0.03);
-    astronautSuffocation1.mesh.rotation.set(-1.5708, 0, 0);
-    astronautSuffocation1.mesh.name = 'Astronaut-Suffocation-1';
+    const astronautSuffocationLeft1 = createActor();
+    astronautSuffocationLeft1.originalStartingPoint = [-4, -4];
+    astronautSuffocationLeft1.currentPoint = [-4, -4];
+    astronautSuffocationLeft1.endingPoint = [-4, -4];
+    astronautSuffocationLeft1.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation1);
+    astronautSuffocationLeft1.mesh.position.set(astronautSuffocationLeft1.currentPoint[0], 1, astronautSuffocationLeft1.currentPoint[1] + 0.03);
+    astronautSuffocationLeft1.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationLeft1.mesh.name = 'Astronaut-Suffocation-Left-1';
 
-    const astronautSuffocation2 = createActor();
-    astronautSuffocation2.originalStartingPoint = [-4, -4];
-    astronautSuffocation2.currentPoint = [-4, -4];
-    astronautSuffocation2.endingPoint = [-4, -4];
-    astronautSuffocation2.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation2);
-    astronautSuffocation2.mesh.position.set(astronautSuffocation2.currentPoint[0], 1, astronautSuffocation2.currentPoint[1] + 0.03);
-    astronautSuffocation2.mesh.rotation.set(-1.5708, 0, 0);
-    astronautSuffocation2.mesh.name = 'Astronaut-Suffocation-2';
+    const astronautSuffocationLeft2 = createActor();
+    astronautSuffocationLeft2.originalStartingPoint = [-4, -4];
+    astronautSuffocationLeft2.currentPoint = [-4, -4];
+    astronautSuffocationLeft2.endingPoint = [-4, -4];
+    astronautSuffocationLeft2.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation2);
+    astronautSuffocationLeft2.mesh.position.set(astronautSuffocationLeft2.currentPoint[0], 1, astronautSuffocationLeft2.currentPoint[1] + 0.03);
+    astronautSuffocationLeft2.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationLeft2.mesh.name = 'Astronaut-Suffocation-Left-2';
 
-    const astronautSuffocation3 = createActor();
-    astronautSuffocation3.originalStartingPoint = [-4, -4];
-    astronautSuffocation3.currentPoint = [-4, -4];
-    astronautSuffocation3.endingPoint = [-4, -4];
-    astronautSuffocation3.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation3);
-    astronautSuffocation3.mesh.position.set(astronautSuffocation3.currentPoint[0], 1, astronautSuffocation3.currentPoint[1] + 0.03);
-    astronautSuffocation3.mesh.rotation.set(-1.5708, 0, 0);
-    astronautSuffocation3.mesh.name = 'Astronaut-Suffocation-3';
+    const astronautSuffocationLeft3 = createActor();
+    astronautSuffocationLeft3.originalStartingPoint = [-4, -4];
+    astronautSuffocationLeft3.currentPoint = [-4, -4];
+    astronautSuffocationLeft3.endingPoint = [-4, -4];
+    astronautSuffocationLeft3.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation3);
+    astronautSuffocationLeft3.mesh.position.set(astronautSuffocationLeft3.currentPoint[0], 1, astronautSuffocationLeft3.currentPoint[1] + 0.03);
+    astronautSuffocationLeft3.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationLeft3.mesh.name = 'Astronaut-Suffocation-Left-3';
 
-    const astronautSuffocation4 = createActor();
-    astronautSuffocation4.originalStartingPoint = [-4, -4];
-    astronautSuffocation4.currentPoint = [-4, -4];
-    astronautSuffocation4.endingPoint = [-4, -4];
-    astronautSuffocation4.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation4);
-    astronautSuffocation4.mesh.position.set(astronautSuffocation4.currentPoint[0], 1, astronautSuffocation4.currentPoint[1] + 0.03);
-    astronautSuffocation4.mesh.rotation.set(-1.5708, 0, 0);
-    astronautSuffocation4.mesh.name = 'Astronaut-Suffocation-4';
+    const astronautSuffocationLeft4 = createActor();
+    astronautSuffocationLeft4.originalStartingPoint = [-4, -4];
+    astronautSuffocationLeft4.currentPoint = [-4, -4];
+    astronautSuffocationLeft4.endingPoint = [-4, -4];
+    astronautSuffocationLeft4.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation4);
+    astronautSuffocationLeft4.mesh.position.set(astronautSuffocationLeft4.currentPoint[0], 1, astronautSuffocationLeft4.currentPoint[1] + 0.03);
+    astronautSuffocationLeft4.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationLeft4.mesh.name = 'Astronaut-Suffocation-Left-4';
 
-    const astronautSuffocation5 = createActor();
-    astronautSuffocation5.originalStartingPoint = [-4, -4];
-    astronautSuffocation5.currentPoint = [-4, -4];
-    astronautSuffocation5.endingPoint = [-4, -4];
-    astronautSuffocation5.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation5);
-    astronautSuffocation5.mesh.position.set(astronautSuffocation5.currentPoint[0], 1, astronautSuffocation5.currentPoint[1] + 0.03);
-    astronautSuffocation5.mesh.rotation.set(-1.5708, 0, 0);
-    astronautSuffocation5.mesh.name = 'Astronaut-Suffocation-5';
+    const astronautSuffocationLeft5 = createActor();
+    astronautSuffocationLeft5.originalStartingPoint = [-4, -4];
+    astronautSuffocationLeft5.currentPoint = [-4, -4];
+    astronautSuffocationLeft5.endingPoint = [-4, -4];
+    astronautSuffocationLeft5.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation5);
+    astronautSuffocationLeft5.mesh.position.set(astronautSuffocationLeft5.currentPoint[0], 1, astronautSuffocationLeft5.currentPoint[1] + 0.03);
+    astronautSuffocationLeft5.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationLeft5.mesh.name = 'Astronaut-Suffocation-Left-5';
+
+    const astronautSuffocationRight1 = createActor();
+    astronautSuffocationRight1.originalStartingPoint = [-4, -4];
+    astronautSuffocationRight1.currentPoint = [-4, -4];
+    astronautSuffocationRight1.endingPoint = [-4, -4];
+    astronautSuffocationRight1.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation1);
+    astronautSuffocationRight1.mesh.position.set(astronautSuffocationRight1.currentPoint[0], 1, astronautSuffocationRight1.currentPoint[1] + 0.03);
+    astronautSuffocationRight1.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationRight1.mesh.name = 'Astronaut-Suffocation-Right-1';
+
+    const astronautSuffocationRight2 = createActor();
+    astronautSuffocationRight2.originalStartingPoint = [-4, -4];
+    astronautSuffocationRight2.currentPoint = [-4, -4];
+    astronautSuffocationRight2.endingPoint = [-4, -4];
+    astronautSuffocationRight2.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation2);
+    astronautSuffocationRight2.mesh.position.set(astronautSuffocationRight2.currentPoint[0], 1, astronautSuffocationRight2.currentPoint[1] + 0.03);
+    astronautSuffocationRight2.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationRight2.mesh.name = 'Astronaut-Suffocation-Right-2';
+
+    const astronautSuffocationRight3 = createActor();
+    astronautSuffocationRight3.originalStartingPoint = [-4, -4];
+    astronautSuffocationRight3.currentPoint = [-4, -4];
+    astronautSuffocationRight3.endingPoint = [-4, -4];
+    astronautSuffocationRight3.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation3);
+    astronautSuffocationRight3.mesh.position.set(astronautSuffocationRight3.currentPoint[0], 1, astronautSuffocationRight3.currentPoint[1] + 0.03);
+    astronautSuffocationRight3.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationRight3.mesh.name = 'Astronaut-Suffocation-Right-3';
+
+    const astronautSuffocationRight4 = createActor();
+    astronautSuffocationRight4.originalStartingPoint = [-4, -4];
+    astronautSuffocationRight4.currentPoint = [-4, -4];
+    astronautSuffocationRight4.endingPoint = [-4, -4];
+    astronautSuffocationRight4.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation4);
+    astronautSuffocationRight4.mesh.position.set(astronautSuffocationRight4.currentPoint[0], 1, astronautSuffocationRight4.currentPoint[1] + 0.03);
+    astronautSuffocationRight4.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationRight4.mesh.name = 'Astronaut-Suffocation-Right-4';
+
+    const astronautSuffocationRight5 = createActor();
+    astronautSuffocationRight5.originalStartingPoint = [-4, -4];
+    astronautSuffocationRight5.currentPoint = [-4, -4];
+    astronautSuffocationRight5.endingPoint = [-4, -4];
+    astronautSuffocationRight5.mesh = new Mesh(astronautGeometry, astronautMaterialSuffocation5);
+    astronautSuffocationRight5.mesh.position.set(astronautSuffocationRight5.currentPoint[0], 1, astronautSuffocationRight5.currentPoint[1] + 0.03);
+    astronautSuffocationRight5.mesh.rotation.set(-1.5708, 0, 0);
+    astronautSuffocationRight5.mesh.name = 'Astronaut-Suffocation-Right-5';
     return [
         astronautLeft1, // 0
         miningEquipment, // 1
@@ -205,9 +250,14 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
         astronautLeft3, // 6
         null, // 7
         astronautRight3, // 8
-        astronautSuffocation1, // 9
-        astronautSuffocation2, // 10
-        astronautSuffocation3, // 11
-        astronautSuffocation4, // 12
-        astronautSuffocation5]; // 13
+        astronautSuffocationLeft1, // 9
+        astronautSuffocationLeft2, // 10
+        astronautSuffocationLeft3, // 11
+        astronautSuffocationLeft4, // 12
+        astronautSuffocationLeft5, // 13
+        astronautSuffocationRight1, // 14
+        astronautSuffocationRight2, // 15
+        astronautSuffocationRight3, // 16
+        astronautSuffocationRight4, // 17
+        astronautSuffocationRight5]; // 18
 }

@@ -36,6 +36,8 @@ import { LoadButton } from '../../controls/buttons/load-button';
 import { MineButton } from '../../controls/buttons/mine-button';
 import { PackItUpButton } from '../../controls/buttons/pack-it-up-button';
 import { LanderSpecifications } from '../../models/lander-specifications';
+import { RightTopStatsText1 } from '../../controls/text/stats/right-top-stats-text-1';
+import { RightTopStatsText2 } from '../../controls/text/stats/right-top-stats-text-2';
 
 /*
  * Grid Values
@@ -106,8 +108,8 @@ export class LandAndMine {
     private _counters: { [key: string]: number } = {
         astronautWalkingCounter: 0,
         astronautWalkingCounterClear: 10,
-        suffocatingCounter: 0,
-        suffocatingCounterClear: 100
+        suffocatingCounter: -1,
+        suffocatingCounterClear: 99
     };
 
     private _currentFuelLevel: number = 100;
@@ -757,6 +759,20 @@ export class LandAndMine {
             border,
             TextType.STATIC);
 
+        this._textElements.rightTopStatsText1 = new RightTopStatsText1(
+            `Wind Speed: ${this._planetSpecifications.wind}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.rightTopStatsText2 = new RightTopStatsText2(
+            `Gravity: ${this._planetSpecifications.gravity}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
         let onClick = () => {
             if (this._state === LandAndMineState.paused) {
                 this._state = LandAndMineState.flying;
@@ -900,6 +916,9 @@ export class LandAndMine {
         this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText3.resize({ height, left: left, top: null, width });
         this._textElements.leftTopStatsText4.resize({ height, left: left, top: null, width });
+        Object.keys(this._textElements)
+            .filter(key => !!this._textElements[key])
+            .forEach(key => this._textElements[key].resize({ height, left: left, top: null, width }));
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width }));
@@ -1132,7 +1151,7 @@ export class LandAndMine {
             this._isLeftThrusting = false;
             this._isRightThrusting = false;
             this._isVerticalThrusting = true;
-            this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
+            this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed - 0.01);
             this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
@@ -1151,7 +1170,24 @@ export class LandAndMine {
         }
 
         if (this._state === LandAndMineState.suffocating) {
-            // TODO: Run through suffocating sequence.
+            if (this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear) {
+                this._loot = {
+                    '-2': 0,
+                    '-1': 0,
+                    '0': 0
+                };
+                this._buttons.mineButton.hide();
+                this._state = LandAndMineState.escaped;
+                setTimeout(() => {
+                    this._camera.position.set(0, this._camera.position.y, 0);
+                    this._camera.zoom = 1;
+                    this._camera.updateProjectionMatrix();
+                }, 100);
+                return;
+            } else {
+                this._counters.suffocatingCounter++;
+            }
+
             if (this._counters.suffocatingCounter % 20 === 0) {
                 this._astronauts.filter(astro => !!astro).forEach((astro, index) => {
                     if (index !== 1) {
@@ -1159,25 +1195,14 @@ export class LandAndMine {
                     }
                 });
                 const astroIndex = Math.floor(this._counters.suffocatingCounter / 20) + 9;
-                const astroPos = this._astronauts[0].mesh.position;
-                const newAstro = this._astronauts[astroIndex].mesh;
-                newAstro.position.set(astroPos.x, astroPos.y, astroPos.z);
-                newAstro.visible = true;
-            }
-
-            this._counters.suffocatingCounter++;
-
-            if (this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear) {
-                this._loot = {
-                    '-2': 0,
-                    '-1': 0,
-                    '0': 0
-                };
-                this._state = LandAndMineState.escaped;
-                const landerPos = this._lander.mesh.position;
-                this._camera.position.set(landerPos.x, this._camera.position.y, landerPos.z);
-                this._camera.zoom = 1;
-                this._camera.updateProjectionMatrix();
+                const astroPosLeft = this._astronauts[0].mesh.position;
+                const astroPosRight = this._astronauts[2].mesh.position;
+                const newAstroLeft = this._astronauts[astroIndex].mesh;
+                const newAstroRight = this._astronauts[astroIndex + 5].mesh;
+                newAstroLeft.position.set(astroPosLeft.x, astroPosLeft.y, astroPosLeft.z);
+                newAstroRight.position.set(astroPosRight.x, astroPosRight.y, astroPosRight.z);
+                newAstroLeft.visible = true;
+                newAstroRight.visible = true;
             }
             return;
         }
