@@ -16,7 +16,7 @@ import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { TextBase } from '../../controls/text/text-base';
 import { createLander } from './actors/create-lander';
-import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors } from '../../models/planet-specifications';
+import { PlanetSpecifications, OreTypeColors, SkyColors, PlanetLandColors, OreTypes, OreQuantity } from '../../models/planet-specifications';
 import { MainThruster } from './actors/main-thruster';
 import { LeftTopStatsText1 } from '../../controls/text/stats/left-top-stats-text-1';
 import { COLORS } from '../../styles/colors';
@@ -38,6 +38,8 @@ import { PackItUpButton } from '../../controls/buttons/pack-it-up-button';
 import { LanderSpecifications } from '../../models/lander-specifications';
 import { RightTopStatsText1 } from '../../controls/text/stats/right-top-stats-text-1';
 import { RightTopStatsText2 } from '../../controls/text/stats/right-top-stats-text-2';
+import { RightTopStatsText3 } from '../../controls/text/stats/right-top-stats-text-3';
+import { RightTopStatsText4 } from '../../controls/text/stats/right-top-stats-text-4';
 
 /*
  * Grid Values
@@ -731,6 +733,8 @@ export class LandAndMine {
 
         // TODO: Tutorial for how to play the game.
 
+        // TODO: Add sound fx.
+
         this._textElements.leftTopStatsText1 = new LeftTopStatsText1(
             `Horizontal Speed: ${this._currentLanderHorizontalSpeed}`,
             { height, left: left, top: null, width },
@@ -768,6 +772,20 @@ export class LandAndMine {
 
         this._textElements.rightTopStatsText2 = new RightTopStatsText2(
             `Gravity: ${this._planetSpecifications.gravity}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.rightTopStatsText3 = new RightTopStatsText3(
+            `Ore Type: ${OreTypes[this._planetSpecifications.ore]}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.rightTopStatsText4 = new RightTopStatsText4(
+            `Ore Quantity: ${OreQuantity[this._planetSpecifications.oreQuantity]}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
