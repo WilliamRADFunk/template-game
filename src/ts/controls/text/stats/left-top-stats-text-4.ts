@@ -33,8 +33,8 @@ export class LeftTopStatsText4 extends TextBase {
      * @param position height, width, left and top position of the button.
      */
     public resize(position: HTMLElementPosition) {
-        this.element.style.maxWidth = `${0.43 * position.width}px`;
-        this.element.style.width = `${0.43 * position.width}px`;
+        this.element.style.maxWidth = `${0.25 * position.width}px`;
+        this.element.style.width = `${0.25 * position.width}px`;
         this.element.style.maxHeight = `${0.08 * position.height}px`;
         this.element.style.height = `${0.08 * position.height}px`;
         this.element.style.top = `${0.065 * position.height}px`;

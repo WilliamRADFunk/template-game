@@ -748,6 +748,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             const layout: { [key: number]: number } = landAndMine.endCycle();
             if (layout) {
                 let output = `Loot received:
+                    Lander = ${layout[-3]},
                     Crew = ${layout[-2] > 0 ? '+': ''}${layout[-2]},
                     Food = ${layout[-1]},
                     Water = ${layout[0]}`;

@@ -40,6 +40,14 @@ import { RightTopStatsText1 } from '../../controls/text/stats/right-top-stats-te
 import { RightTopStatsText2 } from '../../controls/text/stats/right-top-stats-text-2';
 import { RightTopStatsText3 } from '../../controls/text/stats/right-top-stats-text-3';
 import { RightTopStatsText4 } from '../../controls/text/stats/right-top-stats-text-4';
+import { LeftTopStatsCol2Text1 } from '../../controls/text/stats/left-top-stats-col2-text-1';
+import { LeftTopStatsCol2Text2 } from '../../controls/text/stats/left-top-stats-col2-text-2';
+import { LeftTopStatsCol2Text3 } from '../../controls/text/stats/left-top-stats-col2-text-3';
+import { LeftTopStatsCol2Text4 } from '../../controls/text/stats/left-top-stats-col2-text-4';
+import { RightTopStatsCol3Text1 } from '../../controls/text/stats/right-top-stats-col3-text-1';
+import { RightTopStatsCol3Text2 } from '../../controls/text/stats/right-top-stats-col3-text-2';
+import { RightTopStatsCol3Text3 } from '../../controls/text/stats/right-top-stats-col3-text-3';
+import { RightTopStatsCol3Text4 } from '../../controls/text/stats/right-top-stats-col3-text-4';
 
 /*
  * Grid Values
@@ -198,7 +206,8 @@ export class LandAndMine {
         this._planetSpecifications = planetSpecifications;
         this._landerSpecifications = landerSpecifications;
         this._loot[planetSpecifications.ore] = 0;
-        this._loot[-2] = 0; // -1 is surviving crew members
+        this._loot[-3] = 0; // -3 is the lander itself
+        this._loot[-2] = 0; // -2 is surviving crew members
         this._loot[-1] = 0; // -1 is food
         this._loot[0] = 0; // 0 is water
 
@@ -353,6 +362,12 @@ export class LandAndMine {
             transparent: true,
             side: DoubleSide
         });
+        const iceMat = new MeshBasicMaterial({
+            color: 0xEEEEEE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
 
         const lifeMats: MeshBasicMaterial[] = [];
         const lifeMatColorBase = '008000';
@@ -403,7 +418,66 @@ export class LandAndMine {
             }
         }
 
-        this._freezeWater();
+        this._freezeWater(iceMat);
+
+        // Creates the 7 shades of common rocks for demo display in top center of screen.
+        for (let x = 58; x < 65; x++) {
+            const index = x - 58;
+            const block = new Mesh( geo, commonRockMats[index] );
+            block.name = `${Math.random()} - demo - common rocks - ${index} - `;
+            block.position.set(-6 + (x/10) + (0.05 * index), 15, 6 - 118/10 - 0.05);
+            block.rotation.set(1.5708, 0, 0);
+            this._scene.add(block);
+            this._meshGrid[118][x] = block;
+        }
+
+        // Creates the 1 danger/impenetrable block for demo display in top center of screen.
+        const dangerBlock = new Mesh( geo, dangerMat );
+        dangerBlock.name = `${Math.random()} - demo - danger block - `;
+        dangerBlock.position.set(-6 + (58/10), 15, 6 - 116/10);
+        dangerBlock.rotation.set(1.5708, 0, 0);
+        this._scene.add(dangerBlock);
+        this._meshGrid[116][58] = dangerBlock;
+
+        // Creates the 1 water and 1 ice block for demo display in top center of screen.
+        const waterBlock = new Mesh( geo, waterMat );
+        waterBlock.name = `${Math.random()} - demo - water block - `;
+        waterBlock.position.set(-6 + (58/10), 15, 6 - 114/10 + 0.05);
+        waterBlock.rotation.set(1.5708, 0, 0);
+        this._scene.add(waterBlock);
+        this._meshGrid[114][58] = waterBlock;
+        const innerWaterGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
+        const iceBlock = new Mesh( geo, iceMat );
+        iceBlock.name = `${Math.random()} - demo - ice block outer - `;
+        iceBlock.position.set(-6 + (59/10) + 0.05, 15.5, 6 - 114/10 + 0.05);
+        iceBlock.rotation.set(1.5708, 0, 0);
+        this._scene.add(iceBlock);
+        this._meshGrid[114][59] = iceBlock;
+        const frozenWater = new Mesh( innerWaterGeo, waterMat );
+        frozenWater.name = `${Math.random()} - demo - ice block inner - `;
+        frozenWater.position.set(-6 + (59/10) + 0.05, 15, 6 - 114/10 + 0.05);
+        frozenWater.rotation.set(1.5708, 0, 0);
+        this._scene.add(frozenWater);
+        this._meshGrid[114][59] = frozenWater;
+
+        // Creates the 5 shades of plant/food blocks for demo display in top center of screen.
+        for (let y = 61; y < 66; y++) {
+            const index = y - 61;
+            const block = new Mesh( geo, lifeMats[index] );
+            block.name = `${Math.random()} - demo - food - ${index} - `;
+            block.position.set(-6 + (y/10) + (0.05 * index), 15, 6 - 114/10 + 0.05);
+            block.rotation.set(1.5708, 0, 0);
+            this._scene.add(block);
+            this._meshGrid[114][y] = block;
+        }
+
+        // Creates the 1 collectable ore block for demo display in top center of screen.
+        const oreBlock = new Mesh( geo, oreTypeMat );
+        oreBlock.name = `${Math.random()} - demo - ore block - `;
+        oreBlock.position.set(-6 + (58/10), 15, 6 - 111/10 - 0.025);
+        oreBlock.rotation.set(1.5708, 0, 0);
+        this._scene.add(oreBlock);
+        this._meshGrid[111][58] = oreBlock;
     }
 
     private _createWind(): void {
@@ -558,18 +632,12 @@ export class LandAndMine {
         }
     }
 
-    private _freezeWater(): void {
+    private _freezeWater(iceMat: MeshBasicMaterial): void {
         if (!this._planetSpecifications.isFrozen) {
             return;
         }
 
         const outerGeo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
-        const iceMat = new MeshBasicMaterial({
-            color: 0xEEEEEE,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
 
         const innerGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
         const waterMat = new MeshBasicMaterial({
@@ -729,62 +797,118 @@ export class LandAndMine {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        // TODO: Environmental readouts (ie. wind speed, ore type and quanitity, ore tiles, danger tiles, common tiles)
+        // TODO: Environmental readouts (ie. ore tiles, danger tiles, common tiles)
 
         // TODO: Tutorial for how to play the game.
 
         // TODO: Add sound fx.
 
-        this._textElements.leftTopStatsText1 = new LeftTopStatsText1(
+        this._textElements.horizontalSpeed = new LeftTopStatsText1(
             `Horizontal Speed: ${this._currentLanderHorizontalSpeed}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.leftTopStatsText2 = new LeftTopStatsText2(
+        this._textElements.verticalSpeed = new LeftTopStatsText2(
             `Vertical Speed: ${this._currentLanderVerticalSpeed}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.leftTopStatsText3 = new LeftTopStatsText3(
+        this._textElements.oxygenLevel = new LeftTopStatsText3(
             `Oxygen Level: ${this._currentOxygenLevel}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.leftTopStatsText4 = new LeftTopStatsText4(
+        this._textElements.fuelLevel = new LeftTopStatsText4(
             `Fuel Level: ${this._currentFuelLevel}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.rightTopStatsText1 = new RightTopStatsText1(
+        this._textElements.commonRocksDisplay = new LeftTopStatsCol2Text1(
+            `Common Rock Blocks: `,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.dangerBlocksDisplay = new LeftTopStatsCol2Text2(
+            `Danger/Impenetrable Blocks: `,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.waterIceFoodBlocksDisplay = new LeftTopStatsCol2Text3(
+            `Water/Ice/Food Blocks: `,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.oreBlocksDisplay = new LeftTopStatsCol2Text4(
+            `${OreTypes[this._planetSpecifications.ore]} Blocks: `,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.collected = new RightTopStatsCol3Text1(
+            'Collected (units)',
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.crewCollected = new RightTopStatsCol3Text2(
+            '0 Crew Recovered',
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.waterAndFoodCollected = new RightTopStatsCol3Text3(
+            '0 Water / 0 Food',
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.oreCollected = new RightTopStatsCol3Text4(
+            `0 ${OreTypes[this._planetSpecifications.ore]}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+
+        this._textElements.windSpeed = new RightTopStatsText1(
             `Wind Speed: ${this._planetSpecifications.wind}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.rightTopStatsText2 = new RightTopStatsText2(
+        this._textElements.gravity = new RightTopStatsText2(
             `Gravity: ${this._planetSpecifications.gravity}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.rightTopStatsText3 = new RightTopStatsText3(
+        this._textElements.oreType = new RightTopStatsText3(
             `Ore Type: ${OreTypes[this._planetSpecifications.ore]}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
-        this._textElements.rightTopStatsText4 = new RightTopStatsText4(
+        this._textElements.oreQuantity = new RightTopStatsText4(
             `Ore Quantity: ${OreQuantity[this._planetSpecifications.oreQuantity]}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
@@ -930,10 +1054,10 @@ export class LandAndMine {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        this._textElements.leftTopStatsText1.resize({ height, left: left, top: null, width });
-        this._textElements.leftTopStatsText2.resize({ height, left: left, top: null, width });
-        this._textElements.leftTopStatsText3.resize({ height, left: left, top: null, width });
-        this._textElements.leftTopStatsText4.resize({ height, left: left, top: null, width });
+        this._textElements.horizontalSpeed.resize({ height, left: left, top: null, width });
+        this._textElements.verticalSpeed.resize({ height, left: left, top: null, width });
+        this._textElements.oxygenLevel.resize({ height, left: left, top: null, width });
+        this._textElements.fuelLevel.resize({ height, left: left, top: null, width });
         Object.keys(this._textElements)
             .filter(key => !!this._textElements[key])
             .forEach(key => this._textElements[key].resize({ height, left: left, top: null, width }));
@@ -1153,11 +1277,25 @@ export class LandAndMine {
 
         // Player died. Nothing should progress.
         if (this._state === LandAndMineState.crashed) {
-            this._explosion.endCycle();
-            this._scene.remove(this._lander.mesh);
-            this._mainThruster.dispose();
-            this._leftThruster.dispose();
-            this._rightThruster.dispose();
+            if (!this._explosion.endCycle()) {
+                return this._loot;
+            }
+            if (this._lander.mesh) {
+                this._scene.remove(this._lander.mesh);
+                this._lander.mesh = null;
+                this._mainThruster.dispose();
+                this._leftThruster.dispose();
+                this._rightThruster.dispose();
+                this._loot = {
+                    '-3': 0,
+                    '-2': 0,
+                    '-1': 0,
+                    '0': 0
+                };
+                this._textElements.crewCollected.update(`0 crew recovered`);
+                this._textElements.waterAndFoodCollected.update(`0 water / 0 food`);
+                this._textElements.oreCollected.update(`0 ${OreTypes[this._planetSpecifications.ore]}`);
+            }
             return;
         }
 
@@ -1184,16 +1322,23 @@ export class LandAndMine {
         if (landerRow >= 110) {
             this._state = LandAndMineState.escaped;
             this._loot[-2] = 2; // Regain crew members.
+            this._loot[-3] = 1; // Regain lander.
+
+            this._textElements.crewCollected.update(`2 crew recovered`);
             return;
         }
 
         if (this._state === LandAndMineState.suffocating) {
             if (this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear) {
                 this._loot = {
+                    '-3': 1, // Regain lander on autopilot.
                     '-2': 0,
                     '-1': 0,
                     '0': 0
                 };
+                this._textElements.crewCollected.update(`0 crew recovered`);
+                this._textElements.waterAndFoodCollected.update(`0 water / 0 food`);
+                this._textElements.oreCollected.update(`0 ${OreTypes[this._planetSpecifications.ore]}`);
                 this._buttons.mineButton.hide();
                 this._state = LandAndMineState.escaped;
                 setTimeout(() => {
@@ -1228,9 +1373,9 @@ export class LandAndMine {
         // All other states consume oxygen still.
         if (this._currentOxygenLevel > 0) {
             this._currentOxygenLevel -= this._landerSpecifications.oxygenBurn;
-            this._textElements.leftTopStatsText3.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
-            if (Math.abs(this._currentOxygenLevel) < 20 && this._textElements.leftTopStatsText3.color === COLORS.neutral) {
-                this._textElements.leftTopStatsText3.cycle(COLORS.selected);
+            this._textElements.oxygenLevel.update(`Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
+            if (Math.abs(this._currentOxygenLevel) < 20 && this._textElements.oxygenLevel.color === COLORS.neutral) {
+                this._textElements.oxygenLevel.cycle(COLORS.selected);
             }
         } else {
             this._state = LandAndMineState.suffocating;
@@ -1277,6 +1422,9 @@ export class LandAndMine {
                         // TODO: Need to add numbers when block is mined.
                         this._scene.remove(minedBlock);
                         this._scene.add(minedMesh);
+
+                        this._textElements.waterAndFoodCollected.update(`${this._loot[0]} Water / ${this._loot[-1]} Food`);
+                        this._textElements.oreCollected.update(`${this._loot[this._planetSpecifications.ore]} ${OreTypes[this._planetSpecifications.ore]}`);
                     }
                 } else if (centerRowBefore !== centerDrillRowAfter) {
                     if (this._landerSpecifications.drillLength !== this._drillBits.length) {
@@ -1515,9 +1663,9 @@ export class LandAndMine {
         }
 
         // Update Readout for remaining fuel
-        this._textElements.leftTopStatsText4.update(`Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
-        if (Math.abs(this._currentFuelLevel) < 20 && this._textElements.leftTopStatsText4.color === COLORS.neutral) {
-            this._textElements.leftTopStatsText4.cycle(COLORS.selected);
+        this._textElements.fuelLevel.update(`Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
+        if (Math.abs(this._currentFuelLevel) < 20 && this._textElements.fuelLevel.color === COLORS.neutral) {
+            this._textElements.fuelLevel.cycle(COLORS.selected);
         }
 
         // If lander exceeds bounds, teleport them to the other side.
@@ -1580,45 +1728,45 @@ export class LandAndMine {
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
 
             horizontalSpeedText = `Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`;
-            this._textElements.leftTopStatsText1.update(horizontalSpeedText);
+            this._textElements.horizontalSpeed.update(horizontalSpeedText);
             if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
-                && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
-                this._textElements.leftTopStatsText1.cycle(COLORS.selected);
+                && this._textElements.horizontalSpeed.color === COLORS.neutral) {
+                this._textElements.horizontalSpeed.cycle(COLORS.selected);
             } else if (Math.abs(this._currentLanderHorizontalSpeed) < this._landerSpecifications.horizontalCrashMargin
-                && this._textElements.leftTopStatsText1.color === COLORS.selected) {
-                this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
+                && this._textElements.horizontalSpeed.color === COLORS.selected) {
+                this._textElements.horizontalSpeed.cycle(COLORS.neutral);
             }
 
-            this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+            this._textElements.verticalSpeed.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
             if (this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin
-                && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
-                this._textElements.leftTopStatsText2.cycle(COLORS.selected);
+                && this._textElements.verticalSpeed.color === COLORS.neutral) {
+                this._textElements.verticalSpeed.cycle(COLORS.selected);
             } else if (this._currentLanderVerticalSpeed < this._landerSpecifications.verticalCrashMargin
-                && this._textElements.leftTopStatsText2.color === COLORS.selected) {
-                this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
+                && this._textElements.verticalSpeed.color === COLORS.selected) {
+                this._textElements.verticalSpeed.cycle(COLORS.neutral);
             }
 
             return;
         }
 
         // Change horizontal speed text color if it exceeds safe limits or back if it is within safe bounds.
-        this._textElements.leftTopStatsText1.update(horizontalSpeedText);
+        this._textElements.horizontalSpeed.update(horizontalSpeedText);
         if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
-            && this._textElements.leftTopStatsText1.color === COLORS.neutral) {
-            this._textElements.leftTopStatsText1.cycle(COLORS.selected);
+            && this._textElements.horizontalSpeed.color === COLORS.neutral) {
+            this._textElements.horizontalSpeed.cycle(COLORS.selected);
         } else if (Math.abs(this._currentLanderHorizontalSpeed) < this._landerSpecifications.horizontalCrashMargin
-            && this._textElements.leftTopStatsText1.color === COLORS.selected) {
-            this._textElements.leftTopStatsText1.cycle(COLORS.neutral);
+            && this._textElements.horizontalSpeed.color === COLORS.selected) {
+            this._textElements.horizontalSpeed.cycle(COLORS.neutral);
         }
 
         // Change vertical speed text color if it exceeds safe limits or back if it is within safe bounds.
-        this._textElements.leftTopStatsText2.update(`Vertical Speed: ${this._currentLanderVerticalSpeed > 0.0001 ? this._currentLanderVerticalSpeed.toFixed(4) : Number(0).toFixed(4)}`);
+        this._textElements.verticalSpeed.update(`Vertical Speed: ${this._currentLanderVerticalSpeed > 0.0001 ? this._currentLanderVerticalSpeed.toFixed(4) : Number(0).toFixed(4)}`);
         if (this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin
-            && this._textElements.leftTopStatsText2.color === COLORS.neutral) {
-            this._textElements.leftTopStatsText2.cycle(COLORS.selected);
+            && this._textElements.verticalSpeed.color === COLORS.neutral) {
+            this._textElements.verticalSpeed.cycle(COLORS.selected);
         } else if (this._currentLanderVerticalSpeed < this._landerSpecifications.verticalCrashMargin
-            && this._textElements.leftTopStatsText2.color === COLORS.selected) {
-            this._textElements.leftTopStatsText2.cycle(COLORS.neutral);
+            && this._textElements.verticalSpeed.color === COLORS.selected) {
+            this._textElements.verticalSpeed.cycle(COLORS.neutral);
         }
 
         // Calculate gravity effect on ship.

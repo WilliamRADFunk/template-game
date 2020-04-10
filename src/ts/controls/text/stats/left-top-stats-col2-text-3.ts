@@ -4,11 +4,11 @@ import { TextType } from "../text-type";
 
 /**
  * @class
- * Text class for text that will appear in the top left corner, as the second readout.
+ * Text class for text that will appear in the top left corner, as the third readout.
  */
-export class LeftTopStatsText2 extends TextBase {
+export class LeftTopStatsCol2Text3 extends TextBase {
     /**
-     * Constructor for the left top stats text sub class
+     * Constructor for the left top stats column 2 text sub class
      * @param sentence starting text content.
      * @param position height, width, left and top position of the button.
      * @param color color of the text.
@@ -21,7 +21,7 @@ export class LeftTopStatsText2 extends TextBase {
         color: string,
         border: string,
         type: TextType) {
-        super('left-top-stats-text-2', sentence, color, 'left', border, type);
+        super('left-top-stats-col2-text-3', sentence, color, 'left', border, type);
 
         document.body.appendChild(this.element);
 
@@ -37,8 +37,8 @@ export class LeftTopStatsText2 extends TextBase {
         this.element.style.width = `${0.25 * position.width}px`;
         this.element.style.maxHeight = `${0.08 * position.height}px`;
         this.element.style.height = `${0.08 * position.height}px`;
-        this.element.style.top = `${0.025 * position.height}px`;
-        this.element.style.left = `${position.left + (0.01 * position.width)}px`;
+        this.element.style.top = `${0.045 * position.height}px`;
+        this.element.style.left = `${position.left + (0.25 * position.width)}px`;
         this.element.style.fontSize = `${0.015 * position.width}px`;
     }
 }
