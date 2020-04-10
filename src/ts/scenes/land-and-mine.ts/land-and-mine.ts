@@ -797,8 +797,6 @@ export class LandAndMine {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        // TODO: Environmental readouts (ie. ore tiles, danger tiles, common tiles)
-
         // TODO: Tutorial for how to play the game.
 
         // TODO: Add sound fx.

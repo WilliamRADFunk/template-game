@@ -41,6 +41,7 @@ import { FreestyleText } from "./custom-controls/freestyle-text";
 import { MinusButton } from "../../controls/buttons/minus-button";
 import { PlusButton } from "../../controls/buttons/plus-button";
 import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-button";
+import { LanderSpecifications } from "../../models/lander-specifications";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -63,6 +64,13 @@ export class DevMenu {
         planetBase: PlanetLandTypes.Red,
         skyBase: SkyTypes.Blue,
         wind: 0
+    };
+    private _landAndMineLanderSpec: LanderSpecifications = {
+        drillLength: 5,
+        fuelBurn: 0.05,
+        horizontalCrashMargin: 0.001,
+        oxygenBurn: 0.02,
+        verticalCrashMargin: 0.01
     };
     /**
      * List of profiles on page 1.
@@ -380,11 +388,11 @@ export class DevMenu {
                     wind: this._landAndMinePlanetSpec.wind
                 },
                 {
-                    drillLength: 5,
-                    fuelBurn: 0.05,
-                    horizontalCrashMargin: 0.001,
-                    oxygenBurn: 0.02,
-                    verticalCrashMargin: 0.01
+                    drillLength: this._landAndMineLanderSpec.drillLength,
+                    fuelBurn: this._landAndMineLanderSpec.fuelBurn,
+                    horizontalCrashMargin: this._landAndMineLanderSpec.horizontalCrashMargin,
+                    oxygenBurn: this._landAndMineLanderSpec.oxygenBurn,
+                    verticalCrashMargin: this._landAndMineLanderSpec.verticalCrashMargin
                 });
         };
 
@@ -449,8 +457,58 @@ export class DevMenu {
             this._page1textElements.freestylePeakElevationReadoutText.update(this._landAndMinePlanetSpec.peakElevation.toFixed(0));
         };
 
-        rowSub1Left += 0.025;
+        rowSub1Left += 0.02;
         this._page1buttons.peakElevationPlusButton = new PlusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+
+        rowSub1Left += 0.04;
+        this._page1textElements.freestyleDrillLengthText = new FreestyleText(
+            'drill length:',
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            COLORS.neutral,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let newDrillLength = this._landAndMineLanderSpec.drillLength - 1;
+            if (newDrillLength < 2) {
+                newDrillLength = 2;
+            }
+            this._landAndMineLanderSpec.drillLength = newDrillLength;
+            this._page1textElements.freestyleDrillLengthReadoutText.update(this._landAndMineLanderSpec.drillLength.toFixed(0));
+        };
+
+        rowSub1Left += 0.12;
+        this._page1buttons.drillLengthMinusButton = new MinusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+
+        rowSub1Left += 0.035;
+        this._page1textElements.freestyleDrillLengthReadoutText = new FreestyleText(
+            this._landAndMineLanderSpec.drillLength.toFixed(0),
+            { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let newDrillLength = this._landAndMineLanderSpec.drillLength + 1;
+            if (newDrillLength > 20) {
+                newDrillLength = 20;
+            }
+            this._landAndMineLanderSpec.drillLength = newDrillLength;
+            this._page1textElements.freestyleDrillLengthReadoutText.update(this._landAndMineLanderSpec.drillLength.toFixed(0));
+        };
+
+        rowSub1Left += 0.025;
+        this._page1buttons.drillLengthPlusButton = new PlusButton(
             { left: left + (rowSub1Left * width), height, top: 0.835 * height, width },
             BUTTON_COLORS,
             onClick,
@@ -883,8 +941,17 @@ export class DevMenu {
         this._buttons.peakElevationMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
         rowSub1Left += 0.035;
         this._textElements.freestylePeakElevationReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
-        rowSub1Left += 0.025;
+        rowSub1Left += 0.02;
         this._buttons.peakElevationPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+
+        rowSub1Left += 0.04;
+        this._textElements.freestyleDrillLengthText.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+        rowSub1Left += 0.12;
+        this._buttons.drillLengthMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+        rowSub1Left += 0.035;
+        this._textElements.freestyleDrillLengthReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
+        rowSub1Left += 0.025;
+        this._buttons.drillLengthPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.835 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 0
         let row0Left = groupLeftStart;
