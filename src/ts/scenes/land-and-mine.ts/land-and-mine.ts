@@ -1338,6 +1338,8 @@ export class LandAndMine {
                 this._textElements.waterAndFoodCollected.update(`0 water / 0 food`);
                 this._textElements.oreCollected.update(`0 ${OreTypes[this._planetSpecifications.ore]}`);
                 this._buttons.mineButton.hide();
+                this._buttons.loadButton.hide();
+                this._buttons.unloadButton.hide();
                 this._state = LandAndMineState.escaped;
                 setTimeout(() => {
                     this._camera.position.set(0, this._camera.position.y, 0);
@@ -1376,7 +1378,19 @@ export class LandAndMine {
                 this._textElements.oxygenLevel.cycle(COLORS.selected);
             }
         } else {
-            this._state = LandAndMineState.suffocating;
+            if (this._state !== LandAndMineState.mining
+                && this._state !== LandAndMineState.walkingAwayFromLander
+                && this._state !== LandAndMineState.walkingByLander) {
+                this._loot[-2] = 0;
+                this._loot[-3] = 1;
+                this._textElements.crewCollected.update(`0 crew recovered`);
+                this._buttons.mineButton.hide();
+                this._buttons.loadButton.hide();
+                this._buttons.unloadButton.hide();
+                this._state = LandAndMineState.escaped;
+            } else {
+                this._state = LandAndMineState.suffocating;
+            }
             return;
         }
 
