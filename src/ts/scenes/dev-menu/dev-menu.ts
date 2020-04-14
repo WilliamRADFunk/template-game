@@ -119,6 +119,8 @@ export class DevMenu {
         fuelBurnPlusButton: null,
         gravityMinusButton: null,
         gravityPlusButton: null,
+        horizontalCrashMarginMinusButton: null,
+        horizontalCrashMarginPlusButton: null,
         isFrozenButton: null,
         isLifeButton: null,
         isWaterButton: null,
@@ -134,6 +136,8 @@ export class DevMenu {
         oxygenBurnPlusButton: null,
         peakElevationMinusButton: null,
         peakElevationPlusButton: null,
+        verticalCrashMarginMinusButton: null,
+        verticalCrashMarginPlusButton: null,
         windMinusButton: null,
         windPlusButton: null,
     };
@@ -182,6 +186,8 @@ export class DevMenu {
         freestyleFuelBurnText: null,
         freestyleGravityText: null,
         freestyleGravityReadoutText: null,
+        freestyleHThresholdText: null,
+        freestyleHorizontalCrashMarginReadoutText: null,
         freestyleOreTypeText: null,
         freestyleOreQuantityText: null,
         freestyleOxygenBurnReadoutText: null,
@@ -190,6 +196,8 @@ export class DevMenu {
         freestylePeakElevationText: null,
         freestyleSkyColorReadoutText: null,
         freestyleSkyColorText: null,
+        freestyleVThresholdText: null,
+        freestyleVerticalCrashMarginReadoutText: null,
         freestyleWindText: null,
         freestyleWindReadoutText: null,
         leftBottomMiddleTitleText: null,
@@ -423,14 +431,112 @@ export class DevMenu {
             TextType.FADABLE);
 
         const groupLeftStart = 0.015;
-
-        // TODO: Lander specifications buttons.
-
         //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
+        this._page1textElements.freestyleHThresholdText = new FreestyleText(
+            'H Threshold',
+            { left: left + (rowSub2Left * width), height, top: 0.755 * height, width },
+            COLORS.neutral,
+            'none',
+            TextType.STATIC);
+        rowSub2Left += 0.325;
+        this._page1textElements.freestyleVThresholdText = new FreestyleText(
+            'V Threshold',
+            { left: left + (rowSub2Left * width), height, top: 0.755 * height, width },
+            COLORS.neutral,
+            'none',
+            TextType.STATIC);
+        //#endregion
+        //#region LaunchLandAndMineScene Row -1
+        let rowSub1Left = groupLeftStart;
+        onClick = () => {
+            let newHorizontalCrashMargin = this._landAndMineLanderSpec.horizontalCrashMargin - 0.001;
+            if (newHorizontalCrashMargin < 0.001) {
+                newHorizontalCrashMargin = 0.001;
+            }
+            this._landAndMineLanderSpec.horizontalCrashMargin = newHorizontalCrashMargin;
+            this._page1textElements.freestyleHorizontalCrashMarginReadoutText.update(this._landAndMineLanderSpec.horizontalCrashMargin.toFixed(3));
+        };
+
+        this._page1buttons.horizontalCrashMarginMinusButton = new MinusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+
+        rowSub1Left += 0.035;
+        this._page1textElements.freestyleHorizontalCrashMarginReadoutText = new FreestyleText(
+            this._landAndMineLanderSpec.horizontalCrashMargin.toFixed(3),
+            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let newHorizontalCrashMargin = this._landAndMineLanderSpec.horizontalCrashMargin + 0.001;
+            if (newHorizontalCrashMargin > 0.009) {
+                newHorizontalCrashMargin = 0.009;
+            }
+            this._landAndMineLanderSpec.horizontalCrashMargin = newHorizontalCrashMargin;
+            this._page1textElements.freestyleHorizontalCrashMarginReadoutText.update(this._landAndMineLanderSpec.horizontalCrashMargin.toFixed(3));
+        };
+
+        rowSub1Left += 0.05;
+        this._page1buttons.horizontalCrashMarginPlusButton = new PlusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+
+        rowSub1Left += 0.238;
+        onClick = () => {
+            let newVerticalCrashMargin = this._landAndMineLanderSpec.verticalCrashMargin - 0.01;
+            if (newVerticalCrashMargin < 0.01) {
+                newVerticalCrashMargin = 0.01;
+            }
+            this._landAndMineLanderSpec.verticalCrashMargin = newVerticalCrashMargin;
+            this._page1textElements.freestyleVerticalCrashMarginReadoutText.update(this._landAndMineLanderSpec.verticalCrashMargin.toFixed(2));
+        };
+
+        this._page1buttons.verticalCrashMarginMinusButton = new MinusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+
+        rowSub1Left += 0.035;
+        this._page1textElements.freestyleVerticalCrashMarginReadoutText = new FreestyleText(
+            this._landAndMineLanderSpec.verticalCrashMargin.toFixed(2),
+            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        onClick = () => {
+            let newVerticalCrashMargin = this._landAndMineLanderSpec.verticalCrashMargin + 0.01;
+            if (newVerticalCrashMargin > 0.09) {
+                newVerticalCrashMargin = 0.09;
+            }
+            this._landAndMineLanderSpec.verticalCrashMargin = newVerticalCrashMargin;
+            this._page1textElements.freestyleVerticalCrashMarginReadoutText.update(this._landAndMineLanderSpec.verticalCrashMargin.toFixed(2));
+        };
+
+        rowSub1Left += 0.04;
+        this._page1buttons.verticalCrashMarginPlusButton = new PlusButton(
+            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            0.5);
+        //#endregion
+        //#region LaunchLandAndMineScene Row 0
+        let row0Left = groupLeftStart;
         this._page1textElements.freestyleOxygenBurnText = new FreestyleText(
             'oxygen burn:',
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -444,18 +550,18 @@ export class DevMenu {
             this._page1textElements.freestyleOxygenBurnReadoutText.update(this._landAndMineLanderSpec.oxygenBurn.toFixed(2));
         };
 
-        rowSub2Left += 0.12;
+        row0Left += 0.12;
         this._page1buttons.oxygenBurnMinusButton = new MinusButton(
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        rowSub2Left += 0.035;
+        row0Left += 0.035;
         this._page1textElements.freestyleOxygenBurnReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.oxygenBurn.toFixed(2),
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -469,18 +575,18 @@ export class DevMenu {
             this._page1textElements.freestyleOxygenBurnReadoutText.update(this._landAndMineLanderSpec.oxygenBurn.toFixed(2));
         };
 
-        rowSub2Left += 0.04;
+        row0Left += 0.04;
         this._page1buttons.oxygenBurnPlusButton = new PlusButton(
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        rowSub2Left += 0.04;
+        row0Left += 0.04;
         this._page1textElements.freestyleFuelBurnText = new FreestyleText(
             'fuel burn:',
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -494,18 +600,18 @@ export class DevMenu {
             this._page1textElements.freestyleFuelBurnReadoutText.update(this._landAndMineLanderSpec.fuelBurn.toFixed(2));
         };
 
-        rowSub2Left += 0.095;
+        row0Left += 0.095;
         this._page1buttons.fuelBurnMinusButton = new MinusButton(
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        rowSub2Left += 0.035;
+        row0Left += 0.035;
         this._page1textElements.freestyleFuelBurnReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.fuelBurn.toFixed(2),
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -519,19 +625,19 @@ export class DevMenu {
             this._page1textElements.freestyleFuelBurnReadoutText.update(this._landAndMineLanderSpec.fuelBurn.toFixed(2));
         };
 
-        rowSub2Left += 0.0425;
+        row0Left += 0.0425;
         this._page1buttons.fuelBurnPlusButton = new PlusButton(
-            { left: left + (rowSub2Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: 0.82 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
         //#endregion
-        //#region LaunchLandAndMineScene Row -1
-        let rowSub1Left = groupLeftStart;
+        //#region LaunchLandAndMineScene Row 1
+        let row1Left = groupLeftStart;
         this._page1textElements.freestylePeakElevationText = new FreestyleText(
             'peak elevation:',
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -545,18 +651,18 @@ export class DevMenu {
             this._page1textElements.freestylePeakElevationReadoutText.update(this._landAndMinePlanetSpec.peakElevation.toFixed(0));
         };
 
-        rowSub1Left += 0.14;
+        row1Left += 0.14;
         this._page1buttons.peakElevationMinusButton = new MinusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        rowSub1Left += 0.035;
+        row1Left += 0.035;
         this._page1textElements.freestylePeakElevationReadoutText = new FreestyleText(
             this._landAndMinePlanetSpec.peakElevation.toFixed(0),
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -570,18 +676,18 @@ export class DevMenu {
             this._page1textElements.freestylePeakElevationReadoutText.update(this._landAndMinePlanetSpec.peakElevation.toFixed(0));
         };
 
-        rowSub1Left += 0.02;
+        row1Left += 0.02;
         this._page1buttons.peakElevationPlusButton = new PlusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        rowSub1Left += 0.04;
+        row1Left += 0.04;
         this._page1textElements.freestyleDrillLengthText = new FreestyleText(
             'drill length:',
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -595,18 +701,18 @@ export class DevMenu {
             this._page1textElements.freestyleDrillLengthReadoutText.update(this._landAndMineLanderSpec.drillLength.toFixed(0));
         };
 
-        rowSub1Left += 0.12;
+        row1Left += 0.12;
         this._page1buttons.drillLengthMinusButton = new MinusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        rowSub1Left += 0.035;
+        row1Left += 0.035;
         this._page1textElements.freestyleDrillLengthReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.drillLength.toFixed(0),
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -620,19 +726,19 @@ export class DevMenu {
             this._page1textElements.freestyleDrillLengthReadoutText.update(this._landAndMineLanderSpec.drillLength.toFixed(0));
         };
 
-        rowSub1Left += 0.025;
+        row1Left += 0.025;
         this._page1buttons.drillLengthPlusButton = new PlusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: 0.855 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
         //#endregion
-        //#region LaunchLandAndMineScene Row 0
-        let row0Left = groupLeftStart;
+        //#region LaunchLandAndMineScene Row 2
+        let row2Left = groupLeftStart;
         this._page1textElements.freestyleSkyColorText = new FreestyleText(
             'Sky Color:',
-            { left: left + (row0Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: 0.89 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -646,27 +752,27 @@ export class DevMenu {
             this._page1textElements.freestyleSkyColorReadoutText.update(SkyTypes[this._landAndMinePlanetSpec.skyBase]);
         };
 
-        row0Left += 0.095;
+        row2Left += 0.095;
         this._page1buttons.changeSkyTypeButton = new FreestyleSquareButton(
-            { left: left + (row0Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: 0.89 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             'fa-globe',
             0.5);
 
-        row0Left += 0.035;
+        row2Left += 0.035;
         this._page1textElements.freestyleSkyColorReadoutText = new FreestyleText(
             SkyTypes[this._landAndMinePlanetSpec.skyBase],
-            { left: left + (row0Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: 0.89 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
 
-        row0Left += 0.08;
+        row2Left += 0.08;
         this._page1textElements.freestylePlanetLandColorText = new FreestyleText(
             'Land Color:',
-            { left: left + (row0Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: 0.89 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -680,28 +786,28 @@ export class DevMenu {
             this._page1textElements.freestylePlanetLandColorReadoutText.update(PlanetLandTypes[this._landAndMinePlanetSpec.planetBase]);
         };
 
-        row0Left += 0.105;
+        row2Left += 0.105;
         this._page1buttons.changePlanetLandTypeButton = new FreestyleSquareButton(
-            { left: left + (row0Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: 0.89 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             'fa-globe',
             0.5);
 
-        row0Left += 0.035;
+        row2Left += 0.035;
         this._page1textElements.freestylePlanetLandColorReadoutText = new FreestyleText(
             PlanetLandTypes[this._landAndMinePlanetSpec.planetBase],
-            { left: left + (row0Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: 0.89 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
         //#endregion
-        //#region LaunchLandAndMineScene Row 1
-        let row1Left = groupLeftStart;
+        //#region LaunchLandAndMineScene Row 3
+        let row3Left = groupLeftStart;
         this._page1textElements.freestyleGravityText = new FreestyleText(
             'gravity:',
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -715,18 +821,18 @@ export class DevMenu {
             this._page1textElements.freestyleGravityReadoutText.update(this._landAndMinePlanetSpec.gravity.toFixed(5));
         };
 
-        row1Left += 0.08;
+        row3Left += 0.08;
         this._page1buttons.gravityMinusButton = new MinusButton(
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        row1Left += 0.035;
+        row3Left += 0.035;
         this._page1textElements.freestyleGravityReadoutText = new FreestyleText(
             this._landAndMinePlanetSpec.gravity.toFixed(5),
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -740,18 +846,18 @@ export class DevMenu {
             this._page1textElements.freestyleGravityReadoutText.update(this._landAndMinePlanetSpec.gravity.toFixed(5));
         };
 
-        row1Left += 0.075;
+        row3Left += 0.075;
         this._page1buttons.gravityPlusButton = new PlusButton(
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        row1Left += 0.05;
+        row3Left += 0.05;
         this._page1textElements.freestyleWindText = new FreestyleText(
             'wind:',
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -765,18 +871,18 @@ export class DevMenu {
             this._page1textElements.freestyleWindReadoutText.update(`${this._landAndMinePlanetSpec.wind}%`);
         };
 
-        row1Left += 0.06;
+        row3Left += 0.06;
         this._page1buttons.windMinusButton = new MinusButton(
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
 
-        row1Left += 0.035;
+        row3Left += 0.035;
         this._page1textElements.freestyleWindReadoutText = new FreestyleText(
             `${this._landAndMinePlanetSpec.wind}%`,
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -790,37 +896,37 @@ export class DevMenu {
             this._page1textElements.freestyleWindReadoutText.update(`${this._landAndMinePlanetSpec.wind}%`);
         };
 
-        row1Left += 0.045;
+        row3Left += 0.045;
         this._page1buttons.windPlusButton = new PlusButton(
-            { left: left + (row1Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: 0.925 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
         //#endregion
-        //#region LaunchLandAndMineScene Row 2
-        let row2Left = groupLeftStart;
+        //#region LaunchLandAndMineScene Row 4
+        let row4Left = groupLeftStart;
         this._page1buttons.isWaterButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             BUTTON_COLORS,
             'fa-tint',
             true);
 
-        row2Left += 0.035;
+        row4Left += 0.035;
         this._page1buttons.isFrozenButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             BUTTON_COLORS,
             'fa-snowflake-o',
             true);
 
-        row2Left += 0.035;
+        row4Left += 0.035;
         this._page1buttons.isLifeButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             BUTTON_COLORS,
             'fa-leaf',
             true);
 
-        row2Left += 0.035;
+        row4Left += 0.035;
 
         onClick = () => {
             let nextNum = this._landAndMinePlanetSpec.ore + 1;
@@ -832,17 +938,17 @@ export class DevMenu {
         };
 
         this._page1buttons.changeOreTypeButton = new FreestyleSquareButton(
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             'fa-diamond',
             0.5);
 
-        row2Left += 0.035;
+        row4Left += 0.035;
         this._page1textElements.freestyleOreTypeText = new FreestyleText(
             OreTypes[this._landAndMinePlanetSpec.ore],
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -856,19 +962,19 @@ export class DevMenu {
             this._page1textElements.freestyleOreQuantityText.update(OreQuantity[this._landAndMinePlanetSpec.oreQuantity]);
         };
 
-        row2Left += 0.1;
+        row4Left += 0.1;
         this._page1buttons.changeOreQuantityButton = new FreestyleSquareButton(
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             'fa-plus',
             0.5);
 
-        row2Left += 0.035;
+        row4Left += 0.035;
         this._page1textElements.freestyleOreQuantityText = new FreestyleText(
             OreQuantity[this._landAndMinePlanetSpec.oreQuantity],
-            { left: left + (row2Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: 0.96 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1045,93 +1151,114 @@ export class DevMenu {
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
 
-        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.145 * width), height, top: 0.785 * height, width });
+        this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.175 * width), height, top: 0.785 * height, width });
         const groupLeftStart = 0.015;
-//#region LaunchLandAndMine Row -2
+//#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
-        this._textElements.freestyleOxygenBurnText.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-        rowSub2Left += 0.12;
-        this._buttons.oxygenBurnMinusButton.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-        rowSub2Left += 0.035;
-        this._textElements.freestyleOxygenBurnReadoutText.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-        rowSub2Left += 0.04;
-        this._buttons.oxygenBurnPlusButton.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-
-        rowSub2Left += 0.04;
-        this._textElements.freestyleFuelBurnText.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-        rowSub2Left += 0.095;
-        this._buttons.fuelBurnMinusButton.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-        rowSub2Left += 0.035;
-        this._textElements.freestyleFuelBurnReadoutText.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
-        rowSub2Left += 0.0425;
-        this._buttons.fuelBurnPlusButton.resize({ left: left + (rowSub2Left * width), height, top: 0.82 * height, width });
+        this._textElements.freestyleHThresholdText.resize({ left: left + (rowSub2Left * width), height, top: 0.755 * height, width });
+        rowSub2Left += 0.325;
+        this._textElements.freestyleVThresholdText.resize({ left: left + (rowSub2Left * width), height, top: 0.755 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row -1
         let rowSub1Left = groupLeftStart;
-        this._textElements.freestylePeakElevationText.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
-        rowSub1Left += 0.14;
-        this._buttons.peakElevationMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
+        this._buttons.horizontalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
         rowSub1Left += 0.035;
-        this._textElements.freestylePeakElevationReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
-        rowSub1Left += 0.02;
-        this._buttons.peakElevationPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
+        this._textElements.freestyleHorizontalCrashMarginReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        rowSub1Left += 0.05;
+        this._buttons.horizontalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
 
-        rowSub1Left += 0.04;
-        this._textElements.freestyleDrillLengthText.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
-        rowSub1Left += 0.12;
-        this._buttons.drillLengthMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
+        rowSub1Left += 0.238;
+        this._buttons.verticalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
         rowSub1Left += 0.035;
-        this._textElements.freestyleDrillLengthReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
-        rowSub1Left += 0.025;
-        this._buttons.drillLengthPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.855 * height, width });
+        this._textElements.freestyleVerticalCrashMarginReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        rowSub1Left += 0.04;
+        this._buttons.verticalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 0
         let row0Left = groupLeftStart;
-        this._textElements.freestyleSkyColorText.resize({ left: left + (row0Left * width), height, top: 0.89 * height, width });
+        this._textElements.freestyleOxygenBurnText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        row0Left += 0.12;
+        this._buttons.oxygenBurnMinusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        row0Left += 0.035;
+        this._textElements.freestyleOxygenBurnReadoutText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        row0Left += 0.04;
+        this._buttons.oxygenBurnPlusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+
+        row0Left += 0.04;
+        this._textElements.freestyleFuelBurnText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
         row0Left += 0.095;
-        this._buttons.changeSkyTypeButton.resize({ left: left + (row0Left * width), height, top: 0.89 * height, width });
+        this._buttons.fuelBurnMinusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
         row0Left += 0.035;
-        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.89 * height, width });
-        row0Left += 0.08;
-        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row0Left * width), height, top: 0.89 * height, width });
-        row0Left += 0.105;
-        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row0Left * width), height, top: 0.89 * height, width });
-        row0Left += 0.035;
-        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row0Left * width), height, top: 0.89 * height, width });
+        this._textElements.freestyleFuelBurnReadoutText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        row0Left += 0.0425;
+        this._buttons.fuelBurnPlusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 1
         let row1Left = groupLeftStart;
-        this._textElements.freestyleGravityText.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
-        row1Left += 0.08;
-        this._buttons.gravityMinusButton.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
+        this._textElements.freestylePeakElevationText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        row1Left += 0.14;
+        this._buttons.peakElevationMinusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
         row1Left += 0.035;
-        this._textElements.freestyleGravityReadoutText.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
-        row1Left += 0.075;
-        this._buttons.gravityPlusButton.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
-        row1Left += 0.05;
-        this._textElements.freestyleWindText.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
-        row1Left += 0.06;
-        this._buttons.windMinusButton.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
+        this._textElements.freestylePeakElevationReadoutText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        row1Left += 0.02;
+        this._buttons.peakElevationPlusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+
+        row1Left += 0.04;
+        this._textElements.freestyleDrillLengthText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        row1Left += 0.12;
+        this._buttons.drillLengthMinusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
         row1Left += 0.035;
-        this._textElements.freestyleWindReadoutText.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
-        row1Left += 0.045;
-        this._buttons.windPlusButton.resize({ left: left + (row1Left * width), height, top: 0.925 * height, width });
+        this._textElements.freestyleDrillLengthReadoutText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        row1Left += 0.025;
+        this._buttons.drillLengthPlusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 2
         let row2Left = groupLeftStart;
-        this._buttons.isWaterButton.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
+        this._textElements.freestyleSkyColorText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        row2Left += 0.095;
+        this._buttons.changeSkyTypeButton.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
         row2Left += 0.035;
-        this._buttons.isFrozenButton.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
+        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        row2Left += 0.08;
+        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        row2Left += 0.105;
+        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
         row2Left += 0.035;
-        this._buttons.isLifeButton.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
-        row2Left += 0.035;
-        this._buttons.changeOreTypeButton.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
-        row2Left += 0.035;
-        this._textElements.freestyleOreTypeText.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
-        row2Left += 0.1;
-        this._buttons.changeOreQuantityButton.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
-        row2Left += 0.035;
-        this._textElements.freestyleOreQuantityText.resize({ left: left + (row2Left * width), height, top: 0.96 * height, width });
+        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+//#endregion
+//#region LaunchLandAndMine Row 3
+        let row3Left = groupLeftStart;
+        this._textElements.freestyleGravityText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.08;
+        this._buttons.gravityMinusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.035;
+        this._textElements.freestyleGravityReadoutText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.075;
+        this._buttons.gravityPlusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.05;
+        this._textElements.freestyleWindText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.06;
+        this._buttons.windMinusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.035;
+        this._textElements.freestyleWindReadoutText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3Left += 0.045;
+        this._buttons.windPlusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+//#endregion
+//#region LaunchLandAndMine Row 4
+        let row4Left = groupLeftStart;
+        this._buttons.isWaterButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left += 0.035;
+        this._buttons.isFrozenButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left += 0.035;
+        this._buttons.isLifeButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left += 0.035;
+        this._buttons.changeOreTypeButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left += 0.035;
+        this._textElements.freestyleOreTypeText.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left += 0.1;
+        this._buttons.changeOreQuantityButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left += 0.035;
+        this._textElements.freestyleOreQuantityText.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
 //#endregion
         this._buttons.launchPlanetRaidSceneButton.resize({ left: left + (0.29 * width), height, top: 0.20 * height, width });
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
