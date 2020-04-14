@@ -333,13 +333,6 @@ export class DevMenu {
             true,
             buttonScale * 0.5);
 
-        this._page1textElements.rightBottomTitleText = new RightBottomTitleText(
-            'Next Page',
-            { left, height, top: null, width },
-            COLORS.selected,
-            border,
-            TextType.FADABLE);
-
         const groupLeftStart = 0.015;
         //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
@@ -890,7 +883,14 @@ export class DevMenu {
             TextType.STATIC);
         //#endregion
     //#endregion
-//#region Page1 Next
+    //#region Page1 Next
+        this._page1textElements.rightBottomTitleText = new RightBottomTitleText(
+            'Next Page',
+            { left, height, top: null, width },
+            COLORS.selected,
+            border,
+            TextType.FADABLE);
+
         onClick = () => {
             this._page1buttons.nextPageButton.disable();
             this._next();
@@ -902,7 +902,7 @@ export class DevMenu {
             BUTTON_COLORS,
             onClick,
             true);
-//#endregion
+    //#endregion
 //#endregion
 
 //#region Page 2
