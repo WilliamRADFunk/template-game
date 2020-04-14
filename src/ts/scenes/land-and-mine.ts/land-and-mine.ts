@@ -48,6 +48,7 @@ import { RightTopStatsCol3Text1 } from '../../controls/text/stats/right-top-stat
 import { RightTopStatsCol3Text2 } from '../../controls/text/stats/right-top-stats-col3-text-2';
 import { RightTopStatsCol3Text3 } from '../../controls/text/stats/right-top-stats-col3-text-3';
 import { RightTopStatsCol3Text4 } from '../../controls/text/stats/right-top-stats-col3-text-4';
+import { MineCountText } from './custom-controls/mine-count-text';
 
 /*
  * Grid Values
@@ -167,7 +168,9 @@ export class LandAndMine {
 
     private _meshGrid: Mesh[][] = [];
 
-    private _windParticles: Mesh[] = [];
+    private _mineCollectCount: number;
+
+    private _mineTextTimeoutId: any;
 
     private _planetSpecifications: PlanetSpecifications;
 
@@ -186,6 +189,8 @@ export class LandAndMine {
     private _textElements: { [key: string]: TextBase } = { };
 
     private _textures: { [key: string]: Texture } = {};
+
+    private _windParticles: Mesh[] = [];
 
     /**
      * Constructor for the Land and Mine (Scene) class
@@ -210,6 +215,8 @@ export class LandAndMine {
         this._loot[-2] = 0; // -2 is surviving crew members
         this._loot[-1] = 0; // -1 is food
         this._loot[0] = 0; // 0 is water
+        this._loot[this._planetSpecifications.ore] = 0; // this._planetSpecifications.ore is ore
+        this._mineCollectCount = planetSpecifications.oreQuantity * 20;
 
         // Choose random surface starting point.
         let startY = Math.floor((Math.random() / 2) * 100) + 20
@@ -913,6 +920,14 @@ export class LandAndMine {
             border,
             TextType.STATIC);
 
+        this._textElements.mineCount = new MineCountText(
+            `${this._mineCollectCount} x ${OreTypes[this._planetSpecifications.ore]}`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.FADABLE);
+        this._textElements.mineCount.hide();
+
         let onClick = () => {
             if (this._state === LandAndMineState.paused) {
                 this._state = LandAndMineState.flying;
@@ -1410,11 +1425,41 @@ export class LandAndMine {
                     }
                     if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
                         if (this._grid[centerDrillRowAfter][drillCol] === 3) {
-                            this._loot[0] += 20;
+                            this._loot[0] += this._mineCollectCount;
+
+                            this._textElements.mineCount.update(`${this._mineCollectCount} x Water`);
+                            this._textElements.mineCount.show();
+                            if (this._mineTextTimeoutId) {
+                                clearTimeout(this._mineTextTimeoutId);
+                                this._mineTextTimeoutId = null;
+                            }
+                            this._mineTextTimeoutId = setTimeout(() => {
+                                this._textElements.mineCount.hide();
+                            }, 1500);
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
-                            this._loot[this._planetSpecifications.ore] += 20;
+                            this._loot[this._planetSpecifications.ore] += this._mineCollectCount;
+
+                            this._textElements.mineCount.update(`${this._mineCollectCount} x ${OreTypes[this._planetSpecifications.ore]}`);
+                            this._textElements.mineCount.show();
+                            if (this._mineTextTimeoutId) {
+                                clearTimeout(this._mineTextTimeoutId);
+                                this._mineTextTimeoutId = null;
+                            }
+                            this._mineTextTimeoutId = setTimeout(() => {
+                                this._textElements.mineCount.hide();
+                            }, 1500);
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
-                            this._loot[-1] += 20;
+                            this._loot[-1] += this._mineCollectCount;
+
+                            this._textElements.mineCount.update(`${this._mineCollectCount} x Food`);
+                            this._textElements.mineCount.show();
+                            if (this._mineTextTimeoutId) {
+                                clearTimeout(this._mineTextTimeoutId);
+                                this._mineTextTimeoutId = null;
+                            }
+                            this._mineTextTimeoutId = setTimeout(() => {
+                                this._textElements.mineCount.hide();
+                            }, 1500);
                         }
                         this._grid[centerDrillRowAfter][drillCol] = 4;
                         const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
@@ -1431,7 +1476,7 @@ export class LandAndMine {
                         minedMesh.position.set(currDrillPos.x, minedBlockPos.y, currDrillPos.z + 0.051);
                         minedMesh.rotation.set(-1.5708, 0, 0);
                         minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
-                        // TODO: Need to add numbers when block is mined.
+
                         this._scene.remove(minedBlock);
                         this._scene.add(minedMesh);
 
