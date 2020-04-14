@@ -34,7 +34,7 @@ import { RightBottomMiddleProfile } from "../../controls/profiles/right-bottom-m
 import { LeftBottomProfile } from "../../controls/profiles/left-bottom-profile";
 import { RightBottomProfile } from "../../controls/profiles/right-bottom-profile";
 import { LeftTopDialogueText } from "../../controls/text/dialogue/left-top-dialogue-text";
-import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandColors, SkyColors, SkyTypes, PlanetLandTypes } from "../../models/planet-specifications";
+import { PlanetSpecifications, OreTypes, OreQuantity, SkyTypes, PlanetLandTypes } from "../../models/planet-specifications";
 import { ToggleBase } from "../../controls/buttons/toggle-base";
 import { SmallToggleButton } from "../../controls/buttons/small-toggle-button";
 import { FreestyleText } from "./custom-controls/freestyle-text";
@@ -42,6 +42,7 @@ import { MinusButton } from "../../controls/buttons/minus-button";
 import { PlusButton } from "../../controls/buttons/plus-button";
 import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-button";
 import { LanderSpecifications } from "../../models/lander-specifications";
+import { ProfileBase } from "../../controls/profiles/profile-base";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -75,86 +76,30 @@ export class DevMenu {
     /**
      * List of profiles on page 1.
      */
-    private _page1profiles: { [key: string]: LeftTopProfile | RightTopProfile } = {};
+    private _page1profiles: { [key: string]: ProfileBase } = {};
 
     /**
      * List of profiles on page 2.
      */
-    private _page2profiles: { [key: string]: LeftBottomMiddleProfile | LeftTopMiddleProfile | LeftTopProfile | RightBottomMiddleProfile | RightTopMiddleProfile | RightTopProfile } = {
-        leftBottomMiddleProfile: null,
-        leftTopMiddleProfile: null,
-        leftTopProfile: null,
-        rightBottomMiddleProfile: null,
-        rightTopProfile: null,
-        rightTopMiddleProfile: null
-    };
+    private _page2profiles: { [key: string]: ProfileBase } = {};
 
     /**
      * List of profiles on page 3.
      */
-    private _page3profiles: { [key: string]: LeftBottomProfile | RightBottomProfile } = {
-        leftBottomProfile3: null,
-        rightBottomProfile3: null
-    };
-
-    /**
-     * List of profiles.
-     */
-    private _profiles: { [key: string]: LeftTopProfile | RightTopProfile } = {
-        ...this._page1profiles,
-        ...this._page2profiles,
-        ...this._page3profiles
-    };
+    private _page3profiles: { [key: string]: ProfileBase } = {};
 
     /**
      * List of buttons on page 1.
      */
-    private _page1buttons: { [key: string]: ButtonBase | ToggleBase } = {
-        changeOreTypeButton: null,
-        changeOreQuantityButton: null,
-        changeSkyTypeButton: null,
-        drillLengthMinusButton: null,
-        drillLengthPlusButton: null,
-        fuelBurnMinusButton: null,
-        fuelBurnPlusButton: null,
-        gravityMinusButton: null,
-        gravityPlusButton: null,
-        horizontalCrashMarginMinusButton: null,
-        horizontalCrashMarginPlusButton: null,
-        isFrozenButton: null,
-        isLifeButton: null,
-        isWaterButton: null,
-        launchGameMenuButton: null,
-        launchIntroSceneButton: null,
-        launchLandAndMineSceneButton: null,
-        launchRepairSceneButton: null,
-        launchShipLayoutSceneButton: null,
-        launchTravelSceneButton: null,
-        launchVertexMapSceneButton: null,
-        nextPageButton: null,
-        oxygenBurnMinusButton: null,
-        oxygenBurnPlusButton: null,
-        peakElevationMinusButton: null,
-        peakElevationPlusButton: null,
-        verticalCrashMarginMinusButton: null,
-        verticalCrashMarginPlusButton: null,
-        windMinusButton: null,
-        windPlusButton: null,
-    };
+    private _page1buttons: { [key: string]: ButtonBase | ToggleBase } = {};
     /**
      * List of buttons on page 2.
      */
-    private _page2buttons: { [key: string]: ButtonBase } = {
-        launchPlanetRaidSceneButton: null,
-        nextPageButton2: null,
-        previousPageButton2: null,
-    };
+    private _page2buttons: { [key: string]: ButtonBase } = {};
     /**
      * List of buttons on page 3.
      */
-    private _page3buttons: { [key: string]: ButtonBase } = {
-        previousPageButton3: null,
-    };
+    private _page3buttons: { [key: string]: ButtonBase } = {};
 
     /**
      * List of buttons.
@@ -179,52 +124,17 @@ export class DevMenu {
     /**
      * Groups of text elements for page 1.
      */
-    private _page1textElements: TextMap = {
-        freestyleDrillLengthReadoutText: null,
-        freestyleDrillLengthText: null,
-        freestyleFuelBurnReadoutText: null,
-        freestyleFuelBurnText: null,
-        freestyleGravityText: null,
-        freestyleGravityReadoutText: null,
-        freestyleHThresholdText: null,
-        freestyleHorizontalCrashMarginReadoutText: null,
-        freestyleOreTypeText: null,
-        freestyleOreQuantityText: null,
-        freestyleOxygenBurnReadoutText: null,
-        freestyleOxygenBurnText: null,
-        freestylePeakElevationReadoutText: null,
-        freestylePeakElevationText: null,
-        freestyleSkyColorReadoutText: null,
-        freestyleSkyColorText: null,
-        freestyleVThresholdText: null,
-        freestyleVerticalCrashMarginReadoutText: null,
-        freestyleWindText: null,
-        freestyleWindReadoutText: null,
-        leftBottomMiddleTitleText: null,
-        leftBottomTitleText: null,
-        leftTopMiddleTitleText: null,
-        leftTopTitleText: null,
-        rightBottomTitleText: null,
-        rightBottomMiddleTitleText: null,
-        rightTopMiddleTitleText: null,
-        rightTopTitleText: null,
-    };
+    private _page1textElements: TextMap = {};
 
     /**
      * Groups of text elements for page 2.
      */
-    private _page2textElements: TextMap = {
-        leftBottomTitleText2: null,
-        leftTopDialogueText2: null,
-        rightBottomTitleText2: null
-    };
+    private _page2textElements: TextMap = {};
 
     /**
      * Groups of text elements for page 3.
      */
-    private _page3textElements: TextMap = {
-        leftBottomTitleText3: null
-    };
+    private _page3textElements: TextMap = {};
 
     /**
      * Groups of text elements.
