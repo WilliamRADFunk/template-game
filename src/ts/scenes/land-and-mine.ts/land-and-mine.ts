@@ -827,7 +827,7 @@ export class LandAndMine {
             TextType.STATIC);
 
         this._textElements.verticalSpeed = new LeftTopStatsText2(
-            `Vertical Speed: ${this._currentLanderVerticalSpeed}`,
+            `Descent Speed: ${this._currentLanderVerticalSpeed}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
@@ -1839,7 +1839,7 @@ export class LandAndMine {
                 this._textElements.horizontalSpeed.cycle(COLORS.neutral);
             }
 
-            this._textElements.verticalSpeed.update(`Vertical Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+            this._textElements.verticalSpeed.update(`Descent Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
             if (this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin
                 && this._textElements.verticalSpeed.color === COLORS.neutral) {
                 this._textElements.verticalSpeed.cycle(COLORS.selected);
@@ -1862,7 +1862,9 @@ export class LandAndMine {
         }
 
         // Change vertical speed text color if it exceeds safe limits or back if it is within safe bounds.
-        this._textElements.verticalSpeed.update(`Vertical Speed: ${this._currentLanderVerticalSpeed > 0.0001 ? this._currentLanderVerticalSpeed.toFixed(4) : Number(0).toFixed(4)}`);
+        this._textElements.verticalSpeed.update(`Descent Speed: ${this._currentLanderVerticalSpeed > 0.0001
+            ? this._currentLanderVerticalSpeed.toFixed(4)
+            : -this._currentLanderVerticalSpeed.toFixed(4)}`);
         if (this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin
             && this._textElements.verticalSpeed.color === COLORS.neutral) {
             this._textElements.verticalSpeed.cycle(COLORS.selected);
