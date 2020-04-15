@@ -7,7 +7,8 @@ import {
     Scene,
     Texture,
     Object3D,
-    OrthographicCamera } from 'three';
+    OrthographicCamera,
+    Vector3} from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -321,6 +322,16 @@ export class LandAndMine {
             }
             this._downPopulate(col, lastY, isWater);
         }
+    }
+
+    private _crashedEffects(currPos: Vector3, landerCol: number, landerRow: number): void {
+        this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+        this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+        this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+        this._state = LandAndMineState.crashed;
+        this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
+        SoundinatorSingleton.playExplosionSmall();
+        setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
     }
 
     private _createEnvironmentMeshes(): void {
@@ -892,15 +903,23 @@ export class LandAndMine {
             border,
             TextType.STATIC);
 
+        const windSpeed = this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (this._planetSpecifications.wind / 10)) : 0;
+        const windSpeedText = `Wind Speed: ${
+            windSpeed < 0 ? '<span class="fa fa-long-arrow-left"></span>' : ''
+        } ${
+            Math.abs(windSpeed).toFixed(6)
+        } ${
+            windSpeed > 0 ? '<span class="fa fa-long-arrow-right"></span>' : ''
+        }`;
         this._textElements.windSpeed = new RightTopStatsText1(
-            `Wind Speed: ${this._planetSpecifications.wind}`,
+            windSpeedText,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
             TextType.STATIC);
 
         this._textElements.gravity = new RightTopStatsText2(
-            `Gravity: ${this._planetSpecifications.gravity}`,
+            `Gravity: ${this._planetSpecifications.gravity.toFixed(5)}`,
             { height, left: left, top: null, width },
             COLORS.neutral,
             border,
@@ -932,6 +951,9 @@ export class LandAndMine {
             if (this._state === LandAndMineState.paused) {
                 this._state = LandAndMineState.flying;
                 this._buttons.startButton.hide();
+                if (Math.abs(this._planetSpecifications.wind) > 0) {
+                    SoundinatorSingleton.playWind();
+                }
             }
         };
 
@@ -965,10 +987,12 @@ export class LandAndMine {
                 miningEquipment.mesh.visible = true;
                 astroRight.mesh.position.set(astroRightPos.x, astroRight.mesh.position.y, astroRightPos.z);
                 astroRight.mesh.visible = true;
+
                 setTimeout(() => {
                     this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
                     this._camera.zoom = 4;
                     this._camera.updateProjectionMatrix();
+                    SoundinatorSingleton.playHollowClank();
                 }, 100);
             }
         };
@@ -995,6 +1019,7 @@ export class LandAndMine {
                     this._camera.position.set(0, this._camera.position.y, 0);
                     this._camera.zoom = 1;
                     this._camera.updateProjectionMatrix();
+                    SoundinatorSingleton.playHollowClunk();
                 }, 100);
             }
         };
@@ -1256,6 +1281,10 @@ export class LandAndMine {
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
+        SoundinatorSingleton.stopAirThruster();
+        SoundinatorSingleton.stopAirThruster();
+        SoundinatorSingleton.stopMainThrusterSmall();
+        SoundinatorSingleton.stopWind();
     }
 
     /**
@@ -1265,6 +1294,7 @@ export class LandAndMine {
     public endCycle(): { [key: number]: number } {
         // Game paused, or in tutorial mode. Nothing should progress.
         if (this._state === LandAndMineState.paused || this._state === LandAndMineState.tutorial) {
+            SoundinatorSingleton.stopWind();
             return;
         }
 
@@ -1312,14 +1342,31 @@ export class LandAndMine {
             return;
         }
 
-        // After successfully reaching escape velocity, no more fuel or oxygen should be spent.
         let currPos = this._lander.mesh.position;
         const landerBottom = currPos.z + 0.11;
         const landerRow = Math.floor((-10 * landerBottom) + 60);
+
+        // If lander exceeds bounds, teleport them to the other side.
+        if (currPos.x < -6) {
+            this._lander.mesh.position.set(5.9, currPos.y, currPos.z);
+        }
+        if (currPos.x > 6) {
+            this._lander.mesh.position.set(-5.9, currPos.y, currPos.z);
+        }
+
+        // After successfully reaching escape velocity, no more fuel or oxygen should be spent.
         if (this._state === LandAndMineState.escaped) {
             this._isLeftThrusting = false;
             this._isRightThrusting = false;
             this._isVerticalThrusting = true;
+
+            // If moving horizontally, after reaching escaped state, taper off until 0;
+            if (this._currentLanderHorizontalSpeed > 0) {
+                this._currentLanderHorizontalSpeed -= 0.0005;
+            } else if (this._currentLanderHorizontalSpeed < 0) {
+                this._currentLanderHorizontalSpeed += 0.0005;
+            }
+
             this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed - 0.01);
             this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
             this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
@@ -1355,6 +1402,7 @@ export class LandAndMine {
                 this._buttons.mineButton.hide();
                 this._buttons.loadButton.hide();
                 this._buttons.unloadButton.hide();
+                this._buttons.packUpButton.hide();
                 this._state = LandAndMineState.escaped;
                 setTimeout(() => {
                     this._camera.position.set(0, this._camera.position.y, 0);
@@ -1399,13 +1447,16 @@ export class LandAndMine {
                 this._loot[-2] = 0;
                 this._loot[-3] = 1;
                 this._textElements.crewCollected.update(`0 crew recovered`);
-                this._buttons.mineButton.hide();
-                this._buttons.loadButton.hide();
-                this._buttons.unloadButton.hide();
                 this._state = LandAndMineState.escaped;
             } else {
                 this._state = LandAndMineState.suffocating;
+                SoundinatorSingleton.playDeathNoNoAchEhh();
             }
+            this._buttons.mineButton.hide();
+            this._buttons.loadButton.hide();
+            this._buttons.unloadButton.hide();
+            this._buttons.packUpButton.hide();
+            SoundinatorSingleton.playBipBipBipBing();
             return;
         }
 
@@ -1422,6 +1473,8 @@ export class LandAndMine {
                 if (tipRowBefore !== tipDrillRowAfter) {
                     if (this._grid[tipDrillRowAfter][drillCol] !== 7) {
                         currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
+                    } else {
+                        SoundinatorSingleton.playFooPang();
                     }
                     if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
                         if (this._grid[centerDrillRowAfter][drillCol] === 3) {
@@ -1436,6 +1489,7 @@ export class LandAndMine {
                             this._mineTextTimeoutId = setTimeout(() => {
                                 this._textElements.mineCount.hide();
                             }, 1500);
+                            SoundinatorSingleton.playBlip();
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
                             this._loot[this._planetSpecifications.ore] += this._mineCollectCount;
 
@@ -1448,6 +1502,7 @@ export class LandAndMine {
                             this._mineTextTimeoutId = setTimeout(() => {
                                 this._textElements.mineCount.hide();
                             }, 1500);
+                            SoundinatorSingleton.playBlip();
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
                             this._loot[-1] += this._mineCollectCount;
 
@@ -1460,6 +1515,9 @@ export class LandAndMine {
                             this._mineTextTimeoutId = setTimeout(() => {
                                 this._textElements.mineCount.hide();
                             }, 1500);
+                            SoundinatorSingleton.playBlip();
+                        } else {
+                            SoundinatorSingleton.playBlap();
                         }
                         this._grid[centerDrillRowAfter][drillCol] = 4;
                         const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
@@ -1725,14 +1783,6 @@ export class LandAndMine {
             this._textElements.fuelLevel.cycle(COLORS.selected);
         }
 
-        // If lander exceeds bounds, teleport them to the other side.
-        if (currPos.x < -6) {
-            this._lander.mesh.position.set(5.9, currPos.y, currPos.z);
-        }
-        if (currPos.x > 6) {
-            this._lander.mesh.position.set(-5.9, currPos.y, currPos.z);
-        }
-
         const gridBottomRow = this._grid[landerRow];
         const gridMiddleRow = this._grid[landerRow + 1];
         const gridTopRow = this._grid[landerRow + 2];
@@ -1749,29 +1799,24 @@ export class LandAndMine {
         if (landerRow < 100
             && landerBottomCenter < 3
             && (landerBottomLeft || landerMiddleLeft || landerTopLeft || landerBottomRight || landerMiddleRight || landerTopRight)) {
-            this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-            this._state = LandAndMineState.crashed;
-            setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+            this._crashedEffects(currPos, landerCol, landerRow);
             return;
         }
 
         // Check if ship is eligible for landing condition, or crashed condition
         if (landerRow < 100 && landerBottomCenter) {
+            let hasCrashed = false;
             if (landerBottomLeft < 3 || landerBottomRight < 3) {
-                this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-                this._state = LandAndMineState.crashed;
-                setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
-                return;
+                hasCrashed = true;
             } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
-                this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, true, 14);
-                this._state = LandAndMineState.crashed;
-                setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
-                return;
+                hasCrashed = true;
             } else if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
                 || this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin) {
-                this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
-                this._state = LandAndMineState.crashed;
-                setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
+                hasCrashed = true;
+            }
+
+            if (hasCrashed) {
+                this._crashedEffects(currPos, landerCol, landerRow);
                 return;
             }
 

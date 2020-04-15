@@ -193,7 +193,7 @@ export class ShipLayout {
                     }
                 });
                 if (hit) {
-                    SoundinatorSingleton.playClick();
+                    SoundinatorSingleton.playBidooo();
                 }
                 if (hit && hit.name !== (this._selectedBox && this._selectedBox.name)) {
                     Object.keys(this._meshMap).forEach(key => {
@@ -202,7 +202,7 @@ export class ShipLayout {
 
                     this._selectedBox = this._meshMap[hit.name];
                     (this._meshMap[hit.name].material as any).color.set(COLORS.selected);
-                    SoundinatorSingleton.playClick();
+                    SoundinatorSingleton.playBidooo();
 
                     this._textElements.hoverText.update(hit.name);
                     this._textElements.selectionText.update(hit.name);

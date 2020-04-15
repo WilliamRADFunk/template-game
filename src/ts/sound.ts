@@ -25,11 +25,17 @@ export class Sound {
      * Constructor for the Sound class
      * @param audio         audio clip belonging to this sound.
      * @param offset        the offset that best suites the audio clip as many have dead space in the beginning.
-     * @param normalVolume  the offset that best suites the audio clip as many have dead space in the beginning.
+     * @param normalVolume  the volume to use for the sound when normal is passed in.
      * @param muffledVolume the volume to use for the sound when muffled is passed in.
      * @hidden
      */
-    constructor(audio: Audio, offset: number, normalVolume?: number, muffledVolume?: number) {
+    constructor(audio: Audio, offset: number, normalVolume?: number, muffledVolume?: number, isLooped?: boolean, duration?: number) {
+        if (isLooped) {
+            audio.setLoop(true);
+        }
+        if (duration) {
+            (audio as any).duration = duration;
+        }
         this.sound = audio;
         this.normalVolume = normalVolume || 1;
         this.muffledVolume = muffledVolume || normalVolume;

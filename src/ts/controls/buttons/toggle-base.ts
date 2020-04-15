@@ -137,7 +137,7 @@ export class ToggleBase {
      */
     public onMouseUp(): void {
         if (this._isEnabled) {
-            SoundinatorSingleton.playClick();
+            SoundinatorSingleton.playBidooo();
             this._state = !this._state;
         }
     }

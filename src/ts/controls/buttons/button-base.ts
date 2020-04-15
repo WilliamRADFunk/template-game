@@ -132,7 +132,7 @@ export class ButtonBase {
             this.element.style.color = this._colorTheme.onMouseUp.color;
             this.element.style.border = '1px solid ' + this._colorTheme.onMouseUp.border;
 
-            SoundinatorSingleton.playClick();
+            SoundinatorSingleton.playBidooo();
 
             this._callback();
         }

@@ -6,6 +6,7 @@ import {
     Scene,
     Triangle,
     Vector3 } from 'three';
+import { SoundinatorSingleton } from '../../../soundinator';
 
 /**
  * Static index to help name one main thruster differenly than another.
@@ -126,6 +127,7 @@ export class MainThruster {
                 this._flames.forEach(flame => {
                     flame.visible = true;
                     flame.updateMatrix();
+                    SoundinatorSingleton.playMainThrusterSmall();
                 });
             }
             this._flames.forEach(flame => {
@@ -141,6 +143,7 @@ export class MainThruster {
                 this._flames.forEach(flame => {
                     flame.visible = false;
                     flame.updateMatrix();
+                    SoundinatorSingleton.stopMainThrusterSmall();
                 });
             }
         }

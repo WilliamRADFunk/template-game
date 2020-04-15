@@ -128,9 +128,9 @@ export class Asteroid implements Collidable {
         this.explosion = new Explosion(this.scene, this.asteroid.position.x, this.asteroid.position.z, 0.2, isInert);
         if (!isInert) {
             CollisionatorSingleton.add(this.explosion);
-            SoundinatorSingleton.playBoom(false);
+            SoundinatorSingleton.playExplosionLarge(false);
         } else {
-            SoundinatorSingleton.playBoom(true);
+            SoundinatorSingleton.playExplosionLarge(true);
         }
     }
     /**

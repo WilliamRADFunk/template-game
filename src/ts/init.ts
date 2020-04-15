@@ -112,86 +112,242 @@ const scenes: { [ key: string ]: SceneType } = {
 /**
  * Sound file paths
  */
-const SOUND_PATHS: string[] = [
-    /**
-     * Bomb Exploding Sound
-     * http://soundbible.com/1986-Bomb-Exploding.html
-     * license: Attribution 3.0
-     * Recorded by: Sound Explorer
-     */
-    'assets/audio/boom.mp3',
-    /**
-     * Click On Sound
-     * http://soundbible.com/1280-Click-On.html
-     * license: Attribution 3.0
-     * Recorded by: Mike Koenig
-     */
-    'assets/audio/click.mp3',
-    /**
-    * Tank Firing Sound
-    * http://soundbible.com/1326-Tank-Firing.html
-    * license: Attribution 3.0
-    * Recorded by: snottyboy
-    */
-    'assets/audio/fire.mp3',
-    /**
-    * Metroid Door Sound
-    * http://soundbible.com/1858-Metroid-Door.html
-    * license: Attribution 3.0
-    * Recorded by: Brandino480
-    */
-    'assets/audio/shield-down.mp3',
-    /**
-    * Power Up Ray Sound
-    * http://soundbible.com/1636-Power-Up-Ray.html
-    * license: Noncommercial 3.0
-    * Recorded by: Mike Koenig
-    */
-    'assets/audio/shield-up.mp3',
-    /**
-    * Strange Noise Sound
-    * http://soundbible.com/1636-Power-Up-Ray.html
-    * license: Noncommercial 3.0
-    * Recorded by: Mike Koenig
-    */
-    'assets/audio/saucer.mp3',
-    /**
-    * Beep Ping Sound
-    * http://soundbible.com/1133-Beep-Ping.html
-    * license: Attribution 3.0
-    * Recorded by: Mike Koenig
-    */
-    'assets/audio/drone.mp3',
-    /**
-    * Ta Da Sound
-    * http://soundbible.com/1003-Ta-Da.html
-    * license: Attribution 3.0
-    * Recorded by: Mike Koenig
-    */
-    'assets/audio/regen.mp3',
-    /**
-    * Gunfire In Crowd Sound
-    * http://soundbible.com/1608-Gunfire-In-Crowd.html
-    * license: Public Domain
-    * Recorded by: KevanGC
-    */
-    'assets/audio/base-lost.mp3',
-    /**
-    * Beam Me Up Scotty Sound
-    * http://soundbible.com/256-Beam-Me-Up-Scotty.html
-    * license: Personal Use Only
-    * Recorded by: N/A
-    */
-    'assets/audio/game-over.mp3'
+const SOUND_PATHS: { name: string; path: string; }[] = [
+    {
+        name: 'airThruster',
+        /**
+        * Astri : 45 minutes sound designs » Astri : 008 : rocketship hover landing.wav
+        * https://freesound.org/people/prod.astri/sounds/492850/
+        * license: Creative Commons 0 License
+        * Recorded by: prod.astri
+        */
+        path: 'assets/audio/air-thruster.wav'
+    },
+    {
+        name: 'baseLost',
+        /**
+        * Gunfire In Crowd Sound
+        * http://soundbible.com/1608-Gunfire-In-Crowd.html
+        * license: Public Domain
+        * Recorded by: KevanGC
+        */
+        path: 'assets/audio/base-lost.mp3'
+    },
+    {
+        name: 'bidooo',
+        /**
+        * Boom, Crackle and Scream Sampler/Analo Fireworks, Boom, Glitch, Granular, Analog, Distort, Distortion, Saturation, Explode, Glitchy, Harsh, Sci-Fi
+        * https://www.zapsplat.com/music/boom-crackle-and-scream-sampler-analo-fireworks-boom-glitch-granular-analog-distort-distortion-saturation-explode-glitchy-harsh-sci-fi/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: Sound Spark LLC
+        */
+        path: 'assets/audio/bidooo.mp3'
+    },
+    {
+        name: 'bipBipBipBing',
+        /**
+        * Dead.wav
+        * https://freesound.org/people/Daleonfire/sounds/406113/
+        * license: Creative Commons 0 License
+        * Recorded by: Daleonfire
+        */
+        path: 'assets/audio/bip-bip-bip-bing.wav'
+    },
+    {
+        name: 'blap',
+        /**
+        * Cartoon object drop, lite clunk 2
+        * https://www.zapsplat.com/music/cartoon-object-drop-lite-clunk-2/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: ZapSplat
+        */
+        path: 'assets/audio/blap.mp3'
+    },
+    {
+        name: 'blip',
+        /**
+        * Cartoon object drop, lite clunk 1
+        * https://www.zapsplat.com/music/cartoon-object-drop-lite-clunk-1/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: ZapSplat
+        */
+        path: 'assets/audio/blip.mp3'
+    },
+    {
+        name: 'clickClack',
+        /**
+         * Click On Sound
+         * http://soundbible.com/1280-Click-On.html
+         * license: Attribution 3.0
+         * Recorded by: Mike Koenig
+         */
+        path: 'assets/audio/click-clack.mp3'
+    },
+    {
+        name: 'deathNoNoAchEhh',
+        /**
+        * Bug Sprayed.wav
+        * https://freesound.org/people/husky70/sounds/157293/
+        * license: Creative Commons 0 License
+        * Recorded by: husky70
+        */
+        path: 'assets/audio/death-no-no-ach-ehh.wav'
+    },
+    {
+        name: 'drone',
+        /**
+        * Beep Ping Sound
+        * http://soundbible.com/1133-Beep-Ping.html
+        * license: Attribution 3.0
+        * Recorded by: Mike Koenig
+        */
+        path: 'assets/audio/drone.mp3'
+    },
+    {
+        name: 'explosionLarge',
+        /**
+         * Bomb Exploding Sound
+         * http://soundbible.com/1986-Bomb-Exploding.html
+         * license: Attribution 3.0
+         * Recorded by: Sound Explorer
+         */
+        path: 'assets/audio/boom.mp3'
+    },
+    {
+        name: 'explosionSmall',
+        /**
+        * Explosion, large with glass breaking and other debris 2
+        * https://www.zapsplat.com/music/explosion-large-with-glass-breaking-and-other-debris-2/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: ZapSplat
+        */
+        path: 'assets/audio/explosion-small.mp3'
+    },
+    {
+        name: 'fire',
+        /**
+        * Tank Firing Sound
+        * http://soundbible.com/1326-Tank-Firing.html
+        * license: Attribution 3.0
+        * Recorded by: snottyboy
+        */
+        path: 'assets/audio/fire.mp3'
+    },
+    {
+        name: 'fooPang',
+        /**
+        * Fast swing, whoosh into a metal hit, thud or clunk, could be sword hitting shield or armor. Version 2
+        * https://www.zapsplat.com/music/fast-swing-whoosh-into-a-metal-hit-thud-or-clunk-could-be-sword-hitting-shield-or-armor-version-2/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: ZapSplat
+        */
+        path: 'assets/audio/foop-pang.mp3'
+    },
+    {
+        name: 'gameOver',
+        /**
+        * Beam Me Up Scotty Sound
+        * http://soundbible.com/256-Beam-Me-Up-Scotty.html
+        * license: Personal Use Only
+        * Recorded by: N/A
+        */
+        path: 'assets/audio/game-over.mp3'
+    },
+    {
+        name: 'hollowClank',
+        /**
+        * Horror, hit, heavy wood thump or clunk with reverb, good for shock, jump scare 2
+        * https://www.zapsplat.com/music/horror-hit-heavy-wood-thump-or-clunk-with-reverb-good-for-shock-jump-scare-2/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: Skyclad Sound
+        */
+        path: 'assets/audio/hollow-clank.mp3'
+    },
+    {
+        name: 'hollowClunk',
+        /**
+        * Horror, hit, heavy wood thump or clunk with reverb, good for shock, jump scare 3
+        * https://www.zapsplat.com/music/horror-hit-heavy-wood-thump-or-clunk-with-reverb-good-for-shock-jump-scare-3/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: Skyclad Sound
+        */
+        path: 'assets/audio/hollow-clunk.mp3'
+    },
+    {
+        name: 'mainThrusterSmall',
+        /**
+        * RocketThrustMaxx.wav
+        * https://freesound.org/people/Maxx222/sounds/446764/
+        * license: Creative Commons 0 License
+        * Recorded by: Maxx222
+        */
+        path: 'assets/audio/main-thruster-small.wav'
+    },
+    {
+        name: 'regen',
+        /**
+        * Ta Da Sound
+        * http://soundbible.com/1003-Ta-Da.html
+        * license: Attribution 3.0
+        * Recorded by: Mike Koenig
+        */
+        path: 'assets/audio/regen.mp3'
+    },
+    {
+        name: 'saucer',
+        /**
+        * Strange Noise Sound
+        * http://soundbible.com/1636-Power-Up-Ray.html
+        * license: Noncommercial 3.0
+        * Recorded by: Mike Koenig
+        */
+        path: 'assets/audio/saucer.mp3'
+    },
+    {
+        name: 'shieldDown',
+        /**
+        * Metroid Door Sound
+        * http://soundbible.com/1858-Metroid-Door.html
+        * license: Attribution 3.0
+        * Recorded by: Brandino480
+        */
+        path: 'assets/audio/shield-down.mp3'
+    },
+    {
+        name: 'shieldUp',
+        /**
+        * Power Up Ray Sound
+        * http://soundbible.com/1636-Power-Up-Ray.html
+        * license: Noncommercial 3.0
+        * Recorded by: Mike Koenig
+        */
+        path: 'assets/audio/shield-up.mp3'
+    },
+    {
+        name: 'wind',
+        /**
+        * Synthesised cold, howling wind
+        * https://www.zapsplat.com/music/synthesised-cold-howling-wind/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: Adam A Johnson
+        */
+        path: 'assets/audio/wind.mp3'
+    }
 ];
 /**
  * Loads the audio files.
  */
-const SOUND_LOADERS: AudioLoader[] = SOUND_PATHS.map(x => new AudioLoader());
+const SOUND_LOADERS: { name: string; loader: AudioLoader; path: string; }[] = SOUND_PATHS.map(x => {
+    return {
+        name: x.name,
+        loader: new AudioLoader(),
+        path: x.path
+    };
+});
 /**
  * List of loaded audio files.
  */
-const SOUNDS: Audio[] = [];
+const SOUNDS: { [key: string]: Audio; } = {};
 /**
  * Passes the callback functions to font and texture loaders,
  * each fitted with their chance to check if all others are done.
@@ -210,19 +366,19 @@ const loadAssets = () => {
         checkAssetsLoaded();
     });
     // Get the ball rolling on each of the sound file loads.
-    SOUND_LOADERS.forEach((loader, index) => {
-        SOUND_LOADERS[index].load(
-            SOUND_PATHS[index],
+    SOUND_LOADERS.forEach((soundLoader, index) => {
+        soundLoader.loader.load(
+            soundLoader.path,
             (soundBuffer: AudioBuffer) => {
                 const sound = (new Audio(AUDIO_LISTENER)).setBuffer(soundBuffer);
                 sound.setLoop(false);
-                SOUNDS[index] = sound;
+                SOUNDS[soundLoader.name] = sound;
                 checkAssetsLoaded();
             },
             (xhr: { loaded: number; total: number;}) => {
                 console.log((xhr.loaded / xhr.total * 100) + '% loaded');
             },
-            (error: string) => console.log(`Failed to load (${SOUND_PATHS[index].split('/').pop()}) sound file`, error)
+            (error: string) => console.log(`Failed to load (${soundLoader.path.split('/').pop()}) sound file`, error)
         );
     });
 };
@@ -232,7 +388,7 @@ const loadAssets = () => {
 const checkAssetsLoaded = () => {
     if (gameFont &&
         !Object.keys(TEXTURES).some(key => !TEXTURES[key][1]) &&
-        SOUNDS.filter(s => s).length === SOUND_LOADERS.length) {
+        Object.keys(SOUNDS).length === SOUND_LOADERS.length) {
         SoundinatorSingleton.addSounds(SOUNDS);
         loadMenu();
     }
@@ -449,7 +605,7 @@ const loadGameMenu = () => {
                     container.removeChild( (scenes.menu.renderer as any).domElement );
                     loadShipLayoutScene();
                 }, 750);
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Load Code') {
                 setTimeout(() => {
@@ -458,31 +614,31 @@ const loadGameMenu = () => {
                     container.removeChild( (scenes.menu.renderer as any).domElement );
                     // loadGame(1);
                 }, 250);
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Easy') {
                 scenes.menu.instance.changeDifficulty(0);
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Normal') {
                 scenes.menu.instance.changeDifficulty(1);
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Hard') {
                 scenes.menu.instance.changeDifficulty(2);
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Hardcore') {
                 scenes.menu.instance.changeDifficulty(3);
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Load') {
                 scenes.menu.instance.pressedLoad();
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Help') {
                 scenes.menu.instance.pressedHelp();
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'On') {
                 scenes.menu.instance.pressedOn();
@@ -492,11 +648,11 @@ const loadGameMenu = () => {
                 return;
             } else if (el.object.name === 'Return Help') {
                 scenes.menu.instance.returnToMainMenu();
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             } else if (el.object.name === 'Return Load') {
                 scenes.menu.instance.returnToMainMenu();
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 return;
             }
         });
@@ -597,7 +753,7 @@ const loadIntroScene = () => {
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
             if (el.object.name === 'Click Barrier') {
-                SoundinatorSingleton.playClick();
+                SoundinatorSingleton.playBidooo();
                 scenes.intro.active = false;
                 loadMenu();
                 return;
@@ -756,9 +912,9 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
                     output += `,
                     ${OreTypes[Number(key)]} = ${layout[Number(key)]}`;
                 });
-                window.alert(output);
                 landAndMine.dispose();
                 scenes.landAndMine.active = false;
+                window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', onWindowResize, false);
                 container.removeChild( (scenes.landAndMine.renderer as any).domElement );

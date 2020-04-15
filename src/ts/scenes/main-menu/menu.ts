@@ -598,7 +598,7 @@ export class Menu {
         this.on.position.set(-0.3, -0.5, 3.2);
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
-        SoundinatorSingleton.playClick();
+        SoundinatorSingleton.playBidooo();
         SoundinatorSingleton.toggleMute(true);
     }
     /**
@@ -619,7 +619,7 @@ export class Menu {
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
         SoundinatorSingleton.toggleMute(false);
-        SoundinatorSingleton.playClick();
+        SoundinatorSingleton.playBidooo();
     }
     /**
      * Changes the start menu button text when clicked to signal to user that their click worked.

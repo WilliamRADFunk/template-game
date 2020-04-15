@@ -11,55 +11,23 @@ class Soundinator {
      * Local reference to the audiolistener made during initialization.
      */
     private audioListener: AudioListener;
-    /**
-     * Contains the base destroyed sound.
-     */
-    private baseLost: Sound;
-    /**
-     * Contains the boom sound.
-     */
-    private boom: Sound;
-    /**
-     * Contains the boom sound.
-     */
-    private click: Sound;
-    /**
-     * Contains the drone drop sound.
-     */
-    private drone: Sound;
-    /**
-     * Contains the weapon's fire sound.
-     */
-    private fire: Sound;
-    /**
-     * Contains the game over sound.
-     */
-    private gameOver: Sound;
+
     /**
      * Tracks whether game is in silent mode or not.
      */
     private isMute: boolean = false;
+
     /**
-     * Contains the regenerated satellite or base sound.
+     * Audio and Sound objects for each of the loaded sound effects.
      */
-    private regen: Sound;
-    /**
-     * Contains the saucer is coming sound.
-     */
-    private saucer: Sound;
-    /**
-     * Contains the shield deactivation sound.
-     */
-    private shieldDown: Sound;
-    /**
-     * Contains the shield activation sound.
-     */
-    private shieldUp: Sound;
+    private _sounds: { [key: string]: { audio: Audio; sound: Sound; misc?: any } } = {};
+
     /**
      * Constructor for the Soundinator class
      * @hidden
      */
     constructor() {}
+
     /**
      * Attached the audiolistner when it's ready.
      * @param listener the singular audiolistener created during initialization of the game.
@@ -67,158 +35,302 @@ class Soundinator {
     addListener(listener: AudioListener): void {
         this.audioListener = listener;
     }
+
     /**
      * Creates game sounds from the preloaded Audio objects.
-     * @param sounds list of preloaded Audio objects.
+     * @param audios list of preloaded Audio objects.
      */
-    addSounds(sounds: Audio[]): void {
-        this.boom = new Sound(sounds[0], 0.5, 0.3, 0.1);
-        this.click = new Sound(sounds[1], 0, 0.8);
-        this.fire = new Sound(sounds[2], 0, 0.3);
-        this.shieldDown = new Sound(sounds[3], 0, 0.7);
-        this.shieldUp = new Sound(sounds[4], 0, 0.7);
-        this.saucer = new Sound(sounds[5], 0, 0.2);
-        this.drone = new Sound(sounds[6], 0, 0.5);
-        this.regen = new Sound(sounds[7], 0, 0.3);
-        this.baseLost = new Sound(sounds[8], 2.2, 0.4);
-        this.gameOver = new Sound(sounds[9], 0, 0.7);
+    addSounds(audios: { [key: string]: Audio; }): void {
+        Object.keys(audios).forEach(key => {
+            this._sounds[key] = {
+                audio: audios[key],
+                sound: null
+            };
+        });
+        this._sounds['airThruster'].sound = new Sound(this._sounds['airThruster'].audio, 4.5, 0.8, 0.3, true, 9);
+        this._sounds['airThruster'].misc = 0;
+        this._sounds['baseLost'].sound = new Sound(this._sounds['baseLost'].audio, 2.2, 0.4);
+        this._sounds['bidooo'].sound = new Sound(this._sounds['bidooo'].audio, 0, 0.7, 0.4);
+        this._sounds['bipBipBipBing'].sound = new Sound(this._sounds['bipBipBipBing'].audio, 0, 0.5, 0.4);
+        this._sounds['blap'].sound = new Sound(this._sounds['blap'].audio, 0, 1, 0.4);
+        this._sounds['blip'].sound = new Sound(this._sounds['blip'].audio, 0, 1, 0.4);
+        this._sounds['clickClack'].sound = new Sound(this._sounds['clickClack'].audio, 0, 0.8);
+        this._sounds['deathNoNoAchEhh'].sound = new Sound(this._sounds['deathNoNoAchEhh'].audio, 0.5, 0.9, 0.4);
+        this._sounds['drone'].sound = new Sound(this._sounds['drone'].audio, 0, 0.5);
+        this._sounds['explosionLarge'].sound = new Sound(this._sounds['explosionLarge'].audio, 0.5, 0.3, 0.1);
+        this._sounds['explosionSmall'].sound = new Sound(this._sounds['explosionSmall'].audio, 0, 1, 0.3);
+        this._sounds['fire'].sound = new Sound(this._sounds['fire'].audio, 0, 0.3);
+        this._sounds['fooPang'].sound = new Sound(this._sounds['fooPang'].audio, 0, 1, 0.4);
+        this._sounds['gameOver'].sound = new Sound(this._sounds['gameOver'].audio, 0, 0.7);
+        this._sounds['hollowClank'].sound = new Sound(this._sounds['hollowClank'].audio, 0, 1, 0.4);
+        this._sounds['hollowClunk'].sound = new Sound(this._sounds['hollowClunk'].audio, 0, 1, 0.4);
+        this._sounds['mainThrusterSmall'].sound = new Sound(this._sounds['mainThrusterSmall'].audio, 0, 0.8, 0.3, true);
+        this._sounds['regen'].sound = new Sound(this._sounds['regen'].audio, 0, 0.3);
+        this._sounds['saucer'].sound = new Sound(this._sounds['saucer'].audio, 0, 0.2);
+        this._sounds['shieldDown'].sound = new Sound(this._sounds['shieldDown'].audio, 0, 0.7);
+        this._sounds['shieldUp'].sound = new Sound(this._sounds['shieldUp'].audio, 0, 0.7);
+        this._sounds['wind'].sound = new Sound(this._sounds['wind'].audio, 0, 0.5, 0.3, true);
     }
+
     /**
      * Getter for the isMute variable (mainly for preselecting the appropriate button in menu).
      * @returns the current isMute state. TRUE --> no sound | FALSE --> there is sound
      */
-    getMute(): boolean {
+    public getMute(): boolean {
         return this.isMute;
     }
-    /**
-     * Plays the mouse click sound.
-     */
-    playBaseLost(): void {
-        if (this.isMute) { return; }
-        this.baseLost.play();
-    }
-    /**
-     * Plays the explosion sound.
-     * @param muffled inert explosions should have a shallower sound.
-     */
-    playBoom(muffled?: boolean): void {
-        if (this.isMute) { return; }
-        this.boom.play(muffled);
-    }
-    /**
-     * Plays the mouse click sound.
-     */
-    playClick(): void {
-        if (this.isMute) { return; }
-        this.click.play();
-    }
-    /**
-     * Plays the drone drop sound.
-     */
-    playDrone(): void {
-        if (this.isMute) { return; }
-        this.drone.play();
-    }
-    /**
-     * Plays the weapon firing sound.
-     */
-    playFire(): void {
-        if (this.isMute) { return; }
-        this.fire.play();
-    }
-    /**
-     * Plays the weapon firing sound.
-     */
-    playGameOver(): void {
-        if (this.isMute) { return; }
-        this.gameOver.play();
-    }
-    /**
-     * Plays the regenerated satellite or base sound.
-     */
-    playRegen(): void {
-        if (this.isMute) { return; }
-        this.regen.play();
-    }
-    /**
-     * Plays the saucer is coming sound.
-     */
-    playSaucer(): void {
-        if (this.isMute) { return; }
-        this.saucer.play();
-    }
-    /**
-     * Plays the shield deactivation sound.
-     */
-    playShieldDown(): void {
-        if (this.isMute) { return; }
-        this.shieldDown.play();
-    }
-    /**
-     * Plays the shield activation sound.
-     */
-    playShieldUp(): void {
-        if (this.isMute) { return; }
-        this.shieldUp.play();
-    }
+
     /**
      * Pauses all the sound clips where they are.
      */
-    pauseSound(): void {
+    public pauseSound(): void {
         if (!this.isMute) {
-            this.boom.pause();
-            this.click.pause();
-            this.fire.pause();
-            this.shieldDown.pause();
-            this.shieldUp.pause();
-            this.saucer.pause();
-            this.drone.pause();
-            this.regen.pause();
-            this.baseLost.pause();
-            this.gameOver.pause();
+            Object.keys(this._sounds).forEach(key => {
+                this._sounds[key].sound.pause();
+            });
         }
     }
+
+    /**
+     * Plays the air thruster sound.
+     */
+    public playAirThruster(): void {
+        if (this.isMute) { return; }
+        this._sounds.airThruster.misc += 1;
+        if (this._sounds.airThruster.misc > 2) {
+            this._sounds.airThruster.misc = 2;
+        } else {
+            this._sounds.airThruster.sound.play();
+        }
+    }
+
+    /**
+     * Plays the mouse click sound.
+     */
+    public playBaseLost(): void {
+        if (this.isMute) { return; }
+        this._sounds.baseLost.sound.play();
+    }
+
+    /**
+     * Plays the bidooo sound.
+     */
+    public playBidooo(): void {
+        if (this.isMute) { return; }
+        this._sounds.bidooo.sound.play();
+    }
+
+    /**
+     * Plays the bipBipBipBing sound.
+     */
+    public playBipBipBipBing(): void {
+        if (this.isMute) { return; }
+        this._sounds.bipBipBipBing.sound.play();
+    }
+
+    /**
+     * Plays the blahp sound.
+     */
+    public playBlap(): void {
+        if (this.isMute) { return; }
+        this._sounds.blap.sound.play();
+    }
+
+    /**
+     * Plays the blip sound.
+     */
+    public playBlip(): void {
+        if (this.isMute) { return; }
+        this._sounds.blip.sound.play();
+    }
+
+    /**
+     * Plays the mouse click clack sound.
+     */
+    public playClickClack(): void {
+        if (this.isMute) { return; }
+        this._sounds.clickClack.sound.play();
+    }
+
+    /**
+     * Plays the deathNoNoAchEhh sound.
+     */
+    public playDeathNoNoAchEhh(): void {
+        if (this.isMute) { return; }
+        this._sounds.deathNoNoAchEhh.sound.play();
+    }
+
+    /**
+     * Plays the drone drop sound.
+     */
+    public playDrone(): void {
+        if (this.isMute) { return; }
+        this._sounds.drone.sound.play();
+    }
+
+    /**
+     * Plays the large explosion sound.
+     * @param muffled inert explosions should have a shallower sound.
+     */
+    public playExplosionLarge(muffled?: boolean): void {
+        if (this.isMute) { return; }
+        this._sounds.explosionLarge.sound.play(muffled);
+    }
+
+    /**
+     * Plays the small explosion sound.
+     * @param muffled inert explosions should have a shallower sound.
+     */
+    public playExplosionSmall(muffled?: boolean): void {
+        if (this.isMute) { return; }
+        this._sounds.explosionSmall.sound.play(muffled);
+    }
+
+    /**
+     * Plays the weapon firing sound.
+     */
+    public playFire(): void {
+        if (this.isMute) { return; }
+        this._sounds.fire.sound.play();
+    }
+
+    /**
+     * Plays the fwoop pang sound.
+     */
+    public playFooPang(): void {
+        if (this.isMute) { return; }
+        this._sounds.fooPang.sound.play();
+    }
+
+    /**
+     * Plays the weapon firing sound.
+     */
+    public playGameOver(): void {
+        if (this.isMute) { return; }
+        this._sounds.gameOver.sound.play();
+    }
+
+    /**
+     * Plays the hollowClank sound.
+     */
+    public playHollowClank(): void {
+        if (this.isMute) { return; }
+        this._sounds.hollowClank.sound.play();
+    }
+
+    /**
+     * Plays the hollowClunk sound.
+     */
+    public playHollowClunk(): void {
+        if (this.isMute) { return; }
+        this._sounds.hollowClunk.sound.play();
+    }
+
+    /**
+     * Plays the small main thruster sound.
+     */
+    public playMainThrusterSmall(): void {
+        if (this.isMute) { return; }
+        this._sounds.mainThrusterSmall.sound.play();
+    }
+
+    /**
+     * Plays the regenerated satellite or base sound.
+     */
+    public playRegen(): void {
+        if (this.isMute) { return; }
+        this._sounds.regen.sound.play();
+    }
+
+    /**
+     * Plays the saucer is coming sound.
+     */
+    public playSaucer(): void {
+        if (this.isMute) { return; }
+        this._sounds.saucer.sound.play();
+    }
+
+    /**
+     * Plays the shield deactivation sound.
+     */
+    public playShieldDown(): void {
+        if (this.isMute) { return; }
+        this._sounds.saucerDown.sound.play();
+    }
+
+    /**
+     * Plays the shield activation sound.
+     */
+    public playShieldUp(): void {
+        if (this.isMute) { return; }
+        this._sounds.saucerUp.sound.play();
+    }
+
+    /**
+     * Plays the wind sound.
+     */
+    public playWind(): void {
+        if (this.isMute) { return; }
+        this._sounds.wind.sound.play();
+    }
+
     /**
      * Resumes all the sound clips that were paused.
      */
-    resumeSound(): void {
+    public resumeSound(): void {
         if (!this.isMute) {
-            this.boom.resume();
-            this.click.resume();
-            this.fire.resume();
-            this.shieldDown.resume();
-            this.shieldUp.resume();
-            this.saucer.resume();
-            this.drone.resume();
-            this.regen.resume();
-            this.baseLost.resume();
-            this.gameOver.resume();
+            Object.keys(this._sounds).forEach(key => {
+                this._sounds[key].sound.resume();
+            });
         }
     }
+
+    /**
+     * Stops the air thruster sound.
+     */
+    public stopAirThruster(): void {
+        if (this.isMute) { return; }
+        this._sounds.airThruster.misc -= 1;
+        if (this._sounds.airThruster.misc <= 0) {
+            this._sounds.airThruster.misc = 0;
+            this._sounds.airThruster.sound.stop();
+        }
+    }
+
+    /**
+     * Stops the small main thruster sound.
+     */
+    public stopMainThrusterSmall(): void {
+        if (this.isMute) { return; }
+        this._sounds.mainThrusterSmall.sound.stop();
+    }
+
     /**
      * Stops the saucer is coming sound.
      */
-    stopSaucer(): void {
+    public stopSaucer(): void {
         if (this.isMute) { return; }
-        this.saucer.stop();
+        this._sounds.saucer.sound.stop();
     }
+
+    /**
+     * Stops the wind sound.
+     */
+    public stopWind(): void {
+        if (this.isMute) { return; }
+        this._sounds.wind.sound.stop();
+    }
+
     /**
      * Toggles sound for the entire game.
      * @param mute TRUE --> mute the game | FALSE --> turn sound on
      */
-    toggleMute(mute: boolean): void {
+    public toggleMute(mute: boolean): void {
         this.isMute = mute;
         if (this.isMute) {
-            this.boom.stop();
-            this.click.stop();
-            this.fire.stop();
-            this.shieldDown.stop();
-            this.shieldUp.stop();
-            this.saucer.stop();
-            this.drone.stop();
-            this.regen.stop();
-            this.baseLost.stop();
-            this.gameOver.stop();
+            Object.keys(this._sounds).forEach(key => {
+                this._sounds[key].sound.stop();
+            });
         }
     }
 }

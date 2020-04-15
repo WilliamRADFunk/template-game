@@ -9,6 +9,8 @@ import {
     Triangle,
     Vector3 } from 'three';
 
+import { SoundinatorSingleton } from '../../../soundinator';
+
 /**
  * Static index to help name one side thruster differenly than another.
  */
@@ -168,6 +170,7 @@ export class SideThruster {
     public endCycle(position: [number, number, number], isBurning?: boolean): void {
         if (isBurning) {
             if (!this._plumes[0].visible) {
+                SoundinatorSingleton.playAirThruster();
                 this._plumes.forEach(plume => {
                     plume.visible = true;
                     plume.updateMatrix();
@@ -187,6 +190,7 @@ export class SideThruster {
             });
         } else {
             if (this._plumes[0].visible) {
+                SoundinatorSingleton.stopAirThruster();
                 this._plumes.forEach(plume => {
                     plume.visible = false;
                     plume.updateMatrix();
