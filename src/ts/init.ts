@@ -124,6 +124,16 @@ const SOUND_PATHS: { name: string; path: string; }[] = [
         path: 'assets/audio/air-thruster.wav'
     },
     {
+        name: 'backgroundMusicScifi01',
+        /**
+        * Atmospheric sci-fi drone
+        * https://www.zapsplat.com/music/atmospheric-sci-fi-drone-2/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: Sumo Blanco
+        */
+        path: 'assets/audio/background-music-scifi-01.mp3'
+    },
+    {
         name: 'baseLost',
         /**
         * Gunfire In Crowd Sound
@@ -192,6 +202,16 @@ const SOUND_PATHS: { name: string; path: string; }[] = [
         * Recorded by: husky70
         */
         path: 'assets/audio/death-no-no-ach-ehh.wav'
+    },
+    {
+        name: 'drilling',
+        /**
+        * Drone, Machine, Engine, Motor, UFO, Spaceship, Sci-Fi, Aliens, Ambience, Buzz, Hum, Noise, Seamless, Loop, Looping
+        * https://www.zapsplat.com/music/drone-machine-engine-motor-ufo-spaceship-sci-fi-aliens-ambience-buzz-hum-noise-seamless-loop-looping-2/
+        * license: Standard License (See ZapSplat license pdf)
+        * Recorded by: Sound Spark LLC
+        */
+        path: 'assets/audio/drilling.mp3'
     },
     {
         name: 'drone',
@@ -322,6 +342,16 @@ const SOUND_PATHS: { name: string; path: string; }[] = [
         * Recorded by: Mike Koenig
         */
         path: 'assets/audio/shield-up.mp3'
+    },
+    {
+        name: 'walkingFastGravel',
+        /**
+        * Running, Snow, A.wav
+        * https://freesound.org/people/InspectorJ/sounds/421022/
+        * license: Attribution License
+        * Recorded by: InspectorJ
+        */
+        path: 'assets/audio/walking-fast-gravel.wav'
     },
     {
         name: 'wind',

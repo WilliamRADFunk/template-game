@@ -49,27 +49,30 @@ class Soundinator {
         });
         this._sounds['airThruster'].sound = new Sound(this._sounds['airThruster'].audio, 4.5, 0.8, 0.3, true, 9);
         this._sounds['airThruster'].misc = 0;
+        this._sounds['backgroundMusicScifi01'].sound = new Sound(this._sounds['backgroundMusicScifi01'].audio, 0, 0.2, 0.1, true);
         this._sounds['baseLost'].sound = new Sound(this._sounds['baseLost'].audio, 2.2, 0.4);
-        this._sounds['bidooo'].sound = new Sound(this._sounds['bidooo'].audio, 0, 0.7, 0.4);
+        this._sounds['bidooo'].sound = new Sound(this._sounds['bidooo'].audio, 0, 0.4, 0.2);
         this._sounds['bipBipBipBing'].sound = new Sound(this._sounds['bipBipBipBing'].audio, 0, 0.5, 0.4);
         this._sounds['blap'].sound = new Sound(this._sounds['blap'].audio, 0, 1, 0.4);
         this._sounds['blip'].sound = new Sound(this._sounds['blip'].audio, 0, 1, 0.4);
         this._sounds['clickClack'].sound = new Sound(this._sounds['clickClack'].audio, 0, 0.8);
         this._sounds['deathNoNoAchEhh'].sound = new Sound(this._sounds['deathNoNoAchEhh'].audio, 0.5, 0.9, 0.4);
+        this._sounds['drilling'].sound = new Sound(this._sounds['drilling'].audio, 0, 0.3, 0.3, true);
         this._sounds['drone'].sound = new Sound(this._sounds['drone'].audio, 0, 0.5);
         this._sounds['explosionLarge'].sound = new Sound(this._sounds['explosionLarge'].audio, 0.5, 0.3, 0.1);
         this._sounds['explosionSmall'].sound = new Sound(this._sounds['explosionSmall'].audio, 0, 1, 0.3);
         this._sounds['fire'].sound = new Sound(this._sounds['fire'].audio, 0, 0.3);
         this._sounds['fooPang'].sound = new Sound(this._sounds['fooPang'].audio, 0, 1, 0.4);
         this._sounds['gameOver'].sound = new Sound(this._sounds['gameOver'].audio, 0, 0.7);
-        this._sounds['hollowClank'].sound = new Sound(this._sounds['hollowClank'].audio, 0, 1, 0.4);
-        this._sounds['hollowClunk'].sound = new Sound(this._sounds['hollowClunk'].audio, 0, 1, 0.4);
+        this._sounds['hollowClank'].sound = new Sound(this._sounds['hollowClank'].audio, 0, 0.8, 0.4);
+        this._sounds['hollowClunk'].sound = new Sound(this._sounds['hollowClunk'].audio, 0, 0.8, 0.4);
         this._sounds['mainThrusterSmall'].sound = new Sound(this._sounds['mainThrusterSmall'].audio, 0, 0.8, 0.3, true);
         this._sounds['regen'].sound = new Sound(this._sounds['regen'].audio, 0, 0.3);
         this._sounds['saucer'].sound = new Sound(this._sounds['saucer'].audio, 0, 0.2);
         this._sounds['shieldDown'].sound = new Sound(this._sounds['shieldDown'].audio, 0, 0.7);
         this._sounds['shieldUp'].sound = new Sound(this._sounds['shieldUp'].audio, 0, 0.7);
-        this._sounds['wind'].sound = new Sound(this._sounds['wind'].audio, 0, 0.5, 0.3, true);
+        this._sounds['walkingFastGravel'].sound = new Sound(this._sounds['walkingFastGravel'].audio, 0, 0.2, 0.1, true);
+        this._sounds['wind'].sound = new Sound(this._sounds['wind'].audio, 0, 0.4, 0.2, true);
     }
 
     /**
@@ -78,6 +81,14 @@ class Soundinator {
      */
     public getMute(): boolean {
         return this.isMute;
+    }
+
+    /**
+     * Checks if sound is already playing
+     * @returns the current isPlaying state. TRUE --> playing | FALSE --> not playing
+     */
+    public isPlaying(name: string): boolean {
+        return this._sounds[name] && this._sounds[name].audio.isPlaying;
     }
 
     /**
@@ -105,7 +116,15 @@ class Soundinator {
     }
 
     /**
-     * Plays the mouse click sound.
+     * Plays the background scifi looping music 01 sound.
+     */
+    public playBackgroundMusicScifi01(): void {
+        if (this.isMute) { return; }
+        this._sounds.backgroundMusicScifi01.sound.play();
+    }
+
+    /**
+     * Plays the crowd screaming in death sound.
      */
     public playBaseLost(): void {
         if (this.isMute) { return; }
@@ -158,6 +177,14 @@ class Soundinator {
     public playDeathNoNoAchEhh(): void {
         if (this.isMute) { return; }
         this._sounds.deathNoNoAchEhh.sound.play();
+    }
+
+    /**
+     * Plays the drilling drop sound.
+     */
+    public playDrilling(): void {
+        if (this.isMute) { return; }
+        this._sounds.drilling.sound.play();
     }
 
     /**
@@ -267,6 +294,14 @@ class Soundinator {
     }
 
     /**
+     * Plays the walkingFastGravel sound.
+     */
+    public playWalkingFastGravel(): void {
+        if (this.isMute) { return; }
+        this._sounds.walkingFastGravel.sound.play();
+    }
+
+    /**
      * Plays the wind sound.
      */
     public playWind(): void {
@@ -298,6 +333,22 @@ class Soundinator {
     }
 
     /**
+     * Stops the background scifi looping music 01 sound.
+     */
+    public stopBackgroundMusicScifi01(): void {
+        if (this.isMute) { return; }
+        this._sounds.backgroundMusicScifi01.sound.stop();
+    }
+
+    /**
+     * Stops the drilling is coming sound.
+     */
+    public stopDrilling(): void {
+        if (this.isMute) { return; }
+        this._sounds.drilling.sound.stop();
+    }
+
+    /**
      * Stops the small main thruster sound.
      */
     public stopMainThrusterSmall(): void {
@@ -311,6 +362,14 @@ class Soundinator {
     public stopSaucer(): void {
         if (this.isMute) { return; }
         this._sounds.saucer.sound.stop();
+    }
+
+    /**
+     * Stops the walkingFastGravel sound.
+     */
+    public stopWalkingFastGravel(): void {
+        if (this.isMute) { return; }
+        this._sounds.walkingFastGravel.sound.stop();
     }
 
     /**
