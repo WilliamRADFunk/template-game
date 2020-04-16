@@ -50,6 +50,7 @@ import { RightTopStatsCol3Text2 } from '../../controls/text/stats/right-top-stat
 import { RightTopStatsCol3Text3 } from '../../controls/text/stats/right-top-stats-col3-text-3';
 import { RightTopStatsCol3Text4 } from '../../controls/text/stats/right-top-stats-col3-text-4';
 import { MineCountText } from './custom-controls/mine-count-text';
+import { ControlPanel } from '../../controls/panels/control-panel';
 
 /*
  * Grid Values
@@ -116,6 +117,8 @@ export class LandAndMine {
     };
 
     private _camera: OrthographicCamera;
+
+    private _controlPanel: ControlPanel;
 
     private _counters: { [key: string]: number } = {
         astronautWalkingCounter: 0,
@@ -829,7 +832,7 @@ export class LandAndMine {
 
         // TODO: Tutorial for how to play the game.
 
-        // TODO: Add sound fx.
+        this._controlPanel = new ControlPanel({ height, left: left, top: null, width });
 
         this._textElements.horizontalSpeed = new LeftTopStatsText1(
             `Horizontal Speed: ${this._currentLanderHorizontalSpeed}`,
@@ -1108,6 +1111,7 @@ export class LandAndMine {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
+        this._controlPanel.resize({ height, left: left, top: null, width });
         this._textElements.horizontalSpeed.resize({ height, left: left, top: null, width });
         this._textElements.verticalSpeed.resize({ height, left: left, top: null, width });
         this._textElements.oxygenLevel.resize({ height, left: left, top: null, width });
