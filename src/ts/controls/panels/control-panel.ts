@@ -1,6 +1,8 @@
+import { FunctionMap } from "../../models/function-map";
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { FreestyleSquareButton } from "../buttons/freestyle-square-button";
 import { BUTTON_COLORS } from "../../styles/button-colors";
+import { SoundinatorSingleton } from "../../soundinator";
 
 /**
  * @class
@@ -11,6 +13,16 @@ export class ControlPanel {
      * List of buttons in the control panel.
      */
     private readonly _buttons: { [key: string]: FreestyleSquareButton } = {};
+
+    /**
+     * List of callback functions from Control Panel creator to pair with matching buttons.
+     */
+    private readonly _callbacks: FunctionMap;
+
+    /**
+     * When pause button is pressed, a previous state may be captured for return when play button is pressed.
+     */
+    private _prevState: any;
 
     /**
      * HTMLElement that is the panel itself.
@@ -31,7 +43,7 @@ export class ControlPanel {
      * @param border border attribute on the element.
      * @param type type of text on the element.
      */
-    constructor(position: HTMLElementPosition) {
+    constructor(position: HTMLElementPosition, callbacks: FunctionMap, startPaused?: boolean) {
         this.element = document.createElement('div');
         this.element.id = this.id = 'control-panel';
         this.element.style.fontFamily = 'Luckiest Guy';
@@ -44,12 +56,14 @@ export class ControlPanel {
         this.element.style.border = '1px solid #CCC';
         this.element.style.borderRadius = '5px';
 
+        this._callbacks = callbacks;
+
         document.body.appendChild(this.element);
 
         this._buttons.helpButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.964 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
-            () => {},
+            this._onHelpClicked.bind(this),
             true,
             'fa-question',
             0.5);
@@ -57,7 +71,7 @@ export class ControlPanel {
         this._buttons.settingsButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.93 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
-            () => {},
+            this._onSettingsClicked.bind(this),
             true,
             'fa-gear',
             0.5);
@@ -73,7 +87,7 @@ export class ControlPanel {
         this._buttons.soundOffButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.896 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
-            () => {},
+            this._onSoundOffClicked.bind(this),
             false,
             'fa-volume-off',
             0.5);
@@ -81,7 +95,7 @@ export class ControlPanel {
         this._buttons.soundOnButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.896 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
-            () => {},
+            this._onSoundOnClicked.bind(this),
             true,
             'fa-volume-up',
             0.5);
@@ -89,7 +103,7 @@ export class ControlPanel {
         this._buttons.pauseButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.862 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
-            () => {},
+            this._onPauseClicked.bind(this),
             true,
             'fa-pause',
             0.5);
@@ -97,12 +111,55 @@ export class ControlPanel {
         this._buttons.playButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.862 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
-            () => {},
+            this._onPlayClicked.bind(this),
             false,
             'fa-play',
             0.5);
 
+        SoundinatorSingleton.getMute() ? this._buttons.soundOnButton.show() : this._buttons.soundOnButton.hide();
+        SoundinatorSingleton.getMute() ? this._buttons.soundOnButton.hide() : this._buttons.soundOnButton.show();
+        startPaused ? this._buttons.pauseButton.show() : this._buttons.pauseButton.hide();
+        startPaused ? this._buttons.playButton.hide() : this._buttons.playButton.show();
+
         this.resize(position);
+    }
+
+    private _onHelpClicked(): void {
+        console.log('Control Panel: Help Button Clicked');
+        this._callbacks.help();
+    }
+
+    private _onPauseClicked(): void {
+        console.log('Control Panel: Pause Button Clicked');
+        this._prevState = this._callbacks.pause();
+        this._buttons.pauseButton.hide();
+        this._buttons.playButton.show();
+    }
+
+    private _onPlayClicked(): void {
+        console.log('Control Panel: Play Button Clicked');
+        this._callbacks.play(this._prevState);
+        this._buttons.pauseButton.show();
+        this._buttons.playButton.hide();
+    }
+
+    private _onSettingsClicked(): void {
+        console.log('Control Panel: Settings Button Clicked');
+        this._callbacks.settings();
+    }
+
+    private _onSoundOffClicked(): void {
+        console.log('Control Panel: Sound Off Button Clicked');
+        SoundinatorSingleton.toggleMute(false);
+        this._buttons.soundOffButton.hide();
+        this._buttons.soundOnButton.show();
+    }
+
+    private _onSoundOnClicked(): void {
+        console.log('Control Panel: Sound On Button Clicked');
+        SoundinatorSingleton.toggleMute(true);
+        this._buttons.soundOffButton.show();
+        this._buttons.soundOnButton.hide();
     }
 
     /**

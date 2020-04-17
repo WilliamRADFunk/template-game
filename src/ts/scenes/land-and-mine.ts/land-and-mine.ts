@@ -90,7 +90,8 @@ export enum LandAndMineState {
     'walkingAwayFromLander' = 6,
     'mining' = 7,
     'suffocating' = 8,
-    'tutorial' = 9
+    'tutorial' = 9,
+    'newGame' = 10
 }
 
 /**
@@ -185,7 +186,7 @@ export class LandAndMine {
      */
     private _scene: Scene;
 
-    private _state: LandAndMineState = LandAndMineState.paused;
+    private _state: LandAndMineState = LandAndMineState.newGame;
 
     /**
      * Groups of text elements
@@ -581,6 +582,18 @@ export class LandAndMine {
         });
     }
 
+    private _disableAllButtons(): void {
+        Object.keys(this._buttons)
+            .filter(key => !!this._buttons[key])
+            .forEach(key => this._buttons[key].disable());
+    }
+
+    private _enableAllButtons(): void {
+        Object.keys(this._buttons)
+            .filter(key => !!this._buttons[key])
+            .forEach(key => this._buttons[key].enable());
+    }
+
     private _downPopulate(x: number, y: number, isWater?: boolean): void {
         let waterAbove = isWater;
         for (let row = y - 1; row >= 0; row--) {
@@ -832,7 +845,52 @@ export class LandAndMine {
 
         // TODO: Tutorial for how to play the game.
 
-        this._controlPanel = new ControlPanel({ height, left: left, top: null, width });
+        const exitHelp = (prevState: LandAndMineState) => {
+            this._enableAllButtons();
+            SoundinatorSingleton.resumeSound();
+            this._state = prevState;
+        };
+
+        const exitSettings = (prevState: LandAndMineState) => {
+            this._enableAllButtons();
+            SoundinatorSingleton.resumeSound();
+            this._state = prevState;
+        };
+
+        const help = () => {
+            this._disableAllButtons();
+            const prevState = this._state;
+            this._state = LandAndMineState.tutorial;
+            SoundinatorSingleton.pauseSound();
+            return prevState;
+        };
+
+        const pause = () => {
+            this._disableAllButtons();
+            const prevState = this._state;
+            this._state = LandAndMineState.paused;
+            SoundinatorSingleton.pauseSound();
+            return prevState;
+        };
+
+        const play = (prevState: LandAndMineState) => {
+            this._enableAllButtons();
+            SoundinatorSingleton.resumeSound();
+            this._state = prevState;
+        };
+
+        const settings = () => {
+            this._disableAllButtons();
+            const prevState = this._state;
+            this._state = LandAndMineState.paused;
+            SoundinatorSingleton.pauseSound();
+            return prevState;
+        };
+
+        this._controlPanel = new ControlPanel(
+            { height, left: left, top: null, width },
+            { exitHelp, exitSettings, help, pause, play, settings },
+            true);
 
         this._textElements.horizontalSpeed = new LeftTopStatsText1(
             `Horizontal Speed: ${this._currentLanderHorizontalSpeed}`,
@@ -963,7 +1021,7 @@ export class LandAndMine {
         this._textElements.mineCount.hide();
 
         let onClick = () => {
-            if (this._state === LandAndMineState.paused) {
+            if (this._state === LandAndMineState.newGame) {
                 this._state = LandAndMineState.flying;
                 this._buttons.startButton.hide();
                 SoundinatorSingleton.playBackgroundMusicScifi01();
@@ -1315,8 +1373,12 @@ export class LandAndMine {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { [key: number]: number } {
-        // Game paused, or in tutorial mode. Nothing should progress.
-        if (this._state === LandAndMineState.paused || this._state === LandAndMineState.tutorial) {
+        // Game externally paused from control panel. Nothing should progress.
+        if (this._state === LandAndMineState.paused) {
+            return;
+        }
+        // Game not yet started, or in tutorial mode. Nothing should progress.
+        if (this._state === LandAndMineState.newGame || this._state === LandAndMineState.tutorial) {
             SoundinatorSingleton.stopBackgroundMusicScifi01();
             SoundinatorSingleton.stopWind();
             return;
