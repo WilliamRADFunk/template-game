@@ -91,6 +91,14 @@ export class ButtonBase {
     }
 
     /**
+     * Determines whether the button is visible or not.
+     * @returns TRUE == visible, FALSE == not visible
+     */
+    public isVisible(): boolean {
+        return this.element.style.visibility === 'visible';
+    }
+
+    /**
      * Activates button changes related to onmouseleave listeners.
      */
     public onExit(): void {

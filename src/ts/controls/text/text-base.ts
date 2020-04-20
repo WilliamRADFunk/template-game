@@ -160,6 +160,14 @@ export class TextBase {
     }
 
     /**
+     * Determines whether the text is visible or not.
+     * @returns TRUE == visible, FALSE == not visible
+     */
+    public isVisible(): boolean {
+        return this.element.style.visibility === 'visible';
+    }
+
+    /**
      * Sets the height, width, left and top positioning of the element.
      * @param position height, width, left and top position of the button.
      */

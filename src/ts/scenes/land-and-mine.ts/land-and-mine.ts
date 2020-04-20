@@ -142,6 +142,8 @@ export class LandAndMine {
 
     private _grid: number[][] = [];
 
+    private _helpTextures: { [key: string]: Mesh } = {}
+
     private _isDrillingDown: boolean = false;
 
     private _isDrillingUp: boolean = false;
@@ -187,6 +189,8 @@ export class LandAndMine {
     private _scene: Scene;
 
     private _state: LandAndMineState = LandAndMineState.newGame;
+
+    private _stateStoredObjects: (ButtonBase | TextBase)[] = [];
 
     /**
      * Groups of text elements
@@ -275,6 +279,20 @@ export class LandAndMine {
             this._scene.add(astro.mesh);
             astro.mesh.visible = false;
         });
+
+        const backingGeo = new PlaneGeometry( 15, 15, 10, 10 );
+        const backingMat = new MeshBasicMaterial({
+            color: 0x000000,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const backingMesh = new Mesh(backingGeo, backingMat);
+        backingMesh.name = 'Help Backing Mesh';
+        backingMesh.rotation.set(1.5708, 0, 0);
+        this._scene.add(backingMesh);
+        backingMesh.visible = false;
+        this._helpTextures.mainBackground = backingMesh;
     }
 
     private _buildSky(): void {
@@ -848,12 +866,17 @@ export class LandAndMine {
         const exitHelp = (prevState: LandAndMineState) => {
             this._enableAllButtons();
             SoundinatorSingleton.resumeSound();
+            this._helpTextures.mainBackground.visible = false;
+            this._stateStoredObjects.forEach(obj => obj && obj.show());
+            this._stateStoredObjects.length = 0;
             this._state = prevState;
         };
 
         const exitSettings = (prevState: LandAndMineState) => {
             this._enableAllButtons();
             SoundinatorSingleton.resumeSound();
+            this._stateStoredObjects.forEach(obj => obj && obj.show());
+            this._stateStoredObjects.length = 0;
             this._state = prevState;
         };
 
@@ -862,6 +885,19 @@ export class LandAndMine {
             const prevState = this._state;
             this._state = LandAndMineState.tutorial;
             SoundinatorSingleton.pauseSound();
+            this._helpTextures.mainBackground.visible = true;
+            Object.values(this._buttons).forEach(button => {
+                if (button.isVisible()) {
+                    this._stateStoredObjects.push(button);
+                    button.hide();
+                }
+            });
+            Object.values(this._textElements).forEach(text => {
+                if (text.isVisible()) {
+                    this._stateStoredObjects.push(text);
+                    text.hide();
+                }
+            });
             return prevState;
         };
 
@@ -884,6 +920,18 @@ export class LandAndMine {
             const prevState = this._state;
             this._state = LandAndMineState.paused;
             SoundinatorSingleton.pauseSound();
+            Object.values(this._buttons).forEach(button => {
+                if (button.isVisible()) {
+                    this._stateStoredObjects.push(button);
+                    button.hide();
+                }
+            });
+            Object.values(this._textElements).forEach(text => {
+                if (text.isVisible()) {
+                    this._stateStoredObjects.push(text);
+                    text.hide();
+                }
+            });
             return prevState;
         };
 

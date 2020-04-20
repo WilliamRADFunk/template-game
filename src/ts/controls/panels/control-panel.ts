@@ -60,6 +60,14 @@ export class ControlPanel {
 
         document.body.appendChild(this.element);
 
+        this._buttons.exitHelpButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.964 * position.width), top: ( 0.964 * position.height), width: position.width },
+            BUTTON_COLORS,
+            this._onExitHelpClicked.bind(this),
+            true,
+            'fa-sign-out',
+            0.5);
+
         this._buttons.helpButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.964 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
@@ -124,8 +132,17 @@ export class ControlPanel {
         this.resize(position);
     }
 
+    private _onExitHelpClicked(): void {
+        console.log('Control Panel: Exit Help Button Clicked');
+        this._buttons.exitHelpButton.hide();
+        this._buttons.helpButton.show();
+        this._callbacks.exitHelp();
+    }
+
     private _onHelpClicked(): void {
         console.log('Control Panel: Help Button Clicked');
+        this._buttons.helpButton.hide();
+        this._buttons.exitHelpButton.show();
         this._callbacks.help();
     }
 
@@ -139,8 +156,8 @@ export class ControlPanel {
     private _onPlayClicked(): void {
         console.log('Control Panel: Play Button Clicked');
         this._callbacks.play(this._prevState);
-        this._buttons.pauseButton.show();
         this._buttons.playButton.hide();
+        this._buttons.pauseButton.show();
     }
 
     private _onSettingsClicked(): void {
@@ -158,8 +175,8 @@ export class ControlPanel {
     private _onSoundOnClicked(): void {
         console.log('Control Panel: Sound On Button Clicked');
         SoundinatorSingleton.toggleMute(true);
-        this._buttons.soundOffButton.show();
         this._buttons.soundOnButton.hide();
+        this._buttons.soundOffButton.show();
     }
 
     /**
