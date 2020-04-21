@@ -64,7 +64,15 @@ export class ControlPanel {
             { height: position.height, left: position.left + (0.964 * position.width), top: ( 0.964 * position.height), width: position.width },
             BUTTON_COLORS,
             this._onExitHelpClicked.bind(this),
-            true,
+            false,
+            'fa-sign-out',
+            0.5);
+
+        this._buttons.exitSettingsButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.93 * position.width), top: ( 0.964 * position.height), width: position.width },
+            BUTTON_COLORS,
+            this._onExitSettingsClicked.bind(this),
+            false,
             'fa-sign-out',
             0.5);
 
@@ -136,33 +144,77 @@ export class ControlPanel {
         console.log('Control Panel: Exit Help Button Clicked');
         this._buttons.exitHelpButton.hide();
         this._buttons.helpButton.show();
-        this._callbacks.exitHelp();
+
+        this._buttons.playButton.hide();
+        this._buttons.pauseButton.show();
+
+        this._callbacks.exitHelp(this._prevState);
+        this._prevState = null;
+
+        this._buttons.settingsButton.enable();
+        this._buttons.pauseButton.enable();
+        this._buttons.playButton.enable();
+    }
+
+    private _onExitSettingsClicked(): void {
+        console.log('Control Panel: Exit Settings Button Clicked');
+        this._buttons.exitSettingsButton.hide();
+        this._buttons.settingsButton.show();
+
+        this._buttons.playButton.hide();
+        this._buttons.pauseButton.show();
+
+        this._callbacks.exitSettings(this._prevState);
+        this._prevState = null;
+
+        this._buttons.helpButton.enable();
+        this._buttons.pauseButton.enable();
+        this._buttons.playButton.enable();
     }
 
     private _onHelpClicked(): void {
         console.log('Control Panel: Help Button Clicked');
         this._buttons.helpButton.hide();
         this._buttons.exitHelpButton.show();
-        this._callbacks.help();
+
+        if (!this._prevState) {
+            this._prevState = this._callbacks.help();
+        }
+
+        this._buttons.settingsButton.disable();
+        this._buttons.pauseButton.disable();
+        this._buttons.playButton.disable();
     }
 
     private _onPauseClicked(): void {
         console.log('Control Panel: Pause Button Clicked');
-        this._prevState = this._callbacks.pause();
         this._buttons.pauseButton.hide();
         this._buttons.playButton.show();
+
+        if (!this._prevState) {
+            this._prevState = this._callbacks.pause();
+        }
     }
 
     private _onPlayClicked(): void {
         console.log('Control Panel: Play Button Clicked');
-        this._callbacks.play(this._prevState);
         this._buttons.playButton.hide();
         this._buttons.pauseButton.show();
+        this._callbacks.play(this._prevState);
+        this._prevState = null;
     }
 
     private _onSettingsClicked(): void {
         console.log('Control Panel: Settings Button Clicked');
-        this._callbacks.settings();
+        this._buttons.exitSettingsButton.show();
+        this._buttons.settingsButton.hide();
+        if (!this._prevState) {
+            this._prevState = this._callbacks.settings();
+        }
+
+        this._buttons.helpButton.disable();
+        this._buttons.pauseButton.disable();
+        this._buttons.playButton.disable();
     }
 
     private _onSoundOffClicked(): void {

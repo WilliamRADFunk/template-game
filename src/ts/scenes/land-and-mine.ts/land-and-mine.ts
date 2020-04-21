@@ -90,8 +90,7 @@ export enum LandAndMineState {
     'walkingAwayFromLander' = 6,
     'mining' = 7,
     'suffocating' = 8,
-    'tutorial' = 9,
-    'newGame' = 10
+    'newGame' = 9
 }
 
 /**
@@ -883,21 +882,22 @@ export class LandAndMine {
         const help = () => {
             this._disableAllButtons();
             const prevState = this._state;
-            this._state = LandAndMineState.tutorial;
+            this._state = LandAndMineState.paused;
             SoundinatorSingleton.pauseSound();
             this._helpTextures.mainBackground.visible = true;
-            Object.values(this._buttons).forEach(button => {
+            Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
                     this._stateStoredObjects.push(button);
                     button.hide();
                 }
             });
-            Object.values(this._textElements).forEach(text => {
+            Object.values(this._textElements).filter(x => !!x).forEach(text => {
                 if (text.isVisible()) {
                     this._stateStoredObjects.push(text);
                     text.hide();
                 }
             });
+            console.log('help', 'prevState', prevState);
             return prevState;
         };
 
@@ -906,6 +906,7 @@ export class LandAndMine {
             const prevState = this._state;
             this._state = LandAndMineState.paused;
             SoundinatorSingleton.pauseSound();
+            console.log('pause', 'prevState', prevState);
             return prevState;
         };
 
@@ -913,6 +914,7 @@ export class LandAndMine {
             this._enableAllButtons();
             SoundinatorSingleton.resumeSound();
             this._state = prevState;
+            console.log('pause', 'prevState', prevState);
         };
 
         const settings = () => {
@@ -1425,8 +1427,8 @@ export class LandAndMine {
         if (this._state === LandAndMineState.paused) {
             return;
         }
-        // Game not yet started, or in tutorial mode. Nothing should progress.
-        if (this._state === LandAndMineState.newGame || this._state === LandAndMineState.tutorial) {
+        // Game not yet started. Nothing should progress.
+        if (this._state === LandAndMineState.newGame) {
             SoundinatorSingleton.stopBackgroundMusicScifi01();
             SoundinatorSingleton.stopWind();
             return;
