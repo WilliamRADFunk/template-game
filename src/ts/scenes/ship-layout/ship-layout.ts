@@ -168,7 +168,7 @@ export class ShipLayout {
             const pelletGeometry = createBoxWithRoundedEdges(pellet.width, pellet.height, pellet.radius, 0);
             const barrier = new Mesh( pelletGeometry, pelletMaterial );
             barrier.name = pellet.name;
-            barrier.position.set(pellet.x, 8, pellet.z);
+            barrier.position.set(pellet.x, -10, pellet.z);
             barrier.rotation.set(1.5708, 0, 0);
             this._scene.add(barrier);
             barrier.visible = false;

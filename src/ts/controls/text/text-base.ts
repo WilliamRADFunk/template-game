@@ -80,6 +80,7 @@ export class TextBase {
         this.element.style.overflowY = 'hidden';
         this.element.style.textAlign = align;
         this.element.style.border = border;
+        this.element.style.visibility = 'visible';
 
         this.sentence = sentence;
         this.element.innerHTML = sentence;
@@ -164,7 +165,7 @@ export class TextBase {
      * @returns TRUE == visible, FALSE == not visible
      */
     public isVisible(): boolean {
-        return this.element.style.visibility === 'visible';
+        return this.element.style.visibility !== 'hidden';
     }
 
     /**

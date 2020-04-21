@@ -11,6 +11,16 @@ import {
  */
 export class PanelBase {
     /**
+     * Reference to the inner panel's mesh.
+     */
+    private _innerbox: Mesh;
+
+    /**
+     * Reference to the outer panel's mesh.
+     */
+    private _outerbox: Mesh;
+
+    /**
      * Reference to the scene, used to remove and reinstall text geometries.
      */
     private _scene: Scene;
@@ -46,9 +56,10 @@ export class PanelBase {
         let textBoxGeometry = new PlaneGeometry( outerWidth, height, 10, 10 );
         let barrier = new Mesh( textBoxGeometry, textBoxMaterial );
         barrier.name = `${id} - Outter Box`;
-        barrier.position.set(x, 15, z);
+        barrier.position.set(x, -1, z);
         barrier.rotation.set(1.5708, 0, 0);
         scene.add(barrier);
+        this._innerbox = barrier;
 
         textBoxMaterial = new MeshBasicMaterial({
             color: 0x000000,
@@ -59,12 +70,23 @@ export class PanelBase {
         textBoxGeometry = new PlaneGeometry( innerWidth, height - 0.2, 10, 10 );
         barrier = new Mesh( textBoxGeometry, textBoxMaterial );
         barrier.name = `${id} - Inner Box`;
-        barrier.position.set(x, 10, z);
+        barrier.position.set(x, -6, z);
         barrier.rotation.set(1.5708, 0, 0);
         scene.add(barrier);
+        this._outerbox = barrier;
     }
 
     public dispose() {
         this._scene.remove();
+    }
+
+    public hide(): void {
+        this._outerbox.visible = false;
+        this._innerbox.visible = false;
+    }
+
+    public show(): void {
+        this._outerbox.visible = true;
+        this._innerbox.visible = true;
     }
 }

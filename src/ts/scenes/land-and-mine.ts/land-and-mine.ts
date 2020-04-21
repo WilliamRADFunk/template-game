@@ -51,6 +51,15 @@ import { RightTopStatsCol3Text3 } from '../../controls/text/stats/right-top-stat
 import { RightTopStatsCol3Text4 } from '../../controls/text/stats/right-top-stats-col3-text-4';
 import { MineCountText } from './custom-controls/mine-count-text';
 import { ControlPanel } from '../../controls/panels/control-panel';
+import { RightTopPanel } from '../../controls/panels/right-top-panel';
+import { LeftTopPanel } from '../../controls/panels/left-top-panel';
+import { RightTopMiddlePanel } from '../../controls/panels/right-top-middle-panel';
+import { LeftTopMiddlePanel } from '../../controls/panels/left-top-middle-panel';
+import { RightBottomMiddlePanel } from '../../controls/panels/right-bottom-middle-panel';
+import { LeftBottomMiddlePanel } from '../../controls/panels/left-bottom-middle-panel';
+import { LeftBottomPanel } from '../../controls/panels/left-bottom-panel';
+import { RightBottomPanel } from '../../controls/panels/right-bottom-panel';
+import { PanelBase } from '../../controls/panels/panel-base';
 
 /*
  * Grid Values
@@ -141,7 +150,9 @@ export class LandAndMine {
 
     private _grid: number[][] = [];
 
-    private _helpTextures: { [key: string]: Mesh } = {}
+    private _helpMeshes: { [key: string]: Mesh } = {}
+
+    private _helpPanels: { [key: string]: PanelBase } = {}
 
     private _isDrillingDown: boolean = false;
 
@@ -279,6 +290,7 @@ export class LandAndMine {
             astro.mesh.visible = false;
         });
 
+        // Help screen backdrop
         const backingGeo = new PlaneGeometry( 15, 15, 10, 10 );
         const backingMat = new MeshBasicMaterial({
             color: 0x000000,
@@ -291,7 +303,24 @@ export class LandAndMine {
         backingMesh.rotation.set(1.5708, 0, 0);
         this._scene.add(backingMesh);
         backingMesh.visible = false;
-        this._helpTextures.mainBackground = backingMesh;
+        this._helpMeshes.mainBackground = backingMesh;
+
+        this._helpPanels.rightTopPanel = new RightTopPanel(this._scene);
+        this._helpPanels.rightTopPanel.hide();
+        this._helpPanels.leftTopPanel = new LeftTopPanel(this._scene);
+        this._helpPanels.leftTopPanel.hide();
+        this._helpPanels.rightTopMiddlePanel = new RightTopMiddlePanel(this._scene);
+        this._helpPanels.rightTopMiddlePanel.hide();
+        this._helpPanels.leftTopMiddlePanel = new LeftTopMiddlePanel(this._scene);
+        this._helpPanels.leftTopMiddlePanel.hide();
+        this._helpPanels.rightBottomMiddlePanel = new RightBottomMiddlePanel(this._scene);
+        this._helpPanels.rightBottomMiddlePanel.hide();
+        this._helpPanels.leftBottomMiddlePanel = new LeftBottomMiddlePanel(this._scene);
+        this._helpPanels.leftBottomMiddlePanel.hide();
+        this._helpPanels.leftBottomPanel = new LeftBottomPanel(this._scene);
+        this._helpPanels.leftBottomPanel.hide();
+        this._helpPanels.rightBottomPanel = new RightBottomPanel(this._scene);
+        this._helpPanels.rightBottomPanel.hide();
     }
 
     private _buildSky(): void {
@@ -865,7 +894,8 @@ export class LandAndMine {
         const exitHelp = (prevState: LandAndMineState) => {
             this._enableAllButtons();
             SoundinatorSingleton.resumeSound();
-            this._helpTextures.mainBackground.visible = false;
+            this._helpMeshes.mainBackground.visible = false;
+            Object.values(this._helpPanels).forEach(p => p && p.hide());
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
             this._state = prevState;
@@ -884,7 +914,8 @@ export class LandAndMine {
             const prevState = this._state;
             this._state = LandAndMineState.paused;
             SoundinatorSingleton.pauseSound();
-            this._helpTextures.mainBackground.visible = true;
+            this._helpMeshes.mainBackground.visible = true;
+            Object.values(this._helpPanels).forEach(p => p && p.show());
             Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
                     this._stateStoredObjects.push(button);

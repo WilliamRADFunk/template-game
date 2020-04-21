@@ -177,8 +177,9 @@ export class ControlPanel {
         this._buttons.helpButton.hide();
         this._buttons.exitHelpButton.show();
 
+        const state = this._callbacks.help();
         if (!this._prevState) {
-            this._prevState = this._callbacks.help();
+            this._prevState = state;
         }
 
         this._buttons.settingsButton.disable();
@@ -191,8 +192,9 @@ export class ControlPanel {
         this._buttons.pauseButton.hide();
         this._buttons.playButton.show();
 
+        const state = this._callbacks.pause();
         if (!this._prevState) {
-            this._prevState = this._callbacks.pause();
+            this._prevState = state;
         }
     }
 
@@ -200,6 +202,7 @@ export class ControlPanel {
         console.log('Control Panel: Play Button Clicked');
         this._buttons.playButton.hide();
         this._buttons.pauseButton.show();
+
         this._callbacks.play(this._prevState);
         this._prevState = null;
     }
@@ -208,8 +211,10 @@ export class ControlPanel {
         console.log('Control Panel: Settings Button Clicked');
         this._buttons.exitSettingsButton.show();
         this._buttons.settingsButton.hide();
+
+        const state = this._callbacks.settings();
         if (!this._prevState) {
-            this._prevState = this._callbacks.settings();
+            this._prevState = state;
         }
 
         this._buttons.helpButton.disable();
@@ -220,6 +225,7 @@ export class ControlPanel {
     private _onSoundOffClicked(): void {
         console.log('Control Panel: Sound Off Button Clicked');
         SoundinatorSingleton.toggleMute(false);
+
         this._buttons.soundOffButton.hide();
         this._buttons.soundOnButton.show();
     }
@@ -227,6 +233,7 @@ export class ControlPanel {
     private _onSoundOnClicked(): void {
         console.log('Control Panel: Sound On Button Clicked');
         SoundinatorSingleton.toggleMute(true);
+
         this._buttons.soundOnButton.hide();
         this._buttons.soundOffButton.show();
     }

@@ -49,7 +49,7 @@ export class ProfileBase {
         (this.profile.material as any).shininess = 0;
         this.profile.material.transparent = true;
         this.profile.mesh = new Mesh(this.profile.geometry, this.profile.material);
-        this.profile.mesh.position.set(this.profile.currentPoint[0], 5, this.profile.currentPoint[1]);
+        this.profile.mesh.position.set(this.profile.currentPoint[0], -9, this.profile.currentPoint[1]);
         this.profile.mesh.rotation.set(-Math.PI / 2, 0, 0);
         this._scene.add(this.profile.mesh);
     }

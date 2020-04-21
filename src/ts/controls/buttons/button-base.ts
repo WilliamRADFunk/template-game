@@ -95,7 +95,7 @@ export class ButtonBase {
      * @returns TRUE == visible, FALSE == not visible
      */
     public isVisible(): boolean {
-        return this.element.style.visibility === 'visible';
+        return this.element.style.visibility !== 'hidden';
     }
 
     /**
