@@ -3,6 +3,7 @@ import { HTMLElementPosition } from "../../models/html-element-position";
 import { FreestyleSquareButton } from "../buttons/freestyle-square-button";
 import { BUTTON_COLORS } from "../../styles/button-colors";
 import { SoundinatorSingleton } from "../../soundinator";
+import { Sound } from "../../sound";
 
 /**
  * @class
@@ -18,6 +19,11 @@ export class ControlPanel {
      * List of callback functions from Control Panel creator to pair with matching buttons.
      */
     private readonly _callbacks: FunctionMap;
+
+    /**
+     * Tracks what sound mute state was before user clicked help, or settings.
+     */
+    private _prevMute: boolean = SoundinatorSingleton.getMute();
 
     /**
      * When pause button is pressed, a previous state may be captured for return when play button is pressed.
@@ -142,6 +148,8 @@ export class ControlPanel {
 
     private _onExitHelpClicked(): void {
         console.log('Control Panel: Exit Help Button Clicked');
+        SoundinatorSingleton.resumeSound();
+
         this._buttons.exitHelpButton.hide();
         this._buttons.helpButton.show();
 
@@ -158,6 +166,8 @@ export class ControlPanel {
 
     private _onExitSettingsClicked(): void {
         console.log('Control Panel: Exit Settings Button Clicked');
+        SoundinatorSingleton.resumeSound();
+
         this._buttons.exitSettingsButton.hide();
         this._buttons.settingsButton.show();
 
@@ -174,6 +184,8 @@ export class ControlPanel {
 
     private _onHelpClicked(): void {
         console.log('Control Panel: Help Button Clicked');
+        SoundinatorSingleton.pauseSound();
+
         this._buttons.helpButton.hide();
         this._buttons.exitHelpButton.show();
 
@@ -189,6 +201,8 @@ export class ControlPanel {
 
     private _onPauseClicked(): void {
         console.log('Control Panel: Pause Button Clicked');
+        SoundinatorSingleton.pauseSound();
+
         this._buttons.pauseButton.hide();
         this._buttons.playButton.show();
 
@@ -200,6 +214,8 @@ export class ControlPanel {
 
     private _onPlayClicked(): void {
         console.log('Control Panel: Play Button Clicked');
+        SoundinatorSingleton.resumeSound();
+
         this._buttons.playButton.hide();
         this._buttons.pauseButton.show();
 
@@ -209,6 +225,8 @@ export class ControlPanel {
 
     private _onSettingsClicked(): void {
         console.log('Control Panel: Settings Button Clicked');
+        SoundinatorSingleton.pauseSound();
+
         this._buttons.exitSettingsButton.show();
         this._buttons.settingsButton.hide();
 
@@ -224,7 +242,7 @@ export class ControlPanel {
 
     private _onSoundOffClicked(): void {
         console.log('Control Panel: Sound Off Button Clicked');
-        SoundinatorSingleton.toggleMute(false);
+        SoundinatorSingleton.resumeSound();
 
         this._buttons.soundOffButton.hide();
         this._buttons.soundOnButton.show();
@@ -232,7 +250,7 @@ export class ControlPanel {
 
     private _onSoundOnClicked(): void {
         console.log('Control Panel: Sound On Button Clicked');
-        SoundinatorSingleton.toggleMute(true);
+        SoundinatorSingleton.pauseSound();
 
         this._buttons.soundOnButton.hide();
         this._buttons.soundOffButton.show();

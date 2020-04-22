@@ -156,6 +156,11 @@ export class SideThruster {
         topPuff.visible = false;
     }
 
+    public changeSize(scale: number): void {
+        this._plumes.forEach(plume => plume.scale.set(scale, scale, scale));
+        this._puffs.forEach(puff => puff.scale.set(scale, scale, scale));
+    }
+
     public dispose():void {
         this._plumes.forEach(plume => plume && this._scene.remove(plume));
         this._plumes.length = 0;

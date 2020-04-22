@@ -89,6 +89,12 @@ const MAIN_THRUSTER_Z_OFFSET: number = 0.16;
 
 const VERTICAL_THRUST: number = 0.0002;
 
+const HELP_LANDER_1_POSITION: [number, number, number] = [-3.25, -8, -4.5];
+
+const HELP_MAIN_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.5];
+
+const HELP_SIDE_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.5];
+
 export enum LandAndMineState {
     'crashed' = 0,
     'escaped' = 1,
@@ -99,7 +105,8 @@ export enum LandAndMineState {
     'walkingAwayFromLander' = 6,
     'mining' = 7,
     'suffocating' = 8,
-    'newGame' = 9
+    'newGame' = 9,
+    'tutorial' = 10
 }
 
 /**
@@ -150,7 +157,14 @@ export class LandAndMine {
 
     private _grid: number[][] = [];
 
-    private _helpMeshes: { [key: string]: Mesh } = {}
+    private _helpActors: { [key: string]: any } = {}
+
+    private _helpCounters: { [key: string]: number } = {
+        thrust: 0,
+        thrustClear: 360
+    }
+
+    private _helpMeshes: { [key: string]: Mesh | Object3D } = {}
 
     private _helpPanels: { [key: string]: PanelBase } = {}
 
@@ -321,6 +335,19 @@ export class LandAndMine {
         this._helpPanels.leftBottomPanel.hide();
         this._helpPanels.rightBottomPanel = new RightBottomPanel(this._scene);
         this._helpPanels.rightBottomPanel.hide();
+
+        this._helpMeshes.lander1 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander1.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1], HELP_LANDER_1_POSITION[2]);
+        this._helpMeshes.lander1.visible = false;
+        this._helpMeshes.lander1.scale.set(2, 2, 2);
+        this._scene.add(this._helpMeshes.lander1);
+
+        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, -1);
+        this._helpActors.sideThrusterLeft.changeSize(2);
+        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, 1);
+        this._helpActors.sideThrusterRight.changeSize(2);
+        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_POSITION);
+        this._helpActors.mainThruster.changeSize(2);
     }
 
     private _buildSky(): void {
@@ -351,8 +378,7 @@ export class LandAndMine {
         this._grid[startY][0] = 6;
         this._downPopulate(0, startY);
         let lastY = startY;
-        for (let col = 1; col < 121; col++) {
-            const cantAscend = (lastY - startY) >= this._planetSpecifications.peakElevation;
+        for (let col = 1; col < 121; col++) {            const cantAscend = (lastY - startY) >= this._planetSpecifications.peakElevation;
             const cantDescend = (startY - lastY) >= this._planetSpecifications.peakElevation;
             const isWater = this._planetSpecifications.hasWater && Math.random() < 0.05;
             const isLife = this._planetSpecifications.isLife && Math.random() < 0.40;
@@ -893,8 +919,11 @@ export class LandAndMine {
 
         const exitHelp = (prevState: LandAndMineState) => {
             this._enableAllButtons();
-            SoundinatorSingleton.resumeSound();
             this._helpMeshes.mainBackground.visible = false;
+            this._helpMeshes.lander1.visible = false;
+            this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
+            this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
+            this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
             Object.values(this._helpPanels).forEach(p => p && p.hide());
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
@@ -903,7 +932,6 @@ export class LandAndMine {
 
         const exitSettings = (prevState: LandAndMineState) => {
             this._enableAllButtons();
-            SoundinatorSingleton.resumeSound();
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
             this._state = prevState;
@@ -912,9 +940,9 @@ export class LandAndMine {
         const help = () => {
             this._disableAllButtons();
             const prevState = this._state;
-            this._state = LandAndMineState.paused;
-            SoundinatorSingleton.pauseSound();
+            this._state = LandAndMineState.tutorial;
             this._helpMeshes.mainBackground.visible = true;
+            this._helpMeshes.lander1.visible = true;
             Object.values(this._helpPanels).forEach(p => p && p.show());
             Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
@@ -936,14 +964,12 @@ export class LandAndMine {
             this._disableAllButtons();
             const prevState = this._state;
             this._state = LandAndMineState.paused;
-            SoundinatorSingleton.pauseSound();
             console.log('pause', 'prevState', prevState);
             return prevState;
         };
 
         const play = (prevState: LandAndMineState) => {
             this._enableAllButtons();
-            SoundinatorSingleton.resumeSound();
             this._state = prevState;
             console.log('pause', 'prevState', prevState);
         };
@@ -952,7 +978,6 @@ export class LandAndMine {
             this._disableAllButtons();
             const prevState = this._state;
             this._state = LandAndMineState.paused;
-            SoundinatorSingleton.pauseSound();
             Object.values(this._buttons).forEach(button => {
                 if (button.isVisible()) {
                     this._stateStoredObjects.push(button);
@@ -1456,6 +1481,30 @@ export class LandAndMine {
     public endCycle(): { [key: number]: number } {
         // Game externally paused from control panel. Nothing should progress.
         if (this._state === LandAndMineState.paused) {
+            return;
+        }
+        // Game is in help mode. Play animations from help screen.
+        if (this._state === LandAndMineState.tutorial) {
+            SoundinatorSingleton.pauseSound();
+            if (this._helpCounters.thrust > this._helpCounters.thrustClear) {
+                this._helpCounters.thrust = 0;
+            }
+
+            this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
+            this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
+            this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
+
+            const val = this._helpCounters.thrustClear / 3;
+            if (this._helpCounters.thrust < val) {
+                this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, true);
+            } else if (this._helpCounters.thrust < (val * 2)) {
+                this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
+            } else {
+                this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
+            }
+
+            this._helpCounters.thrust++;
+
             return;
         }
         // Game not yet started. Nothing should progress.

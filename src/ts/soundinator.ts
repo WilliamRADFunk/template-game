@@ -18,6 +18,11 @@ class Soundinator {
     private isMute: boolean = false;
 
     /**
+     * Tracks whether game is in temporary silent mode or not.
+     */
+    private isPaused: boolean = false;
+
+    /**
      * Audio and Sound objects for each of the loaded sound effects.
      */
     private _sounds: { [key: string]: { audio: Audio; sound: Sound; misc?: any } } = {};
@@ -84,6 +89,14 @@ class Soundinator {
     }
 
     /**
+     * Getter for the isPaused variable (mainly for preselecting the appropriate button in menu).
+     * @returns the current isPaused state. TRUE --> paused | FALSE --> not paused
+     */
+    public getPaused(): boolean {
+        return this.isPaused;
+    }
+
+    /**
      * Checks if sound is already playing
      * @returns the current isPlaying state. TRUE --> playing | FALSE --> not playing
      */
@@ -95,10 +108,11 @@ class Soundinator {
      * Pauses all the sound clips where they are.
      */
     public pauseSound(): void {
-        if (!this.isMute) {
+        if (!this.isMute && !this.isPaused) {
             Object.keys(this._sounds).forEach(key => {
                 this._sounds[key].sound.pause();
             });
+            this.isPaused = true;
         }
     }
 
@@ -106,7 +120,7 @@ class Soundinator {
      * Plays the air thruster sound.
      */
     public playAirThruster(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.airThruster.misc += 1;
         if (this._sounds.airThruster.misc > 2) {
             this._sounds.airThruster.misc = 2;
@@ -119,7 +133,7 @@ class Soundinator {
      * Plays the background scifi looping music 01 sound.
      */
     public playBackgroundMusicScifi01(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.backgroundMusicScifi01.sound.play();
     }
 
@@ -127,7 +141,7 @@ class Soundinator {
      * Plays the crowd screaming in death sound.
      */
     public playBaseLost(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.baseLost.sound.play();
     }
 
@@ -135,7 +149,7 @@ class Soundinator {
      * Plays the bidooo sound.
      */
     public playBidooo(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.bidooo.sound.play();
     }
 
@@ -143,7 +157,7 @@ class Soundinator {
      * Plays the bipBipBipBing sound.
      */
     public playBipBipBipBing(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.bipBipBipBing.sound.play();
     }
 
@@ -151,7 +165,7 @@ class Soundinator {
      * Plays the blahp sound.
      */
     public playBlap(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.blap.sound.play();
     }
 
@@ -159,7 +173,7 @@ class Soundinator {
      * Plays the blip sound.
      */
     public playBlip(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.blip.sound.play();
     }
 
@@ -167,7 +181,7 @@ class Soundinator {
      * Plays the mouse click clack sound.
      */
     public playClickClack(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.clickClack.sound.play();
     }
 
@@ -175,7 +189,7 @@ class Soundinator {
      * Plays the deathNoNoAchEhh sound.
      */
     public playDeathNoNoAchEhh(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.deathNoNoAchEhh.sound.play();
     }
 
@@ -183,7 +197,7 @@ class Soundinator {
      * Plays the drilling drop sound.
      */
     public playDrilling(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.drilling.sound.play();
     }
 
@@ -191,7 +205,7 @@ class Soundinator {
      * Plays the drone drop sound.
      */
     public playDrone(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.drone.sound.play();
     }
 
@@ -200,7 +214,7 @@ class Soundinator {
      * @param muffled inert explosions should have a shallower sound.
      */
     public playExplosionLarge(muffled?: boolean): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.explosionLarge.sound.play(muffled);
     }
 
@@ -209,7 +223,7 @@ class Soundinator {
      * @param muffled inert explosions should have a shallower sound.
      */
     public playExplosionSmall(muffled?: boolean): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.explosionSmall.sound.play(muffled);
     }
 
@@ -217,7 +231,7 @@ class Soundinator {
      * Plays the weapon firing sound.
      */
     public playFire(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.fire.sound.play();
     }
 
@@ -225,7 +239,7 @@ class Soundinator {
      * Plays the fwoop pang sound.
      */
     public playFooPang(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.fooPang.sound.play();
     }
 
@@ -233,7 +247,7 @@ class Soundinator {
      * Plays the weapon firing sound.
      */
     public playGameOver(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.gameOver.sound.play();
     }
 
@@ -241,7 +255,7 @@ class Soundinator {
      * Plays the hollowClank sound.
      */
     public playHollowClank(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.hollowClank.sound.play();
     }
 
@@ -249,7 +263,7 @@ class Soundinator {
      * Plays the hollowClunk sound.
      */
     public playHollowClunk(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.hollowClunk.sound.play();
     }
 
@@ -257,7 +271,7 @@ class Soundinator {
      * Plays the small main thruster sound.
      */
     public playMainThrusterSmall(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.mainThrusterSmall.sound.play();
     }
 
@@ -265,7 +279,7 @@ class Soundinator {
      * Plays the regenerated satellite or base sound.
      */
     public playRegen(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.regen.sound.play();
     }
 
@@ -273,7 +287,7 @@ class Soundinator {
      * Plays the saucer is coming sound.
      */
     public playSaucer(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.saucer.sound.play();
     }
 
@@ -281,7 +295,7 @@ class Soundinator {
      * Plays the shield deactivation sound.
      */
     public playShieldDown(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.saucerDown.sound.play();
     }
 
@@ -289,7 +303,7 @@ class Soundinator {
      * Plays the shield activation sound.
      */
     public playShieldUp(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.saucerUp.sound.play();
     }
 
@@ -297,7 +311,7 @@ class Soundinator {
      * Plays the walkingFastGravel sound.
      */
     public playWalkingFastGravel(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.walkingFastGravel.sound.play();
     }
 
@@ -305,7 +319,7 @@ class Soundinator {
      * Plays the wind sound.
      */
     public playWind(): void {
-        if (this.isMute) { return; }
+        if (this.isMute || this.isPaused) { return; }
         this._sounds.wind.sound.play();
     }
 
@@ -313,10 +327,11 @@ class Soundinator {
      * Resumes all the sound clips that were paused.
      */
     public resumeSound(): void {
-        if (!this.isMute) {
+        if (!this.isMute && this.isPaused) {
             Object.keys(this._sounds).forEach(key => {
                 this._sounds[key].sound.resume();
             });
+            this.isPaused = false;
         }
     }
 

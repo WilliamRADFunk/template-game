@@ -112,7 +112,11 @@ export class MainThruster {
         meshOrange.visible = false;
     }
 
-    public dispose():void {
+    public changeSize(scale: number): void {
+        this._flames.forEach(flame => flame.scale.set(scale, scale, scale));
+    }
+
+    public dispose(): void {
         this._flames.forEach(flame => flame && this._scene.remove(flame));
         this._flames.length = 0;
     }
