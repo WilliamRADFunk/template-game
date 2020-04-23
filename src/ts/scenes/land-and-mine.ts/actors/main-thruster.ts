@@ -64,16 +64,16 @@ export class MainThruster {
      * @param position x, y, z coordinate for base of flames.
      * @hidden
      */
-    constructor(scene: Scene, position: [number, number, number]) {
+    constructor(scene: Scene, position: [number, number, number], scale?: number) {
         this._scene = scene;
-        this._createFlames(position);
+        this._createFlames(position, scale || 1);
     }
 
     /**
      * Instantiates the flames of the thruster.
      * @param position x, y, z coordinate for base of flames.
      */
-    private _createFlames(position: [number, number, number]): void {
+    private _createFlames(position: [number, number, number], scale: number): void {
         index++;
 
         const geometry = new Geometry();
@@ -93,6 +93,7 @@ export class MainThruster {
         const meshYellow = new Mesh(geometry, this._yellowFlameMaterial);
         meshYellow.position.set(position[0], position[1], position[2]);
         meshYellow.name = `flame-${index}`;
+        meshYellow.scale.set(scale, scale, scale);
         this._flames.push(meshYellow);
         this._scene.add(meshYellow);
         meshYellow.visible = false;
@@ -100,6 +101,7 @@ export class MainThruster {
         const meshRed = new Mesh(geometry, this._redFlameMaterial);
         meshRed.position.set(position[0], position[1], position[2]);
         meshRed.name = `flame-${index}`;
+        meshRed.scale.set(scale, scale, scale);
         this._flames.push(meshRed);
         this._scene.add(meshRed);
         meshRed.visible = false;
@@ -107,13 +109,10 @@ export class MainThruster {
         const meshOrange = new Mesh(geometry, this._orangeFlameMaterial);
         meshOrange.position.set(position[0], position[1], position[2]);
         meshOrange.name = `flame-${index}`;
+        meshOrange.scale.set(scale, scale, scale);
         this._flames.push(meshOrange);
         this._scene.add(meshOrange);
         meshOrange.visible = false;
-    }
-
-    public changeSize(scale: number): void {
-        this._flames.forEach(flame => flame.scale.set(scale, scale, scale));
     }
 
     public dispose(): void {

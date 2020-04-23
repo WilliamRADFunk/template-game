@@ -81,7 +81,7 @@ const HORIZONTAL_THRUST: number = 0.0001;
 
 const SIDE_THRUSTER_Y_OFFSET: number = 5;
 
-const SIDE_THRUSTER_Z_OFFSET: number = 0;
+const SIDE_THRUSTER_Z_OFFSET: number = -0.17;
 
 const MAIN_THRUSTER_Y_OFFSET: number = 5;
 
@@ -91,9 +91,9 @@ const VERTICAL_THRUST: number = 0.0002;
 
 const HELP_LANDER_1_POSITION: [number, number, number] = [-3.25, -8, -4.5];
 
-const HELP_MAIN_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.5];
+const HELP_MAIN_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.2];
 
-const HELP_SIDE_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.5];
+const HELP_SIDE_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.87];
 
 export enum LandAndMineState {
     'crashed' = 0,
@@ -282,7 +282,7 @@ export class LandAndMine {
         const currPos = this._lander.mesh.position;
         this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
-        this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET]);
+        this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], 1);
         // Create astronaut mining team
         this._astronauts = createMiningTeam(
             {
@@ -342,12 +342,9 @@ export class LandAndMine {
         this._helpMeshes.lander1.scale.set(2, 2, 2);
         this._scene.add(this._helpMeshes.lander1);
 
-        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, -1);
-        this._helpActors.sideThrusterLeft.changeSize(2);
-        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, 1);
-        this._helpActors.sideThrusterRight.changeSize(2);
-        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_POSITION);
-        this._helpActors.mainThruster.changeSize(2);
+        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, -1, 1.5);
+        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, 1, 1.5);
+        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_POSITION, 2);
     }
 
     private _buildSky(): void {

@@ -40,6 +40,11 @@ export class SideThruster {
     private _puffs: Mesh[] = [];
 
     /**
+     * Scale of thruster meshes.
+     */
+    private _scale: number;
+
+    /**
      * Reference to the scene, used to and and remove plumes from rendering cycle once finished.
      */
     private _scene: Scene;
@@ -81,9 +86,10 @@ export class SideThruster {
      * @param invert 1 === right thruster orientation, -1 == left thruster orientation.
      * @hidden
      */
-    constructor(scene: Scene, position: [number, number, number], invert?: number) {
+    constructor(scene: Scene, position: [number, number, number], invert: number, scale?: number) {
         this._scene = scene;
         this._invert = invert || 1;
+        this._scale = scale || 1;
         this._createPlumes(position);
     }
 
@@ -96,7 +102,7 @@ export class SideThruster {
 
         const geometry = new Geometry();
         const v1 = new Vector3(this._invert * 0.4, 0, this._invert * 0.04);
-        const v2 = new Vector3(0, 0, 0);
+        const v2 = new Vector3(0.05 * this._invert, 0, 0);
         const v3 = new Vector3(this._invert * 0.4, 0, -0.04 * this._invert);
 
         const triangle = new Triangle( v1, v2, v3 );
@@ -111,6 +117,7 @@ export class SideThruster {
         const meshWhite = new Mesh(geometry, this._whiteFlameMaterial);
         meshWhite.position.set(position[0], position[1], position[2]);
         meshWhite.name = `white-plume-${index}`;
+        meshWhite.scale.set(this._scale, this._scale, this._scale);
         this._plumes.push(meshWhite);
         this._scene.add(meshWhite);
         meshWhite.visible = false;
@@ -118,6 +125,7 @@ export class SideThruster {
         const meshLightGrey = new Mesh(geometry, this._lightGreyFlameMaterial);
         meshLightGrey.position.set(position[0], position[1], position[2]);
         meshLightGrey.name = `light-grey-plume-${index}`;
+        meshLightGrey.scale.set(this._scale, this._scale, this._scale);
         this._plumes.push(meshLightGrey);
         this._scene.add(meshLightGrey);
         meshLightGrey.visible = false;
@@ -125,6 +133,7 @@ export class SideThruster {
         const meshDarkGrey = new Mesh(geometry, this._darkGreyFlameMaterial);
         meshDarkGrey.position.set(position[0], position[1], position[2]);
         meshDarkGrey.name = `dark-grey-plume-${index}`;
+        meshDarkGrey.scale.set(this._scale, this._scale, this._scale);
         this._plumes.push(meshDarkGrey);
         this._scene.add(meshDarkGrey);
         meshDarkGrey.visible = false;
@@ -133,32 +142,30 @@ export class SideThruster {
 
         const middlePuff = new Mesh( circleGeometry, this._whiteFlameMaterial );
         middlePuff.name = `middle-puff-${index}`;
-        middlePuff.position.set(position[0] + (this._invert * 0.45), position[1], position[2]);
+        middlePuff.position.set(position[0] + (this._invert * 0.45 * this._scale), position[1], position[2]);
         middlePuff.rotation.set(1.5708, 0, 0);
+        middlePuff.scale.set(this._scale, this._scale, this._scale);
         this._puffs.push(middlePuff);
         this._scene.add(middlePuff);
         middlePuff.visible = false;
 
         const bottomPuff = new Mesh( circleGeometry, this._whiteFlameMaterial );
         bottomPuff.name = `bottom-puff-${index}`;
-        bottomPuff.position.set(position[0] + (this._invert * 0.4), position[1], position[2] + 0.05);
+        bottomPuff.position.set(position[0] + (this._invert * 0.4 * this._scale), position[1], position[2] + 0.05);
         bottomPuff.rotation.set(1.5708, 0, 0);
+        bottomPuff.scale.set(this._scale, this._scale, this._scale);
         this._puffs.push(bottomPuff);
         this._scene.add(bottomPuff);
         bottomPuff.visible = false;
 
         const topPuff = new Mesh( circleGeometry, this._whiteFlameMaterial );
         topPuff.name = `top-puff-${index}`;
-        topPuff.position.set(position[0] + (this._invert * 0.4), position[1], position[2] - 0.05);
+        topPuff.position.set(position[0] + (this._invert * 0.4 * this._scale), position[1], position[2] - 0.05);
         topPuff.rotation.set(1.5708, 0, 0);
+        topPuff.scale.set(this._scale, this._scale, this._scale);
         this._puffs.push(topPuff);
         this._scene.add(topPuff);
         topPuff.visible = false;
-    }
-
-    public changeSize(scale: number): void {
-        this._plumes.forEach(plume => plume.scale.set(scale, scale, scale));
-        this._puffs.forEach(puff => puff.scale.set(scale, scale, scale));
     }
 
     public dispose():void {
@@ -207,8 +214,8 @@ export class SideThruster {
             }
         }
         this._plumes.forEach(plume => plume.position.set(position[0], position[1], position[2]));
-        this._puffs[0].position.set(position[0] + (this._invert * 0.45), position[1], position[2]);
-        this._puffs[1].position.set(position[0] + (this._invert * 0.4), position[1], position[2] + 0.05);
-        this._puffs[2].position.set(position[0] + (this._invert * 0.4), position[1], position[2] - 0.05);
+        this._puffs[0].position.set(position[0] + (this._invert * 0.45 * this._scale), position[1], position[2]);
+        this._puffs[1].position.set(position[0] + (this._invert * 0.4 * this._scale), position[1], position[2] + 0.05);
+        this._puffs[2].position.set(position[0] + (this._invert * 0.4 * this._scale), position[1], position[2] - 0.05);
     }
 }
