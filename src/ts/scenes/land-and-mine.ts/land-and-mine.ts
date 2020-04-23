@@ -8,7 +8,8 @@ import {
     Texture,
     Object3D,
     OrthographicCamera,
-    Vector3} from 'three';
+    Vector3,
+    LinearFilter} from 'three';
 
 import { SoundinatorSingleton } from '../../soundinator';
 import { Actor } from '../../models/actor';
@@ -319,6 +320,7 @@ export class LandAndMine {
         backingMesh.visible = false;
         this._helpMeshes.mainBackground = backingMesh;
 
+        // Help screen panels
         this._helpPanels.rightTopPanel = new RightTopPanel(this._scene);
         this._helpPanels.rightTopPanel.hide();
         this._helpPanels.leftTopPanel = new LeftTopPanel(this._scene);
@@ -336,15 +338,54 @@ export class LandAndMine {
         this._helpPanels.rightBottomPanel = new RightBottomPanel(this._scene);
         this._helpPanels.rightBottomPanel.hide();
 
+        // Upper left lander graphic instructions
         this._helpMeshes.lander1 = createLander(this._textures.ship).mesh;
         this._helpMeshes.lander1.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1], HELP_LANDER_1_POSITION[2]);
         this._helpMeshes.lander1.visible = false;
         this._helpMeshes.lander1.scale.set(2, 2, 2);
         this._scene.add(this._helpMeshes.lander1);
-
         this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, -1, 1.5);
         this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, 1, 1.5);
         this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_POSITION, 2);
+
+        // Upper left arrows graphic instructions
+        const arrowGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
+        const arrowMat = new MeshBasicMaterial();
+        arrowMat.map = this._textures.arrow;
+        arrowMat.map.minFilter = LinearFilter;
+        (arrowMat as any).shininess = 0;
+        arrowMat.transparent = true;
+        const arrowRight = new Mesh(arrowGeo, arrowMat);
+        arrowRight.name = 'Right Arrow Mesh';
+        arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 1.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
+        arrowRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(arrowRight);
+        arrowRight.visible = false;
+        this._helpMeshes.arrowRight = arrowRight;
+
+        arrowMat.map = this._textures.arrow;
+        arrowMat.map.minFilter = LinearFilter;
+        (arrowMat as any).shininess = 0;
+        arrowMat.transparent = true;
+        const arrowLeft = new Mesh(arrowGeo, arrowMat);
+        arrowLeft.name = 'Left Arrow Mesh';
+        arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 1.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
+        arrowLeft.rotation.set(-1.5708, 0, 3.1416);
+        this._scene.add(arrowLeft);
+        arrowLeft.visible = false;
+        this._helpMeshes.arrowLeft = arrowLeft;
+
+        arrowMat.map = this._textures.arrow;
+        arrowMat.map.minFilter = LinearFilter;
+        (arrowMat as any).shininess = 0;
+        arrowMat.transparent = true;
+        const arrowUp = new Mesh(arrowGeo, arrowMat);
+        arrowUp.name = 'Up Arrow Mesh';
+        arrowUp.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] - 1);
+        arrowUp.rotation.set(-1.5708, 0, 1.5708);
+        this._scene.add(arrowUp);
+        arrowUp.visible = false;
+        this._helpMeshes.arrowUp = arrowUp;
     }
 
     private _buildSky(): void {
@@ -918,6 +959,9 @@ export class LandAndMine {
             this._enableAllButtons();
             this._helpMeshes.mainBackground.visible = false;
             this._helpMeshes.lander1.visible = false;
+            this._helpMeshes.arrowLeft.visible = false;
+            this._helpMeshes.arrowRight.visible = false;
+            this._helpMeshes.arrowUp.visible = false;
             this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
@@ -1490,14 +1534,20 @@ export class LandAndMine {
             this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
             this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
+            this._helpMeshes.arrowLeft.visible = false;
+            this._helpMeshes.arrowRight.visible = false;
+            this._helpMeshes.arrowUp.visible = false;
 
             const val = this._helpCounters.thrustClear / 3;
             if (this._helpCounters.thrust < val) {
                 this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, true);
+                this._helpMeshes.arrowUp.visible = true;
             } else if (this._helpCounters.thrust < (val * 2)) {
                 this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
+                this._helpMeshes.arrowRight.visible = true;
             } else {
                 this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
+                this._helpMeshes.arrowLeft.visible = true;
             }
 
             this._helpCounters.thrust++;

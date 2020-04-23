@@ -31,6 +31,7 @@ import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
 import { LanderSpecifications } from './models/lander-specifications';
 
 const TEXTURES: { [key: string]: [string, Texture] } = {
+    arrow: ['assets/images/arrow.png', null],
     asteroid: ['assets/images/asteroid.png', null],
     astronaut1: ['assets/images/astronaut-01.png', null],
     astronaut2: ['assets/images/astronaut-02.png', null],
@@ -544,7 +545,8 @@ const loadDevMenu = () => {
         {
             engineer: TEXTURES.engineerProfile[1],
             engineer2: TEXTURES.engineer2Profile[1],
-            enzmann: TEXTURES.enzmannOutside[1]
+            enzmann: TEXTURES.enzmannOutside[1],
+            arrow: TEXTURES.arrow[1]
         });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();
@@ -909,7 +911,8 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             miningEquipment1: TEXTURES.miningEquipment1[1],
             miningEquipment2: TEXTURES.miningEquipment2[1],
             miningDrill: TEXTURES.miningDrill[1],
-            minedSquare1: TEXTURES.minedSquare1[1]
+            minedSquare1: TEXTURES.minedSquare1[1],
+            arrow: TEXTURES.arrow[1]
         },
         planetSpec,
         landerSpec);
