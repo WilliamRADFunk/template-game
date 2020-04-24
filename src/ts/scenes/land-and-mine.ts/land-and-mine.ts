@@ -62,6 +62,8 @@ import { LeftBottomPanel } from '../../controls/panels/left-bottom-panel';
 import { RightBottomPanel } from '../../controls/panels/right-bottom-panel';
 import { PanelBase } from '../../controls/panels/panel-base';
 import { LeftTopTitleText } from '../../controls/text/title/left-top-title-text';
+import { RightTopMiddleTitleText } from '../../controls/text/title/right-top-middle-title-text';
+import { LeftTopMiddleTitleText } from '../../controls/text/title/left-top-middle-title-text';
 
 /*
  * Grid Values
@@ -446,6 +448,22 @@ export class LandAndMine {
             border,
             TextType.STATIC);
         this._helpTexts.landerControlsTitle.hide();
+
+        this._helpTexts.miningControlsTitle = new RightTopMiddleTitleText(
+            'Mining Controls',
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.miningControlsTitle.hide();
+
+        this._helpTexts.astronautControlsTitle = new LeftTopMiddleTitleText(
+            'Astronaut Controls',
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.astronautControlsTitle.hide();
     }
 
     private _buildSky(): void {
@@ -1026,6 +1044,8 @@ export class LandAndMine {
             this._helpMeshes.keysLeft.visible = false;
             this._helpMeshes.keysRight.visible = false;
             this._helpTexts.landerControlsTitle.hide();
+            this._helpTexts.miningControlsTitle.hide();
+            this._helpTexts.astronautControlsTitle.hide();
             this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
@@ -1049,6 +1069,8 @@ export class LandAndMine {
             this._helpMeshes.mainBackground.visible = true;
             this._helpMeshes.lander1.visible = true;
             this._helpTexts.landerControlsTitle.show();
+            this._helpTexts.miningControlsTitle.show();
+            this._helpTexts.astronautControlsTitle.show();
             Object.values(this._helpPanels).forEach(p => p && p.show());
             Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
