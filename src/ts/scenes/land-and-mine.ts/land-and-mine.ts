@@ -61,6 +61,7 @@ import { LeftBottomMiddlePanel } from '../../controls/panels/left-bottom-middle-
 import { LeftBottomPanel } from '../../controls/panels/left-bottom-panel';
 import { RightBottomPanel } from '../../controls/panels/right-bottom-panel';
 import { PanelBase } from '../../controls/panels/panel-base';
+import { LeftTopTitleText } from '../../controls/text/title/left-top-title-text';
 
 /*
  * Grid Values
@@ -90,11 +91,11 @@ const MAIN_THRUSTER_Z_OFFSET: number = 0.16;
 
 const VERTICAL_THRUST: number = 0.0002;
 
-const HELP_LANDER_1_POSITION: [number, number, number] = [-3.25, -8, -4.5];
+const HELP_LANDER_1_POSITION: [number, number, number] = [-2.25, -8, -4];
 
-const HELP_MAIN_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.2];
+const HELP_MAIN_THRUSTER_POSITION: [number, number, number] = [-2.25, -7, -3.7];
 
-const HELP_SIDE_THRUSTER_POSITION: [number, number, number] = [-3.25, -7, -4.87];
+const HELP_SIDE_THRUSTER_POSITION: [number, number, number] = [-2.25, -7, -4.37];
 
 export enum LandAndMineState {
     'crashed' = 0,
@@ -166,6 +167,8 @@ export class LandAndMine {
     }
 
     private _helpMeshes: { [key: string]: Mesh | Object3D } = {}
+
+    private _helpTexts: { [key: string]: TextBase } = {}
 
     private _helpPanels: { [key: string]: PanelBase } = {}
 
@@ -305,6 +308,16 @@ export class LandAndMine {
             astro.mesh.visible = false;
         });
 
+        this._buildHelpScreen();
+    }
+
+    private _buildHelpScreen(): void {
+        // Get window dimmensions
+        let width = window.innerWidth * 0.99;
+        let height = window.innerHeight * 0.99;
+        width < height ? height = width : width = height;
+        const left = (((window.innerWidth * 0.99) - width) / 2);
+
         // Help screen backdrop
         const backingGeo = new PlaneGeometry( 15, 15, 10, 10 );
         const backingMat = new MeshBasicMaterial({
@@ -355,30 +368,25 @@ export class LandAndMine {
         arrowMat.map.minFilter = LinearFilter;
         (arrowMat as any).shininess = 0;
         arrowMat.transparent = true;
+
         const arrowRight = new Mesh(arrowGeo, arrowMat);
         arrowRight.name = 'Right Arrow Mesh';
-        arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 1.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
+        arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
         arrowRight.rotation.set(-1.5708, 0, 0);
         this._scene.add(arrowRight);
         arrowRight.visible = false;
         this._helpMeshes.arrowRight = arrowRight;
 
         arrowMat.map = this._textures.arrow;
-        arrowMat.map.minFilter = LinearFilter;
-        (arrowMat as any).shininess = 0;
-        arrowMat.transparent = true;
         const arrowLeft = new Mesh(arrowGeo, arrowMat);
         arrowLeft.name = 'Left Arrow Mesh';
-        arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 1.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
+        arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
         arrowLeft.rotation.set(-1.5708, 0, 3.1416);
         this._scene.add(arrowLeft);
         arrowLeft.visible = false;
         this._helpMeshes.arrowLeft = arrowLeft;
 
         arrowMat.map = this._textures.arrow;
-        arrowMat.map.minFilter = LinearFilter;
-        (arrowMat as any).shininess = 0;
-        arrowMat.transparent = true;
         const arrowUp = new Mesh(arrowGeo, arrowMat);
         arrowUp.name = 'Up Arrow Mesh';
         arrowUp.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] - 1);
@@ -386,6 +394,58 @@ export class LandAndMine {
         this._scene.add(arrowUp);
         arrowUp.visible = false;
         this._helpMeshes.arrowUp = arrowUp;
+
+        // Upper left keyboard keys graphic instructions
+        const keyGeo = new PlaneGeometry( 1.1, 0.4, 10, 10 );
+        const keyUpMat = new MeshBasicMaterial();
+        keyUpMat.map = this._textures.keysForUp;
+        keyUpMat.map.minFilter = LinearFilter;
+        (keyUpMat as any).shininess = 0;
+        keyUpMat.transparent = true;
+
+        const keyUp = new Mesh(keyGeo, keyUpMat);
+        keyUp.name = 'Up Keys Mesh';
+        keyUp.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
+        keyUp.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyUp);
+        keyUp.visible = false;
+        this._helpMeshes.keysUp = keyUp;
+
+        const keyLeftMat = new MeshBasicMaterial();
+        keyLeftMat.map = this._textures.keysForLeft;
+        keyLeftMat.map.minFilter = LinearFilter;
+        (keyLeftMat as any).shininess = 0;
+        keyLeftMat.transparent = true;
+
+        const keyLeft = new Mesh(keyGeo, keyLeftMat);
+        keyLeft.name = 'Left Keys Mesh';
+        keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
+        keyLeft.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyLeft);
+        keyLeft.visible = false;
+        this._helpMeshes.keysLeft = keyLeft;
+
+        const keyRightMat = new MeshBasicMaterial();
+        keyRightMat.map = this._textures.keysForRight;
+        keyRightMat.map.minFilter = LinearFilter;
+        (keyRightMat as any).shininess = 0;
+        keyRightMat.transparent = true;
+
+        const keyRight = new Mesh(keyGeo, keyRightMat);
+        keyRight.name = 'Right Keys Mesh';
+        keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
+        keyRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyRight);
+        keyRight.visible = false;
+        this._helpMeshes.keysRight = keyRight;
+
+        this._helpTexts.landerControlsTitle = new LeftTopTitleText(
+            'Lander Controls',
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landerControlsTitle.hide();
     }
 
     private _buildSky(): void {
@@ -962,6 +1022,10 @@ export class LandAndMine {
             this._helpMeshes.arrowLeft.visible = false;
             this._helpMeshes.arrowRight.visible = false;
             this._helpMeshes.arrowUp.visible = false;
+            this._helpMeshes.keysUp.visible = false;
+            this._helpMeshes.keysLeft.visible = false;
+            this._helpMeshes.keysRight.visible = false;
+            this._helpTexts.landerControlsTitle.hide();
             this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
@@ -984,6 +1048,7 @@ export class LandAndMine {
             this._state = LandAndMineState.tutorial;
             this._helpMeshes.mainBackground.visible = true;
             this._helpMeshes.lander1.visible = true;
+            this._helpTexts.landerControlsTitle.show();
             Object.values(this._helpPanels).forEach(p => p && p.show());
             Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
@@ -1327,6 +1392,9 @@ export class LandAndMine {
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width }));
+        Object.keys(this._helpTexts)
+            .filter(key => !!this._helpTexts[key])
+            .forEach(key => this._helpTexts[key].resize({ height, left: left, top: null, width }));
     }
 
     private _sidePopulate(x: number, y: number, direction: number) {
@@ -1537,17 +1605,23 @@ export class LandAndMine {
             this._helpMeshes.arrowLeft.visible = false;
             this._helpMeshes.arrowRight.visible = false;
             this._helpMeshes.arrowUp.visible = false;
+            this._helpMeshes.keysUp.visible = false;
+            this._helpMeshes.keysLeft.visible = false;
+            this._helpMeshes.keysRight.visible = false;
 
             const val = this._helpCounters.thrustClear / 3;
             if (this._helpCounters.thrust < val) {
                 this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, true);
                 this._helpMeshes.arrowUp.visible = true;
+                this._helpMeshes.keysUp.visible = true;
             } else if (this._helpCounters.thrust < (val * 2)) {
                 this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
                 this._helpMeshes.arrowRight.visible = true;
+                this._helpMeshes.keysRight.visible = true;
             } else {
                 this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
                 this._helpMeshes.arrowLeft.visible = true;
+                this._helpMeshes.keysLeft.visible = true;
             }
 
             this._helpCounters.thrust++;

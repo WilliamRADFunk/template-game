@@ -51,6 +51,9 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     enzmannLayout: ['assets/images/enzmann-layout.png', null],
     enzmannOutside: ['assets/images/enzmann-outside.png', null],
     fire: ['assets/images/fire.png', null],
+    keysForLeft: ['assets/images/keys-left.png', null],
+    keysForRight: ['assets/images/keys-right.png', null],
+    keysForUp: ['assets/images/keys-up.png', null],
     mars: ['assets/images/mars.png', null],
     lander: ['assets/images/lander.png', null],
     miningEquipment1: ['assets/images/mining-equipment-01.png', null],
@@ -912,7 +915,10 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             miningEquipment2: TEXTURES.miningEquipment2[1],
             miningDrill: TEXTURES.miningDrill[1],
             minedSquare1: TEXTURES.minedSquare1[1],
-            arrow: TEXTURES.arrow[1]
+            arrow: TEXTURES.arrow[1],
+            keysForUp: TEXTURES.keysForUp[1],
+            keysForLeft: TEXTURES.keysForLeft[1],
+            keysForRight: TEXTURES.keysForRight[1]
         },
         planetSpec,
         landerSpec);
