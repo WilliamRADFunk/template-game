@@ -165,7 +165,9 @@ export class LandAndMine {
 
     private _helpCounters: { [key: string]: number } = {
         thrust: 0,
-        thrustClear: 360
+        thrustClear: 360,
+        astroWalk: 0,
+        astroWalkClear: 360
     }
 
     private _helpMeshes: { [key: string]: Mesh | Object3D } = {}
@@ -371,7 +373,7 @@ export class LandAndMine {
         (arrowMat as any).shininess = 0;
         arrowMat.transparent = true;
 
-        const arrowRight = new Mesh(arrowGeo, arrowMat);
+        let arrowRight = new Mesh(arrowGeo, arrowMat);
         arrowRight.name = 'Right Arrow Mesh';
         arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
         arrowRight.rotation.set(-1.5708, 0, 0);
@@ -380,7 +382,7 @@ export class LandAndMine {
         this._helpMeshes.arrowRight = arrowRight;
 
         arrowMat.map = this._textures.arrow;
-        const arrowLeft = new Mesh(arrowGeo, arrowMat);
+        let arrowLeft = new Mesh(arrowGeo, arrowMat);
         arrowLeft.name = 'Left Arrow Mesh';
         arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
         arrowLeft.rotation.set(-1.5708, 0, 3.1416);
@@ -419,7 +421,7 @@ export class LandAndMine {
         (keyLeftMat as any).shininess = 0;
         keyLeftMat.transparent = true;
 
-        const keyLeft = new Mesh(keyGeo, keyLeftMat);
+        let keyLeft = new Mesh(keyGeo, keyLeftMat);
         keyLeft.name = 'Left Keys Mesh';
         keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
         keyLeft.rotation.set(-1.5708, 0, 0);
@@ -433,7 +435,7 @@ export class LandAndMine {
         (keyRightMat as any).shininess = 0;
         keyRightMat.transparent = true;
 
-        const keyRight = new Mesh(keyGeo, keyRightMat);
+        let keyRight = new Mesh(keyGeo, keyRightMat);
         keyRight.name = 'Right Keys Mesh';
         keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
         keyRight.rotation.set(-1.5708, 0, 0);
@@ -456,6 +458,67 @@ export class LandAndMine {
             border,
             TextType.STATIC);
         this._helpTexts.miningControlsTitle.hide();
+
+        // Create astronaut mining team
+        this._helpActors.astronauts = createMiningTeam(
+            {
+                astronaut1: this._textures.astronaut1,
+                astronaut2: this._textures.astronaut2,
+                astronaut3: this._textures.astronaut3,
+                astronautSuffocation1: this._textures.astronautSuffocation1,
+                astronautSuffocation2: this._textures.astronautSuffocation2,
+                astronautSuffocation3: this._textures.astronautSuffocation3,
+                astronautSuffocation4: this._textures.astronautSuffocation4,
+                astronautSuffocation5: this._textures.astronautSuffocation5
+            },
+            {
+                miningEquipment1: this._textures.miningEquipment1,
+                miningEquipment2: this._textures.miningEquipment2
+            }).slice(0, 9);
+        this._helpActors.astronauts.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
+            this._scene.add(astro.mesh);
+            astro.mesh.scale.set(3, 3, 3);
+            astro.mesh.visible = false;
+            if (index === 1) {
+                astro.mesh.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+            } else if (index % 3 === 0) {
+                astro.mesh.position.set(HELP_LANDER_1_POSITION[0] - 0.3, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+            } else {
+                astro.mesh.position.set(HELP_LANDER_1_POSITION[0] + 0.3, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+            }
+        });
+
+        arrowLeft = new Mesh(arrowGeo, arrowMat);
+        arrowLeft.name = 'Left Arrow Astro Walk Mesh';
+        arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3);
+        arrowLeft.rotation.set(-1.5708, 0, 3.1416);
+        this._scene.add(arrowLeft);
+        arrowLeft.visible = false;
+        this._helpMeshes.arrowLeftAstroWalk = arrowLeft;
+
+        keyLeft = new Mesh(keyGeo, keyLeftMat);
+        keyLeft.name = 'Left Keys Astro Walk Mesh';
+        keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
+        keyLeft.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyLeft);
+        keyLeft.visible = false;
+        this._helpMeshes.keysLeftAstroWalk = keyLeft;
+
+        arrowRight = new Mesh(arrowGeo, arrowMat);
+        arrowRight.name = 'Right Arrow Astro Walk Mesh';
+        arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3);
+        arrowRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(arrowRight);
+        arrowRight.visible = false;
+        this._helpMeshes.arrowRightAstroWalk = arrowRight;
+
+        keyRight = new Mesh(keyGeo, keyRightMat);
+        keyRight.name = 'Right Keys Astro Walk Mesh';
+        keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
+        keyRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyRight);
+        keyRight.visible = false;
+        this._helpMeshes.keysRightAstroWalk = keyRight;
 
         this._helpTexts.astronautControlsTitle = new LeftTopMiddleTitleText(
             'Astronaut Controls',
@@ -1046,6 +1109,9 @@ export class LandAndMine {
             this._helpTexts.landerControlsTitle.hide();
             this._helpTexts.miningControlsTitle.hide();
             this._helpTexts.astronautControlsTitle.hide();
+            this._helpActors.astronauts.filter((astro: Actor) => !!astro).forEach((astro: Actor) => {
+                astro.mesh.visible = false;
+            });
             this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
             this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
@@ -1071,6 +1137,10 @@ export class LandAndMine {
             this._helpTexts.landerControlsTitle.show();
             this._helpTexts.miningControlsTitle.show();
             this._helpTexts.astronautControlsTitle.show();
+            this._helpCounters.astroWalk = 0;
+            this._helpActors.astronauts[1].mesh.visible = true;
+            this._helpActors.astronauts[3].mesh.visible = true;
+            this._helpActors.astronauts[5].mesh.visible = true;
             Object.values(this._helpPanels).forEach(p => p && p.show());
             Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
@@ -1084,7 +1154,6 @@ export class LandAndMine {
                     text.hide();
                 }
             });
-            console.log('help', 'prevState', prevState);
             return prevState;
         };
 
@@ -1092,14 +1161,12 @@ export class LandAndMine {
             this._disableAllButtons();
             const prevState = this._state;
             this._state = LandAndMineState.paused;
-            console.log('pause', 'prevState', prevState);
             return prevState;
         };
 
         const play = (prevState: LandAndMineState) => {
             this._enableAllButtons();
             this._state = prevState;
-            console.log('pause', 'prevState', prevState);
         };
 
         const settings = () => {
@@ -1617,6 +1684,8 @@ export class LandAndMine {
         // Game is in help mode. Play animations from help screen.
         if (this._state === LandAndMineState.tutorial) {
             SoundinatorSingleton.pauseSound();
+
+            // Thruster controls section
             if (this._helpCounters.thrust > this._helpCounters.thrustClear) {
                 this._helpCounters.thrust = 0;
             }
@@ -1647,6 +1716,40 @@ export class LandAndMine {
             }
 
             this._helpCounters.thrust++;
+
+            // Astronaut walking section
+            if (this._helpCounters.astroWalk > this._helpCounters.astroWalkClear) {
+                this._helpCounters.astroWalk = 0;
+            }
+
+            if (this._helpCounters.astroWalk % 10 < 5) {
+                this._helpActors.astronauts[3].mesh.visible = false;
+                this._helpActors.astronauts[5].mesh.visible = false;
+                this._helpActors.astronauts[6].mesh.visible = true;
+                this._helpActors.astronauts[8].mesh.visible = true;
+            } else {
+                this._helpActors.astronauts[6].mesh.visible = false;
+                this._helpActors.astronauts[5].mesh.visible = true;
+                this._helpActors.astronauts[3].mesh.visible = true;
+                this._helpActors.astronauts[8].mesh.visible = false;
+            }
+
+            this._helpMeshes.arrowLeftAstroWalk.visible = false;
+            this._helpMeshes.arrowRightAstroWalk.visible = false;
+            this._helpMeshes.keysLeftAstroWalk.visible = false;
+            this._helpMeshes.keysRightAstroWalk.visible = false;
+            // Keep in time with lander controls
+            if (this._helpCounters.astroWalk < val) {
+                // No arrows, or keys to show.
+            } else if (this._helpCounters.astroWalk < (val * 2)) {
+                this._helpMeshes.arrowRightAstroWalk.visible = true;
+                this._helpMeshes.keysRightAstroWalk.visible = true;
+            } else {
+                this._helpMeshes.arrowLeftAstroWalk.visible = true;
+                this._helpMeshes.keysLeftAstroWalk.visible = true;
+            }
+
+            this._helpCounters.astroWalk++;
 
             return;
         }
