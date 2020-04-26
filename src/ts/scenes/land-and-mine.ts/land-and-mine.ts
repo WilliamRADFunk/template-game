@@ -1722,16 +1722,27 @@ export class LandAndMine {
                 this._helpCounters.astroWalk = 0;
             }
 
-            if (this._helpCounters.astroWalk % 10 < 5) {
+            if (this._helpCounters.astroWalk < val) {
+                this._helpActors.astronauts[3].mesh.visible = false;
+                this._helpActors.astronauts[5].mesh.visible = false;
+                this._helpActors.astronauts[6].mesh.visible = false;
+                this._helpActors.astronauts[8].mesh.visible = false;
+                this._helpActors.astronauts[0].mesh.visible = true;
+                this._helpActors.astronauts[2].mesh.visible = true;
+            } else if (this._helpCounters.astroWalk % 10 < 5) {
+                this._helpActors.astronauts[0].mesh.visible = false;
+                this._helpActors.astronauts[2].mesh.visible = false;
                 this._helpActors.astronauts[3].mesh.visible = false;
                 this._helpActors.astronauts[5].mesh.visible = false;
                 this._helpActors.astronauts[6].mesh.visible = true;
                 this._helpActors.astronauts[8].mesh.visible = true;
             } else {
+                this._helpActors.astronauts[0].mesh.visible = false;
+                this._helpActors.astronauts[2].mesh.visible = false;
                 this._helpActors.astronauts[6].mesh.visible = false;
-                this._helpActors.astronauts[5].mesh.visible = true;
-                this._helpActors.astronauts[3].mesh.visible = true;
                 this._helpActors.astronauts[8].mesh.visible = false;
+                this._helpActors.astronauts[3].mesh.visible = true;
+                this._helpActors.astronauts[5].mesh.visible = true;
             }
 
             this._helpMeshes.arrowLeftAstroWalk.visible = false;
