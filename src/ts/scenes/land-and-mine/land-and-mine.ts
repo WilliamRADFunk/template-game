@@ -287,7 +287,7 @@ export class LandAndMine {
             astro.mesh.visible = false;
         });
 
-        this._helpCtrl = new HelpCtrl(this._scene, { ship: this._textures.ship }, border);
+        this._helpCtrl = new HelpCtrl(this._scene, this._textures, border);
     }
 
     private _buildSky(): void {

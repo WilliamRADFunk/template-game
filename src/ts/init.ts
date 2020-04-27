@@ -26,7 +26,7 @@ import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
-import { LandAndMine } from './scenes/land-and-mine.ts/land-and-mine';
+import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
 import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
 import { LanderSpecifications } from './models/lander-specifications';
 
