@@ -333,6 +333,12 @@ export class HelpCtrl {
         this._helpTexts.astronautControlsTitle.hide();
     }
 
+    public dispose(): void {
+        Object.keys(this._helpTexts)
+            .filter(key => !!this._helpTexts[key])
+            .forEach(key => this._helpTexts[key].dispose());
+    }
+
     /**
      * Calls the next frame in the animation cycle.
      */

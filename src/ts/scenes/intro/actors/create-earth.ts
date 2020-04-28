@@ -21,17 +21,17 @@ export function createEarth(
     lbGeo: PlaneGeometry,
     lbMat: MeshBasicMaterial,
     headerParams: TextGeometryParameters): Actor {
-    let labelBackGlow = new Mesh( lbgGeo, lbgMat );
+    const labelBackGlow = new Mesh( lbgGeo, lbgMat );
     labelBackGlow.position.set(0, 0.1, -5);
     labelBackGlow.rotation.set(1.5708, 0, 0);
 
-    let labelBack = new Mesh( lbGeo, lbMat );
+    const labelBack = new Mesh( lbGeo, lbMat );
     labelBack.position.set(0, 0, -5);
-    labelBack.rotation.set(1.5708, 0, 0); 
-    
+    labelBack.rotation.set(1.5708, 0, 0);
+
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
-    let textGeometry = new TextGeometry('Earth', headerParams);
-    let textMesh = new Mesh( textGeometry, textMaterial );
+    const textGeometry = new TextGeometry('Earth', headerParams);
+    const textMesh = new Mesh( textGeometry, textMaterial );
     textMesh.position.set(-0.5, -0.5, -4.85);
     textMesh.rotation.x = -1.5708;
 
@@ -39,7 +39,7 @@ export function createEarth(
     earth.originalStartingPoint = [0, 0];
     earth.currentPoint = [0, 0];
     earth.endingPoint = [0, 0];
-    let meshGroup = new Object3D();
+    const meshGroup = new Object3D();
     earth.geometry = new CircleGeometry(5, 48, 48);
     earth.material = new MeshPhongMaterial();
     earth.material.map = earthTexture;

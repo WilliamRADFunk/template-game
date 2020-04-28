@@ -19,18 +19,18 @@ export function createSun(
     lbMat: MeshBasicMaterial,
     headerParams: TextGeometryParameters,
     zIndex: number): Actor {
-        
-    let labelBackGlow = new Mesh( lbgGeo, lbgMat );
+
+    const labelBackGlow = new Mesh( lbgGeo, lbgMat );
     labelBackGlow.position.set(0, 0.1, -5);
     labelBackGlow.rotation.set(1.5708, 0, 0);
 
-    let labelBack = new Mesh( lbGeo, lbMat );
+    const labelBack = new Mesh( lbGeo, lbMat );
     labelBack.position.set(0, 0, -5);
-    labelBack.rotation.set(1.5708, 0, 0); 
-    
+    labelBack.rotation.set(1.5708, 0, 0);
+
     const textMaterial = new MeshLambertMaterial( {color: 0x00B39F, opacity: 1, transparent: true} );
-    let textGeometry = new TextGeometry('Sol System', headerParams);
-    let textMesh = new Mesh( textGeometry, textMaterial );
+    const textGeometry = new TextGeometry('Sol System', headerParams);
+    const textMesh = new Mesh( textGeometry, textMaterial );
     textMesh.position.set(-0.9, -0.5, -4.85);
     textMesh.rotation.x = -1.5708;
 

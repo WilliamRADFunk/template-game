@@ -108,7 +108,7 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
+
         // Create the help collision layer
         const clickMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
         const returnBarrierGeometry = new PlaneGeometry( 2, 0.8, 0, 0 );
@@ -259,7 +259,7 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
+
         let textGeo = new TextGeometry('Sentence 1', this.textHeaderParams);
         let text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(-2.2, -11.4, this.zSpot - 2.2);
@@ -289,28 +289,28 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
+
         let textGeo = new TextGeometry('Example', this.textHeaderParams);
         let text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(3, -11.4, this.zSpot - 2.2);
         text.rotation.x = -1.5708;
         this.scene.add(text);
         this.texts.push(text);
-        
+
         textGeo = new TextGeometry('Placeholder 1', this.textpParams);
         text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(3, -11.4, this.zSpot - 1);
         text.rotation.x = -1.5708;
         this.scene.add(text);
         this.texts.push(text);
-        
+
         textGeo = new TextGeometry('Placeholder 2', this.textpParams);
         text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(3.2, -11.4, this.zSpot - 0.7);
         text.rotation.x = -1.5708;
         this.scene.add(text);
         this.texts.push(text);
-        
+
         textGeo = new TextGeometry('Placeholder 3', this.textpParams);
         text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(3.4, -11.4, this.zSpot - 0.4);
@@ -333,9 +333,9 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
-        let textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
-        let text = new Mesh( textGeo, this.helpMaterial );
+
+        const textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
+        const text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(-5.55, -11.4, this.zSpot + 0.5);
         text.rotation.x = -1.5708;
         this.scene.add(text);
@@ -362,9 +362,9 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
-        let textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
-        let text = new Mesh( textGeo, this.helpMaterial );
+
+        const textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
+        const text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(-2.1, -11.4, this.zSpot + 0.5);
         text.rotation.x = -1.5708;
         this.scene.add(text);
@@ -385,9 +385,9 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
-        let textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
-        let text = new Mesh( textGeo, this.helpMaterial );
+
+        const textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
+        const text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(3, -11.4, this.zSpot + 0.5);
         text.rotation.x = -1.5708;
         this.scene.add(text);
@@ -408,9 +408,9 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
-        let textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
-        let text = new Mesh( textGeo, this.helpMaterial );
+
+        const textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
+        const text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(-5.6, -11.4, this.zSpot + 3.2);
         text.rotation.x = -1.5708;
         this.scene.add(text);
@@ -419,7 +419,7 @@ export class HelpHandler {
     /**
      * Builds the box and graphics for the 4th row right section.
      */
-    private makeBox8(): void {  
+    private makeBox8(): void {
         let section = new Mesh( this.sectionBackingGeometrySides, this.sectionMaterial );
         section.position.set(4.25, -11, this.zSpot + 4);
         section.rotation.set(1.5708, 0, 0);
@@ -431,9 +431,9 @@ export class HelpHandler {
         section.rotation.set(1.5708, 0, 0);
         this.scene.add(section);
         this.sections.push(section);
-        
-        let textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
-        let text = new Mesh( textGeo, this.helpMaterial );
+
+        const textGeo = new TextGeometry('Placeholder', this.textHeaderParams);
+        const text = new Mesh( textGeo, this.helpMaterial );
         text.position.set(2.95, -11.4, this.zSpot + 3.2);
         text.rotation.x = -1.5708;
         this.scene.add(text);

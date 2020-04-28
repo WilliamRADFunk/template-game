@@ -26,24 +26,24 @@ export function createMercury(zIndex: number): Actor {
     meshGroup.name = 'Mercury';
     mercury.mesh = meshGroup;
     // White Orbital Ring
-    let orbitGeometry = new CircleGeometry(0.75, 32, 32);
-    let orbitMaterial = new MeshBasicMaterial({
+    const orbitGeometry = new CircleGeometry(0.75, 32, 32);
+    const orbitMaterial = new MeshBasicMaterial({
         color: new Color(0xFFFFFF),
         opacity: 1,
         side: DoubleSide,
         transparent: true});
-    let orbit = new Mesh(orbitGeometry, orbitMaterial);
+    const orbit = new Mesh(orbitGeometry, orbitMaterial);
     orbit.position.set(0, zIndex + 3, 0);
     orbit.rotation.set(-1.5708, 0, 0);
     meshGroup.add(orbit);
     // Inner Black Circle
-    let blackGeometry = new CircleGeometry(0.73, 32, 32);
-    let blackMaterial = new MeshBasicMaterial({
+    const blackGeometry = new CircleGeometry(0.73, 32, 32);
+    const blackMaterial = new MeshBasicMaterial({
         color: new Color(0x000000),
         opacity: 1,
         side: DoubleSide,
         transparent: false});
-    let black = new Mesh(blackGeometry, blackMaterial);
+    const black = new Mesh(blackGeometry, blackMaterial);
     black.position.set(0, zIndex + 2, 0);
     black.rotation.set(-1.5708, 0, 0);
     meshGroup.add(black);
