@@ -41,7 +41,7 @@ import { HelpCtrl } from './controllers/help-controller';
 import { noOp } from '../../utils/no-op';
 import { COLORS } from '../../styles/colors';
 import { TextBase } from '../../controls/text/text-base';
-import { StatsCtrl } from './controllers/stats-controller';
+import { TextCtrl } from './controllers/text-controller';
 
 /*
  * Grid Values
@@ -181,7 +181,7 @@ export class LandAndMine {
 
     private _stateStoredObjects: (ButtonBase | TextBase)[] = [];
 
-    private _statsCtrl: StatsCtrl;
+    private _txtCtrl: TextCtrl;
 
     private _textures: { [key: string]: Texture } = {};
 
@@ -267,7 +267,7 @@ export class LandAndMine {
         });
 
         this._helpCtrl = new HelpCtrl(this._scene, this._textures, border);
-        this._statsCtrl = new StatsCtrl(
+        this._txtCtrl = new TextCtrl(
             this._scene,
             planetSpecifications,
             this._planetSpecifications.wind ? (HORIZONTAL_THRUST * (this._planetSpecifications.wind / 10)) : 0,
@@ -869,7 +869,7 @@ export class LandAndMine {
                     button.hide();
                 }
             });
-            this._statsCtrl.hide();
+            this._txtCtrl.hide();
             return prevState;
         };
 
@@ -895,7 +895,7 @@ export class LandAndMine {
                     button.hide();
                 }
             });
-            this._statsCtrl.show();
+            this._txtCtrl.show();
             return prevState;
         };
 
@@ -1056,7 +1056,7 @@ export class LandAndMine {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         this._controlPanel.resize({ height, left: left, top: null, width });
-        this._statsCtrl.onWindowResize(height, left, null, width);
+        this._txtCtrl.onWindowResize(height, left, null, width);
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width }));
@@ -1234,7 +1234,7 @@ export class LandAndMine {
         document.onclick = () => {};
         document.oncontextmenu = () => {};
         this._helpCtrl.dispose();
-        this._statsCtrl.dispose();
+        this._txtCtrl.dispose();
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].dispose());
@@ -1307,7 +1307,7 @@ export class LandAndMine {
                     '-1': 0,
                     '0': 0
                 };
-                this._statsCtrl.resetLoot();
+                this._txtCtrl.resetLoot();
             }
             return;
         }
@@ -1354,7 +1354,7 @@ export class LandAndMine {
             this._loot[-2] = 2; // Regain crew members.
             this._loot[-3] = 1; // Regain lander.
 
-            this._statsCtrl.update('crewCollected', '2 crew recovered');
+            this._txtCtrl.update('crewCollected', '2 crew recovered');
             return;
         }
 
@@ -1366,7 +1366,7 @@ export class LandAndMine {
                     '-1': 0,
                     '0': 0
                 };
-                this._statsCtrl.resetLoot();
+                this._txtCtrl.resetLoot();
                 this._buttons.mineButton.hide();
                 this._buttons.loadButton.hide();
                 this._buttons.unloadButton.hide();
@@ -1404,15 +1404,15 @@ export class LandAndMine {
         // All other states consume oxygen still.
         if (this._currentOxygenLevel > 0) {
             this._currentOxygenLevel -= this._landerSpecifications.oxygenBurn;
-            this._statsCtrl.update('oxygenLevel', `Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
-            this._statsCtrl.changeColorBelowThreshold(20, Math.abs(this._currentOxygenLevel), 'oxygenLevel');
+            this._txtCtrl.update('oxygenLevel', `Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
+            this._txtCtrl.changeColorBelowThreshold(20, Math.abs(this._currentOxygenLevel), 'oxygenLevel');
         } else {
             if (this._state !== LandAndMineState.mining
                 && this._state !== LandAndMineState.walkingAwayFromLander
                 && this._state !== LandAndMineState.walkingByLander) {
                 this._loot[-2] = 0;
                 this._loot[-3] = 1;
-                this._statsCtrl.update('crewCollected', '0 crew recovered');
+                this._txtCtrl.update('crewCollected', '0 crew recovered');
                 this._state = LandAndMineState.escaped;
             } else {
                 this._state = LandAndMineState.suffocating;
@@ -1447,15 +1447,15 @@ export class LandAndMine {
                     if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
                         if (this._grid[centerDrillRowAfter][drillCol] === 3) {
                             this._loot[0] += this._mineCollectCount;
-                            this._statsCtrl.generateMinedText(`${this._mineCollectCount} x Water`);
+                            this._txtCtrl.generateMinedText(`${this._mineCollectCount} x Water`);
                             SoundinatorSingleton.playBlip();
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
                             this._loot[this._planetSpecifications.ore] += this._mineCollectCount;
-                            this._statsCtrl.generateMinedText(`${this._mineCollectCount} x ${OreTypes[this._planetSpecifications.ore]}`);
+                            this._txtCtrl.generateMinedText(`${this._mineCollectCount} x ${OreTypes[this._planetSpecifications.ore]}`);
                             SoundinatorSingleton.playBlip();
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
                             this._loot[-1] += this._mineCollectCount;
-                            this._statsCtrl.generateMinedText(`${this._mineCollectCount} x Food`);
+                            this._txtCtrl.generateMinedText(`${this._mineCollectCount} x Food`);
                             SoundinatorSingleton.playBlip();
                         } else {
                             SoundinatorSingleton.playBlap();
@@ -1479,8 +1479,8 @@ export class LandAndMine {
                         this._scene.remove(minedBlock);
                         this._scene.add(minedMesh);
 
-                        this._statsCtrl.update('waterAndFoodCollected', `${this._loot[0]} Water / ${this._loot[-1]} Food`);
-                        this._statsCtrl.update('oreCollected', `${this._loot[this._planetSpecifications.ore]} ${OreTypes[this._planetSpecifications.ore]}`);
+                        this._txtCtrl.update('waterAndFoodCollected', `${this._loot[0]} Water / ${this._loot[-1]} Food`);
+                        this._txtCtrl.update('oreCollected', `${this._loot[this._planetSpecifications.ore]} ${OreTypes[this._planetSpecifications.ore]}`);
                     }
                 } else if (centerRowBefore !== centerDrillRowAfter) {
                     if (this._landerSpecifications.drillLength !== this._drillBits.length) {
@@ -1719,8 +1719,8 @@ export class LandAndMine {
         }
 
         // Update Readout for remaining fuel
-        this._statsCtrl.update('fuelLevel', `Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
-        this._statsCtrl.changeColorBelowThreshold(20, Math.abs(this._currentFuelLevel), 'fuelLevel');
+        this._txtCtrl.update('fuelLevel', `Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
+        this._txtCtrl.changeColorBelowThreshold(20, Math.abs(this._currentFuelLevel), 'fuelLevel');
 
         const gridBottomRow = this._grid[landerRow];
         const gridMiddleRow = this._grid[landerRow + 1];
@@ -1769,24 +1769,24 @@ export class LandAndMine {
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
 
             horizontalSpeedText = `Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`;
-            this._statsCtrl.update('horizontalSpeed', horizontalSpeedText);
-            this._statsCtrl.changeColorAboveThreshold(this._landerSpecifications.horizontalCrashMargin, this._currentLanderHorizontalSpeed, 'horizontalSpeed');
+            this._txtCtrl.update('horizontalSpeed', horizontalSpeedText);
+            this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.horizontalCrashMargin, this._currentLanderHorizontalSpeed, 'horizontalSpeed');
 
-            this._statsCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
-            this._statsCtrl.changeColorAboveThreshold(this._landerSpecifications.verticalCrashMargin, this._currentLanderVerticalSpeed, 'verticalSpeed');
+            this._txtCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+            this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.verticalCrashMargin, this._currentLanderVerticalSpeed, 'verticalSpeed');
 
             return;
         }
 
         // Change horizontal speed text color if it exceeds safe limits or back if it is within safe bounds.
-        this._statsCtrl.update('horizontalSpeed', horizontalSpeedText);
-        this._statsCtrl.changeColorAboveThreshold(this._landerSpecifications.horizontalCrashMargin, this._currentLanderHorizontalSpeed, 'horizontalSpeed');
+        this._txtCtrl.update('horizontalSpeed', horizontalSpeedText);
+        this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.horizontalCrashMargin, this._currentLanderHorizontalSpeed, 'horizontalSpeed');
 
         // Change vertical speed text color if it exceeds safe limits or back if it is within safe bounds.
-        this._statsCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed > 0.0001
+        this._txtCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed > 0.0001
             ? this._currentLanderVerticalSpeed.toFixed(4)
             : -this._currentLanderVerticalSpeed.toFixed(4)}`);
-        this._statsCtrl.changeColorAboveThreshold(this._landerSpecifications.verticalCrashMargin, this._currentLanderVerticalSpeed, 'verticalSpeed');
+        this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.verticalCrashMargin, this._currentLanderVerticalSpeed, 'verticalSpeed');
 
         // Calculate gravity effect on ship.
         this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
@@ -1801,7 +1801,7 @@ export class LandAndMine {
         }
 
         // Run all texts through their cycles.
-        this._statsCtrl.cycleAll();
+        this._txtCtrl.cycleAll();
 
         return;
     }

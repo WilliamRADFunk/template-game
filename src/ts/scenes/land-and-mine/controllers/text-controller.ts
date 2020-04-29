@@ -24,19 +24,42 @@ import { PlanetSpecifications, OreTypes, OreQuantity } from '../../../models/pla
 
 let border: string;
 
-export class StatsCtrl {
+/**
+ * @class
+ * The stats controller class - coordinates everything text in the scene.
+ */
+export class TextCtrl {
+    /**
+     * Timeout id for when mined quantity text should vanish.
+     */
     private _mineTextTimeoutId: any;
 
+    /**
+     * The specifications of the planet on which these stats are based.
+     */
     private _planetSpecifications: PlanetSpecifications;
+
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
+
     /**
      * Groups of text elements
      */
     private _textElements: { [key: string]: TextBase } = { };
 
+    /**
+     * Constructor for the TextCtrl Class.
+     * @param scene ThreeJS scene to add meshes to for help screen.
+     * @param planetSpecifications the specifications of the planet on which these stats are based.
+     * @param windSpeed speed of the wind on the planet.
+     * @param startSpeedH starting horizontal speed for lander.
+     * @param startSpeedV starting vertical speed for lander.
+     * @param startOxygen starting percentage of remaining oxygen for lander and crew.
+     * @param startFuel starting percentage of lander's fuel
+     * @param brdr dev environment brdr set in creating class.
+     */
     constructor(
         scene: Scene,
         planetSpecifications: PlanetSpecifications,
@@ -184,10 +207,22 @@ export class StatsCtrl {
         this._textElements.mineCount.hide();
     }
 
+    /**
+     * Checks to see if text is a given color.
+     * @param name key of the text to be checked.
+     * @param value color value to compare against.
+     * @returns TRUE if the text is already the given color, FALSE if they don't match.
+     */
     private _isColorEqual(name: string, value: string): boolean {
         return this._textElements[name].color === value;
     }
 
+    /**
+     * Checks first ivalue is above or equal to a threshold is met, and if the text isn't already the given color. Then changes the texts color.
+     * @param threshold the amount to be compared against.
+     * @param value the current amount to compare against the threshold.
+     * @param name key of the text to be checked.
+     */
     public changeColorAboveThreshold(threshold: number, value: number, name: string): void {
         if (value >= threshold && this._isColorEqual(name, COLORS.neutral)) {
             this.cycle(name, COLORS.selected);
@@ -196,26 +231,47 @@ export class StatsCtrl {
         }
     }
 
+    /**
+     * Checks first ivalue is below a threshold is met, and if the text isn't already the given color. Then changes the texts color.
+     * @param threshold the amount to be compared against.
+     * @param value the current amount to compare against the threshold.
+     * @param name key of the text to be checked.
+     */
     public changeColorBelowThreshold(threshold: number, value: number, name: string): void {
         if (value < threshold && this._isColorEqual(name, COLORS.neutral)) {
             this.cycle(name, COLORS.selected);
         }
     }
 
+    /**
+     * Runs the cycle method for the given text property.
+     * @param name key of the text to be checked.
+     * @param value param to pass into the text's cycle method.
+     */
     public cycle(name: string, value: string): void {
         this._textElements[name].cycle(value);
     }
 
+    /**
+     * Cycles through all the text properties in the text controller.
+     */
     public cycleAll(): void {
         Object.keys(this._textElements).forEach(x => x && this._textElements[x].cycle());
     }
 
+    /**
+     * Standard cleanup method when destroying this controller.
+     */
     public dispose(): void {
         Object.keys(this._textElements)
             .filter(key => !!this._textElements[key])
             .forEach(key => this._textElements[key].dispose());
     }
 
+    /**
+     * Creates a short-lived text showing amount mined.
+     * @param value the text strnig to generate.
+     */
     public generateMinedText(value: string): void {
         this._textElements.mineCount.update(value);
         this._textElements.mineCount.show();
@@ -228,6 +284,9 @@ export class StatsCtrl {
         }, 1500);
     }
 
+    /**
+     * Hide all of the text content from view.
+     */
     public hide(): void {
         Object.values(this._textElements).filter(x => !!x).forEach(text => {
             if (text.isVisible()) {
@@ -236,24 +295,42 @@ export class StatsCtrl {
         });
     }
 
+    /**
+     * Resize all the text based on change in window size.
+     * @param height of the new screen.
+     * @param left point of game area from window left.
+     * @param top point from top of screen the text should be.
+     * @param width of the new screen.
+     */
     public onWindowResize(height: number, left: number, top: number, width: number): void {
         Object.keys(this._textElements)
             .filter(key => !!this._textElements[key])
             .forEach(key => this._textElements[key].resize({ height, left, top, width }));
     }
 
+    /**
+     * Resets texts displaying amount of loot player has collected thus far.
+     */
     public resetLoot(): void {
         this._textElements.crewCollected.update(`0 crew recovered`);
         this._textElements.waterAndFoodCollected.update(`0 water / 0 food`);
         this._textElements.oreCollected.update(`0 ${OreTypes[this._planetSpecifications.ore]}`);
     }
 
+    /**
+     * Shows all the text content.
+     */
     public show(): void {
         Object.values(this._textElements).filter(x => !!x).forEach(text => {
             text.show();
         });
     }
 
+    /**
+     * Runs the given text property's update method.
+     * @param name key of the text to be checked.
+     * @param value param to pass into the text's update method.
+     */
     public update(name: string, value: string): void {
         this._textElements[name].update(value);
     }
