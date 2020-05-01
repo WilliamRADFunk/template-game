@@ -42,6 +42,7 @@ import { noOp } from '../../utils/no-op';
 import { COLORS } from '../../styles/colors';
 import { TextBase } from '../../controls/text/text-base';
 import { TextCtrl } from './controllers/text-controller';
+import { LootCtrl } from './controllers/loot-controller';
 
 /*
  * Grid Values
@@ -160,7 +161,7 @@ export class LandAndMine {
      */
     private _listenerRef: () => void;
 
-    private _loot: { [key: number]: number } = {};
+    private _lootCtrl: LootCtrl;
 
     private _mainThruster: MainThruster;
 
@@ -205,12 +206,6 @@ export class LandAndMine {
         this._textures = textures;
         this._planetSpecifications = planetSpecifications;
         this._landerSpecifications = landerSpecifications;
-        this._loot[planetSpecifications.ore] = 0;
-        this._loot[-3] = 0; // -3 is the lander itself
-        this._loot[-2] = 0; // -2 is surviving crew members
-        this._loot[-1] = 0; // -1 is food
-        this._loot[0] = 0; // 0 is water
-        this._loot[this._planetSpecifications.ore] = 0; // this._planetSpecifications.ore is ore
         this._mineCollectCount = planetSpecifications.oreQuantity * 20;
 
         // Choose random surface starting point.
@@ -276,6 +271,7 @@ export class LandAndMine {
             this._currentOxygenLevel,
             this._currentFuelLevel,
             border);
+        this._lootCtrl = new LootCtrl(planetSpecifications.ore, this._txtCtrl);
     }
 
     private _buildSky(): void {
@@ -980,6 +976,8 @@ export class LandAndMine {
                     this._camera.zoom = 1;
                     this._camera.updateProjectionMatrix();
                     SoundinatorSingleton.playHollowClunk();
+
+                    this._lootCtrl.loadLoot();
                 }, 100);
             }
         };
@@ -1293,7 +1291,7 @@ export class LandAndMine {
         // Player died. Nothing should progress.
         if (this._state === LandAndMineState.crashed) {
             if (!this._explosion.endCycle()) {
-                return this._loot;
+                return this._lootCtrl.getLoot();
             }
             if (this._lander.mesh) {
                 this._scene.remove(this._lander.mesh);
@@ -1301,13 +1299,7 @@ export class LandAndMine {
                 this._mainThruster.dispose();
                 this._leftThruster.dispose();
                 this._rightThruster.dispose();
-                this._loot = {
-                    '-3': 0,
-                    '-2': 0,
-                    '-1': 0,
-                    '0': 0
-                };
-                this._txtCtrl.resetLoot();
+                this._lootCtrl.crashTheLander();
             }
             return;
         }
@@ -1343,7 +1335,7 @@ export class LandAndMine {
             this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
 
             if (landerRow > 120) {
-                return this._loot;
+                return this._lootCtrl.getLoot();
             }
             return;
         }
@@ -1351,21 +1343,12 @@ export class LandAndMine {
         // If ship reaches a certain altitude they've escaped.
         if (landerRow >= 110) {
             this._state = LandAndMineState.escaped;
-            this._loot[-2] = 2; // Regain crew members.
-            this._loot[-3] = 1; // Regain lander.
-
-            this._txtCtrl.update('crewCollected', '2 crew recovered');
+            this._lootCtrl.regainCrew();
             return;
         }
 
         if (this._state === LandAndMineState.suffocating) {
             if (this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear) {
-                this._loot = {
-                    '-3': 1, // Regain lander on autopilot.
-                    '-2': 0,
-                    '-1': 0,
-                    '0': 0
-                };
                 this._txtCtrl.resetLoot();
                 this._buttons.mineButton.hide();
                 this._buttons.loadButton.hide();
@@ -1407,12 +1390,10 @@ export class LandAndMine {
             this._txtCtrl.update('oxygenLevel', `Oxygen Level: ${Math.abs(this._currentOxygenLevel).toFixed(0)} %`);
             this._txtCtrl.changeColorBelowThreshold(20, Math.abs(this._currentOxygenLevel), 'oxygenLevel');
         } else {
+            this._lootCtrl.loseCrew();
             if (this._state !== LandAndMineState.mining
                 && this._state !== LandAndMineState.walkingAwayFromLander
                 && this._state !== LandAndMineState.walkingByLander) {
-                this._loot[-2] = 0;
-                this._loot[-3] = 1;
-                this._txtCtrl.update('crewCollected', '0 crew recovered');
                 this._state = LandAndMineState.escaped;
             } else {
                 this._state = LandAndMineState.suffocating;
@@ -1446,16 +1427,13 @@ export class LandAndMine {
                     }
                     if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
                         if (this._grid[centerDrillRowAfter][drillCol] === 3) {
-                            this._loot[0] += this._mineCollectCount;
-                            this._txtCtrl.generateMinedText(`${this._mineCollectCount} x Water`);
+                            this._lootCtrl.addTempWater(this._mineCollectCount);
                             SoundinatorSingleton.playBlip();
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
-                            this._loot[this._planetSpecifications.ore] += this._mineCollectCount;
-                            this._txtCtrl.generateMinedText(`${this._mineCollectCount} x ${OreTypes[this._planetSpecifications.ore]}`);
+                            this._lootCtrl.addTempOre(this._mineCollectCount);
                             SoundinatorSingleton.playBlip();
                         } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
-                            this._loot[-1] += this._mineCollectCount;
-                            this._txtCtrl.generateMinedText(`${this._mineCollectCount} x Food`);
+                            this._lootCtrl.addTempFood(this._mineCollectCount);
                             SoundinatorSingleton.playBlip();
                         } else {
                             SoundinatorSingleton.playBlap();
@@ -1478,9 +1456,6 @@ export class LandAndMine {
 
                         this._scene.remove(minedBlock);
                         this._scene.add(minedMesh);
-
-                        this._txtCtrl.update('waterAndFoodCollected', `${this._loot[0]} Water / ${this._loot[-1]} Food`);
-                        this._txtCtrl.update('oreCollected', `${this._loot[this._planetSpecifications.ore]} ${OreTypes[this._planetSpecifications.ore]}`);
                     }
                 } else if (centerRowBefore !== centerDrillRowAfter) {
                     if (this._landerSpecifications.drillLength !== this._drillBits.length) {
