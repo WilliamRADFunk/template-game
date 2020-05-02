@@ -2,7 +2,6 @@ import {
     DoubleSide,
     Mesh,
     MeshBasicMaterial,
-    MeshPhongMaterial,
     Object3D,
     OrthographicCamera,
     PlaneGeometry,
@@ -20,9 +19,7 @@ import {
     PlanetSpecifications,
     OreTypeColors,
     SkyColors,
-    PlanetLandColors,
-    OreTypes,
-    OreQuantity } from '../../models/planet-specifications';
+    PlanetLandColors } from '../../models/planet-specifications';
 import { MainThruster } from './actors/main-thruster';
 import { SideThruster } from './actors/side-thruster';
 import { Explosion } from '../../weapons/explosion';
@@ -31,7 +28,6 @@ import { createWindParticles } from './actors/create-wind-particles';
 import { StartButton } from '../../controls/buttons/start-button';
 import { BUTTON_COLORS } from '../../styles/button-colors';
 import { UnloadButton } from '../../controls/buttons/unload-button';
-import { createMiningTeam } from './actors/create-mining-team';
 import { LoadButton } from '../../controls/buttons/load-button';
 import { MineButton } from '../../controls/buttons/mine-button';
 import { PackItUpButton } from '../../controls/buttons/pack-it-up-button';
@@ -39,10 +35,10 @@ import { LanderSpecifications } from '../../models/lander-specifications';
 import { ControlPanel } from '../../controls/panels/control-panel';
 import { HelpCtrl } from './controllers/help-controller';
 import { noOp } from '../../utils/no-op';
-import { COLORS } from '../../styles/colors';
 import { TextBase } from '../../controls/text/text-base';
 import { TextCtrl } from './controllers/text-controller';
 import { LootCtrl } from './controllers/loot-controller';
+import { AstronautCtrl } from './controllers/astronaut-controller';
 
 /*
  * Grid Values
@@ -96,7 +92,7 @@ export class LandAndMine {
      */
     private _actors: Actor[] = [];
 
-    private _astronauts: Actor[] = [];
+    private _astronautCtrl: AstronautCtrl;
 
     /**
      * List of buttons
@@ -113,13 +109,6 @@ export class LandAndMine {
 
     private _controlPanel: ControlPanel;
 
-    private _counters: { [key: string]: number } = {
-        astronautWalkingCounter: 0,
-        astronautWalkingCounterClear: 10,
-        suffocatingCounter: -1,
-        suffocatingCounterClear: 99
-    };
-
     private _currentFuelLevel: number = 100;
 
     private _currentLanderHorizontalSpeed: number = 0.01;
@@ -127,8 +116,6 @@ export class LandAndMine {
     private _currentLanderVerticalSpeed: number = 0.001;
 
     private _currentOxygenLevel: number = 100;
-
-    private _drillBits: Mesh[] = [];
 
     private _explosion: Explosion = null;
 
@@ -141,10 +128,6 @@ export class LandAndMine {
     private _isDrillingUp: boolean = false;
 
     private _isLeftThrusting: boolean = false;
-
-    private _isMiningTeamMovingLeft: boolean = false;
-
-    private _isMiningTeamMovingRight: boolean = false;
 
     private _isRightThrusting: boolean = false;
 
@@ -240,28 +223,12 @@ export class LandAndMine {
         this._mainThruster = new MainThruster(this._scene, [currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET]);
         this._leftThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], -1);
         this._rightThruster = new SideThruster(this._scene, [currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], 1);
-        // Create astronaut mining team
-        this._astronauts = createMiningTeam(
-            {
-                astronaut1: textures.astronaut1,
-                astronaut2: textures.astronaut2,
-                astronaut3: textures.astronaut3,
-                astronautSuffocation1: textures.astronautSuffocation1,
-                astronautSuffocation2: textures.astronautSuffocation2,
-                astronautSuffocation3: textures.astronautSuffocation3,
-                astronautSuffocation4: textures.astronautSuffocation4,
-                astronautSuffocation5: textures.astronautSuffocation5
-            },
-            {
-                miningEquipment1: textures.miningEquipment1,
-                miningEquipment2: textures.miningEquipment2
-            });
-        this._astronauts.filter(astro => !!astro).forEach(astro => {
-            this._scene.add(astro.mesh);
-            astro.mesh.visible = false;
-        });
 
-        this._helpCtrl = new HelpCtrl(this._scene, this._textures, border);
+        this._helpCtrl = new HelpCtrl(
+            this._scene,
+            this._textures,
+            border);
+
         this._txtCtrl = new TextCtrl(
             this._scene,
             planetSpecifications,
@@ -271,7 +238,19 @@ export class LandAndMine {
             this._currentOxygenLevel,
             this._currentFuelLevel,
             border);
-        this._lootCtrl = new LootCtrl(planetSpecifications.ore, this._txtCtrl);
+
+        this._lootCtrl = new LootCtrl(
+            planetSpecifications.ore,
+            this._txtCtrl);
+
+        this._astronautCtrl = new AstronautCtrl(
+            this._scene,
+            this._camera,
+            textures,
+            this._grid,
+            this._meshGrid,
+            this._lootCtrl,
+            landerSpecifications.drillLength);
     }
 
     private _buildSky(): void {
@@ -742,20 +721,10 @@ export class LandAndMine {
                 }
             } else if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
                 if (event.keyCode === 65 || event.keyCode === 37) {
-                    this._isMiningTeamMovingLeft = true;
-
-                    if (!SoundinatorSingleton.isPlaying('walkingFastGravel')) {
-                        SoundinatorSingleton.playWalkingFastGravel();
-                    }
-
+                    this._astronautCtrl.startWalking(true);
                     return;
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
-                    this._isMiningTeamMovingRight = true;
-
-                    if (!SoundinatorSingleton.isPlaying('walkingFastGravel')) {
-                        SoundinatorSingleton.playWalkingFastGravel();
-                    }
-
+                    this._astronautCtrl.startWalking(false);
                     return;
                 }
             } else if (this._state === LandAndMineState.mining) {
@@ -781,47 +750,13 @@ export class LandAndMine {
                     return;
                 }
             } else if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
-                let newPos;
                 if (event.keyCode === 65 || event.keyCode === 37) {
                     SoundinatorSingleton.stopWalkingFastGravel();
-                    newPos = this._getMiningTeamsPositions(true, false);
-                    this._isMiningTeamMovingLeft = false;
-                    this._counters.astronautWalkingCounter = 0;
-                    this._astronauts[0].mesh.visible = true;
-                    this._astronauts[3].mesh.visible = false;
-                    this._astronauts[6].mesh.visible = false;
-                    this._astronauts[2].mesh.visible = true;
-                    this._astronauts[5].mesh.visible = false;
-                    this._astronauts[6].mesh.visible = false;
+                    this._astronautCtrl.standing(true);
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
                     SoundinatorSingleton.stopWalkingFastGravel();
-                    newPos = this._getMiningTeamsPositions(false, true);
-                    this._isMiningTeamMovingRight = false;
-                    this._counters.astronautWalkingCounter = 0;
-                    this._astronauts[0].mesh.visible = true;
-                    this._astronauts[3].mesh.visible = false;
-                    this._astronauts[6].mesh.visible = false;
-                    this._astronauts[2].mesh.visible = true;
-                    this._astronauts[5].mesh.visible = false;
-                    this._astronauts[6].mesh.visible = false;
-                } else { // Some unrelated key
-                    return;
+                    this._astronautCtrl.standing(false);
                 }
-
-                // Left astronaut
-                this._astronauts[0].mesh.position.set(newPos.left[0], newPos.left[1], newPos.left[2]);
-                this._astronauts[3].mesh.position.set(newPos.left[0], newPos.left[1], newPos.left[2]);
-                this._astronauts[6].mesh.position.set(newPos.left[0], newPos.left[1], newPos.left[2]);
-                // Mining Equipment
-                this._astronauts[1].mesh.position.set(newPos.middle[0], newPos.middle[1], newPos.middle[2]);
-                // Right astronaut
-                this._astronauts[2].mesh.position.set(newPos.right[0], newPos.right[1], newPos.right[2]);
-                this._astronauts[5].mesh.position.set(newPos.right[0], newPos.right[1], newPos.right[2]);
-                this._astronauts[8].mesh.position.set(newPos.right[0], newPos.right[1], newPos.right[2]);
-
-                this._camera.position.set(newPos.middle[0], this._camera.position.y, newPos.middle[2]);
-                this._camera.updateProjectionMatrix();
-                return;
             } else if (this._state === LandAndMineState.mining) {
                 if (event.keyCode === 87 || event.keyCode === 38) {
                     this._isDrillingUp = false;
@@ -926,30 +861,8 @@ export class LandAndMine {
                 this._buttons.unloadButton.hide();
                 this._buttons.loadButton.show();
                 const landerPos = this._lander.mesh.position;
-                const astroLeft = this._astronauts[0];
-                const miningEquipment = this._astronauts[1];
-                const astroRight = this._astronauts[2];
 
-                const landerBottom = landerPos.z + 0.11;
-                const landerRow = Math.floor((-10 * landerBottom) + 60);
-                const landerCol = ((100 * landerPos.x) % 10) < 5 ? Math.floor((10 * landerPos.x) + 60) : Math.ceil((10 * landerPos.x) + 60);
-                const astroLeftPos = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120].position;
-                const miningEquipmentPos = this._meshGrid[landerRow][landerCol].position;
-                const astroRightPos = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0].position;
-
-                astroLeft.mesh.position.set(astroLeftPos.x, astroLeft.mesh.position.y, astroLeftPos.z);
-                astroLeft.mesh.visible = true;
-                miningEquipment.mesh.position.set(miningEquipmentPos.x, miningEquipment.mesh.position.y, miningEquipmentPos.z);
-                miningEquipment.mesh.visible = true;
-                astroRight.mesh.position.set(astroRightPos.x, astroRight.mesh.position.y, astroRightPos.z);
-                astroRight.mesh.visible = true;
-
-                setTimeout(() => {
-                    this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
-                    this._camera.zoom = 4;
-                    this._camera.updateProjectionMatrix();
-                    SoundinatorSingleton.playHollowClank();
-                }, 100);
+                this._astronautCtrl.disembark(landerPos);
             }
         };
 
@@ -967,18 +880,8 @@ export class LandAndMine {
                 this._buttons.loadButton.hide();
                 this._buttons.unloadButton.show();
 
-                this._astronauts.filter(astro => !!astro).forEach(astro => {
-                    astro.mesh.visible = false;
-                });
-
-                setTimeout(() => {
-                    this._camera.position.set(0, this._camera.position.y, 0);
-                    this._camera.zoom = 1;
-                    this._camera.updateProjectionMatrix();
-                    SoundinatorSingleton.playHollowClunk();
-
-                    this._lootCtrl.loadLoot();
-                }, 100);
+                this._astronautCtrl.loadMiners();
+                this._lootCtrl.loadLoot();
             }
         };
 
@@ -996,22 +899,7 @@ export class LandAndMine {
                 this._buttons.mineButton.hide();
                 this._buttons.packUpButton.show();
 
-                const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
-                const drillMat = new MeshPhongMaterial({
-                    color: '#FFFFFF',
-                    map: this._textures.miningDrill,
-                    shininess: 0,
-                    transparent: true
-                });
-                const miningEquipPos = this._astronauts[1].mesh.position;
-                const drillMesh = new Mesh(drillGeo, drillMat);
-                drillMesh.position.set(miningEquipPos.x, miningEquipPos.y - 3, miningEquipPos.z);
-                drillMesh.rotation.set(-1.5708, 0, 0);
-                drillMesh.name = 'Mining-Drill-1';
-                this._drillBits.push(drillMesh);
-                this._scene.add(drillMesh);
-
-                SoundinatorSingleton.playDrilling();
+                this._astronautCtrl.setupDrill();
             }
         };
 
@@ -1028,9 +916,8 @@ export class LandAndMine {
                 this._state = LandAndMineState.walkingAwayFromLander;
                 this._buttons.packUpButton.hide();
                 this._buttons.mineButton.show();
-                this._scene.remove(this._drillBits[0]);
-                this._drillBits.length = 0;
-                SoundinatorSingleton.stopDrilling();
+
+                this._astronautCtrl.packupDrill();
             }
         };
 
@@ -1113,115 +1000,6 @@ export class LandAndMine {
         if (changeMade) {
             this._waterFlow();
         }
-    }
-
-    private _getMiningTeamsPositions(left: boolean, right: boolean): {
-        left: [number, number, number];
-        middle: [number, number, number];
-        right: [number, number, number];
-        teleported: [boolean, boolean, boolean]; } {
-        const astroLeftPos = this._astronauts[0].mesh.position;
-        const miningEquipmentPos = this._astronauts[1].mesh.position;
-        const astroRightPos = this._astronauts[2].mesh.position;
-        let astroLeftCol = Math.floor((10 * (astroLeftPos.x + 0.05)) + 60);
-        let miningEquipmentCol = Math.floor((10 * (miningEquipmentPos.x + 0.05)) + 60);
-        let astroRightCol = Math.floor((10 * (astroRightPos.x + 0.05)) + 60);
-        let astroLeftRow;
-        let miningEquipmentRow;
-        let astroRightRow;
-        const newPositions: {
-            left: [number, number, number];
-            middle: [number, number, number];
-            right: [number, number, number];
-            teleported: [boolean, boolean, boolean]; } = {
-            left: [0, 0, 0],
-            middle: [0, 0, 0],
-            right: [0, 0, 0],
-            teleported: [false, false, false]
-        }
-
-        if (left) {
-            if (astroLeftCol < 0) {
-                astroLeftCol = 120;
-                newPositions.teleported[0] = true;
-            }
-            if (miningEquipmentCol < 0) {
-                miningEquipmentCol = 120;
-                newPositions.teleported[1] = true;
-            }
-            if (astroRightCol < 0) {
-                astroRightCol = 120;
-                newPositions.teleported[2] = true;
-            }
-
-            for (let z = 109; z > 0; z--) {
-                if (this._grid[z][astroLeftCol] >= 3) {
-                    astroLeftRow = z + 1;
-                    break;
-                }
-            }
-            let newAstroPos = this._meshGrid[astroLeftRow][astroLeftCol].position;
-            newPositions.left = [newAstroPos.x, astroLeftPos.y, newAstroPos.z];
-
-            for (let z = 109; z > 0; z--) {
-                if (this._grid[z][miningEquipmentCol] >= 3) {
-                    miningEquipmentRow = z + 1;
-                    break;
-                }
-            }
-            newAstroPos = this._meshGrid[miningEquipmentRow][miningEquipmentCol].position;
-            newPositions.middle = [newAstroPos.x, miningEquipmentPos.y, newAstroPos.z];
-
-            for (let z = 109; z > 0; z--) {
-                if (this._grid[z][astroRightCol] >= 3) {
-                    astroRightRow = z + 1;
-                    break;
-                }
-            }
-            newAstroPos = this._meshGrid[astroRightRow][astroRightCol].position;
-            newPositions.right = [newAstroPos.x, astroRightPos.y, newAstroPos.z];
-        } else if (right) {
-            if (astroLeftCol > 120) {
-                astroLeftCol = 0;
-                newPositions.teleported[0] = true;
-            }
-            if (miningEquipmentCol > 120) {
-                miningEquipmentCol = 0;
-                newPositions.teleported[1] = true;
-            }
-            if (astroRightCol > 120) {
-                astroRightCol = 0;
-                newPositions.teleported[2] = true;
-            }
-
-            for (let z = 109; z > 0; z--) {
-                if (this._grid[z][astroLeftCol] >= 3) {
-                    astroLeftRow = z + 1;
-                    break;
-                }
-            }
-            let newAstroPos = this._meshGrid[astroLeftRow][astroLeftCol].position;
-            newPositions.left = [newAstroPos.x, astroLeftPos.y, newAstroPos.z];
-
-            for (let z = 109; z > 0; z--) {
-                if (this._grid[z][miningEquipmentCol] >= 3) {
-                    miningEquipmentRow = z + 1;
-                    break;
-                }
-            }
-            newAstroPos = this._meshGrid[miningEquipmentRow][miningEquipmentCol].position;
-            newPositions.middle = [newAstroPos.x, miningEquipmentPos.y, newAstroPos.z];
-
-            for (let z = 109; z > 0; z--) {
-                if (this._grid[z][astroRightCol] >= 3) {
-                    astroRightRow = z + 1;
-                    break;
-                }
-            }
-            newAstroPos = this._meshGrid[astroRightRow][astroRightCol].position;
-            newPositions.right = [newAstroPos.x, astroRightPos.y, newAstroPos.z];
-        }
-        return newPositions;
     }
 
     /**
@@ -1348,7 +1126,7 @@ export class LandAndMine {
         }
 
         if (this._state === LandAndMineState.suffocating) {
-            if (this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear) {
+            if (this._astronautCtrl.hasSuffocated()) {
                 this._txtCtrl.resetLoot();
                 this._buttons.mineButton.hide();
                 this._buttons.loadButton.hide();
@@ -1362,25 +1140,10 @@ export class LandAndMine {
                 }, 100);
                 return;
             } else {
-                this._counters.suffocatingCounter++;
+                this._astronautCtrl.suffocating();
             }
 
-            if (this._counters.suffocatingCounter % 20 === 0) {
-                this._astronauts.filter(astro => !!astro).forEach((astro, index) => {
-                    if (index !== 1) {
-                        astro.mesh.visible = false;
-                    }
-                });
-                const astroIndex = Math.floor(this._counters.suffocatingCounter / 20) + 9;
-                const astroPosLeft = this._astronauts[0].mesh.position;
-                const astroPosRight = this._astronauts[2].mesh.position;
-                const newAstroLeft = this._astronauts[astroIndex].mesh;
-                const newAstroRight = this._astronauts[astroIndex + 5].mesh;
-                newAstroLeft.position.set(astroPosLeft.x, astroPosLeft.y, astroPosLeft.z);
-                newAstroRight.position.set(astroPosRight.x, astroPosRight.y, astroPosRight.z);
-                newAstroLeft.visible = true;
-                newAstroRight.visible = true;
-            }
+            this._astronautCtrl.runSuffocationSequence();
             return;
         }
 
@@ -1412,222 +1175,25 @@ export class LandAndMine {
         // Mining team has unpacked, and is ready to drill.
         if (this._state === LandAndMineState.mining) {
             if (this._isDrillingDown) {
-                const currentDrillBit = this._drillBits[this._drillBits.length - 1];
-                const currDrillPos = currentDrillBit.position;
-                const drillCol = Math.floor((10 * currDrillPos.x) + 60);
-                const tipRowBefore = Math.floor((-10 * (currDrillPos.z + 0.05)) + 60);
-                const tipDrillRowAfter = Math.floor((-10 * (currDrillPos.z + 0.051)) + 60);
-                const centerRowBefore = Math.floor((-10 * currDrillPos.z) + 60);
-                const centerDrillRowAfter = Math.floor((-10 * (currDrillPos.z + 0.001)) + 60);
-                if (tipRowBefore !== tipDrillRowAfter) {
-                    if (this._grid[tipDrillRowAfter][drillCol] !== 7) {
-                        currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
-                    } else {
-                        SoundinatorSingleton.playFooPang();
-                    }
-                    if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
-                        if (this._grid[centerDrillRowAfter][drillCol] === 3) {
-                            this._lootCtrl.addTempWater(this._mineCollectCount);
-                            SoundinatorSingleton.playBlip();
-                        } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
-                            this._lootCtrl.addTempOre(this._mineCollectCount);
-                            SoundinatorSingleton.playBlip();
-                        } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
-                            this._lootCtrl.addTempFood(this._mineCollectCount);
-                            SoundinatorSingleton.playBlip();
-                        } else {
-                            SoundinatorSingleton.playBlap();
-                        }
-                        this._grid[centerDrillRowAfter][drillCol] = 4;
-                        const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
-                        const minedBlockPos = minedBlock.position;
-
-                        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
-                        const minedMat = new MeshPhongMaterial({
-                            color: '#FFFFFF',
-                            map: this._textures.minedSquare1,
-                            shininess: 0,
-                            transparent: true
-                        });
-                        const minedMesh = new Mesh(geo, minedMat);
-                        minedMesh.position.set(currDrillPos.x, minedBlockPos.y, currDrillPos.z + 0.051);
-                        minedMesh.rotation.set(-1.5708, 0, 0);
-                        minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
-
-                        this._scene.remove(minedBlock);
-                        this._scene.add(minedMesh);
-                    }
-                } else if (centerRowBefore !== centerDrillRowAfter) {
-                    if (this._landerSpecifications.drillLength !== this._drillBits.length) {
-                        this._buttons.packUpButton.hide();
-                        const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
-                        const drillMat = new MeshPhongMaterial({
-                            color: '#FFFFFF',
-                            map: this._textures.miningDrill,
-                            shininess: 0,
-                            transparent: true
-                        });
-                        const drillMesh = new Mesh(drillGeo, drillMat);
-                        drillMesh.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
-                        drillMesh.rotation.set(-1.5708, 0, 0);
-                        drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
-                        this._drillBits.push(drillMesh);
-                        this._scene.add(drillMesh);
-                    }
-                } else {
-                    currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
-                }
+                this._astronautCtrl.drillDown(this._mineCollectCount, this._buttons.packUpButton);
             } else if (this._isDrillingUp) {
-                const currentDrillBit = this._drillBits[this._drillBits.length - 1];
-                const currDrillPos = currentDrillBit.position;
-                const currDrillRowBefore = Math.floor((10 * currDrillPos.z) + 60);
-                const currDrillRowAfter = Math.floor((10 * (currDrillPos.z - 0.001)) + 60);
-                if (currDrillRowAfter !== currDrillRowBefore && this._drillBits.length > 1) {
-                    this._scene.remove(currentDrillBit);
-                    this._drillBits.pop();
-                } else {
-                    if (this._drillBits.length === 1) {
-                        this._buttons.packUpButton.show();
-                    } else {
-                        currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z - 0.001);
-                    }
-                }
+                this._astronautCtrl.drillUp(this._buttons.packUpButton);
             }
             return;
         }
 
         // Mining team should move left and right, detect proximity to ship for loading, and nothing else while in walking mode.
         if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
-            if (this._isMiningTeamMovingLeft) {
-                this._counters.astronautWalkingCounter++;
-                if (this._counters.astronautWalkingCounter > this._counters.astronautWalkingCounterClear) {
-                    this._counters.astronautWalkingCounter = 0;
-                }
-                const positions = this._getMiningTeamsPositions(true, false);
-                this._astronauts[0].mesh.position.set(
-                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x - 0.002,
-                    positions.left[1],
-                    positions.left[2]);
-                this._astronauts[3].mesh.position.set(
-                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x - 0.002,
-                    positions.left[1],
-                    positions.left[2]);
-                this._astronauts[6].mesh.position.set(
-                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x - 0.002,
-                    positions.left[1],
-                    positions.left[2]);
-                if (this._astronauts[0].mesh.visible) {
-                    this._counters.astronautWalkingCounter = 0;
-                    this._astronauts[0].mesh.visible = false;
-                    this._astronauts[3].mesh.visible = true;
-                } else if (this._astronauts[3].mesh.visible && this._counters.astronautWalkingCounter < 5) {
-                    this._astronauts[3].mesh.visible = false;
-                    this._astronauts[6].mesh.visible = true;
-                } else if (this._astronauts[6].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
-                    this._astronauts[6].mesh.visible = false;
-                    this._astronauts[3].mesh.visible = true;
-                }
-                this._astronauts[1].mesh.position.set(
-                    positions.teleported[1] ? positions.middle[0] : this._astronauts[1].mesh.position.x - 0.002,
-                    positions.middle[1],
-                    positions.middle[2]);
-                this._astronauts[2].mesh.position.set(
-                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x - 0.002,
-                    positions.right[1],
-                    positions.right[2]);
-                this._astronauts[5].mesh.position.set(
-                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x - 0.002,
-                    positions.right[1],
-                    positions.right[2]);
-                this._astronauts[8].mesh.position.set(
-                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x - 0.002,
-                    positions.right[1],
-                    positions.right[2]);
-                if (this._astronauts[2].mesh.visible) {
-                    this._counters.astronautWalkingCounter = 0;
-                    this._astronauts[2].mesh.visible = false;
-                    this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[5].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
-                    this._astronauts[5].mesh.visible = false;
-                    this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[8].mesh.visible && this._counters.astronautWalkingCounter < 5) {
-                    this._astronauts[8].mesh.visible = false;
-                    this._astronauts[5].mesh.visible = true;
-                }
-
-                this._camera.position.set(this._astronauts[1].mesh.position.x, this._camera.position.y, positions.middle[2]);
-                this._camera.updateProjectionMatrix();
-            } else if (this._isMiningTeamMovingRight) {
-                this._counters.astronautWalkingCounter++;
-                if (this._counters.astronautWalkingCounter > this._counters.astronautWalkingCounterClear) {
-                    this._counters.astronautWalkingCounter = 0;
-                }
-                const positions = this._getMiningTeamsPositions(false, true);
-                this._astronauts[0].mesh.position.set(
-                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x + 0.002,
-                    positions.left[1],
-                    positions.left[2]);
-                this._astronauts[3].mesh.position.set(
-                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x + 0.002,
-                    positions.left[1],
-                    positions.left[2]);
-                this._astronauts[6].mesh.position.set(
-                    positions.teleported[0] ? positions.left[0] : this._astronauts[0].mesh.position.x + 0.002,
-                    positions.left[1],
-                    positions.left[2]);
-                if (this._astronauts[0].mesh.visible) {
-                    this._counters.astronautWalkingCounter = 0;
-                    this._astronauts[0].mesh.visible = false;
-                    this._astronauts[3].mesh.visible = true;
-                } else if (this._astronauts[3].mesh.visible && this._counters.astronautWalkingCounter < 5) {
-                    this._astronauts[3].mesh.visible = false;
-                    this._astronauts[6].mesh.visible = true;
-                } else if (this._astronauts[6].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
-                    this._astronauts[6].mesh.visible = false;
-                    this._astronauts[3].mesh.visible = true;
-                }
-                this._astronauts[1].mesh.position.set(
-                    positions.teleported[1] ? positions.middle[0] : this._astronauts[1].mesh.position.x + 0.002,
-                    positions.middle[1],
-                    positions.middle[2]);
-                this._astronauts[2].mesh.position.set(
-                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x + 0.002,
-                    positions.right[1],
-                    positions.right[2]);
-                this._astronauts[5].mesh.position.set(
-                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x + 0.002,
-                    positions.right[1],
-                    positions.right[2]);
-                this._astronauts[8].mesh.position.set(
-                    positions.teleported[2] ? positions.right[0] : this._astronauts[2].mesh.position.x + 0.002,
-                    positions.right[1],
-                    positions.right[2]);
-                if (this._astronauts[2].mesh.visible) {
-                    this._counters.astronautWalkingCounter = 0;
-                    this._astronauts[2].mesh.visible = false;
-                    this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[5].mesh.visible && this._counters.astronautWalkingCounter >= 5) {
-                    this._astronauts[5].mesh.visible = false;
-                    this._astronauts[8].mesh.visible = true;
-                } else if (this._astronauts[8].mesh.visible && this._counters.astronautWalkingCounter < 5) {
-                    this._astronauts[8].mesh.visible = false;
-                    this._astronauts[5].mesh.visible = true;
-                }
-
-                this._camera.position.set(this._astronauts[1].mesh.position.x, this._camera.position.y, positions.middle[2]);
-                this._camera.updateProjectionMatrix();
-            }
+            this._astronautCtrl.walking();
 
             if (this._state === LandAndMineState.walkingByLander) {
-                const miningEquipmentPos = this._astronauts[1].mesh.position;
-                if (Math.abs(currPos.x - miningEquipmentPos.x) > 0.3) {
+                if (Math.abs(currPos.x - this._astronautCtrl.getEquipmentPosition().x) > 0.3) {
                     this._state = LandAndMineState.walkingAwayFromLander;
                     this._buttons.loadButton.hide();
                     this._buttons.mineButton.show();
                 }
             } else if (this._state === LandAndMineState.walkingAwayFromLander) {
-                const miningEquipmentPos = this._astronauts[1].mesh.position;
-                if (Math.abs(currPos.x - miningEquipmentPos.x) < 0.3) {
+                if (Math.abs(currPos.x - this._astronautCtrl.getEquipmentPosition().x) < 0.3) {
                     this._state = LandAndMineState.walkingByLander;
                     this._buttons.mineButton.hide();
                     this._buttons.loadButton.show();
@@ -1720,9 +1286,7 @@ export class LandAndMine {
         // Check if ship is eligible for landing condition, or crashed condition
         if (landerRow < 100 && landerBottomCenter) {
             let hasCrashed = false;
-            if (landerBottomLeft < 3 || landerBottomRight < 3) {
-                hasCrashed = true;
-            } else if (landerBottomLeft === 3 || landerBottomRight === 3) {
+            if (landerBottomLeft <= 3 || landerBottomRight <= 3) {
                 hasCrashed = true;
             } else if (Math.abs(this._currentLanderHorizontalSpeed) >= this._landerSpecifications.horizontalCrashMargin
                 || this._currentLanderVerticalSpeed >= this._landerSpecifications.verticalCrashMargin) {
