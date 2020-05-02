@@ -290,8 +290,8 @@ export class MiningCtrl {
     public drillUp(packUpBtn: ButtonBase): void {
         const currentDrillBit = this._drillBits[this._drillBits.length - 1];
         const currDrillPos = currentDrillBit.position;
-        const currDrillRowBefore = Math.floor((10 * currDrillPos.z) + 60);
-        const currDrillRowAfter = Math.floor((10 * (currDrillPos.z - 0.001)) + 60);
+        const currDrillRowBefore = Math.floor((-10 * currDrillPos.z) + 60);
+        const currDrillRowAfter = Math.floor((-10 * (currDrillPos.z - 0.001)) + 60);
         if (currDrillRowAfter !== currDrillRowBefore && this._drillBits.length > 1) {
             this._scene.remove(currentDrillBit);
             this._drillBits.pop();
