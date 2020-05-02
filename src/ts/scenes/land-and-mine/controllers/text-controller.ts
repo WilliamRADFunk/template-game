@@ -324,6 +324,7 @@ export class TextCtrl {
         Object.values(this._textElements).filter(x => !!x).forEach(text => {
             text.show();
         });
+        this._textElements.mineCount.hide();
     }
 
     /**

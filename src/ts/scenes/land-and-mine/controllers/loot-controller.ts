@@ -35,7 +35,7 @@ export class LootCtrl {
             if (Number(key) > 0)
             oreKey = key
         });
-        return this._quantities[oreKey];
+        return this._quantities[Number(oreKey)];
     }
 
     private _getWater(): number {
@@ -49,7 +49,7 @@ export class LootCtrl {
 
     public addTempOre(amount: number): void {
         this._tempQuantities[this._oreKey] += amount;
-        this._txtCtrl.generateMinedText(`${amount} x ${this._oreKey}`);
+        this._txtCtrl.generateMinedText(`${amount} x ${OreTypes[this._oreKey]}`);
     }
 
     public addTempWater(amount: number): void {
@@ -59,7 +59,7 @@ export class LootCtrl {
 
     public crashTheLander(): void {
         Object.keys(this._quantities).forEach(key => {
-            this._quantities[key] = 0;
+            this._quantities[Number(key)] = 0;
         });
         this._txtCtrl.resetLoot();
     }
@@ -70,8 +70,8 @@ export class LootCtrl {
 
     public loadLoot(): void {
         Object.keys(this._tempQuantities).forEach(key => {
-            this._quantities[key] += this._tempQuantities[key];
-            this._tempQuantities[key] = 0;
+            this._quantities[Number(key)] += this._tempQuantities[Number(key)];
+            this._tempQuantities[Number(key)] = 0;
         });
 
         this._txtCtrl.update('waterAndFoodCollected', `${this._getWater()} Water / ${this._getFood()} Food`);

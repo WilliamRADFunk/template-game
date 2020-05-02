@@ -779,6 +779,7 @@ export class LandAndMine {
             this._helpCtrl.hide();
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
+            this._txtCtrl.show();
             this._state = prevState;
         };
 
@@ -786,6 +787,7 @@ export class LandAndMine {
             this._enableAllButtons();
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
+            this._txtCtrl.show();
             this._state = prevState;
         };
 
@@ -826,7 +828,7 @@ export class LandAndMine {
                     button.hide();
                 }
             });
-            this._txtCtrl.show();
+            this._txtCtrl.hide();
             return prevState;
         };
 
