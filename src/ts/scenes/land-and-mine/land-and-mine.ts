@@ -38,7 +38,7 @@ import { noOp } from '../../utils/no-op';
 import { TextBase } from '../../controls/text/text-base';
 import { TextCtrl } from './controllers/text-controller';
 import { LootCtrl } from './controllers/loot-controller';
-import { AstronautCtrl } from './controllers/astronaut-controller';
+import { MiningCtrl } from './controllers/mining-controller';
 
 /*
  * Grid Values
@@ -91,8 +91,6 @@ export class LandAndMine {
      * List of actors in the scene.
      */
     private _actors: Actor[] = [];
-
-    private _astronautCtrl: AstronautCtrl;
 
     /**
      * List of buttons
@@ -151,6 +149,8 @@ export class LandAndMine {
     private _meshGrid: Mesh[][] = [];
 
     private _mineCollectCount: number;
+
+    private _miningCtrl: MiningCtrl;
 
     private _planetSpecifications: PlanetSpecifications;
 
@@ -243,7 +243,7 @@ export class LandAndMine {
             planetSpecifications.ore,
             this._txtCtrl);
 
-        this._astronautCtrl = new AstronautCtrl(
+        this._miningCtrl = new MiningCtrl(
             this._scene,
             this._camera,
             textures,
@@ -721,10 +721,10 @@ export class LandAndMine {
                 }
             } else if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
                 if (event.keyCode === 65 || event.keyCode === 37) {
-                    this._astronautCtrl.startWalking(true);
+                    this._miningCtrl.startWalking(true);
                     return;
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
-                    this._astronautCtrl.startWalking(false);
+                    this._miningCtrl.startWalking(false);
                     return;
                 }
             } else if (this._state === LandAndMineState.mining) {
@@ -752,10 +752,10 @@ export class LandAndMine {
             } else if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
                 if (event.keyCode === 65 || event.keyCode === 37) {
                     SoundinatorSingleton.stopWalkingFastGravel();
-                    this._astronautCtrl.standing(true);
+                    this._miningCtrl.standing(true);
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
                     SoundinatorSingleton.stopWalkingFastGravel();
-                    this._astronautCtrl.standing(false);
+                    this._miningCtrl.standing(false);
                 }
             } else if (this._state === LandAndMineState.mining) {
                 if (event.keyCode === 87 || event.keyCode === 38) {
@@ -862,7 +862,7 @@ export class LandAndMine {
                 this._buttons.loadButton.show();
                 const landerPos = this._lander.mesh.position;
 
-                this._astronautCtrl.disembark(landerPos);
+                this._miningCtrl.disembark(landerPos);
             }
         };
 
@@ -880,7 +880,7 @@ export class LandAndMine {
                 this._buttons.loadButton.hide();
                 this._buttons.unloadButton.show();
 
-                this._astronautCtrl.loadMiners();
+                this._miningCtrl.loadMiners();
                 this._lootCtrl.loadLoot();
             }
         };
@@ -899,7 +899,7 @@ export class LandAndMine {
                 this._buttons.mineButton.hide();
                 this._buttons.packUpButton.show();
 
-                this._astronautCtrl.setupDrill();
+                this._miningCtrl.setupDrill();
             }
         };
 
@@ -917,7 +917,7 @@ export class LandAndMine {
                 this._buttons.packUpButton.hide();
                 this._buttons.mineButton.show();
 
-                this._astronautCtrl.packupDrill();
+                this._miningCtrl.packupDrill();
             }
         };
 
@@ -1126,7 +1126,7 @@ export class LandAndMine {
         }
 
         if (this._state === LandAndMineState.suffocating) {
-            if (this._astronautCtrl.hasSuffocated()) {
+            if (this._miningCtrl.hasSuffocated()) {
                 this._txtCtrl.resetLoot();
                 this._buttons.mineButton.hide();
                 this._buttons.loadButton.hide();
@@ -1140,10 +1140,10 @@ export class LandAndMine {
                 }, 100);
                 return;
             } else {
-                this._astronautCtrl.suffocating();
+                this._miningCtrl.suffocating();
             }
 
-            this._astronautCtrl.runSuffocationSequence();
+            this._miningCtrl.runSuffocationSequence();
             return;
         }
 
@@ -1175,25 +1175,25 @@ export class LandAndMine {
         // Mining team has unpacked, and is ready to drill.
         if (this._state === LandAndMineState.mining) {
             if (this._isDrillingDown) {
-                this._astronautCtrl.drillDown(this._mineCollectCount, this._buttons.packUpButton);
+                this._miningCtrl.drillDown(this._mineCollectCount, this._buttons.packUpButton);
             } else if (this._isDrillingUp) {
-                this._astronautCtrl.drillUp(this._buttons.packUpButton);
+                this._miningCtrl.drillUp(this._buttons.packUpButton);
             }
             return;
         }
 
         // Mining team should move left and right, detect proximity to ship for loading, and nothing else while in walking mode.
         if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
-            this._astronautCtrl.walking();
+            this._miningCtrl.walking();
 
             if (this._state === LandAndMineState.walkingByLander) {
-                if (Math.abs(currPos.x - this._astronautCtrl.getEquipmentPosition().x) > 0.3) {
+                if (Math.abs(currPos.x - this._miningCtrl.getEquipmentPosition().x) > 0.3) {
                     this._state = LandAndMineState.walkingAwayFromLander;
                     this._buttons.loadButton.hide();
                     this._buttons.mineButton.show();
                 }
             } else if (this._state === LandAndMineState.walkingAwayFromLander) {
-                if (Math.abs(currPos.x - this._astronautCtrl.getEquipmentPosition().x) < 0.3) {
+                if (Math.abs(currPos.x - this._miningCtrl.getEquipmentPosition().x) < 0.3) {
                     this._state = LandAndMineState.walkingByLander;
                     this._buttons.mineButton.hide();
                     this._buttons.loadButton.show();

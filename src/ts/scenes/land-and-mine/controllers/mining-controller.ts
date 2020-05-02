@@ -13,7 +13,7 @@ import { SoundinatorSingleton } from "../../../soundinator";
 import { LootCtrl } from "./loot-controller";
 import { ButtonBase } from "../../../controls/buttons/button-base";
 
-export class AstronautCtrl {
+export class MiningCtrl {
     private _astronauts: Actor[] = [];
 
     private _isMiningTeamMovingLeft: boolean = false;
