@@ -260,6 +260,7 @@ export class ControlPanel {
      * Remove the element from the DOM
      */
     public dispose() {
+        Object.values(this._buttons).forEach(button => button && button.dispose());
         this.element && this.element.remove();
     }
 

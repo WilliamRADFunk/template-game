@@ -1032,6 +1032,7 @@ export class LandAndMine {
         document.oncontextmenu = () => {};
         this._helpCtrl.dispose();
         this._txtCtrl.dispose();
+        this._controlPanel.dispose();
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].dispose());
