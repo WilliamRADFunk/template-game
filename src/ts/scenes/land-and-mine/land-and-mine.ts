@@ -780,6 +780,14 @@ export class LandAndMine {
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
             this._txtCtrl.show();
+            if (prevState === LandAndMineState.mining
+                || prevState === LandAndMineState.walkingAwayFromLander
+                || prevState === LandAndMineState.walkingByLander) {
+                const equipmentPos = this._miningCtrl.getEquipmentPosition();
+                this._camera.position.set(equipmentPos.x, this._camera.position.y, equipmentPos.z);
+                this._camera.zoom = 4;
+                this._camera.updateProjectionMatrix();
+            }
             this._state = prevState;
         };
 
@@ -788,6 +796,14 @@ export class LandAndMine {
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
             this._txtCtrl.show();
+            if (prevState === LandAndMineState.mining
+                || prevState === LandAndMineState.walkingAwayFromLander
+                || prevState === LandAndMineState.walkingByLander) {
+                const equipmentPos = this._miningCtrl.getEquipmentPosition();
+                this._camera.position.set(equipmentPos.x, this._camera.position.y, equipmentPos.z);
+                this._camera.zoom = 4;
+                this._camera.updateProjectionMatrix();
+            }
             this._state = prevState;
         };
 
@@ -803,6 +819,9 @@ export class LandAndMine {
                 }
             });
             this._txtCtrl.hide();
+            this._camera.position.set(0, this._camera.position.y, 0);
+            this._camera.zoom = 1;
+            this._camera.updateProjectionMatrix();
             return prevState;
         };
 
@@ -1311,7 +1330,10 @@ export class LandAndMine {
 
             horizontalSpeedText = `Horizontal Speed: ${Math.abs(this._currentLanderHorizontalSpeed).toFixed(4)}`;
             this._txtCtrl.update('horizontalSpeed', horizontalSpeedText);
-            this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.horizontalCrashMargin, this._currentLanderHorizontalSpeed, 'horizontalSpeed');
+            this._txtCtrl.changeColorAboveThreshold(
+                this._landerSpecifications.horizontalCrashMargin,
+                Math.abs(this._currentLanderHorizontalSpeed),
+                'horizontalSpeed');
 
             this._txtCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
             this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.verticalCrashMargin, this._currentLanderVerticalSpeed, 'verticalSpeed');
@@ -1321,7 +1343,10 @@ export class LandAndMine {
 
         // Change horizontal speed text color if it exceeds safe limits or back if it is within safe bounds.
         this._txtCtrl.update('horizontalSpeed', horizontalSpeedText);
-        this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.horizontalCrashMargin, this._currentLanderHorizontalSpeed, 'horizontalSpeed');
+        this._txtCtrl.changeColorAboveThreshold(
+            this._landerSpecifications.horizontalCrashMargin,
+            Math.abs(this._currentLanderHorizontalSpeed),
+            'horizontalSpeed');
 
         // Change vertical speed text color if it exceeds safe limits or back if it is within safe bounds.
         this._txtCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed > 0.0001
