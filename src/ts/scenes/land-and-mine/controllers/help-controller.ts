@@ -75,7 +75,9 @@ export class HelpCtrl {
         thrust: 0,
         thrustClear: 360,
         astroWalk: 0,
-        astroWalkClear: 360
+        astroWalkClear: 360,
+        mining: 0,
+        miningClear: 360
     }
 
     /**
@@ -211,7 +213,7 @@ export class HelpCtrl {
         (keyUpMat as any).shininess = 0;
         keyUpMat.transparent = true;
 
-        const keyUp = new Mesh(keyGeo, keyUpMat);
+        let keyUp = new Mesh(keyGeo, keyUpMat);
         keyUp.name = 'Up Keys Mesh';
         keyUp.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
         keyUp.rotation.set(-1.5708, 0, 0);
@@ -255,15 +257,7 @@ export class HelpCtrl {
             TextType.STATIC);
         this._helpTexts.landerControlsTitle.hide();
 
-        this._helpTexts.miningControlsTitle = new RightTopMiddleTitleText(
-            'Mining Controls',
-            { height, left, top: null, width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC);
-        this._helpTexts.miningControlsTitle.hide();
-
-        // Create astronaut mining team
+        // Create astronaut mining team for astronaut controls
         this._helpActors.astronauts = createMiningTeam(
             {
                 astronaut1: this._textures.astronaut1,
@@ -331,6 +325,53 @@ export class HelpCtrl {
             border,
             TextType.STATIC);
         this._helpTexts.astronautControlsTitle.hide();
+
+        // Create astronaut mining team for mining controls
+        this._helpActors.miners = createMiningTeam(
+            {
+                astronaut1: this._textures.astronaut1,
+                astronaut2: this._textures.astronaut2,
+                astronaut3: this._textures.astronaut3,
+                astronautSuffocation1: this._textures.astronautSuffocation1,
+                astronautSuffocation2: this._textures.astronautSuffocation2,
+                astronautSuffocation3: this._textures.astronautSuffocation3,
+                astronautSuffocation4: this._textures.astronautSuffocation4,
+                astronautSuffocation5: this._textures.astronautSuffocation5
+            },
+            {
+                miningEquipment1: this._textures.miningEquipment1,
+                miningEquipment2: this._textures.miningEquipment2
+            }).slice(0, 9);
+        this._helpActors.miners.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
+            this._scene.add(astro.mesh);
+            astro.mesh.scale.set(3, 3, 3);
+            if (index > 2) {
+                astro.mesh.visible = false;
+            }
+            if (index === 1) {
+                astro.mesh.position.set(HELP_LANDER_1_POSITION[0] + 5, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+            } else if (index % 3 === 0) {
+                astro.mesh.position.set(HELP_LANDER_1_POSITION[0] + 4.7, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+            } else {
+                astro.mesh.position.set(HELP_LANDER_1_POSITION[0] + 5.3, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+            }
+        });
+
+        keyUp = new Mesh(keyGeo, keyUpMat);
+        keyUp.name = 'Up Keys Mesh';
+        keyUp.position.set(HELP_LANDER_1_POSITION[0] + 6, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+        keyUp.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyUp);
+        keyUp.visible = false;
+        this._helpMeshes.keysUpMining = keyUp;
+
+        this._helpTexts.miningControlsTitle = new RightTopMiddleTitleText(
+            'Mining Controls',
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.miningControlsTitle.hide();
     }
 
     public dispose(): void {
@@ -421,6 +462,11 @@ export class HelpCtrl {
         }
 
         this._helpCounters.astroWalk++;
+
+        // Mining section
+        if (this._helpCounters.mining > this._helpCounters.miningClear) {
+            this._helpCounters.mining = 0;
+        }
     }
 
     /**

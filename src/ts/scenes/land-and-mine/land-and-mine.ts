@@ -848,6 +848,9 @@ export class LandAndMine {
                 }
             });
             this._txtCtrl.hide();
+            this._camera.position.set(0, this._camera.position.y, 0);
+            this._camera.zoom = 1;
+            this._camera.updateProjectionMatrix();
             return prevState;
         };
 
