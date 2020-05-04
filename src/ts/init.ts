@@ -51,15 +51,18 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     enzmannLayout: ['assets/images/enzmann-layout.png', null],
     enzmannOutside: ['assets/images/enzmann-outside.png', null],
     fire: ['assets/images/fire.png', null],
+    keysForDown: ['assets/images/keys-down.png', null],
     keysForLeft: ['assets/images/keys-left.png', null],
     keysForRight: ['assets/images/keys-right.png', null],
     keysForUp: ['assets/images/keys-up.png', null],
-    mars: ['assets/images/mars.png', null],
     lander: ['assets/images/lander.png', null],
+    mars: ['assets/images/mars.png', null],
+    minedSquare1: ['assets/images/mined-square-01.png', null],
+    miningDrill: ['assets/images/mining-drill.png', null],
     miningEquipment1: ['assets/images/mining-equipment-01.png', null],
     miningEquipment2: ['assets/images/mining-equipment-02.png', null],
-    miningDrill: ['assets/images/mining-drill.png', null],
-    minedSquare1: ['assets/images/mined-square-01.png', null],
+    mouse: ['assets/images/mouse.png', null],
+    mouseLeft: ['assets/images/mouse-left.png', null],
     ship: ['assets/images/ship.png', null]
 };
 /**
@@ -916,9 +919,12 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             miningDrill: TEXTURES.miningDrill[1],
             minedSquare1: TEXTURES.minedSquare1[1],
             arrow: TEXTURES.arrow[1],
+            keysForDown: TEXTURES.keysForDown[1],
             keysForUp: TEXTURES.keysForUp[1],
             keysForLeft: TEXTURES.keysForLeft[1],
-            keysForRight: TEXTURES.keysForRight[1]
+            keysForRight: TEXTURES.keysForRight[1],
+            mouse: TEXTURES.mouse[1],
+            mouseLeft: TEXTURES.mouseLeft[1]
         },
         planetSpec,
         landerSpec);

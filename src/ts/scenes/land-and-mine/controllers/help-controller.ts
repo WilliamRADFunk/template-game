@@ -215,7 +215,7 @@ export class HelpCtrl {
 
         let keyUp = new Mesh(keyGeo, keyUpMat);
         keyUp.name = 'Up Keys Mesh';
-        keyUp.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
+        keyUp.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
         keyUp.rotation.set(-1.5708, 0, 0);
         this._scene.add(keyUp);
         keyUp.visible = false;
@@ -229,7 +229,7 @@ export class HelpCtrl {
 
         let keyLeft = new Mesh(keyGeo, keyLeftMat);
         keyLeft.name = 'Left Keys Mesh';
-        keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
+        keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
         keyLeft.rotation.set(-1.5708, 0, 0);
         this._scene.add(keyLeft);
         keyLeft.visible = false;
@@ -243,7 +243,7 @@ export class HelpCtrl {
 
         let keyRight = new Mesh(keyGeo, keyRightMat);
         keyRight.name = 'Right Keys Mesh';
-        keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.6);
+        keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
         keyRight.rotation.set(-1.5708, 0, 0);
         this._scene.add(keyRight);
         keyRight.visible = false;
@@ -344,10 +344,8 @@ export class HelpCtrl {
             }).slice(0, 9);
         this._helpActors.miners.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
             this._scene.add(astro.mesh);
+            astro.mesh.visible = false;
             astro.mesh.scale.set(3, 3, 3);
-            if (index > 2) {
-                astro.mesh.visible = false;
-            }
             if (index === 1) {
                 astro.mesh.position.set(HELP_LANDER_1_POSITION[0] + 5, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
             } else if (index % 3 === 0) {
@@ -358,12 +356,55 @@ export class HelpCtrl {
         });
 
         keyUp = new Mesh(keyGeo, keyUpMat);
-        keyUp.name = 'Up Keys Mesh';
-        keyUp.position.set(HELP_LANDER_1_POSITION[0] + 6, HELP_LANDER_1_POSITION[1] - 2, HELP_LANDER_1_POSITION[2] + 3);
+        keyUp.name = 'Up Keys Mesh Mining';
+        keyUp.position.set(HELP_LANDER_1_POSITION[0] + 3.35, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
         keyUp.rotation.set(-1.5708, 0, 0);
         this._scene.add(keyUp);
         keyUp.visible = false;
         this._helpMeshes.keysUpMining = keyUp;
+
+        const keyDownMat = new MeshBasicMaterial();
+        keyDownMat.map = this._textures.keysForDown;
+        keyDownMat.map.minFilter = LinearFilter;
+        (keyDownMat as any).shininess = 0;
+        keyDownMat.transparent = true;
+
+        const keyDown = new Mesh(keyGeo, keyDownMat);
+        keyDown.name = 'Down Keys Mesh Mining';
+        keyDown.position.set(HELP_LANDER_1_POSITION[0] + 3.35, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
+        keyDown.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyDown);
+        keyDown.visible = false;
+        this._helpMeshes.keysDownMining = keyDown;
+
+        const mouseGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
+        const mouseLeftMat = new MeshBasicMaterial();
+        mouseLeftMat.map = this._textures.mouseLeft;
+        mouseLeftMat.map.minFilter = LinearFilter;
+        (mouseLeftMat as any).shininess = 0;
+        mouseLeftMat.transparent = true;
+
+        const mouseLeft = new Mesh(mouseGeo, mouseLeftMat);
+        mouseLeft.name = 'Mouse Left Mesh Mining';
+        mouseLeft.position.set(HELP_LANDER_1_POSITION[0] + 3.75, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 2.25);
+        mouseLeft.rotation.set(-1.5708, 0, 0);
+        this._scene.add(mouseLeft);
+        mouseLeft.visible = false;
+        this._helpMeshes.mouseLeftMining = mouseLeft;
+
+        const mouseMat = new MeshBasicMaterial();
+        mouseMat.map = this._textures.mouse;
+        mouseMat.map.minFilter = LinearFilter;
+        (mouseMat as any).shininess = 0;
+        mouseMat.transparent = true;
+
+        const mouse = new Mesh(mouseGeo, mouseMat);
+        mouse.name = 'Mouse Mesh Mining';
+        mouse.position.set(HELP_LANDER_1_POSITION[0] + 3.75, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 2.25);
+        mouse.rotation.set(-1.5708, 0, 0);
+        this._scene.add(mouse);
+        mouse.visible = false;
+        this._helpMeshes.mouseMining = mouse;
 
         this._helpTexts.miningControlsTitle = new RightTopMiddleTitleText(
             'Mining Controls',
@@ -467,6 +508,20 @@ export class HelpCtrl {
         if (this._helpCounters.mining > this._helpCounters.miningClear) {
             this._helpCounters.mining = 0;
         }
+
+        if (this._helpCounters.mining < this._helpCounters.miningClear / 2) {
+            this._helpMeshes.keysDownMining.visible = true;
+            this._helpMeshes.mouseMining.visible = true;
+            this._helpMeshes.keysUpMining.visible = false;
+            this._helpMeshes.mouseLeftMining.visible = false;
+        } else {
+            this._helpMeshes.keysUpMining.visible = true;
+            this._helpMeshes.mouseLeftMining.visible = true;
+            this._helpMeshes.keysDownMining.visible = false;
+            this._helpMeshes.mouseMining.visible = false;
+        }
+
+        this._helpCounters.mining++;
     }
 
     /**
@@ -485,6 +540,13 @@ export class HelpCtrl {
         this._helpMeshes.arrowRightAstroWalk.visible = false;
         this._helpMeshes.keysLeftAstroWalk.visible = false;
         this._helpMeshes.keysRightAstroWalk.visible = false;
+        this._helpMeshes.keysDownMining.visible = false;
+        this._helpMeshes.keysUpMining.visible = false;
+        this._helpMeshes.mouseMining.visible = false;
+        this._helpMeshes.mouseLeftMining.visible = false;
+        this._helpActors.miners[0].mesh.visible = false;
+        this._helpActors.miners[1].mesh.visible = false;
+        this._helpActors.miners[2].mesh.visible = false;
         this._helpTexts.landerControlsTitle.hide();
         this._helpTexts.miningControlsTitle.hide();
         this._helpTexts.astronautControlsTitle.hide();
@@ -517,9 +579,17 @@ export class HelpCtrl {
         this._helpTexts.astronautControlsTitle.show();
         this._helpCounters.thrust = 0;
         this._helpCounters.astroWalk = 0;
+        this._helpCounters.mining = 0;
         this._helpActors.astronauts[1].mesh.visible = true;
         this._helpActors.astronauts[3].mesh.visible = true;
         this._helpActors.astronauts[5].mesh.visible = true;
+        this._helpActors.miners[0].mesh.visible = true;
+        this._helpActors.miners[1].mesh.visible = true;
+        this._helpActors.miners[2].mesh.visible = true;
+        this._helpMeshes.keysDownMining.visible = false;
+        this._helpMeshes.keysUpMining.visible = false;
+        this._helpMeshes.mouseMining.visible = false;
+        this._helpMeshes.mouseLeftMining.visible = false;
         Object.values(this._helpPanels).forEach(p => p && p.show());
     }
 }
