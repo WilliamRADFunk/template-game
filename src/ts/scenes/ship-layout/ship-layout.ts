@@ -33,6 +33,7 @@ import { RightTopDialogueText } from '../../controls/text/dialogue/right-top-dia
 import { LeftTopPanel } from '../../controls/panels/left-top-panel';
 import { RightTopPanel } from '../../controls/panels/right-top-panel';
 import { COLORS } from '../../styles/colors';
+import { noOp } from '../../utils/no-op';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -207,7 +208,7 @@ export class ShipLayout {
                     this._textElements.hoverText.update(hit.name);
                     this._textElements.selectionText.update(hit.name);
 
-                    !this._techPellentMeshMap[0].visible ? this._techPellentMeshMap.forEach(x => x.visible = true) : null;
+                    !this._techPellentMeshMap[0].visible ? this._techPellentMeshMap.forEach(x => x.visible = true) : noOp();
                     this._adjustTechPoints([this._cloneTechPoints[hit.name]]);
 
                     this._buttons.minusButton.show();
