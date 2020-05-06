@@ -53,21 +53,45 @@ import { MiningCtrl } from './controllers/mining-controller';
  * 08: Life (plants mostly)
  */
 
+/**
+ * Border value used for dev mode to see outline around text content (for positioning and sizing).
+ */
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
+/**
+ * The amount of horizontal speed the side thrusters can apply per frame while on.
+ */
 const HORIZONTAL_THRUST: number = 0.0001;
 
+/**
+ * Y Coordinate offset for the side thrusters in this scene.
+ */
 const SIDE_THRUSTER_Y_OFFSET: number = 5;
 
+/**
+ * Z Coordinate offset for the side thrusters in this scene.
+ */
 const SIDE_THRUSTER_Z_OFFSET: number = -0.17;
 
+/**
+ * Y Coordinate offset for the main thruster in this scene.
+ */
 const MAIN_THRUSTER_Y_OFFSET: number = 5;
 
+/**
+ * Y Coordinate offset for the main thruster in this scene.
+ */
 const MAIN_THRUSTER_Z_OFFSET: number = 0.16;
 
+/**
+ * The amount of upward vertical speed the main thrusters can apply per frame while on.
+ */
 const VERTICAL_THRUST: number = 0.0002;
 
+/**
+ * The game state mode enum for this scene.
+ */
 export enum LandAndMineState {
     'crashed' = 0,
     'escaped' = 1,
@@ -103,38 +127,89 @@ export class LandAndMine {
         unloadButton: null
     };
 
+    /**
+     * Reference to the ThreeJS camera through which the scene is visible.
+     */
     private _camera: OrthographicCamera;
 
+    /**
+     * Reference to the main Control Panel.
+     */
     private _controlPanel: ControlPanel;
 
+    /**
+     * The current amount of fuel remaining.
+     */
     private _currentFuelLevel: number = 100;
 
+    /**
+     * The current amount of horizontal speed. Negative values denote left directionality.
+     */
     private _currentLanderHorizontalSpeed: number = 0.01;
 
+    /**
+     * The current amount of vertical speed. Negative values denote upward directionality.
+     */
     private _currentLanderVerticalSpeed: number = 0.001;
 
+    /**
+     * The current amount of oxygen remaining.
+     */
     private _currentOxygenLevel: number = 100;
 
+    /**
+     * Reference to current explosion if there is one.
+     */
     private _explosion: Explosion = null;
 
+    /**
+     * The grid array with values of all tiles on game map.
+     */
     private _grid: number[][] = [];
 
+    /**
+     * Reference to the Help Controller.
+     */
     private _helpCtrl: HelpCtrl;
 
+    /**
+     * Flag to tell when drill is moving downward.
+     */
     private _isDrillingDown: boolean = false;
 
+    /**
+     * Flag to tell when drill is moving upward.
+     */
     private _isDrillingUp: boolean = false;
 
+    /**
+     * Flag to tell when the left side thruster is on.
+     */
     private _isLeftThrusting: boolean = false;
 
+    /**
+     * Flag to tell when the right side thruster is on.
+     */
     private _isRightThrusting: boolean = false;
 
+    /**
+     * Flag to tell when the main thruster is on.
+     */
     private _isVerticalThrusting: boolean = false;
 
+    /**
+     * Reference to the ship object.
+     */
     private _lander: Actor;
 
+    /**
+     * All the details about the ship needed for determining speed, suffocation, and crashes.
+     */
     private _landerSpecifications: LanderSpecifications;
 
+    /**
+     * Reference to the left side thruster for lander.
+     */
     private _leftThruster: SideThruster;
 
     /**
@@ -142,18 +217,39 @@ export class LandAndMine {
      */
     private _listenerRef: () => void;
 
+    /**
+     * Reference to the Loot Controller.
+     */
     private _lootCtrl: LootCtrl;
 
+    /**
+     * Reference to the main thruster for lander.
+     */
     private _mainThruster: MainThruster;
 
+    /**
+     * The mesh array with meshes of all tiles on game map.
+     */
     private _meshGrid: Mesh[][] = [];
 
+    /**
+     * Quanity to assign as loot when a lootable block is mined.
+     */
     private _mineCollectCount: number;
 
+    /**
+     * Reference to the Mining Controller.
+     */
     private _miningCtrl: MiningCtrl;
 
+    /**
+     * All the details about the planet body needed for building the scene.
+     */
     private _planetSpecifications: PlanetSpecifications;
 
+    /**
+     * Reference to the right side thruster for lander.
+     */
     private _rightThruster: SideThruster;
 
     /**
@@ -161,14 +257,29 @@ export class LandAndMine {
      */
     private _scene: Scene;
 
+    /**
+     * Tracks current game state mode.
+     */
     private _state: LandAndMineState = LandAndMineState.newGame;
 
+    /**
+     * Text and button objects that were visible before player entered help or settings mode.
+     */
     private _stateStoredObjects: (ButtonBase | TextBase)[] = [];
 
+    /**
+     * Reference to the game's Text Controller.
+     */
     private _txtCtrl: TextCtrl;
 
+    /**
+     * All of the textures contained in the help screen.
+     */
     private _textures: { [key: string]: Texture } = {};
 
+    /**
+     * Array of wind particles to move during endCycle
+     */
     private _windParticles: Mesh[] = [];
 
     /**
