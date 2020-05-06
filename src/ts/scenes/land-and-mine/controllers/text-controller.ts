@@ -51,14 +51,14 @@ export class TextCtrl {
 
     /**
      * Constructor for the TextCtrl Class.
-     * @param scene ThreeJS scene to add meshes to for help screen.
-     * @param planetSpecifications the specifications of the planet on which these stats are based.
-     * @param windSpeed speed of the wind on the planet.
-     * @param startSpeedH starting horizontal speed for lander.
-     * @param startSpeedV starting vertical speed for lander.
-     * @param startOxygen starting percentage of remaining oxygen for lander and crew.
-     * @param startFuel starting percentage of lander's fuel
-     * @param brdr dev environment brdr set in creating class.
+     * @param scene                 ThreeJS scene to add meshes to for help screen.
+     * @param planetSpecifications  the specifications of the planet on which these stats are based.
+     * @param windSpeed             speed of the wind on the planet.
+     * @param startSpeedH           starting horizontal speed for lander.
+     * @param startSpeedV           starting vertical speed for lander.
+     * @param startOxygen           starting percentage of remaining oxygen for lander and crew.
+     * @param startFuel             starting percentage of lander's fuel
+     * @param brdr                  dev environment brdr set in creating class.
      */
     constructor(
         scene: Scene,

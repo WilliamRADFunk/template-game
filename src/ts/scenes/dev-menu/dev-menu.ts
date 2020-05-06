@@ -37,7 +37,7 @@ import { LeftTopDialogueText } from "../../controls/text/dialogue/left-top-dialo
 import { PlanetSpecifications, OreTypes, OreQuantity, SkyTypes, PlanetLandTypes } from "../../models/planet-specifications";
 import { ToggleBase } from "../../controls/buttons/toggle-base";
 import { SmallToggleButton } from "../../controls/buttons/small-toggle-button";
-import { FreestyleText } from "./custom-controls/freestyle-text";
+import { FreestyleText } from "../../controls/text/freestyle-text";
 import { MinusButton } from "../../controls/buttons/minus-button";
 import { PlusButton } from "../../controls/buttons/plus-button";
 import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-button";

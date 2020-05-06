@@ -339,6 +339,7 @@ export class LandAndMine {
             this._scene,
             this._textures,
             this._planetSpecifications,
+            this._landerSpecifications,
             border);
 
         this._txtCtrl = new TextCtrl(

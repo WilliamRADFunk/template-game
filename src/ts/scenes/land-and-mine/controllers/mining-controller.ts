@@ -85,13 +85,13 @@ export class MiningCtrl {
 
     /**
      * Constructor for the Mining Controller class.
-     * @param scene ThreeJS scene for adding and removing object
-     * @param camera camera in the scene for zomming in and out from mining team
-     * @param textures textures needed to make ThreeJS objects
-     * @param grid the grid array with values of all tiles on game map
-     * @param meshGrid the mesh array with meshes of all tiles on game map
-     * @param lootCtrl reference to the Loot Controller to add or remove loot from tally
-     * @param maxDrillLength total number of squares the drill can reach when mining
+     * @param scene             ThreeJS scene for adding and removing object
+     * @param camera            camera in the scene for zomming in and out from mining team
+     * @param textures          textures needed to make ThreeJS objects
+     * @param grid              the grid array with values of all tiles on game map
+     * @param meshGrid          the mesh array with meshes of all tiles on game map
+     * @param lootCtrl          reference to the Loot Controller to add or remove loot from tally
+     * @param maxDrillLength    total number of squares the drill can reach when mining
      */
     constructor(
         scene: Scene,

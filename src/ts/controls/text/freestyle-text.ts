@@ -1,6 +1,6 @@
-import { TextBase } from "../../../controls/text/text-base";
-import { HTMLElementPosition } from "../../../models/html-element-position";
-import { TextType } from "../../../controls/text/text-type";
+import { TextBase } from "./text-base";
+import { HTMLElementPosition } from "../../models/html-element-position";
+import { TextType } from "./text-type";
 
 let index = 0;
 
@@ -9,6 +9,16 @@ let index = 0;
  * Text class for text that will appear where position tells it to be.
  */
 export class FreestyleText extends TextBase {
+    /**
+     * Optionally set font size modifier.
+     */
+    private _fontSize: number;
+
+    /**
+     * Optionally set padding top modifier.
+     */
+    private _topPadding: number;
+
     /**
      * Constructor for the freestyle text sub class
      * @param sentence starting text content.
@@ -22,9 +32,14 @@ export class FreestyleText extends TextBase {
         position: HTMLElementPosition,
         color: string,
         border: string,
-        type: TextType) {
+        type: TextType,
+        fontSize?: number,
+        topPadding?: number) {
         index++;
         super(`freestyle-text-${index}`, sentence, color, 'left', border, type);
+
+        this._fontSize = fontSize || 0.0175;
+        this._topPadding = topPadding || 0.006875;
 
         document.body.appendChild(this.element);
 
@@ -38,7 +53,7 @@ export class FreestyleText extends TextBase {
     public resize(position: HTMLElementPosition) {
         this.element.style.top = `${position.top}px`;
         this.element.style.left = `${position.left}px`;
-        this.element.style.fontSize = `${0.0175 * position.width}px`;
-        this.element.style.paddingTop = `${0.006875 * position.width}px`;
+        this.element.style.fontSize = `${this._fontSize * position.width}px`;
+        this.element.style.paddingTop = `${this._topPadding * position.width}px`;
     }
 }

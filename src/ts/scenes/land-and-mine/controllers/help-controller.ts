@@ -45,8 +45,11 @@ import { SoundinatorSingleton } from "../../../soundinator";
 import { COLORS } from "../../../styles/colors";
 import { noOp } from "../../../utils/no-op";
 import { RightTopTitleText } from "../../../controls/text/title/right-top-title-text";
-import { OreTypeColors, PlanetLandColors, PlanetSpecifications } from "../../../models/planet-specifications";
+import { PlanetLandColors, PlanetSpecifications } from "../../../models/planet-specifications";
 import { colorLuminance } from "../../../utils/color-shader";
+import { LanderSpecifications } from "../../../models/lander-specifications";
+import { RightTopStatsText4 } from "../../../controls/text/stats/right-top-stats-text-4";
+import { FreestyleText } from "../../../controls/text/freestyle-text";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -59,14 +62,49 @@ let border: string;
 const HELP_LANDER_1_POSITION: [number, number, number] = [-2.25, -8, -4];
 
 /**
+ * Sets the starting position of the top right lander.
+ */
+const HELP_LANDER_2_POSITION: [number, number, number] = [2.75, -8, -5];
+
+/**
  * Sets the starting position of the top left main thruster.
  */
-const HELP_MAIN_THRUSTER_POSITION: [number, number, number] = [-2.25, -7, -3.7];
+const HELP_MAIN_THRUSTER_1_POSITION: [number, number, number] = [-2.25, -7, -3.7];
+
+/**
+ * Sets the starting position of the top right main thruster.
+ */
+const HELP_MAIN_THRUSTER_2_POSITION: [number, number, number] = [2.75, -7, -4.7];
 
 /**
  * Sets the starting position of the top left side thrusters.
  */
-const HELP_SIDE_THRUSTER_POSITION: [number, number, number] = [-2.25, -7, -4.37];
+const HELP_SIDE_THRUSTER_1_POSITION: [number, number, number] = [-2.25, -7, -4.37];
+
+/**
+ * Sets the starting position of the top right side thrusters.
+ */
+const HELP_SIDE_THRUSTER_2_POSITION: [number, number, number] = [2.75, -7, -5.37];
+
+/**
+ * Y Coordinate offset for the side thrusters in this scene.
+ */
+const SIDE_THRUSTER_Y_OFFSET: number = 1;
+
+/**
+ * Z Coordinate offset for the side thrusters in this scene.
+ */
+const SIDE_THRUSTER_Z_OFFSET: number = -0.37;
+
+/**
+ * Y Coordinate offset for the main thruster in this scene.
+ */
+const MAIN_THRUSTER_Y_OFFSET: number = 1;
+
+/**
+ * Y Coordinate offset for the main thruster in this scene.
+ */
+const MAIN_THRUSTER_Z_OFFSET: number = 0.32;
 
 /**
  * Sets the starting position of the top left lander.
@@ -104,6 +142,9 @@ export class HelpCtrl {
         astroWalkClear: 360,
         landingThresholds: 0,
         landingThresholdsClear: 720,
+        landingThresholdsGravity: 0.0005,
+        landingThresholdsHorizontalSpeed: 0,
+        landingThresholdsVerticalSpeed: 0,
         mining: 0,
         miningClear: 720,
         thrust: 0,
@@ -133,6 +174,11 @@ export class HelpCtrl {
     private _helpPanels: { [key: string]: PanelBase } = {}
 
     /**
+     * All the details about the ship needed for determining speed, suffocation, and crashes.
+     */
+    private _landerSpecifications: LanderSpecifications;
+
+    /**
      * All the details about the planet body needed for building the scene.
      */
     private _planetSpecifications: PlanetSpecifications;
@@ -149,14 +195,22 @@ export class HelpCtrl {
 
     /**
      * Constructor for the HelpCtrl Class.
-     * @param scene ThreeJS scene to add meshes to for help screen.
-     * @param textures textures used to make certain meshes in the help screen.
-     * @param brdr dev environment brdr set in creating class.
+     * @param scene                 ThreeJS scene to add meshes to for help screen.
+     * @param textures              textures used to make certain meshes in the help screen.
+     * @param planetSpecifications  all the details about the planet body needed for building the scene.
+     * @param landerSpecifications  all the details about the ship needed for determining speed, suffocation, and crashes.
+     * @param brdr                  dev environment brdr set in creating class.
      */
-    constructor(scene: Scene, textures: { [key: string]: Texture }, planetSpecifications: PlanetSpecifications, brdr: string) {
+    constructor(
+        scene: Scene,
+        textures: { [key: string]: Texture },
+        planetSpecifications: PlanetSpecifications,
+        landerSpecifications: LanderSpecifications,
+        brdr: string) {
         this._scene = scene;
         this._textures = textures;
         this._planetSpecifications = planetSpecifications;
+        this._landerSpecifications = landerSpecifications;
         border = brdr;
         this._buildHelpScreen();
     }
@@ -214,9 +268,9 @@ export class HelpCtrl {
         this._helpMeshes.lander1.visible = false;
         this._helpMeshes.lander1.scale.set(2, 2, 2);
         this._scene.add(this._helpMeshes.lander1);
-        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, -1, 1.5);
-        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_POSITION, 1, 1.5);
-        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_POSITION, 2);
+        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_1_POSITION, -1, 1.5);
+        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_1_POSITION, 1, 1.5);
+        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_1_POSITION, 2);
 
         // Right Arrow graphics
         const arrowGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
@@ -331,6 +385,67 @@ export class HelpCtrl {
                 this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col + 0.5] = block;
             }
         }
+
+        // Landing Thresholds Lander graphics
+        this._helpMeshes.lander2 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
+        this._helpMeshes.lander2.visible = false;
+        this._helpMeshes.lander2.scale.set(2, 2, 2);
+        this._scene.add(this._helpMeshes.lander2);
+        this._helpActors.sideThruster2Left = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, -1, 1.5);
+        this._helpActors.sideThruster2Right = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, 1, 1.5);
+        this._helpActors.mainThruster2 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_2_POSITION, 2);
+
+        // Landing Thresholds Vertical Speed Text graphics
+        this._helpTexts.landingThresholdVerticalSpeed = new FreestyleText(
+            'Descent Speed: 0.000',
+            { height, left: (left + width - (0.49 * width)), top: (0.06 * height), width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingThresholdVerticalSpeed.hide();
+
+        // Landing Thresholds Danger Text graphics
+        this._helpTexts.landingThresholdDanger = new FreestyleText(
+            'Crash Risk!',
+            { height, left: (left + width - (0.49 * width)), top: (0.08 * height), width },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingThresholdDanger.hide();
+
+        // Landing Thresholds Safe Text graphics
+        this._helpTexts.landingThresholdSafe = new FreestyleText(
+            'Safe to Land',
+            { height, left: (left + width - (0.49 * width)), top: (0.08 * height), width },
+            COLORS.highlighted,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingThresholdSafe.hide();
+
+        // Landing Thresholds Vertical Threshold Text graphics
+        this._helpTexts.landingThresholdVerticalThreshold = new RightTopStatsText4(
+            `Vertical Threshold: ${this._landerSpecifications.verticalCrashMargin}&nbsp;&nbsp;&nbsp;&nbsp;`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landingThresholdVerticalThreshold.hide();
+
+        // Landing Thresholds Horizontal Threshold Text graphics
+        this._helpTexts.horizontalThreshold = new RightTopStatsText4(
+            `Horizontal Threshold: ${this._landerSpecifications.horizontalCrashMargin}&nbsp;&nbsp;&nbsp;&nbsp;`,
+            { height, left: left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.horizontalThreshold.hide();
 
         // Landing Thresholds Text graphics
         this._helpTexts.landingThresholdsTitle = new RightTopTitleText(
@@ -617,14 +732,13 @@ export class HelpCtrl {
         SoundinatorSingleton.pauseSound();
 
     //#region LANDER CONTROLS SECTION
-        // Thruster controls section
         if (this._helpCounters.thrust > this._helpCounters.thrustClear) {
             this._helpCounters.thrust = 0;
         }
 
-        this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
-        this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
-        this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
+        this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
         this._helpMeshes.arrowLeft.visible = false;
         this._helpMeshes.arrowRight.visible = false;
         this._helpMeshes.arrowUp.visible = false;
@@ -634,22 +748,112 @@ export class HelpCtrl {
 
         const val = this._helpCounters.thrustClear / 3;
         if (this._helpCounters.thrust < val) {
-            this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, true);
+            this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, true);
             this._helpMeshes.arrowUp.visible = true;
             this._helpMeshes.keysUp.visible = true;
         } else if (this._helpCounters.thrust < (val * 2)) {
-            this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
+            this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, true);
             this._helpMeshes.arrowRight.visible = true;
             this._helpMeshes.keysRight.visible = true;
         } else {
-            this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, true);
+            this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, true);
             this._helpMeshes.arrowLeft.visible = true;
             this._helpMeshes.keysLeft.visible = true;
         }
 
 //#endregion
     //#region THRESHOLDS SECTION
+        if (this._helpCounters.landingThresholds > this._helpCounters.landingThresholdsClear) {
+            this._helpCounters.landingThresholds = 0;
+        }
 
+        this._helpTexts.horizontalThreshold.hide();
+        this._helpTexts.landingThresholdDanger.hide();
+        this._helpTexts.landingThresholdSafe.hide();
+        this._helpTexts.landingThresholdVerticalSpeed.hide();
+        this._helpTexts.landingThresholdVerticalThreshold.hide();
+        this._helpActors.mainThruster2.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThruster2Left.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThruster2Right.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpMeshes.lander2.visible = false;
+
+        if (this._helpCounters.landingThresholds === 0) {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdVerticalSpeed.update('Descent Speed: 0.0000');
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
+            this._helpActors.sideThruster2Left = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, -1, 1.5);
+            this._helpActors.sideThruster2Right = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, 1, 1.5);
+            this._helpActors.mainThruster2 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_2_POSITION, 2);
+        } else if (this._helpCounters.landingThresholds < 60) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._helpTexts.landingThresholdVerticalSpeed.update(
+                `Descent Speed: ${this._helpCounters.landingThresholdsVerticalSpeed.toFixed(4)}`);
+
+            let currPos = this._helpMeshes.lander2.position;
+            this._helpMeshes.lander2.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingThresholdsVerticalSpeed);
+            currPos = this._helpMeshes.lander2.position;
+            this._helpActors.sideThruster2Left.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._helpActors.sideThruster2Right.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._helpActors.mainThruster2.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+
+            if (this._helpCounters.landingThresholdsVerticalSpeed > this._landerSpecifications.verticalCrashMargin) {
+                this._helpTexts.landingThresholdDanger.show();
+                this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.selected);
+            } else {
+                this._helpTexts.landingThresholdSafe.show();
+                this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.neutral);
+            }
+
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 65) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity - 0.005;
+            this._helpTexts.landingThresholdVerticalSpeed.update(
+                `Descent Speed: ${this._helpCounters.landingThresholdsVerticalSpeed.toFixed(4)}`);
+
+            let currPos = this._helpMeshes.lander2.position;
+            this._helpMeshes.lander2.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingThresholdsVerticalSpeed);
+            currPos = this._helpMeshes.lander2.position;
+            this._helpActors.sideThruster2Left.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._helpActors.sideThruster2Right.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._helpActors.mainThruster2.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
+
+            if (this._helpCounters.landingThresholdsVerticalSpeed > this._landerSpecifications.verticalCrashMargin) {
+                this._helpTexts.landingThresholdDanger.show();
+                this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.selected);
+            } else {
+                this._helpTexts.landingThresholdSafe.show();
+                this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.neutral);
+            }
+
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 90) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._helpTexts.landingThresholdVerticalSpeed.update(
+                `Descent Speed: ${this._helpCounters.landingThresholdsVerticalSpeed.toFixed(4)}`);
+
+            let currPos = this._helpMeshes.lander2.position;
+            this._helpMeshes.lander2.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingThresholdsVerticalSpeed);
+            currPos = this._helpMeshes.lander2.position;
+            this._helpActors.sideThruster2Left.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._helpActors.sideThruster2Right.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+            this._helpActors.mainThruster2.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+        }
+
+        this._helpMeshes.lander2.visible = true;
+        this._helpTexts.landingThresholdSafe.show();
+        this._helpTexts.landingThresholdVerticalSpeed.show();
+        this._helpTexts.landingThresholdVerticalThreshold.show();
+        this._helpCounters.landingThresholds++;
     //#endregion
     //#region ASTRONAUTS CONTROLS SECTION
         this._helpCounters.thrust++;
@@ -810,12 +1014,21 @@ export class HelpCtrl {
         this._helpMeshes.keysUp.visible = false;
         this._helpMeshes.keysLeft.visible = false;
         this._helpMeshes.keysRight.visible = false;
-        this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
-        this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
-        this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
+        this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
         this._helpTexts.landerControlsTitle.hide();
 
         // Landing Thresholds
+        this._helpMeshes.lander2.visible = false;
+        this._helpActors.sideThruster2Left.endCycle(HELP_SIDE_THRUSTER_2_POSITION, false);
+        this._helpActors.sideThruster2Right.endCycle(HELP_SIDE_THRUSTER_2_POSITION, false);
+        this._helpActors.mainThruster2.endCycle(HELP_MAIN_THRUSTER_2_POSITION, false);
+        this._helpTexts.horizontalThreshold.hide();
+        this._helpTexts.landingThresholdDanger.hide();
+        this._helpTexts.landingThresholdSafe.hide();
+        this._helpTexts.landingThresholdVerticalSpeed.hide();
+        this._helpTexts.landingThresholdVerticalThreshold.hide();
         this._helpTexts.landingThresholdsTitle.hide();
         for (let row = 0; row < this._helpTerrainMeshes.landingThresholdsGroundSpeed.length; row++) {
             if (this._helpTerrainMeshes.landingThresholdsGroundSpeed[row]) {
@@ -866,6 +1079,11 @@ export class HelpCtrl {
             .filter(key => !!this._helpTexts[key])
             .forEach(key => this._helpTexts[key].resize({ height, left, top, width }));
 
+
+        this._helpTexts.landingThresholdVerticalSpeed.resize({ height, left: (left + width - (0.49 * width)), top: (0.065 * height), width });
+        this._helpTexts.landingThresholdDanger.resize({ height, left: (left + width - (0.49 * width)), top: (0.08 * height), width });
+        this._helpTexts.landingThresholdSafe.resize({ height, left: (left + width - (0.49 * width)), top: (0.08 * height), width });
+
         this._helpButtons.mineButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
         this._helpButtons.minePressedButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
         this._helpButtons.packUpButton.resize({ left: left + (0.663 * width), height, top: height - (0.67 * height), width });
@@ -886,6 +1104,7 @@ export class HelpCtrl {
         this._helpCounters.thrust = 0;
 
         // Landing Thresholds
+        this._helpMeshes.lander2.visible = true;
         this._helpTexts.landingThresholdsTitle.show();
         for (let row = 0; row < this._helpTerrainMeshes.landingThresholdsGroundSpeed.length; row++) {
             if (this._helpTerrainMeshes.landingThresholdsGroundSpeed[row]) {
@@ -896,6 +1115,7 @@ export class HelpCtrl {
                 }
             }
         }
+        this._helpCounters.landingThresholds = 0;
 
         // Astronaut Controls
         this._helpTexts.astronautControlsTitle.show();

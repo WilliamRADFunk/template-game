@@ -36,8 +36,8 @@ export class LootCtrl {
 
     /**
      * Constructor for the Loot Controller class.
-     * @param oreKey ore enum lookup value for the current planetary body.
-     * @param lootCtrl reference to the Text Controller to update loot values
+     * @param oreKey    ore enum lookup value for the current planetary body.
+     * @param lootCtrl  reference to the Text Controller to update loot values
      */
     constructor(oreKey: OreTypes, txtCtrl: TextCtrl) {
         this._oreKey = oreKey;
