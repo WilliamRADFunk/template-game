@@ -8,20 +8,39 @@ import {
     Vector3 } from "three";
 
 import { Actor } from "../../../models/actor";
-import { createMiningTeam } from "../actors/create-mining-team";
+import { createMiningTeam } from "../utils/create-mining-team";
 import { SoundinatorSingleton } from "../../../soundinator";
 import { LootCtrl } from "./loot-controller";
 import { ButtonBase } from "../../../controls/buttons/button-base";
 
+/**
+ * @class
+ * The mining controller class - performs all actions and animations related to movement of miners and the mining process.
+ */
 export class MiningCtrl {
+    /**
+     * The mining team.
+     */
     private _astronauts: Actor[] = [];
 
+    /**
+     * Flag to track if mining team is currently moving left.
+     */
     private _isMiningTeamMovingLeft: boolean = false;
 
+    /**
+     * Flag to track if mining team is currently moving right.
+     */
     private _isMiningTeamMovingRight: boolean = false;
 
+    /**
+     * Camera in the scene for zomming in and out from mining team.
+     */
     private _camera: OrthographicCamera;
 
+    /**
+     * Counters used for tracking animation frames.
+     */
     private _counters: { [key: string]: number } = {
         astronautWalkingCounter: 0,
         astronautWalkingCounterClear: 10,
@@ -29,14 +48,29 @@ export class MiningCtrl {
         suffocatingCounterClear: 99
     };
 
+    /**
+     * Array of drill bit meshes currently on scene in order of creation and depth.
+     */
     private _drillBits: Mesh[] = [];
 
+    /**
+     * Total number of squares the drill can reach when mining.
+     */
     private _maxDrillLength: number;
 
+    /**
+     * The grid array with values of all tiles on game map.
+     */
     private _grid: number[][] = [];
 
+    /**
+     * Reference to the Loot Controller to add or remove loot from tally.
+     */
     private _lootCtrl: LootCtrl;
 
+    /**
+     * The mesh array with meshes of all tiles on game map.
+     */
     private _meshGrid: Mesh[][] = [];
 
     /**
@@ -44,8 +78,21 @@ export class MiningCtrl {
      */
     private _scene: Scene;
 
+    /**
+     * Textures needed to make ThreeJS objects.
+     */
     private _textures: { [key: string]: Texture } = {};
 
+    /**
+     * Constructor for the Mining Controller class.
+     * @param scene ThreeJS scene for adding and removing object
+     * @param camera camera in the scene for zomming in and out from mining team
+     * @param textures textures needed to make ThreeJS objects
+     * @param grid the grid array with values of all tiles on game map
+     * @param meshGrid the mesh array with meshes of all tiles on game map
+     * @param lootCtrl reference to the Loot Controller to add or remove loot from tally
+     * @param maxDrillLength total number of squares the drill can reach when mining
+     */
     constructor(
         scene: Scene,
         camera: OrthographicCamera,
@@ -83,6 +130,12 @@ export class MiningCtrl {
         });
     }
 
+    /**
+     * Calculates the position of each miner, and the equipment.
+     * @param left is team moving left
+     * @param right is team moving right
+     * @returns the position values for left miner, equipment, and right miner, plus if any of them wrapped to other side of screen
+     */
     private _getMiningTeamsPositions(left: boolean, right: boolean): {
         left: [number, number, number];
         middle: [number, number, number];
@@ -192,6 +245,10 @@ export class MiningCtrl {
         return newPositions;
     }
 
+    /**
+     * Perform all actions related to putting the miners on the screen.
+     * @param landerPos position vector of the parked ship
+     */
     public disembark(landerPos: Vector3): void {
         const astroLeft = this._astronauts[0];
         const miningEquipment = this._astronauts[1];
@@ -219,6 +276,11 @@ export class MiningCtrl {
         }, 100);
     }
 
+    /**
+     * Performs all actions involved in the drill moving downward.
+     * @param value quantity value of a loot block when mined
+     * @param packUpBtn reference to button that should disappear when drill is not all the way up
+     */
     public drillDown(value: number, packUpBtn: ButtonBase): void {
         const currentDrillBit = this._drillBits[this._drillBits.length - 1];
         const currDrillPos = currentDrillBit.position;
@@ -287,6 +349,10 @@ export class MiningCtrl {
         }
     }
 
+    /**
+     * Performs all actions involved in the drill moving upward.
+     * @param packUpBtn reference to button that should appear when drill is all the way up
+     */
     public drillUp(packUpBtn: ButtonBase): void {
         const currentDrillBit = this._drillBits[this._drillBits.length - 1];
         const currDrillPos = currentDrillBit.position;
@@ -304,14 +370,25 @@ export class MiningCtrl {
         }
     }
 
+    /**
+     * Getter for current position of equipment portion of the mining team.
+     * @returns position vector of the equipment portion of the mining team
+     */
     public getEquipmentPosition(): Vector3 {
         return this._astronauts[1].mesh.position;
     }
 
+    /**
+     * Getter for whether or not the astronauts dies of suffocation.
+     * @returns suffocation state of the astronauts, TRUE === dead | FALSE not dead
+     */
     public hasSuffocated(): boolean {
         return this._counters.suffocatingCounter >= this._counters.suffocatingCounterClear;
     }
 
+    /**
+     * Perform all actions related to removing the miners on the screen.
+     */
     public loadMiners(): void {
         this._astronauts.filter(astro => !!astro).forEach(astro => {
             astro.mesh.visible = false;
@@ -325,12 +402,18 @@ export class MiningCtrl {
         }, 100);
     }
 
+    /**
+     * Perform all actions related to removing the drill on the screen.
+     */
     public packupDrill(): void {
         this._drillBits.forEach(bit => bit && this._scene.remove(bit));
         this._drillBits.length = 0;
         SoundinatorSingleton.stopDrilling();
     }
 
+    /**
+     * Perform the endCycle iteration for astronaut suffocation animation.
+     */
     public runSuffocationSequence(): void {
         if (this._counters.suffocatingCounter % 20 === 0) {
             this._astronauts.filter(astro => !!astro).forEach((astro, index) => {
@@ -350,6 +433,9 @@ export class MiningCtrl {
         }
     }
 
+    /**
+     * Perform all actions related to putting the drill on the screen.
+     */
     public setupDrill(): void {
         const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
         const drillMat = new MeshPhongMaterial({
@@ -369,6 +455,10 @@ export class MiningCtrl {
         SoundinatorSingleton.playDrilling();
     }
 
+    /**
+     * Perform all actions related to the astronauts halting after walking.
+     * @param goingLeft TRUE was walking toward the left | FALSE was walking toward the right
+     */
     public standing(goingLeft: boolean): void {
         this._counters.astronautWalkingCounter = 0;
         this._isMiningTeamMovingLeft = false;
@@ -397,6 +487,10 @@ export class MiningCtrl {
         this._camera.updateProjectionMatrix();
     }
 
+    /**
+     * Perform all actions related to the astronauts starting to walk.
+     * @param goingLeft TRUE walking toward the left | FALSE walking toward the right
+     */
     public startWalking(goingLeft: boolean): void {
         this._isMiningTeamMovingLeft = goingLeft;
         this._isMiningTeamMovingRight = !goingLeft;
@@ -406,10 +500,16 @@ export class MiningCtrl {
         }
     }
 
+    /**
+     * Perform all actions related to the astronauts dying.
+     */
     public suffocating(): void {
         this._counters.suffocatingCounter++;
     }
 
+    /**
+     * Perform all actions related to the astronauts walking left or right.
+     */
     public walking(): void {
         if (this._isMiningTeamMovingLeft) {
             this._counters.astronautWalkingCounter++;

@@ -10,10 +10,10 @@ import {
     Texture } from "three";
 
 // Local utilities
-import { createLander } from "../actors/create-lander";
-import { createMiningTeam } from "../actors/create-mining-team";
-import { MainThruster } from "../actors/main-thruster";
-import { SideThruster } from "../actors/side-thruster";
+import { createLander } from "../utils/create-lander";
+import { createMiningTeam } from "../utils/create-mining-team";
+import { MainThruster } from "../utils/main-thruster";
+import { SideThruster } from "../utils/side-thruster";
 
 // Panels
 import { LeftBottomMiddlePanel } from "../../../controls/panels/left-bottom-middle-panel";
@@ -44,6 +44,7 @@ import { Actor } from "../../../models/actor";
 import { SoundinatorSingleton } from "../../../soundinator";
 import { COLORS } from "../../../styles/colors";
 import { noOp } from "../../../utils/no-op";
+import { RightTopTitleText } from "../../../controls/text/title/right-top-title-text";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -97,12 +98,14 @@ export class HelpCtrl {
      * All of the counters, and counter clearing threasholds.
      */
     private _helpCounters: { [key: string]: number } = {
-        thrust: 0,
-        thrustClear: 360,
         astroWalk: 0,
         astroWalkClear: 360,
+        landingThresholds: 0,
+        landingThresholdsClear: 720,
         mining: 0,
-        miningClear: 720
+        miningClear: 720,
+        thrust: 0,
+        thrustClear: 360
     }
 
     /**
@@ -144,7 +147,6 @@ export class HelpCtrl {
     }
 
 
-//#region BUILD_HELP_SCREEN()
     /**
      * Coordinates the creation of all the help screen content.
      */
@@ -293,6 +295,16 @@ export class HelpCtrl {
         this._helpTexts.landerControlsTitle.hide();
 
 //#endregion
+    //#region THRESHOLDS SETUP
+        // Landing Thresholds Text graphics
+        this._helpTexts.landingThresholdsTitle = new RightTopTitleText(
+            'Landing Thresholds',
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landingThresholdsTitle.hide();
+    //#endregion
     //#region ASTRONAUT CONTROLS SETUP
         // Create astronaut mining team for astronaut controls
         this._helpActors.astronauts = createMiningTeam(
@@ -529,9 +541,7 @@ export class HelpCtrl {
 
     //#endregion
     }
-//#endregion
 
-//#region MAKE_DRILL_BIT()
     /**
      * Creates a drill bit and places it at the position set by parameters.
      * @param x coordinate for the drill bit's position
@@ -554,17 +564,16 @@ export class HelpCtrl {
         this._drillBits.push(drillMesh);
         this._scene.add(drillMesh);
     }
-//#endregion
 
-//#region DISPOSE()
+    /**
+     * Removes anything that might stick around after Help Controller is destroyed.
+     */
     public dispose(): void {
         Object.keys(this._helpTexts)
             .filter(key => !!this._helpTexts[key])
             .forEach(key => this._helpTexts[key].dispose());
     }
-//#endregion
 
-//#region END_CYCLE()
     /**
      * Calls the next frame in the animation cycle.
      */
@@ -603,6 +612,9 @@ export class HelpCtrl {
         }
 
 //#endregion
+    //#region THRESHOLDS SECTION
+
+    //#endregion
     //#region ASTRONAUTS CONTROLS SECTION
         this._helpCounters.thrust++;
 
@@ -745,9 +757,7 @@ export class HelpCtrl {
         this._helpCounters.mining++;
     //#endregion
     }
-//#endregion
 
-//#region HIDE()
     /**
      * Sets all help content to be hidden.
      */
@@ -768,6 +778,9 @@ export class HelpCtrl {
         this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_POSITION, false);
         this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_POSITION, false);
         this._helpTexts.landerControlsTitle.hide();
+
+        // Landing Thresholds
+        this._helpTexts.landingThresholdsTitle.hide();
 
         // Astronaut Controls
         this._helpMeshes.arrowLeftAstroWalk.visible = false;
@@ -799,9 +812,7 @@ export class HelpCtrl {
         this._drillBits[0].visible = false;
         this._drillBits.length = 1;
     }
-//#endregion
 
-//#region ON_WINDOW_RESIZE()
     /**
      * Resizes non-threejs content to the new window size.
      */
@@ -815,9 +826,7 @@ export class HelpCtrl {
         this._helpButtons.packUpButton.resize({ left: left + (0.663 * width), height, top: height - (0.67 * height), width });
         this._helpButtons.packUpPressedButton.resize({ left: left + (0.663 * width), height, top: height - (0.67 * height), width });
     }
-//#endregion
 
-//#region SHOW()
     /**
      * Sets all help content to visible, and to start initialized.
      */
@@ -830,6 +839,9 @@ export class HelpCtrl {
         this._helpMeshes.lander1.visible = true;
         this._helpTexts.landerControlsTitle.show();
         this._helpCounters.thrust = 0;
+
+        // Landing Thresholds
+        this._helpTexts.landingThresholdsTitle.show();
 
         // Astronaut Controls
         this._helpTexts.astronautControlsTitle.show();
@@ -851,5 +863,4 @@ export class HelpCtrl {
         this._helpTexts.miningControlsTitle.show();
         this._helpCounters.mining = 0;
     }
-//#endregion
 }

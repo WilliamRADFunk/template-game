@@ -14,17 +14,17 @@ import { Actor } from '../../models/actor';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
-import { createLander } from './actors/create-lander';
+import { createLander } from './utils/create-lander';
 import {
     PlanetSpecifications,
     OreTypeColors,
     SkyColors,
     PlanetLandColors } from '../../models/planet-specifications';
-import { MainThruster } from './actors/main-thruster';
-import { SideThruster } from './actors/side-thruster';
+import { MainThruster } from './utils/main-thruster';
+import { SideThruster } from './utils/side-thruster';
 import { Explosion } from '../../weapons/explosion';
 import { colorLuminance } from '../../utils/color-shader';
-import { createWindParticles } from './actors/create-wind-particles';
+import { createWindParticles } from './utils/create-wind-particles';
 import { StartButton } from '../../controls/buttons/start-button';
 import { BUTTON_COLORS } from '../../styles/button-colors';
 import { UnloadButton } from '../../controls/buttons/unload-button';
@@ -253,6 +253,9 @@ export class LandAndMine {
             landerSpecifications.drillLength);
     }
 
+    /**
+     * Fills in the sky, space, and escape line values for the grid tiles.
+     */
     private _buildSky(): void {
         for (let row = 120; row > 110; row--) {
             for (let col = 0; col < 121; col++) {
@@ -273,6 +276,10 @@ export class LandAndMine {
         }
     }
 
+    /**
+     * Procedurally generates the grid values for all solid planetary matter (ie. ground, water, ore).
+     * @param startY vertical coordinate of the top-most, left-most groundish grid tile.
+     */
     private _buildTerrain(startY: number): void {
         for (let i = 0; i < 121; i++) {
             this._grid[i] = [];
@@ -303,6 +310,9 @@ export class LandAndMine {
         }
     }
 
+    /**
+     * Performs all the functionality associated with the ship blowing up.
+     */
     private _crashedEffects(currPos: Vector3, landerCol: number, landerRow: number): void {
         this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
         this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
@@ -313,6 +323,9 @@ export class LandAndMine {
         setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
     }
 
+    /**
+     * Creates all the meshes that match the values in the grid array.
+     */
     private _createEnvironmentMeshes(): void {
         const skyMats: MeshBasicMaterial[] = [];
         for (let i = 0; i < 9; i++) {
@@ -477,10 +490,18 @@ export class LandAndMine {
         this._meshGrid[111][58] = oreBlock;
     }
 
+    /**
+     * Calls the wind creation utility and stuff the result into a local variable for later use.
+     */
     private _createWind(): void {
         this._windParticles = createWindParticles(this._scene, '#000000');
     }
 
+    /**
+     * Systematically destroys ground tiles within range of an explosion's blast.
+     * @param col grid column index where explosion originates
+     * @param row grid row index where explosion originates
+     */
     private _destroyTiles(col: number, row: number): void {
         const left = col !== 0 ? col - 1 : 120;
         const right = col !== 120 ? col + 1 : 0;
@@ -557,18 +578,30 @@ export class LandAndMine {
         });
     }
 
+    /**
+     * Makes all existing buttons unclickable.
+     */
     private _disableAllButtons(): void {
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].disable());
     }
 
+    /**
+     * Makes all existing buttons clickable.
+     */
     private _enableAllButtons(): void {
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].enable());
     }
 
+    /**
+     * Populates mesh land in a downwards fashion to create above and below ground bodies of water.
+     * @param x coordinate from which to start populating sideways from
+     * @param y coordinate from which to start populating sideways from
+     * @param isWater if the tile belonging to the x,y coordinates is already water
+     */
     private _downPopulate(x: number, y: number, isWater?: boolean): void {
         let waterAbove = isWater;
         for (let row = y - 1; row >= 0; row--) {
@@ -596,6 +629,10 @@ export class LandAndMine {
         }
     }
 
+    /**
+     * Assesses whether at least one suitable landing spot exists, and if not, creates a space flat enough to land.
+     * @param startY starting vertical coordinate when checking top ground layer
+     */
     private _enforceMinLanding(startY: number): void {
         let prevY = startY;
         let count = 1;
@@ -641,6 +678,10 @@ export class LandAndMine {
         }
     }
 
+    /**
+     * Freezes water above ground if planet specification express frozen temperatures.
+     * @param iceMat the ThreeJS material for ice.
+     */
     private _freezeWater(iceMat: MeshBasicMaterial): void {
         if (!this._planetSpecifications.isFrozen) {
             return;
@@ -666,13 +707,13 @@ export class LandAndMine {
                     const iceBlock = new Object3D();
                     // Ice border
                     let block = new Mesh( outerGeo, iceMat );
-                    block.name = `${Math.random()} - ground - `;
+                    block.name = `${Math.random()} - ice exterior - `;
                     block.position.set(-6 + (col/10), 15.5, 6 - row/10);
                     block.rotation.set(1.5708, 0, 0);
                     iceBlock.add(block);
                     // Watery center
                     block = new Mesh( innerGeo, waterMat );
-                    block.name = `${Math.random()} - ground - `;
+                    block.name = `${Math.random()} - water interior - `;
                     block.position.set(-6 + (col/10), 15, 6 - row/10);
                     block.rotation.set(1.5708, 0, 0);
                     iceBlock.add(block);
@@ -972,6 +1013,12 @@ export class LandAndMine {
         this._helpCtrl.onWindowResize(height, left, null, width);
     }
 
+    /**
+     * Populates mesh land in a sideways fashion to create above and below ground bodies of water.
+     * @param x coordinate from which to start populating sideways from
+     * @param y coordinate from which to start populating sideways from
+     * @param direction direction sideways to populate, -1 left | +1 right
+     */
     private _sidePopulate(x: number, y: number, direction: number) {
         const waterTileCheck = Math.random() * 100;
         if (waterTileCheck < 80) {
@@ -982,6 +1029,9 @@ export class LandAndMine {
         }
     }
 
+    /**
+     * Creates water and ice tiles in a way water might naturally flow.
+     */
     private _waterFlow():void {
         let changeMade = false;
 
