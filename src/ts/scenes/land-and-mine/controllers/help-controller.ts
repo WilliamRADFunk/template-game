@@ -45,6 +45,8 @@ import { SoundinatorSingleton } from "../../../soundinator";
 import { COLORS } from "../../../styles/colors";
 import { noOp } from "../../../utils/no-op";
 import { RightTopTitleText } from "../../../controls/text/title/right-top-title-text";
+import { OreTypeColors, PlanetLandColors, PlanetSpecifications } from "../../../models/planet-specifications";
+import { colorLuminance } from "../../../utils/color-shader";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -114,6 +116,13 @@ export class HelpCtrl {
     private _helpMeshes: { [key: string]: Mesh | Object3D } = {}
 
     /**
+     * All of the terrain-based meshes contained in the help screen.
+     */
+    private _helpTerrainMeshes: { [key: string]: (Mesh[][] | Object3D[][]) } = {
+        landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][]
+    }
+
+    /**
      * All of the HTML text contained in the help screen.
      */
     private _helpTexts: { [key: string]: TextBase } = {}
@@ -122,6 +131,11 @@ export class HelpCtrl {
      * All of the background panels contained in the help screen.
      */
     private _helpPanels: { [key: string]: PanelBase } = {}
+
+    /**
+     * All the details about the planet body needed for building the scene.
+     */
+    private _planetSpecifications: PlanetSpecifications;
 
     /**
      * All of the textures contained in the help screen.
@@ -139,9 +153,10 @@ export class HelpCtrl {
      * @param textures textures used to make certain meshes in the help screen.
      * @param brdr dev environment brdr set in creating class.
      */
-    constructor(scene: Scene, textures: { [key: string]: Texture }, brdr: string) {
+    constructor(scene: Scene, textures: { [key: string]: Texture }, planetSpecifications: PlanetSpecifications, brdr: string) {
         this._scene = scene;
         this._textures = textures;
+        this._planetSpecifications = planetSpecifications;
         border = brdr;
         this._buildHelpScreen();
     }
@@ -296,6 +311,27 @@ export class HelpCtrl {
 
 //#endregion
     //#region THRESHOLDS SETUP
+        // The ground for landing
+        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+        const commonRockMat = new MeshBasicMaterial({
+            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        for (let row = 27; row < 31; row++) {
+            this._helpTerrainMeshes.landingThresholdsGroundSpeed[row] = [];
+            for (let col = -0.5; col < 59; col++) {
+                const block = new Mesh( geo, commonRockMat );
+                block.name = `Landing Thresholds - Ground - Speed`;
+                block.position.set((col/10), -8, -6 + row/10);
+                block.rotation.set(1.5708, 0, 0);
+                block.visible = false;
+                this._scene.add(block);
+                this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col + 0.5] = block;
+            }
+        }
+
         // Landing Thresholds Text graphics
         this._helpTexts.landingThresholdsTitle = new RightTopTitleText(
             'Landing Thresholds',
@@ -781,6 +817,15 @@ export class HelpCtrl {
 
         // Landing Thresholds
         this._helpTexts.landingThresholdsTitle.hide();
+        for (let row = 0; row < this._helpTerrainMeshes.landingThresholdsGroundSpeed.length; row++) {
+            if (this._helpTerrainMeshes.landingThresholdsGroundSpeed[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingThresholdsGroundSpeed[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col]) {
+                        this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col].visible = false;
+                    }
+                }
+            }
+        }
 
         // Astronaut Controls
         this._helpMeshes.arrowLeftAstroWalk.visible = false;
@@ -842,6 +887,15 @@ export class HelpCtrl {
 
         // Landing Thresholds
         this._helpTexts.landingThresholdsTitle.show();
+        for (let row = 0; row < this._helpTerrainMeshes.landingThresholdsGroundSpeed.length; row++) {
+            if (this._helpTerrainMeshes.landingThresholdsGroundSpeed[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingThresholdsGroundSpeed[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col]) {
+                        this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col].visible = true;
+                    }
+                }
+            }
+        }
 
         // Astronaut Controls
         this._helpTexts.astronautControlsTitle.show();

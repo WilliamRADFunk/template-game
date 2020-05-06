@@ -338,6 +338,7 @@ export class LandAndMine {
         this._helpCtrl = new HelpCtrl(
             this._scene,
             this._textures,
+            this._planetSpecifications,
             border);
 
         this._txtCtrl = new TextCtrl(
@@ -399,7 +400,8 @@ export class LandAndMine {
         this._grid[startY][0] = 6;
         this._downPopulate(0, startY);
         let lastY = startY;
-        for (let col = 1; col < 121; col++) {            const cantAscend = (lastY - startY) >= this._planetSpecifications.peakElevation;
+        for (let col = 1; col < 121; col++) {
+            const cantAscend = (lastY - startY) >= this._planetSpecifications.peakElevation;
             const cantDescend = (startY - lastY) >= this._planetSpecifications.peakElevation;
             const isWater = this._planetSpecifications.hasWater && Math.random() < 0.05;
             const isLife = this._planetSpecifications.isLife && Math.random() < 0.40;
