@@ -156,7 +156,7 @@ export class HelpCtrl {
         astroWalk: 0,
         astroWalkClear: 360,
         landingThresholds: 0,
-        landingThresholdsClear: 1080,
+        landingThresholdsClear: 2130,
         landingThresholdsGravity: 0.0005,
         landingThresholdsHorizontalSpeed: 0,
         landingThresholdsVerticalSpeed: 0,
@@ -720,219 +720,12 @@ export class HelpCtrl {
     //#endregion
     }
 
-    /**
-     * Updates text and graphics during vertical threshold section demonstration.
-     * @param mainThrusterOn whether turn turn main thruster graphics on
-     */
-    private _landingThresholdsVerticalUpdate(mainThrusterOn: boolean): void {
-        this._helpTexts.landingThresholdVerticalSpeed.update(
-            `Descent Speed: ${this._helpCounters.landingThresholdsVerticalSpeed.toFixed(4)}`);
 
-        let currPos = this._helpMeshes.lander2.position;
-        this._helpMeshes.lander2.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingThresholdsVerticalSpeed);
-        currPos = this._helpMeshes.lander2.position;
-        this._helpActors.sideThruster2Left.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
-        this._helpActors.sideThruster2Right.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
-        this._helpActors.mainThruster2.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], mainThrusterOn);
-
-        if (this._helpCounters.landingThresholdsVerticalSpeed > this._landerSpecifications.verticalCrashMargin) {
-            this._helpTexts.landingThresholdDanger.show();
-            this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.selected);
-        } else {
-            this._helpTexts.landingThresholdSafe.show();
-            this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.neutral);
-        }
-
-        this._helpMeshes.lander2.visible = true;
-        this._helpTexts.landingThresholdVerticalSpeed.show();
-        this._helpTexts.landingThresholdVerticalThreshold.show();
-    }
 
     /**
-     * Creates a drill bit and places it at the position set by parameters.
-     * @param x coordinate for the drill bit's position
-     * @param y coordinate for the drill bit's position
-     * @param z coordinate for the drill bit's position
+     * Calls the next frame in the animation cycle specific to upper-middle-left panel - Astronaut Controls.
      */
-    private _makeDrillBit(x: number, y: number, z: number): void {
-        const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
-        const drillMat = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.miningDrill,
-            shininess: 0,
-            transparent: true
-        });
-        const drillMesh = new Mesh(drillGeo, drillMat);
-        drillMesh.position.set(x, y - (this._drillBits.length), z);
-        drillMesh.rotation.set(-1.5708, 0, 0);
-        drillMesh.scale.set(3, 3, 3);
-        drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
-        this._drillBits.push(drillMesh);
-        this._scene.add(drillMesh);
-    }
-
-    /**
-     * Removes anything that might stick around after Help Controller is destroyed.
-     */
-    public dispose(): void {
-        Object.keys(this._helpTexts)
-            .filter(key => !!this._helpTexts[key])
-            .forEach(key => this._helpTexts[key].dispose());
-    }
-
-    /**
-     * Calls the next frame in the animation cycle.
-     */
-    public endCycle(): void {
-        SoundinatorSingleton.pauseSound();
-
-    //#region LANDER CONTROLS SECTION
-        if (this._helpCounters.thrust > this._helpCounters.thrustClear) {
-            this._helpCounters.thrust = 0;
-        }
-
-        this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
-        this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
-        this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
-        this._helpMeshes.arrowLeft.visible = false;
-        this._helpMeshes.arrowRight.visible = false;
-        this._helpMeshes.arrowUp.visible = false;
-        this._helpMeshes.keysUp.visible = false;
-        this._helpMeshes.keysLeft.visible = false;
-        this._helpMeshes.keysRight.visible = false;
-
-        const val = this._helpCounters.thrustClear / 3;
-        if (this._helpCounters.thrust < val) {
-            this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, true);
-            this._helpMeshes.arrowUp.visible = true;
-            this._helpMeshes.keysUp.visible = true;
-        } else if (this._helpCounters.thrust < (val * 2)) {
-            this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, true);
-            this._helpMeshes.arrowRight.visible = true;
-            this._helpMeshes.keysRight.visible = true;
-        } else {
-            this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, true);
-            this._helpMeshes.arrowLeft.visible = true;
-            this._helpMeshes.keysLeft.visible = true;
-        }
-
-//#endregion
-    //#region THRESHOLDS SECTION
-        if (this._helpCounters.landingThresholds > this._helpCounters.landingThresholdsClear) {
-            this._helpCounters.landingThresholds = 0;
-        }
-
-        this._helpTexts.landingThresholdHorizontalSpeed.hide();
-        this._helpTexts.landingThresholdHorizontalThreshold.hide();
-        this._helpTexts.landingThresholdDanger.hide();
-        this._helpTexts.landingThresholdSafe.hide();
-        this._helpTexts.landingThresholdVerticalSpeed.hide();
-        this._helpTexts.landingThresholdVerticalThreshold.hide();
-        this._helpActors.mainThruster2.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
-        this._helpActors.sideThruster2Left.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
-        this._helpActors.sideThruster2Right.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
-        this._helpMeshes.lander2.visible = false;
-
-        if (this._helpCounters.landingThresholds === 0) {
-            this._helpTexts.landingThresholdSafe.show();
-            this._helpCounters.landingThresholdsVerticalSpeed = 0;
-            this._helpTexts.landingThresholdVerticalSpeed.update('Descent Speed: 0.0000');
-            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
-            this._helpActors.sideThruster2Left = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, -1, 1.5);
-            this._helpActors.sideThruster2Right = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, 1, 1.5);
-            this._helpActors.mainThruster2 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_2_POSITION, 2);
-        } else if (this._helpCounters.landingThresholds < 55) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
-            this._landingThresholdsVerticalUpdate(false);
-        } else if (this._helpCounters.landingThresholds < 80) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity - 0.0015;
-            this._landingThresholdsVerticalUpdate(true);
-        } else if (this._helpCounters.landingThresholds < 95) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
-            this._landingThresholdsVerticalUpdate(false);
-        } else if (this._helpCounters.landingThresholds < 100) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity - 0.0015;
-            this._landingThresholdsVerticalUpdate(true);
-        } else if (this._helpCounters.landingThresholds < 110) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
-            this._landingThresholdsVerticalUpdate(false);
-        } else if (this._helpCounters.landingThresholds < 239) {
-            this._helpMeshes.lander2.visible = true;
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
-                ? Number(!this._helpCounters.landingThresholdsFlashOn)
-                : this._helpCounters.landingThresholdsFlashOn;
-
-            !!this._helpCounters.landingThresholdsFlashOn
-                ? this._helpTexts.landingThresholdSafe.show()
-                : this._helpTexts.landingThresholdSafe.hide();
-        } else if (this._helpCounters.landingThresholds === 240) {
-            this._helpTexts.landingThresholdSafe.show();
-            this._helpCounters.landingThresholdsVerticalSpeed = 0;
-            this._helpTexts.landingThresholdVerticalSpeed.update('Descent Speed: 0.0000');
-            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
-        } else if (this._helpCounters.landingThresholds < 270) {
-            this._helpMeshes.lander2.visible = true;
-            this._helpTexts.landingThresholdSafe.show();
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-        } else if (this._helpCounters.landingThresholds < 325) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
-            this._landingThresholdsVerticalUpdate(false);
-        } else if (this._helpCounters.landingThresholds < 430) {
-            this._helpMeshes.lander2.visible = true;
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
-                ? Number(!this._helpCounters.landingThresholdsFlashOn)
-                : this._helpCounters.landingThresholdsFlashOn;
-
-            !!this._helpCounters.landingThresholdsFlashOn
-                ? this._helpTexts.landingThresholdDanger.show()
-                : this._helpTexts.landingThresholdDanger.hide();
-        } else if (this._helpCounters.landingThresholds < 450) {
-            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
-            this._landingThresholdsVerticalUpdate(false);
-        } else if (this._helpCounters.landingThresholds === 451) {
-            this._helpTexts.landingThresholdDanger.show()
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-            const currPos = this._helpMeshes.lander2.position;
-            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
-        } else if (this._helpCounters.landingThresholds < 552) {
-            this._helpTexts.landingThresholdDanger.show()
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-            this._helpActors.landingThresholdsExplosion1 && this._helpActors.landingThresholdsExplosion1.endCycle();
-        } else if (this._helpCounters.landingThresholds === 552) {
-            this._helpTexts.landingThresholdDanger.show()
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-            this._scene.remove(this._helpActors.landingThresholdsExplosion1);
-            this._helpActors.landingThresholdsExplosion1 = null;
-        } else if (this._helpCounters.landingThresholds < 610) {
-            this._helpTexts.landingThresholdDanger.show()
-            this._helpTexts.landingThresholdVerticalSpeed.show();
-            this._helpTexts.landingThresholdVerticalThreshold.show();
-        } else if (this._helpCounters.landingThresholds === 610) {
-            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2] + 0.5);
-            this._helpTexts.landingThresholdSafe.show();
-            this._helpCounters.landingThresholdsHorizontalSpeed = 0;
-            this._helpTexts.landingThresholdHorizontalSpeed.update('Horizontal Speed: 0.0000');
-            this._helpTexts.landingThresholdHorizontalSpeed.show();
-            this._helpTexts.landingThresholdHorizontalThreshold.show();
-        } else {
-            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2] + 0.5);
-            this._helpMeshes.lander2.visible = true;
-            this._helpTexts.landingThresholdSafe.show();
-            this._helpTexts.landingThresholdHorizontalSpeed.show();
-            this._helpTexts.landingThresholdHorizontalThreshold.show();
-        }
-
-        this._helpCounters.landingThresholds++;
-    //#endregion
-    //#region ASTRONAUTS CONTROLS SECTION
+    private _endCycleAstronautControls(): void {
         this._helpCounters.thrust++;
 
         // Astronaut walking section
@@ -940,6 +733,7 @@ export class HelpCtrl {
             this._helpCounters.astroWalk = 0;
         }
 
+        const val = this._helpCounters.astroWalkClear / 3;
         if (this._helpCounters.astroWalk < val) {
             this._helpActors.astronauts[3].mesh.visible = false;
             this._helpActors.astronauts[5].mesh.visible = false;
@@ -979,10 +773,46 @@ export class HelpCtrl {
         }
 
         this._helpCounters.astroWalk++;
+    }
 
-//#endregion
-    //#region MINING CONTROLS SECTION
-        // Mining section
+    /**
+     * Calls the next frame in the animation cycle specific to upper-left panel - Landing Controls.
+     */
+    private _endCycleLanderControls(): void {
+        if (this._helpCounters.thrust > this._helpCounters.thrustClear) {
+            this._helpCounters.thrust = 0;
+        }
+
+        this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpMeshes.arrowLeft.visible = false;
+        this._helpMeshes.arrowRight.visible = false;
+        this._helpMeshes.arrowUp.visible = false;
+        this._helpMeshes.keysUp.visible = false;
+        this._helpMeshes.keysLeft.visible = false;
+        this._helpMeshes.keysRight.visible = false;
+
+        const val = this._helpCounters.thrustClear / 3;
+        if (this._helpCounters.thrust < val) {
+            this._helpActors.mainThruster.endCycle(HELP_MAIN_THRUSTER_1_POSITION, true);
+            this._helpMeshes.arrowUp.visible = true;
+            this._helpMeshes.keysUp.visible = true;
+        } else if (this._helpCounters.thrust < (val * 2)) {
+            this._helpActors.sideThrusterLeft.endCycle(HELP_SIDE_THRUSTER_1_POSITION, true);
+            this._helpMeshes.arrowRight.visible = true;
+            this._helpMeshes.keysRight.visible = true;
+        } else {
+            this._helpActors.sideThrusterRight.endCycle(HELP_SIDE_THRUSTER_1_POSITION, true);
+            this._helpMeshes.arrowLeft.visible = true;
+            this._helpMeshes.keysLeft.visible = true;
+        }
+    }
+
+    /**
+     * Calls the next frame in the animation cycle specific to upper-middle-right panel - Mining Controls.
+     */
+    private _endCycleMiningControls(): void {
         if (this._helpCounters.mining > this._helpCounters.miningClear) {
             this._helpCounters.mining = 0;
         }
@@ -1072,7 +902,414 @@ export class HelpCtrl {
         }
 
         this._helpCounters.mining++;
-    //#endregion
+    }
+
+    /**
+     * Calls the next frame in the animation cycle specific to upper-right panel - Thresholds.
+     */
+    private _endCycleThresholds(): void {
+        if (this._helpCounters.landingThresholds > this._helpCounters.landingThresholdsClear) {
+            this._helpCounters.landingThresholds = 0;
+        }
+
+        this._helpTexts.landingThresholdHorizontalSpeed.hide();
+        this._helpTexts.landingThresholdHorizontalThreshold.hide();
+        this._helpTexts.landingThresholdDanger.hide();
+        this._helpTexts.landingThresholdSafe.hide();
+        this._helpTexts.landingThresholdVerticalSpeed.hide();
+        this._helpTexts.landingThresholdVerticalThreshold.hide();
+        this._helpActors.mainThruster2.endCycle(HELP_MAIN_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThruster2Left.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpActors.sideThruster2Right.endCycle(HELP_SIDE_THRUSTER_1_POSITION, false);
+        this._helpMeshes.lander2.visible = false;
+
+        //#region Setup
+        if (this._helpCounters.landingThresholds === 0) {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdVerticalSpeed.update('Descent Speed: 0.0000');
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
+            this._helpActors.sideThruster2Left = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, -1, 1.5);
+            this._helpActors.sideThruster2Right = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, 1, 1.5);
+            this._helpActors.mainThruster2 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_2_POSITION, 2);
+        //#endregion
+        //#region Vertical Direction Safe Landing Sequence
+        } else if (this._helpCounters.landingThresholds < 55) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._landingThresholdsVerticalUpdate(false);
+        } else if (this._helpCounters.landingThresholds < 80) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity - 0.0015;
+            this._landingThresholdsVerticalUpdate(true);
+        } else if (this._helpCounters.landingThresholds < 95) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._landingThresholdsVerticalUpdate(false);
+        } else if (this._helpCounters.landingThresholds < 100) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity - 0.0015;
+            this._landingThresholdsVerticalUpdate(true);
+        } else if (this._helpCounters.landingThresholds < 110) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._landingThresholdsVerticalUpdate(false);
+        } else if (this._helpCounters.landingThresholds < 239) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
+                ? Number(!this._helpCounters.landingThresholdsFlashOn)
+                : this._helpCounters.landingThresholdsFlashOn;
+
+            !!this._helpCounters.landingThresholdsFlashOn
+                ? this._helpTexts.landingThresholdSafe.show()
+                : this._helpTexts.landingThresholdSafe.hide();
+        //#endregion
+        //#region Vertical Direction Crash Landing Sequence
+        } else if (this._helpCounters.landingThresholds === 240) {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdVerticalSpeed.update('Descent Speed: 0.0000');
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
+        } else if (this._helpCounters.landingThresholds < 270) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 325) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._landingThresholdsVerticalUpdate(false);
+        } else if (this._helpCounters.landingThresholds < 430) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
+                ? Number(!this._helpCounters.landingThresholdsFlashOn)
+                : this._helpCounters.landingThresholdsFlashOn;
+
+            !!this._helpCounters.landingThresholdsFlashOn
+                ? this._helpTexts.landingThresholdDanger.show()
+                : this._helpTexts.landingThresholdDanger.hide();
+        } else if (this._helpCounters.landingThresholds < 450) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity;
+            this._landingThresholdsVerticalUpdate(false);
+        } else if (this._helpCounters.landingThresholds === 450) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+            const currPos = this._helpMeshes.lander2.position;
+            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
+        } else if (this._helpCounters.landingThresholds < 552) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+            this._helpActors.landingThresholdsExplosion1 && this._helpActors.landingThresholdsExplosion1.endCycle();
+        } else if (this._helpCounters.landingThresholds === 552) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+            this._scene.remove(this._helpActors.landingThresholdsExplosion1);
+            this._helpActors.landingThresholdsExplosion1 = null;
+        } else if (this._helpCounters.landingThresholds < 610) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdVerticalSpeed.show();
+            this._helpTexts.landingThresholdVerticalThreshold.show();
+        //#endregion
+        //#region Right Direction Safe Landing Sequence
+        } else if (this._helpCounters.landingThresholds === 610) {
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2] + 0.5);
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsHorizontalSpeed = 0;
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdHorizontalSpeed.update('Horizontal Speed: 0.0000');
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 640) {
+            this._landingThresholdsHorizontalUpdate(true, false);
+        } else if (this._helpCounters.landingThresholds < 690) {
+            this._helpCounters.landingThresholdsHorizontalSpeed += 0.0001;
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(true, false);
+        } else if (this._helpCounters.landingThresholds < 720) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds < 750) {
+            this._helpCounters.landingThresholdsHorizontalSpeed -= 0.00014;
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, true);
+        } else if (this._helpCounters.landingThresholds < 780) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds < 880) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
+                ? Number(!this._helpCounters.landingThresholdsFlashOn)
+                : this._helpCounters.landingThresholdsFlashOn;
+
+            !!this._helpCounters.landingThresholdsFlashOn
+                ? this._helpTexts.landingThresholdSafe.show()
+                : this._helpTexts.landingThresholdSafe.hide();
+        } else if (this._helpCounters.landingThresholds < 940) {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpMeshes.lander2.visible = true;
+        //#endregion
+        //#region Left Direction Safe Landing Sequence
+        } else if (this._helpCounters.landingThresholds === 940) {
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2] + 0.5);
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsHorizontalSpeed = 0;
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdHorizontalSpeed.update('Horizontal Speed: 0.0000');
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 970) {
+            this._landingThresholdsHorizontalUpdate(false, true);
+        } else if (this._helpCounters.landingThresholds < 1020) {
+            this._helpCounters.landingThresholdsHorizontalSpeed -= 0.0001;
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, true);
+        } else if (this._helpCounters.landingThresholds < 1050) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds < 1080) {
+            this._helpCounters.landingThresholdsHorizontalSpeed += 0.00014;
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(true, false);
+        } else if (this._helpCounters.landingThresholds < 1110) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds < 1210) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
+                ? Number(!this._helpCounters.landingThresholdsFlashOn)
+                : this._helpCounters.landingThresholdsFlashOn;
+
+            !!this._helpCounters.landingThresholdsFlashOn
+                ? this._helpTexts.landingThresholdSafe.show()
+                : this._helpTexts.landingThresholdSafe.hide();
+        } else if (this._helpCounters.landingThresholds < 1270) {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpMeshes.lander2.visible = true;
+        //#endregion
+        //#region Right Direction Crash Landing Sequence
+        } else if (this._helpCounters.landingThresholds === 1270) {
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2] + 0.5);
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsHorizontalSpeed = 0;
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdHorizontalSpeed.update('Horizontal Speed: 0.0000');
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 1300) {
+            this._landingThresholdsHorizontalUpdate(true, false);
+        } else if (this._helpCounters.landingThresholds < 1380) {
+            this._helpCounters.landingThresholdsHorizontalSpeed += 0.0001;
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(true, false);
+        } else if (this._helpCounters.landingThresholds < 1410) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds < 1510) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
+                ? Number(!this._helpCounters.landingThresholdsFlashOn)
+                : this._helpCounters.landingThresholdsFlashOn;
+
+            !!this._helpCounters.landingThresholdsFlashOn
+                ? this._helpTexts.landingThresholdDanger.show()
+                : this._helpTexts.landingThresholdDanger.hide();
+        } else if (this._helpCounters.landingThresholds < 1540) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds === 1540) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            const currPos = this._helpMeshes.lander2.position;
+            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
+        } else if (this._helpCounters.landingThresholds < 1642) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpActors.landingThresholdsExplosion1 && this._helpActors.landingThresholdsExplosion1.endCycle();
+        } else if (this._helpCounters.landingThresholds === 1642) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._scene.remove(this._helpActors.landingThresholdsExplosion1);
+            this._helpActors.landingThresholdsExplosion1 = null;
+        } else if (this._helpCounters.landingThresholds < 1700) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+        //#endregion
+        //#region Left Direction Crash Landing Sequence
+        } else if (this._helpCounters.landingThresholds === 1700) {
+            this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2] + 0.5);
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpCounters.landingThresholdsHorizontalSpeed = 0;
+            this._helpCounters.landingThresholdsVerticalSpeed = 0;
+            this._helpTexts.landingThresholdHorizontalSpeed.update('Horizontal Speed: 0.0000');
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+        } else if (this._helpCounters.landingThresholds < 1730) {
+            this._landingThresholdsHorizontalUpdate(false, true);
+        } else if (this._helpCounters.landingThresholds < 1810) {
+            this._helpCounters.landingThresholdsHorizontalSpeed -= 0.0001;
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, true);
+        } else if (this._helpCounters.landingThresholds < 1840) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds < 1940) {
+            this._helpMeshes.lander2.visible = true;
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpCounters.landingThresholdsFlashOn = this._helpCounters.landingThresholds % 10 === 0
+                ? Number(!this._helpCounters.landingThresholdsFlashOn)
+                : this._helpCounters.landingThresholdsFlashOn;
+
+            !!this._helpCounters.landingThresholdsFlashOn
+                ? this._helpTexts.landingThresholdDanger.show()
+                : this._helpTexts.landingThresholdDanger.hide();
+        } else if (this._helpCounters.landingThresholds < 1970) {
+            this._helpCounters.landingThresholdsVerticalSpeed += this._helpCounters.landingThresholdsGravity / 6;
+            this._landingThresholdsHorizontalUpdate(false, false);
+        } else if (this._helpCounters.landingThresholds === 1970) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            const currPos = this._helpMeshes.lander2.position;
+            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
+        } else if (this._helpCounters.landingThresholds < 2072) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._helpActors.landingThresholdsExplosion1 && this._helpActors.landingThresholdsExplosion1.endCycle();
+        } else if (this._helpCounters.landingThresholds === 2072) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+            this._scene.remove(this._helpActors.landingThresholdsExplosion1);
+            this._helpActors.landingThresholdsExplosion1 = null;
+        } else if (this._helpCounters.landingThresholds < 2130) {
+            this._helpTexts.landingThresholdDanger.show()
+            this._helpTexts.landingThresholdHorizontalSpeed.show();
+            this._helpTexts.landingThresholdHorizontalThreshold.show();
+        //#endregion
+        }
+
+        this._helpCounters.landingThresholds++;
+    }
+
+    /**
+     * Updates text and graphics during horizontal threshold section demonstration.
+     * @param leftSideThrusterOn whether turn left side thruster graphics on
+     * @param rightSideThrusterOn whether turn right side thruster graphics on
+     */
+    private _landingThresholdsHorizontalUpdate(leftSideThrusterOn: boolean, rightSideThrusterOn: boolean): void {
+        this._helpTexts.landingThresholdHorizontalSpeed.update(
+            `Horizontal Speed: ${this._helpCounters.landingThresholdsHorizontalSpeed.toFixed(4)}`);
+
+        let currPos = this._helpMeshes.lander2.position;
+        this._helpMeshes.lander2.position.set(
+            currPos.x + this._helpCounters.landingThresholdsHorizontalSpeed,
+            currPos.y,
+            currPos.z + this._helpCounters.landingThresholdsVerticalSpeed);
+        currPos = this._helpMeshes.lander2.position;
+        this._helpActors.sideThruster2Left.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], leftSideThrusterOn);
+        this._helpActors.sideThruster2Right.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], rightSideThrusterOn);
+        this._helpActors.mainThruster2.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+
+        if (Math.abs(this._helpCounters.landingThresholdsHorizontalSpeed) > this._landerSpecifications.horizontalCrashMargin) {
+            this._helpTexts.landingThresholdDanger.show();
+            this._helpTexts.landingThresholdHorizontalSpeed.cycle(COLORS.selected);
+        } else {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpTexts.landingThresholdHorizontalSpeed.cycle(COLORS.neutral);
+        }
+
+        this._helpMeshes.lander2.visible = true;
+        this._helpTexts.landingThresholdHorizontalSpeed.show();
+        this._helpTexts.landingThresholdHorizontalThreshold.show();
+    }
+
+    /**
+     * Updates text and graphics during vertical threshold section demonstration.
+     * @param mainThrusterOn whether turn main thruster graphics on
+     */
+    private _landingThresholdsVerticalUpdate(mainThrusterOn: boolean): void {
+        this._helpTexts.landingThresholdVerticalSpeed.update(
+            `Descent Speed: ${this._helpCounters.landingThresholdsVerticalSpeed.toFixed(4)}`);
+
+        let currPos = this._helpMeshes.lander2.position;
+        this._helpMeshes.lander2.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingThresholdsVerticalSpeed);
+        currPos = this._helpMeshes.lander2.position;
+        this._helpActors.sideThruster2Left.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+        this._helpActors.sideThruster2Right.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+        this._helpActors.mainThruster2.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], mainThrusterOn);
+
+        if (this._helpCounters.landingThresholdsVerticalSpeed > this._landerSpecifications.verticalCrashMargin) {
+            this._helpTexts.landingThresholdDanger.show();
+            this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.selected);
+        } else {
+            this._helpTexts.landingThresholdSafe.show();
+            this._helpTexts.landingThresholdVerticalSpeed.cycle(COLORS.neutral);
+        }
+
+        this._helpMeshes.lander2.visible = true;
+        this._helpTexts.landingThresholdVerticalSpeed.show();
+        this._helpTexts.landingThresholdVerticalThreshold.show();
+    }
+
+    /**
+     * Creates a drill bit and places it at the position set by parameters.
+     * @param x coordinate for the drill bit's position
+     * @param y coordinate for the drill bit's position
+     * @param z coordinate for the drill bit's position
+     */
+    private _makeDrillBit(x: number, y: number, z: number): void {
+        const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
+        const drillMat = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.miningDrill,
+            shininess: 0,
+            transparent: true
+        });
+        const drillMesh = new Mesh(drillGeo, drillMat);
+        drillMesh.position.set(x, y - (this._drillBits.length), z);
+        drillMesh.rotation.set(-1.5708, 0, 0);
+        drillMesh.scale.set(3, 3, 3);
+        drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
+        this._drillBits.push(drillMesh);
+        this._scene.add(drillMesh);
+    }
+
+    /**
+     * Removes anything that might stick around after Help Controller is destroyed.
+     */
+    public dispose(): void {
+        Object.keys(this._helpTexts)
+            .filter(key => !!this._helpTexts[key])
+            .forEach(key => this._helpTexts[key].dispose());
+    }
+
+    /**
+     * Calls the next frame in the animation cycle.
+     */
+    public endCycle(): void {
+        SoundinatorSingleton.pauseSound();
+
+        this._endCycleLanderControls();
+        this._endCycleThresholds();
+        this._endCycleAstronautControls();
+        this._endCycleMiningControls();
     }
 
     /**
