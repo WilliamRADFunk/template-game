@@ -1,10 +1,13 @@
 import { CircleGeometry, Mesh, MeshBasicMaterial, Scene } from 'three';
 
 import { Collidable } from '../collidable';
+import { ExplosionOptions } from '../models/explosions';
+
 /**
  * Static index to help name one explosion differenly than another.
  */
 let index: number = 0;
+
 /**
  * @class
  * An expanding explosion of force that dissolves over time, but can cause other things to explode on contanct.
@@ -14,58 +17,65 @@ export class Explosion implements Collidable {
      * Keeps track of how big explosions scale is at moment.
      */
     private currentExplosionScale: number = 1;
+
     /**
      * Controls size and shape of the explosion
      */
     private explosionGeometry: CircleGeometry;
+
     /**
      * Controls the color of the explosion material
      */
 	private explosionMaterial: MeshBasicMaterial;
+
     /**
      * Controls the overall rendering of the explosion
      */
     private explosion: Mesh;
+
     /**
      * Flag to signal if explosion is in its collidable state.
      * True = collidable. False = not collidable.
      */
     private isActive: boolean = true;
+
     /**
      * Flag to signal if the explosion is expanding/contracting.
      * True is expanding. False is contracting..
      */
     private isExplosionGrowing: boolean = true;
+
     /**
      * Starting size of the explosion. Usually the size of the thing that went boom.
      */
     private radius: number;
+
     /**
      * Reference to the scene, used to remove projectile from rendering cycle once destroyed.
      */
     private scene: Scene;
+
     /**
      * Constructor for the Explosion class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param x coordinate on x-axis where explosion should instantiate.
      * @param z coordinate on z-axis where explosion should instantiate.
-     * @param radius starting size of the explosions, used for collision reference.
-     * @param renderedInert if created as result of shield strike, it's not collidable and color is different.
-     * @param y optional y value for explosion (for help screen demo).
+     * @param options available options for adjust size, lvel, and color of the explosion.
      * @hidden
      */
-    constructor(scene: Scene, x:number, z: number, radius: number, renderedInert?: boolean, y?: number) {
+    constructor(scene: Scene, x:number, z: number, options?: ExplosionOptions) {
+        const _options = options || ({} as ExplosionOptions);
         this.scene = scene;
-        this.radius = radius;
+        this.radius = _options.radius || 0.25;
         index++;
-        this.explosionGeometry = new CircleGeometry(radius, 32);
+        this.explosionGeometry = new CircleGeometry(_options.radius, 32);
         this.explosionMaterial = new MeshBasicMaterial({
-            color: (!!renderedInert) ? 0x05EDFF : 0xF9A602,
+            color: (!!_options.renderedInert) ? 0x05EDFF : 0xF9A602,
             opacity: 1,
             transparent: true
         });
         this.explosion = new Mesh(this.explosionGeometry, this.explosionMaterial);
-        this.explosion.position.set(x, (y || -0.25), z);
+        this.explosion.position.set(x, (_options.y || -0.25), z);
         this.explosion.rotation.set(-1.5708, 0, 0);
         this.explosion.name = `explosion-${index}`;
         this.scene.add(this.explosion);

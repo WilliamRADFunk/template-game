@@ -994,7 +994,16 @@ export class HelpCtrl {
             this._helpTexts.landingThresholdVerticalSpeed.show();
             this._helpTexts.landingThresholdVerticalThreshold.show();
             const currPos = this._helpMeshes.lander2.position;
-            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
+            this._helpActors.landingThresholdsExplosion1 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
         } else if (this._helpCounters.landingThresholds < 552) {
             this._helpTexts.landingThresholdDanger.show()
             this._helpTexts.landingThresholdVerticalSpeed.show();
@@ -1132,7 +1141,16 @@ export class HelpCtrl {
             this._helpTexts.landingThresholdHorizontalSpeed.show();
             this._helpTexts.landingThresholdHorizontalThreshold.show();
             const currPos = this._helpMeshes.lander2.position;
-            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
+            this._helpActors.landingThresholdsExplosion1 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
         } else if (this._helpCounters.landingThresholds < 1642) {
             this._helpTexts.landingThresholdDanger.show()
             this._helpTexts.landingThresholdHorizontalSpeed.show();
@@ -1186,7 +1204,16 @@ export class HelpCtrl {
             this._helpTexts.landingThresholdHorizontalSpeed.show();
             this._helpTexts.landingThresholdHorizontalThreshold.show();
             const currPos = this._helpMeshes.lander2.position;
-            this._helpActors.landingThresholdsExplosion1 = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, -8);
+            this._helpActors.landingThresholdsExplosion1 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
         } else if (this._helpCounters.landingThresholds < 2072) {
             this._helpTexts.landingThresholdDanger.show()
             this._helpTexts.landingThresholdHorizontalSpeed.show();

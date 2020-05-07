@@ -125,7 +125,14 @@ export class Asteroid implements Collidable {
      * @param isInert flag to let explosion know it isn't a 'real' explosion (hit shield).
      */
     private createExplosion(isInert: boolean): void {
-        this.explosion = new Explosion(this.scene, this.asteroid.position.x, this.asteroid.position.z, 0.2, isInert);
+        this.explosion = new Explosion(
+            this.scene,
+            this.asteroid.position.x,
+            this.asteroid.position.z,
+            {
+                radius: 0.2,
+                renderedInert: isInert
+            });
         if (!isInert) {
             CollisionatorSingleton.add(this.explosion);
             SoundinatorSingleton.playExplosionLarge(false);

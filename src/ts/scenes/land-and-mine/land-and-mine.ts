@@ -432,7 +432,15 @@ export class LandAndMine {
         this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
         this._state = LandAndMineState.crashed;
-        this._explosion = new Explosion(this._scene, currPos.x, currPos.z, 0.3, false, 14);
+        this._explosion = new Explosion(
+            this._scene,
+            currPos.x,
+            currPos.z,
+            {
+                radius: 0.3,
+                renderedInert: false,
+                y: 14
+            });
         SoundinatorSingleton.playExplosionSmall();
         setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
     }
