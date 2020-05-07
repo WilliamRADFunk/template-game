@@ -51,6 +51,7 @@ import { LanderSpecifications } from "../../../models/lander-specifications";
 import { RightTopStatsText4 } from "../../../controls/text/stats/right-top-stats-text-4";
 import { FreestyleText } from "../../../controls/text/freestyle-text";
 import { Explosion } from "../../../weapons/explosion";
+import { HTMLElementPosition } from "../../../models/html-element-position";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -236,7 +237,6 @@ export class HelpCtrl {
      * Coordinates the creation of all the help screen content.
      */
     private _buildHelpScreen(): void {
-    //#region SHARED RESOURCES SETUP
         // Get window dimmensions
         let width = window.innerWidth * 0.99;
         let height = window.innerHeight * 0.99;
@@ -276,214 +276,61 @@ export class HelpCtrl {
         this._helpPanels.rightBottomPanel = new RightBottomPanel(this._scene);
         this._helpPanels.rightBottomPanel.hide();
 
-//#endregion
-    //#region LANDING CONTROLS SETUP
-        // Create lander graphic
-        this._helpMeshes.lander1 = createLander(this._textures.ship).mesh;
-        this._helpMeshes.lander1.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1], HELP_LANDER_1_POSITION[2]);
-        this._helpMeshes.lander1.visible = false;
-        this._helpMeshes.lander1.scale.set(2, 2, 2);
-        this._scene.add(this._helpMeshes.lander1);
-        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_1_POSITION, -1, 1.5);
-        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_1_POSITION, 1, 1.5);
-        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_1_POSITION, 2);
-
-        // Right Arrow graphics
         const arrowGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
+        const keyGeo = new PlaneGeometry( 1.1, 0.4, 10, 10 );
+
         const arrowMat = new MeshBasicMaterial();
         arrowMat.map = this._textures.arrow;
         arrowMat.map.minFilter = LinearFilter;
         (arrowMat as any).shininess = 0;
         arrowMat.transparent = true;
 
-        let arrowRight = new Mesh(arrowGeo, arrowMat);
-        arrowRight.name = 'Right Arrow Mesh';
-        arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
-        arrowRight.rotation.set(-1.5708, 0, 0);
-        this._scene.add(arrowRight);
-        arrowRight.visible = false;
-        this._helpMeshes.arrowRight = arrowRight;
-
-        // Left Arrow graphics
-        arrowMat.map = this._textures.arrow;
-        let arrowLeft = new Mesh(arrowGeo, arrowMat);
-        arrowLeft.name = 'Left Arrow Mesh';
-        arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
-        arrowLeft.rotation.set(-1.5708, 0, 3.1416);
-        this._scene.add(arrowLeft);
-        arrowLeft.visible = false;
-        this._helpMeshes.arrowLeft = arrowLeft;
-
-        // Up Arrow graphics
-        arrowMat.map = this._textures.arrow;
-        let arrowUp = new Mesh(arrowGeo, arrowMat);
-        arrowUp.name = 'Up Arrow Mesh';
-        arrowUp.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] - 1);
-        arrowUp.rotation.set(-1.5708, 0, 1.5708);
-        this._scene.add(arrowUp);
-        arrowUp.visible = false;
-        this._helpMeshes.arrowUp = arrowUp;
-
-        // Up Keys graphics
-        const keyGeo = new PlaneGeometry( 1.1, 0.4, 10, 10 );
-        const keyUpMat = new MeshBasicMaterial();
-        keyUpMat.map = this._textures.keysForUp;
-        keyUpMat.map.minFilter = LinearFilter;
-        (keyUpMat as any).shininess = 0;
-        keyUpMat.transparent = true;
-
-        let keyUp = new Mesh(keyGeo, keyUpMat);
-        keyUp.name = 'Up Keys Mesh';
-        keyUp.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
-        keyUp.rotation.set(-1.5708, 0, 0);
-        this._scene.add(keyUp);
-        keyUp.visible = false;
-        this._helpMeshes.keysUp = keyUp;
-
-        // Left Keys graphics
         const keyLeftMat = new MeshBasicMaterial();
         keyLeftMat.map = this._textures.keysForLeft;
         keyLeftMat.map.minFilter = LinearFilter;
         (keyLeftMat as any).shininess = 0;
         keyLeftMat.transparent = true;
 
-        let keyLeft = new Mesh(keyGeo, keyLeftMat);
-        keyLeft.name = 'Left Keys Mesh';
-        keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
-        keyLeft.rotation.set(-1.5708, 0, 0);
-        this._scene.add(keyLeft);
-        keyLeft.visible = false;
-        this._helpMeshes.keysLeft = keyLeft;
-
-        // Right Keys graphics
         const keyRightMat = new MeshBasicMaterial();
         keyRightMat.map = this._textures.keysForRight;
         keyRightMat.map.minFilter = LinearFilter;
         (keyRightMat as any).shininess = 0;
         keyRightMat.transparent = true;
 
-        let keyRight = new Mesh(keyGeo, keyRightMat);
-        keyRight.name = 'Right Keys Mesh';
-        keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
-        keyRight.rotation.set(-1.5708, 0, 0);
-        this._scene.add(keyRight);
-        keyRight.visible = false;
-        this._helpMeshes.keysRight = keyRight;
+        const keyUpMat = new MeshBasicMaterial();
+        keyUpMat.map = this._textures.keysForUp;
+        keyUpMat.map.minFilter = LinearFilter;
+        (keyUpMat as any).shininess = 0;
+        keyUpMat.transparent = true;
 
-        // Lander Text graphics
-        this._helpTexts.landerControlsTitle = new LeftTopTitleText(
-            'Lander Controls',
-            { height, left, top: null, width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC);
-        this._helpTexts.landerControlsTitle.hide();
+        const keyDownMat = new MeshBasicMaterial();
+        keyDownMat.map = this._textures.keysForDown;
+        keyDownMat.map.minFilter = LinearFilter;
+        (keyDownMat as any).shininess = 0;
+        keyDownMat.transparent = true;
 
-//#endregion
-    //#region THRESHOLDS SETUP
-        // The ground for landing
-        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
-        const commonRockMat = new MeshBasicMaterial({
-            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
-        for (let row = 27; row < 31; row++) {
-            this._helpTerrainMeshes.landingThresholdsGroundSpeed[row] = [];
-            for (let col = -0.5; col < 59; col++) {
-                const block = new Mesh( geo, commonRockMat );
-                block.name = `Landing Thresholds - Ground - Speed`;
-                block.position.set((col/10), -7, -6 + row/10);
-                block.rotation.set(1.5708, 0, 0);
-                block.visible = false;
-                this._scene.add(block);
-                this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col + 0.5] = block;
-            }
-        }
+        this._buildHelpScreenLandingControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, keyUpMat, { height, left, top: null, width });
+        this._buildHelpScreenThresholds({ height, left, top: null, width });
+        this._buildHelpScreenAstronautControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, { height, left, top: null, width });
+        this._buildHelpScreenMiningControls(arrowGeo, arrowMat, keyGeo, keyDownMat, keyUpMat, { height, left, top: null, width });
+    }
 
-        // Landing Thresholds Lander graphics
-        this._helpMeshes.lander2 = createLander(this._textures.ship).mesh;
-        this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
-        this._helpMeshes.lander2.visible = false;
-        this._helpMeshes.lander2.scale.set(2, 2, 2);
-        this._scene.add(this._helpMeshes.lander2);
-        this._helpActors.sideThruster2Left = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, -1, 1.5);
-        this._helpActors.sideThruster2Right = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, 1, 1.5);
-        this._helpActors.mainThruster2 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_2_POSITION, 2);
-
-        // Landing Thresholds Danger Text graphics
-        this._helpTexts.landingThresholdDanger = new FreestyleText(
-            'Crash Risk!',
-            { height, left: (left + width - (0.49 * width)), top: (0.08 * height), width },
-            COLORS.selected,
-            border,
-            TextType.STATIC,
-            0.017,
-            0);
-        this._helpTexts.landingThresholdDanger.hide();
-
-        // Landing Thresholds Safe Text graphics
-        this._helpTexts.landingThresholdSafe = new FreestyleText(
-            'Safe to Land',
-            { height, left: (left + width - (0.49 * width)), top: (0.08 * height), width },
-            COLORS.highlighted,
-            border,
-            TextType.STATIC,
-            0.017,
-            0);
-        this._helpTexts.landingThresholdSafe.hide();
-
-        // Landing Thresholds Vertical Speed Text graphics
-        this._helpTexts.landingThresholdVerticalSpeed = new FreestyleText(
-            'Descent Speed: 0.000',
-            { height, left: (left + width - (0.49 * width)), top: (0.06 * height), width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC,
-            0.015,
-            0);
-        this._helpTexts.landingThresholdVerticalSpeed.hide();
-
-        // Landing Thresholds Vertical Threshold Text graphics
-        this._helpTexts.landingThresholdVerticalThreshold = new RightTopStatsText4(
-            `Vertical Threshold: ${this._landerSpecifications.verticalCrashMargin}&nbsp;&nbsp;&nbsp;&nbsp;`,
-            { height, left: left, top: null, width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC);
-        this._helpTexts.landingThresholdVerticalThreshold.hide();
-
-        // Landing Thresholds Horizontal Speed Text graphics
-        this._helpTexts.landingThresholdHorizontalSpeed = new FreestyleText(
-            'Horizontal Speed: 0.0000',
-            { height, left: (left + width - (0.49 * width)), top: (0.06 * height), width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC,
-            0.015,
-            0);
-        this._helpTexts.landingThresholdHorizontalSpeed.hide();
-
-        // Landing Thresholds Horizontal Threshold Text graphics
-        this._helpTexts.landingThresholdHorizontalThreshold = new RightTopStatsText4(
-            `Horizontal Threshold: ${this._landerSpecifications.horizontalCrashMargin}&nbsp;&nbsp;&nbsp;&nbsp;`,
-            { height, left: left, top: null, width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC);
-        this._helpTexts.landingThresholdHorizontalThreshold.hide();
-
-        // Landing Thresholds Text graphics
-        this._helpTexts.landingThresholdsTitle = new RightTopTitleText(
-            'Landing Thresholds',
-            { height, left, top: null, width },
-            COLORS.neutral,
-            border,
-            TextType.STATIC);
-        this._helpTexts.landingThresholdsTitle.hide();
-    //#endregion
-    //#region ASTRONAUT CONTROLS SETUP
+    /**
+     * Creates everything needed for the Astronaut Controls panel.
+     * @param arrowGeo the geometry used to make all the arrow meshes in this panel
+     * @param arrowMat the material used to make all the arrow meshes in this panel
+     * @param keyGeo the geometry used to make all the key meshes in this panel
+     * @param keyLeftMat the material used to make the left keys mesh in this panel
+     * @param keyRightMat the material used to make the right keys mesh in this panel
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenAstronautControls(
+        arrowGeo: PlaneGeometry,
+        arrowMat: MeshBasicMaterial,
+        keyGeo: PlaneGeometry,
+        keyLeftMat: MeshBasicMaterial,
+        keyRightMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
         // Create astronaut mining team for astronaut controls
         this._helpActors.astronauts = createMiningTeam(
             {
@@ -516,7 +363,7 @@ export class HelpCtrl {
         });
 
         // Left Arrow graphics
-        arrowLeft = new Mesh(arrowGeo, arrowMat);
+        const arrowLeft = new Mesh(arrowGeo, arrowMat);
         arrowLeft.name = 'Left Arrow Astro Walk Mesh';
         arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3);
         arrowLeft.rotation.set(-1.5708, 0, 3.1416);
@@ -525,7 +372,7 @@ export class HelpCtrl {
         this._helpMeshes.arrowLeftAstroWalk = arrowLeft;
 
         // Left Keys graphics
-        keyLeft = new Mesh(keyGeo, keyLeftMat);
+        const keyLeft = new Mesh(keyGeo, keyLeftMat);
         keyLeft.name = 'Left Keys Astro Walk Mesh';
         keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
         keyLeft.rotation.set(-1.5708, 0, 0);
@@ -534,7 +381,7 @@ export class HelpCtrl {
         this._helpMeshes.keysLeftAstroWalk = keyLeft;
 
         // Right Arrow graphics
-        arrowRight = new Mesh(arrowGeo, arrowMat);
+        const arrowRight = new Mesh(arrowGeo, arrowMat);
         arrowRight.name = 'Right Arrow Astro Walk Mesh';
         arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3);
         arrowRight.rotation.set(-1.5708, 0, 0);
@@ -543,7 +390,7 @@ export class HelpCtrl {
         this._helpMeshes.arrowRightAstroWalk = arrowRight;
 
         // Right Keys graphics
-        keyRight = new Mesh(keyGeo, keyRightMat);
+        const keyRight = new Mesh(keyGeo, keyRightMat);
         keyRight.name = 'Right Keys Astro Walk Mesh';
         keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
         keyRight.rotation.set(-1.5708, 0, 0);
@@ -554,14 +401,123 @@ export class HelpCtrl {
         // Astronaut Text graphics
         this._helpTexts.astronautControlsTitle = new LeftTopMiddleTitleText(
             'Astronaut Controls',
-            { height, left, top: null, width },
+            position,
             COLORS.neutral,
             border,
             TextType.STATIC);
         this._helpTexts.astronautControlsTitle.hide();
+    }
 
-//#endregion
-    //#region MINING CONTROLS SETUP
+    /**
+     * Creates everything needed for the Landing Controls panel.
+     * @param arrowGeo the geometry used to make all the arrow meshes in this panel
+     * @param arrowMat the material used to make all the arrow meshes in this panel
+     * @param keyGeo the geometry used to make all the key meshes in this panel
+     * @param keyLeftMat the material used to make the left keys mesh in this panel
+     * @param keyRightMat the material used to make the right keys mesh in this panel
+     * @param keyUpMat the material used to make the up keys mesh in this panel
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenLandingControls(
+        arrowGeo: PlaneGeometry,
+        arrowMat: MeshBasicMaterial,
+        keyGeo: PlaneGeometry,
+        keyLeftMat: MeshBasicMaterial,
+        keyRightMat: MeshBasicMaterial,
+        keyUpMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
+        // Create lander graphic
+        this._helpMeshes.lander1 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander1.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1], HELP_LANDER_1_POSITION[2]);
+        this._helpMeshes.lander1.visible = false;
+        this._helpMeshes.lander1.scale.set(2, 2, 2);
+        this._scene.add(this._helpMeshes.lander1);
+        this._helpActors.sideThrusterLeft = new SideThruster(this._scene, HELP_SIDE_THRUSTER_1_POSITION, -1, 1.5);
+        this._helpActors.sideThrusterRight = new SideThruster(this._scene, HELP_SIDE_THRUSTER_1_POSITION, 1, 1.5);
+        this._helpActors.mainThruster = new MainThruster(this._scene, HELP_MAIN_THRUSTER_1_POSITION, 2);
+
+        // Right Arrow graphics
+        const arrowRight = new Mesh(arrowGeo, arrowMat);
+        arrowRight.name = 'Right Arrow Mesh';
+        arrowRight.position.set(HELP_LANDER_1_POSITION[0] + 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
+        arrowRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(arrowRight);
+        arrowRight.visible = false;
+        this._helpMeshes.arrowRight = arrowRight;
+
+        // Left Arrow graphics
+        arrowMat.map = this._textures.arrow;
+        const arrowLeft = new Mesh(arrowGeo, arrowMat);
+        arrowLeft.name = 'Left Arrow Mesh';
+        arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
+        arrowLeft.rotation.set(-1.5708, 0, 3.1416);
+        this._scene.add(arrowLeft);
+        arrowLeft.visible = false;
+        this._helpMeshes.arrowLeft = arrowLeft;
+
+        // Up Arrow graphics
+        arrowMat.map = this._textures.arrow;
+        const arrowUp = new Mesh(arrowGeo, arrowMat);
+        arrowUp.name = 'Up Arrow Mesh';
+        arrowUp.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] - 1);
+        arrowUp.rotation.set(-1.5708, 0, 1.5708);
+        this._scene.add(arrowUp);
+        arrowUp.visible = false;
+        this._helpMeshes.arrowUp = arrowUp;
+
+        // Up Keys graphics
+        const keyUp = new Mesh(keyGeo, keyUpMat);
+        keyUp.name = 'Up Keys Mesh';
+        keyUp.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
+        keyUp.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyUp);
+        keyUp.visible = false;
+        this._helpMeshes.keysUp = keyUp;
+
+        // Left Keys graphics
+        const keyLeft = new Mesh(keyGeo, keyLeftMat);
+        keyLeft.name = 'Left Keys Mesh';
+        keyLeft.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
+        keyLeft.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyLeft);
+        keyLeft.visible = false;
+        this._helpMeshes.keysLeft = keyLeft;
+
+        // Right Keys graphics
+        const keyRight = new Mesh(keyGeo, keyRightMat);
+        keyRight.name = 'Right Keys Mesh';
+        keyRight.position.set(HELP_LANDER_1_POSITION[0] - 2.5, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 0.8);
+        keyRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(keyRight);
+        keyRight.visible = false;
+        this._helpMeshes.keysRight = keyRight;
+
+        // Lander Text graphics
+        this._helpTexts.landerControlsTitle = new LeftTopTitleText(
+            'Lander Controls',
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landerControlsTitle.hide();
+    }
+
+    /**
+     * Creates everything needed for the Mining Controls panel.
+     * @param arrowGeo the geometry used to make all the arrow meshes in this panel
+     * @param arrowMat the material used to make all the arrow meshes in this panel
+     * @param keyGeo the geometry used to make all the key meshes in this panel
+     * @param keyDownMat the material used to make the down keys mesh in this panel
+     * @param keyUpMat the material used to make the up keys mesh in this panel
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenMiningControls(
+        arrowGeo: PlaneGeometry,
+        arrowMat: MeshBasicMaterial,
+        keyGeo: PlaneGeometry,
+        keyDownMat: MeshBasicMaterial,
+        keyUpMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
         // Create astronaut mining team for mining controls.
         this._helpActors.miners = createMiningTeam(
             {
@@ -594,8 +550,7 @@ export class HelpCtrl {
         });
 
         // Up Arrow graphics
-        arrowMat.map = this._textures.arrow;
-        arrowUp = new Mesh(arrowGeo, arrowMat);
+        const arrowUp = new Mesh(arrowGeo, arrowMat);
         arrowUp.name = 'Up Arrow Mesh';
         arrowUp.position.set(HELP_LANDER_1_POSITION[0] + 6, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 2.75);
         arrowUp.rotation.set(-1.5708, 0, 1.5708);
@@ -604,7 +559,6 @@ export class HelpCtrl {
         this._helpMeshes.arrowUpMining = arrowUp;
 
         // Down Arrow graphics
-        arrowMat.map = this._textures.arrow;
         const arrowDown = new Mesh(arrowGeo, arrowMat);
         arrowDown.name = 'Down Arrow Mesh';
         arrowDown.position.set(HELP_LANDER_1_POSITION[0] + 6, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 2.75);
@@ -614,7 +568,7 @@ export class HelpCtrl {
         this._helpMeshes.arrowDownMining = arrowDown;
 
         // Up Keys graphics
-        keyUp = new Mesh(keyGeo, keyUpMat);
+        const keyUp = new Mesh(keyGeo, keyUpMat);
         keyUp.name = 'Up Keys Mesh Mining';
         keyUp.position.set(HELP_LANDER_1_POSITION[0] + 3.35, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
         keyUp.rotation.set(-1.5708, 0, 0);
@@ -623,12 +577,6 @@ export class HelpCtrl {
         this._helpMeshes.keysUpMining = keyUp;
 
         // Down Keys graphics
-        const keyDownMat = new MeshBasicMaterial();
-        keyDownMat.map = this._textures.keysForDown;
-        keyDownMat.map.minFilter = LinearFilter;
-        (keyDownMat as any).shininess = 0;
-        keyDownMat.transparent = true;
-
         const keyDown = new Mesh(keyGeo, keyDownMat);
         keyDown.name = 'Down Keys Mesh Mining';
         keyDown.position.set(HELP_LANDER_1_POSITION[0] + 3.35, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 3.6);
@@ -670,7 +618,12 @@ export class HelpCtrl {
 
         // Mining Button graphic
         this._helpButtons.mineButton = new MineButton(
-            { left: left + (0.685 * width), height, top: height - (0.67 * height), width },
+            {
+                height: position.height,
+                left: position.left + (0.685 * position.width),
+                top: position.height - (0.67 * position.height),
+                width: position.width
+            },
             BUTTON_COLORS,
             noOp,
             true,
@@ -679,7 +632,12 @@ export class HelpCtrl {
 
         // Mining Button Pressed graphic
         this._helpButtons.minePressedButton = new MineButton(
-            { left: left + (0.685 * width), height, top: height - (0.67 * height), width },
+            {
+                height: position.height,
+                left: position.left + (0.685 * position.width),
+                top: position.height - (0.67 * position.height),
+                width: position.width
+            },
             BUTTON_COLORS_INVERSE,
             noOp,
             true,
@@ -688,7 +646,12 @@ export class HelpCtrl {
 
         // PackItUp Button graphic
         this._helpButtons.packUpButton = new PackItUpButton(
-            { left: left + (0.663 * width), height, top: height - (0.67 * height), width },
+            {
+                height: position.height,
+                left: position.left + (0.663 * position.width),
+                top: position.height - (0.67 * position.height),
+                width: position.width
+            },
             BUTTON_COLORS,
             noOp,
             true,
@@ -697,7 +660,12 @@ export class HelpCtrl {
 
         // PackItUp Button Pressed graphic
         this._helpButtons.packUpPressedButton = new PackItUpButton(
-            { left: left + (0.663 * width), height, top: height - (0.67 * height), width },
+            {
+                height: position.height,
+                left: position.left + (0.663 * position.width),
+                top: position.height - (0.67 * position.height),
+                width: position.width
+            },
             BUTTON_COLORS_INVERSE,
             noOp,
             true,
@@ -711,16 +679,140 @@ export class HelpCtrl {
         // Mining Text graphics
         this._helpTexts.miningControlsTitle = new RightTopMiddleTitleText(
             'Mining Controls',
-            { height, left, top: null, width },
+            position,
             COLORS.neutral,
             border,
             TextType.STATIC);
         this._helpTexts.miningControlsTitle.hide();
-
-    //#endregion
     }
 
+    /**
+     * Creates everything needed for the Landing Thresholds panel.
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenThresholds(position: HTMLElementPosition): void {
+        // The ground for landing
+        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+        const commonRockMat = new MeshBasicMaterial({
+            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        for (let row = 27; row < 31; row++) {
+            this._helpTerrainMeshes.landingThresholdsGroundSpeed[row] = [];
+            for (let col = -0.5; col < 59; col++) {
+                const block = new Mesh( geo, commonRockMat );
+                block.name = `Landing Thresholds - Ground - Speed`;
+                block.position.set((col/10), -7, -6 + row/10);
+                block.rotation.set(1.5708, 0, 0);
+                block.visible = false;
+                this._scene.add(block);
+                this._helpTerrainMeshes.landingThresholdsGroundSpeed[row][col + 0.5] = block;
+            }
+        }
 
+        // Landing Thresholds Lander graphics
+        this._helpMeshes.lander2 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
+        this._helpMeshes.lander2.visible = false;
+        this._helpMeshes.lander2.scale.set(2, 2, 2);
+        this._scene.add(this._helpMeshes.lander2);
+        this._helpActors.sideThruster2Left = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, -1, 1.5);
+        this._helpActors.sideThruster2Right = new SideThruster(this._scene, HELP_SIDE_THRUSTER_2_POSITION, 1, 1.5);
+        this._helpActors.mainThruster2 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_2_POSITION, 2);
+
+        // Landing Thresholds Danger Text graphics
+        this._helpTexts.landingThresholdDanger = new FreestyleText(
+            'Crash Risk!',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.49 * position.width)),
+                top: (0.08 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingThresholdDanger.hide();
+
+        // Landing Thresholds Safe Text graphics
+        this._helpTexts.landingThresholdSafe = new FreestyleText(
+            'Safe to Land',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.49 * position.width)),
+                top: (0.08 * position.height),
+                width: position.width
+            },
+            COLORS.highlighted,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingThresholdSafe.hide();
+
+        // Landing Thresholds Vertical Speed Text graphics
+        this._helpTexts.landingThresholdVerticalSpeed = new FreestyleText(
+            'Descent Speed: 0.000',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.49 * position.width)),
+                top: (0.06 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingThresholdVerticalSpeed.hide();
+
+        // Landing Thresholds Vertical Threshold Text graphics
+        this._helpTexts.landingThresholdVerticalThreshold = new RightTopStatsText4(
+            `Vertical Threshold: ${this._landerSpecifications.verticalCrashMargin}&nbsp;&nbsp;&nbsp;&nbsp;`,
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landingThresholdVerticalThreshold.hide();
+
+        // Landing Thresholds Horizontal Speed Text graphics
+        this._helpTexts.landingThresholdHorizontalSpeed = new FreestyleText(
+            'Horizontal Speed: 0.0000',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.49 * position.width)),
+                top: (0.06 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingThresholdHorizontalSpeed.hide();
+
+        // Landing Thresholds Horizontal Threshold Text graphics
+        this._helpTexts.landingThresholdHorizontalThreshold = new RightTopStatsText4(
+            `Horizontal Threshold: ${this._landerSpecifications.horizontalCrashMargin}&nbsp;&nbsp;&nbsp;&nbsp;`,
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landingThresholdHorizontalThreshold.hide();
+
+        // Landing Thresholds Text graphics
+        this._helpTexts.landingThresholdsTitle = new RightTopTitleText(
+            'Landing Thresholds',
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landingThresholdsTitle.hide();
+    }
 
     /**
      * Calls the next frame in the animation cycle specific to upper-middle-left panel - Astronaut Controls.
