@@ -1,7 +1,6 @@
 import { CircleGeometry, Mesh, MeshBasicMaterial, Scene } from 'three';
 
 import { Collidable } from '../collidable';
-import { SoundinatorSingleton } from '../soundinator';
 /**
  * Static index to help name one explosion differenly than another.
  */
