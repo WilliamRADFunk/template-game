@@ -82,6 +82,11 @@ const MAIN_THRUSTER_Y_OFFSET: number = 1;
 const MAIN_THRUSTER_Z_OFFSET: number = 0.3;
 
 /**
+ * Y Coordinate offset for the smaller main thruster in this scene.
+ */
+const MAIN_THRUSTER_Z_OFFSET_SMALL: number = 0.16;
+
+/**
  * Sets the starting position of the top left lander.
  */
 const HELP_LANDER_1_POSITION: [number, number, number] = [-2.25, -8, -4];
@@ -90,6 +95,21 @@ const HELP_LANDER_1_POSITION: [number, number, number] = [-2.25, -8, -4];
  * Sets the starting position of the top right lander.
  */
 const HELP_LANDER_2_POSITION: [number, number, number] = [2.75, -9, -5];
+
+/**
+ * Sets the starting position of the first bottom left lander.
+ */
+const HELP_LANDER_3_POSITION: [number, number, number] = [-4.675, -8, 4];
+
+/**
+ * Sets the starting position of the second bottom left lander.
+ */
+const HELP_LANDER_4_POSITION: [number, number, number] = [-3.14, -8, 4];
+
+/**
+ * Sets the starting position of the third bottom left lander.
+ */
+const HELP_LANDER_5_POSITION: [number, number, number] = [-1.625, -8, 4];
 
 /**
  * Sets the starting position of the top left main thruster.
@@ -106,6 +126,33 @@ const HELP_MAIN_THRUSTER_2_POSITION: [number, number, number] = [
     HELP_LANDER_2_POSITION[0],
     HELP_LANDER_2_POSITION[1] + MAIN_THRUSTER_Y_OFFSET,
     HELP_LANDER_2_POSITION[2] + MAIN_THRUSTER_Z_OFFSET
+];
+
+/**
+ * Sets the starting position of the first bottom left main thruster.
+ */
+const HELP_MAIN_THRUSTER_3_POSITION: [number, number, number] = [
+    HELP_LANDER_3_POSITION[0],
+    HELP_LANDER_3_POSITION[1] + MAIN_THRUSTER_Y_OFFSET,
+    HELP_LANDER_3_POSITION[2] + MAIN_THRUSTER_Z_OFFSET_SMALL
+];
+
+/**
+ * Sets the starting position of the second bottom left main thruster.
+ */
+const HELP_MAIN_THRUSTER_4_POSITION: [number, number, number] = [
+    HELP_LANDER_4_POSITION[0],
+    HELP_LANDER_4_POSITION[1] + MAIN_THRUSTER_Y_OFFSET,
+    HELP_LANDER_4_POSITION[2] + MAIN_THRUSTER_Z_OFFSET_SMALL
+];
+
+/**
+ * Sets the starting position of the third bottom left main thruster.
+ */
+const HELP_MAIN_THRUSTER_5_POSITION: [number, number, number] = [
+    HELP_LANDER_5_POSITION[0],
+    HELP_LANDER_5_POSITION[1] + MAIN_THRUSTER_Y_OFFSET,
+    HELP_LANDER_5_POSITION[2] + MAIN_THRUSTER_Z_OFFSET_SMALL
 ];
 
 /**
@@ -160,13 +207,16 @@ export class HelpCtrl {
         astroWalk: 0,
         astroWalkClear: 360,
         landingSurfaces: 0,
-        landingSurfacesClear: 360,
+        landingSurfacesClear: 870,
+        landingSurfacesFlashOn: 1,
+        landingSurfacesGravity: 0.0001,
+        landingSurfacesVerticalSpeed: 0,
         landingThresholds: 0,
         landingThresholdsClear: 2130,
+        landingThresholdsFlashOn: 1,
         landingThresholdsGravity: 0.0005,
         landingThresholdsHorizontalSpeed: 0,
         landingThresholdsVerticalSpeed: 0,
-        landingThresholdsFlashOn: 1,
         mining: 0,
         miningClear: 720,
         thrust: 0,
@@ -182,7 +232,8 @@ export class HelpCtrl {
      * All of the terrain-based meshes contained in the help screen.
      */
     private _helpTerrainMeshes: { [key: string]: (Mesh[][] | Object3D[][]) } = {
-        landingSurfacesBase: [] as Mesh[][] | Object3D[][],
+        landingSurfacesBasePart1: [] as Mesh[][] | Object3D[][],
+        landingSurfacesBasePart2: [] as Mesh[][] | Object3D[][],
         landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][]
     }
 
@@ -536,17 +587,25 @@ export class HelpCtrl {
         ];
         baseGroundBounds.forEach(bounds => {
             for (let row = bounds[2]; row < bounds[3]; row++) {
-                if (!this._helpTerrainMeshes.landingSurfacesBase[row]) {
-                    this._helpTerrainMeshes.landingSurfacesBase[row] = [];
+                if (!this._helpTerrainMeshes.landingSurfacesBasePart1[row]) {
+                    this._helpTerrainMeshes.landingSurfacesBasePart1[row] = [];
+                    this._helpTerrainMeshes.landingSurfacesBasePart2[row] = [];
                 }
                 for (let col = bounds[0]; col < bounds[1]; col++) {
-                    const block = new Mesh( groundGeo, commonRockMat );
-                    block.name = `Landing Thresholds - Ground - Speed`;
+                    let block = new Mesh( groundGeo, commonRockMat );
+                    block.name = `Landing Surfaces - Ground - Base`;
                     block.position.set(-6 + (col/10), -7, 6 - row/10);
                     block.rotation.set(1.5708, 0, 0);
                     block.visible = false;
                     this._scene.add(block);
-                    this._helpTerrainMeshes.landingSurfacesBase[row][col + bounds[4]] = block;
+                    this._helpTerrainMeshes.landingSurfacesBasePart1[row][col + bounds[4]] = block;
+                    block = new Mesh( groundGeo, commonRockMat );
+                    block.name = `Landing Surfaces - Ground - Base`;
+                    block.position.set(-6 + (col/10), -7, 6 - row/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.landingSurfacesBasePart2[row][col + bounds[4]] = block;
                 }
             }
         });
@@ -555,31 +614,124 @@ export class HelpCtrl {
         // 2, 3, 4, 5, 6, 7: place block
         const groundObstructionBounds = [
             [ 10.75, -0.75, true, false, false, false, false, true ],
-            [ 26, 0, true, true, true, false, true, true ],
+            [ 26, 0, true, true, false, false, true, true ],
             [ 41.25, -0.25, true, false, true, true, true, true ]
         ];
         const obstructionRow = baseGroundBounds[0][3];
-        this._helpTerrainMeshes.landingSurfacesBase[obstructionRow] = [];
+        this._helpTerrainMeshes.landingSurfacesBasePart1[obstructionRow] = [];
         groundObstructionBounds.forEach(bounds => {
             for (let col = 0; col < 6; col++) {
                 if (bounds[col + 2]) {
                     const block = new Mesh( groundGeo, commonRockMat );
-                    block.name = `Landing Thresholds - Ground - Speed`;
+                    block.name = `Landing Surfaces - Ground - Obstruction`;
                     block.position.set(-6 + ((Number(bounds[0]) + col)/10), -7, 6 - obstructionRow/10);
                     block.rotation.set(1.5708, 0, 0);
                     block.visible = false;
                     this._scene.add(block);
-                    this._helpTerrainMeshes.landingSurfacesBase[obstructionRow][Number(bounds[0]) + col + Number(bounds[1])] = block;
+                    this._helpTerrainMeshes.landingSurfacesBasePart1[obstructionRow][Number(bounds[0]) + col + Number(bounds[1])] = block;
                 }
             }
         });
 
-        // Landing Surfaces 4 Level Blocks Text graphics
-        this._helpTexts.landingSurfaces4LevelBlocks = new FreestyleText(
-            '4+ level blocks',
+        const lifeMat = new MeshBasicMaterial({
+            color: colorLuminance('008000', 3 / 10),
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const waterMat = new MeshBasicMaterial({
+            color: 0x006FCE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const iceMat = new MeshBasicMaterial({
+            color: 0xEEEEEE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const innerWaterGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
+
+        // 0: colStart
+        // 1: modifier
+        // 2, 3, 4, 5, 6, 7: place block
+        // 8: material
+        const otherObstructionBounds = [
+            [ 10.75, -0.75, false, true, true, true, true, false, false, lifeMat ],
+            [ 26, 0, false, true, true, true, true, false, false, waterMat ],
+            [ 41.25, -0.25, false, true, true, true, true, false, true ]
+        ];
+        this._helpTerrainMeshes.landingSurfacesBasePart2[obstructionRow] = [];
+        otherObstructionBounds.forEach(bounds => {
+            for (let col = 0; col < 6; col++) {
+                if (!bounds[col + 2]) {
+                    const block = new Mesh( groundGeo, commonRockMat );
+                    block.name = `Landing Surfaces - Ground - Other`;
+                    block.position.set(-6 + ((Number(bounds[0]) + col)/10), -7, 6 - obstructionRow/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.landingSurfacesBasePart2[obstructionRow][Number(bounds[0]) + col + Number(bounds[1])] = block;
+                } else if (!bounds[8]) {
+                    const block = new Mesh( groundGeo, (bounds[9] as MeshBasicMaterial) );
+                    block.name = `Landing Surfaces - Ground - Other`;
+                    block.position.set(-6 + ((Number(bounds[0]) + col)/10), -7, 6 - obstructionRow/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.landingSurfacesBasePart2[obstructionRow][Number(bounds[0]) + col + Number(bounds[1])] = block;
+                } else {
+                    const iceBlock = new Object3D();
+                    // Ice border
+                    let block = new Mesh( groundGeo, iceMat );
+                    block.name = `Landing Surfaces - Ground - Other - ice exterior - `;
+                    block.position.set(-6 + ((Number(bounds[0]) + col)/10), -6.5, 6 - obstructionRow/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    iceBlock.add(block);
+                    // Watery center
+                    block = new Mesh( innerWaterGeo, waterMat );
+                    block.name = `Landing Surfaces - Ground - Other - water interior - `;
+                    block.position.set(-6 + ((Number(bounds[0]) + col)/10), -7, 6 - obstructionRow/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    iceBlock.add(block);
+
+                    // Place new ice block in mesh grid
+                    this._scene.add(iceBlock);
+                    iceBlock.visible = false;
+                    this._helpTerrainMeshes.landingSurfacesBasePart2[obstructionRow][Number(bounds[0]) + col + Number(bounds[1])] = iceBlock;
+                }
+            }
+        });
+
+        // Landing Thresholds Lander graphics
+        this._helpMeshes.lander3 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
+        this._helpMeshes.lander3.visible = false;
+        this._helpMeshes.lander3.scale.set(1, 1, 1);
+        this._scene.add(this._helpMeshes.lander3);
+        this._helpActors.mainThruster3 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_3_POSITION, 1);
+
+        this._helpMeshes.lander4 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2]);
+        this._helpMeshes.lander4.visible = false;
+        this._helpMeshes.lander4.scale.set(1, 1, 1);
+        this._scene.add(this._helpMeshes.lander4);
+        this._helpActors.mainThruster4 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_4_POSITION, 1);
+
+        this._helpMeshes.lander5 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander5.position.set(HELP_LANDER_5_POSITION[0], HELP_LANDER_5_POSITION[1], HELP_LANDER_5_POSITION[2]);
+        this._helpMeshes.lander5.visible = false;
+        this._helpMeshes.lander5.scale.set(1, 1, 1);
+        this._scene.add(this._helpMeshes.lander5);
+        this._helpActors.mainThruster5 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_5_POSITION, 1);
+
+        // Landing Surfaces 4+ Flat Blocks Text graphics
+        this._helpTexts.landingSurfaces4FlatBlocks = new FreestyleText(
+            '4+ flat blocks',
             {
                 height: position.height,
-                left: (position.left + (0.058 * position.width)),
+                left: (position.left + (0.059 * position.width)),
                 top: (0.9745 * position.height),
                 width: position.width
             },
@@ -588,7 +740,23 @@ export class HelpCtrl {
             TextType.STATIC,
             0.015,
             0);
-        this._helpTexts.landingSurfaces4LevelBlocks.hide();
+        this._helpTexts.landingSurfaces4FlatBlocks.hide();
+
+        // Landing Surfaces Plant Blocks Text graphics
+        this._helpTexts.landingSurfacesPlantBlocks = new FreestyleText(
+            'Plant blocks',
+            {
+                height: position.height,
+                left: (position.left + (0.062 * position.width)),
+                top: (0.9745 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingSurfacesPlantBlocks.hide();
 
         // Landing Surfaces Left Safe Text graphics
         this._helpTexts.landingSurfacesLeftSafe = new FreestyleText(
@@ -622,6 +790,22 @@ export class HelpCtrl {
             0);
         this._helpTexts.landingSurfacesNoGaps.hide();
 
+        // Landing Surfaces Water Blocks Text graphics
+        this._helpTexts.landingSurfacesWaterBlocks = new FreestyleText(
+            'Water blocks',
+            {
+                height: position.height,
+                left: (position.left + (0.19 * position.width)),
+                top: (0.9745 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingSurfacesWaterBlocks.hide();
+
         // Landing Surfaces Right Danger Text graphics
         this._helpTexts.landingSurfacesMiddleDanger = new FreestyleText(
             'Crash Risk!',
@@ -653,6 +837,22 @@ export class HelpCtrl {
             0.015,
             0);
         this._helpTexts.landingSurfacesNoLedges.hide();
+
+        // Landing Surfaces Ice Blocks Text graphics
+        this._helpTexts.landingSurfacesIceBlocks = new FreestyleText(
+            'Ice blocks',
+            {
+                height: position.height,
+                left: (position.left + (0.33 * position.width)),
+                top: (0.9745 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingSurfacesIceBlocks.hide();
 
         // Landing Surfaces Middle Danger Text graphics
         this._helpTexts.landingSurfacesRightDanger = new FreestyleText(
@@ -1046,7 +1246,7 @@ export class HelpCtrl {
     }
 
     /**
-     * Calls the next frame in the animation cycle specific to upper-left panel - Landing Controls.
+     * Calls the next frame in the animation cycle specific to upper-left panel - Lander Controls.
      */
     private _endCycleLanderControls(): void {
         if (this._helpCounters.thrust > this._helpCounters.thrustClear) {
@@ -1077,6 +1277,300 @@ export class HelpCtrl {
             this._helpMeshes.arrowLeft.visible = true;
             this._helpMeshes.keysLeft.visible = true;
         }
+    }
+
+    /**
+     * Calls the next frame in the animation cycle specific to bottom-left panel - Landing Surfaces.
+     */
+    private _endCycleLandingSurfaces(): void {
+        if (this._helpCounters.landingSurfaces > this._helpCounters.landingSurfacesClear) {
+            this._helpCounters.landingSurfaces = 0;
+            this._helpCounters.landingSurfacesVerticalSpeed = 0;
+
+            for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart1.length; row++) {
+                if (this._helpTerrainMeshes.landingSurfacesBasePart1[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart1[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingSurfacesBasePart1[row][col]) {
+                            this._helpTerrainMeshes.landingSurfacesBasePart1[row][col].visible = true;
+                        }
+                    }
+                }
+            }
+            for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart2.length; row++) {
+                if (this._helpTerrainMeshes.landingSurfacesBasePart2[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart2[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingSurfacesBasePart2[row][col]) {
+                            this._helpTerrainMeshes.landingSurfacesBasePart2[row][col].visible = false;
+                        }
+                    }
+                }
+            }
+            this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
+            this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2]);
+            this._helpMeshes.lander5.position.set(HELP_LANDER_5_POSITION[0], HELP_LANDER_5_POSITION[1], HELP_LANDER_5_POSITION[2]);
+
+            this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
+            this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
+            this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
+        }
+
+        this._helpTexts.landingSurfaces4FlatBlocks.hide();
+        this._helpTexts.landingSurfacesNoGaps.hide();
+        this._helpTexts.landingSurfacesNoLedges.hide();
+        this._helpTexts.landingSurfacesPlantBlocks.hide();
+        this._helpTexts.landingSurfacesWaterBlocks.hide();
+        this._helpTexts.landingSurfacesIceBlocks.hide();
+        this._helpTexts.landingSurfacesLeftSafe.hide();
+        this._helpTexts.landingSurfacesMiddleDanger.hide();
+        this._helpTexts.landingSurfacesRightDanger.hide();
+        this._helpMeshes.lander3.visible = false;
+        this._helpMeshes.lander4.visible = false;
+        this._helpMeshes.lander5.visible = false;
+
+        //#region Topography Landing Conditions
+        if (this._helpCounters.landingSurfaces < 30) {
+            this._landingSurfacesVerticalUpdate1(false);
+        } else if (this._helpCounters.landingSurfaces < 130) {
+            this._helpCounters.landingSurfacesVerticalSpeed += this._helpCounters.landingSurfacesGravity;
+            this._landingSurfacesVerticalUpdate1(false);
+        } else if (this._helpCounters.landingSurfaces < 180) {
+            this._helpCounters.landingSurfacesVerticalSpeed += this._helpCounters.landingSurfacesGravity - 0.0002;
+            this._landingSurfacesVerticalUpdate1(true);
+        } else if (this._helpCounters.landingSurfaces < 240) {
+            this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
+            this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
+            this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
+            this._helpMeshes.lander3.visible = true;
+            this._helpMeshes.lander4.visible = true;
+            this._helpMeshes.lander5.visible = true;
+            this._helpTexts.landingSurfaces4FlatBlocks.show();
+            this._helpTexts.landingSurfacesNoGaps.show();
+            this._helpTexts.landingSurfacesNoLedges.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            this._helpCounters.landingSurfacesFlashOn = this._helpCounters.landingSurfaces % 10 === 0
+                ? Number(!this._helpCounters.landingSurfacesFlashOn)
+                : this._helpCounters.landingSurfacesFlashOn;
+
+            if (!!this._helpCounters.landingSurfacesFlashOn) {
+                this._helpTexts.landingSurfacesLeftSafe.show();
+                this._helpTexts.landingSurfacesMiddleDanger.show();
+                this._helpTexts.landingSurfacesRightDanger.show();
+            } else {
+                this._helpTexts.landingSurfacesLeftSafe.hide();
+                this._helpTexts.landingSurfacesMiddleDanger.hide();
+                this._helpTexts.landingSurfacesRightDanger.hide();
+            }
+        } else if (this._helpCounters.landingSurfaces === 250) {
+            this._helpCounters.landingSurfacesVerticalSpeed = 0.006;
+            this._landingSurfacesVerticalUpdate1(false);
+        } else if (this._helpCounters.landingSurfaces < 280) {
+            this._helpCounters.landingSurfacesVerticalSpeed += this._helpCounters.landingSurfacesGravity;
+            this._landingSurfacesVerticalUpdate1(false);
+        } else if (this._helpCounters.landingSurfaces === 280) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfaces4FlatBlocks.show();
+            this._helpTexts.landingSurfacesNoGaps.show();
+            this._helpTexts.landingSurfacesNoLedges.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            let currPos = this._helpMeshes.lander4.position;
+            this._helpActors.landingSurfacesExplosion1 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
+            currPos = this._helpMeshes.lander5.position;
+            this._helpActors.landingSurfacesExplosion2 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
+        } else if (this._helpCounters.landingSurfaces < 382) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfaces4FlatBlocks.show();
+            this._helpTexts.landingSurfacesNoGaps.show();
+            this._helpTexts.landingSurfacesNoLedges.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            this._helpActors.landingSurfacesExplosion1 && this._helpActors.landingSurfacesExplosion1.endCycle();
+            this._helpActors.landingSurfacesExplosion2 && this._helpActors.landingSurfacesExplosion2.endCycle();
+        } else if (this._helpCounters.landingSurfaces === 382) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfaces4FlatBlocks.show();
+            this._helpTexts.landingSurfacesNoGaps.show();
+            this._helpTexts.landingSurfacesNoLedges.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            this._scene.remove(this._helpActors.landingSurfacesExplosion1);
+            this._helpActors.landingSurfacesExplosion1 = null;
+            this._scene.remove(this._helpActors.landingSurfacesExplosion2);
+            this._helpActors.landingSurfacesExplosion2 = null;
+        } else if (this._helpCounters.landingSurfaces < 440) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfaces4FlatBlocks.show();
+            this._helpTexts.landingSurfacesNoGaps.show();
+            this._helpTexts.landingSurfacesNoLedges.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+        //#endregion
+        //#region Block Type Landing Conditions
+        } else if (this._helpCounters.landingSurfaces === 440) {
+            this._helpCounters.landingSurfacesVerticalSpeed = 0;
+            this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
+            this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2]);
+            this._helpMeshes.lander5.position.set(HELP_LANDER_5_POSITION[0], HELP_LANDER_5_POSITION[1], HELP_LANDER_5_POSITION[2]);
+            this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
+            this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
+            this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
+            this._helpTexts.landingSurfacesPlantBlocks.show();
+            this._helpTexts.landingSurfacesWaterBlocks.show();
+            this._helpTexts.landingSurfacesIceBlocks.show();
+            for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart1.length; row++) {
+                if (this._helpTerrainMeshes.landingSurfacesBasePart1[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart1[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingSurfacesBasePart1[row][col]) {
+                            this._helpTerrainMeshes.landingSurfacesBasePart1[row][col].visible = false;
+                        }
+                    }
+                }
+            }
+            for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart2.length; row++) {
+                if (this._helpTerrainMeshes.landingSurfacesBasePart2[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart2[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingSurfacesBasePart2[row][col]) {
+                            this._helpTerrainMeshes.landingSurfacesBasePart2[row][col].visible = true;
+                        }
+                    }
+                }
+            }
+        } else if (this._helpCounters.landingSurfaces < 470) {
+            this._landingSurfacesVerticalUpdate2(false);
+        } else if (this._helpCounters.landingSurfaces < 570) {
+            this._helpCounters.landingSurfacesVerticalSpeed += this._helpCounters.landingSurfacesGravity;
+            this._landingSurfacesVerticalUpdate2(false);
+        } else if (this._helpCounters.landingSurfaces < 620) {
+            this._helpCounters.landingSurfacesVerticalSpeed += this._helpCounters.landingSurfacesGravity - 0.0002;
+            this._landingSurfacesVerticalUpdate2(true);
+        } else if (this._helpCounters.landingSurfaces < 680) {
+            this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
+            this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
+            this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
+            this._helpMeshes.lander3.visible = true;
+            this._helpMeshes.lander4.visible = true;
+            this._helpMeshes.lander5.visible = true;
+            this._helpTexts.landingSurfacesPlantBlocks.show();
+            this._helpTexts.landingSurfacesWaterBlocks.show();
+            this._helpTexts.landingSurfacesIceBlocks.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            this._helpCounters.landingSurfacesFlashOn = this._helpCounters.landingSurfaces % 10 === 0
+                ? Number(!this._helpCounters.landingSurfacesFlashOn)
+                : this._helpCounters.landingSurfacesFlashOn;
+
+            if (!!this._helpCounters.landingSurfacesFlashOn) {
+                this._helpTexts.landingSurfacesLeftSafe.show();
+                this._helpTexts.landingSurfacesMiddleDanger.show();
+                this._helpTexts.landingSurfacesRightDanger.show();
+            } else {
+                this._helpTexts.landingSurfacesLeftSafe.hide();
+                this._helpTexts.landingSurfacesMiddleDanger.hide();
+                this._helpTexts.landingSurfacesRightDanger.hide();
+            }
+        } else if (this._helpCounters.landingSurfaces === 680) {
+            this._helpCounters.landingSurfacesVerticalSpeed = 0.006;
+            this._landingSurfacesVerticalUpdate2(false);
+        } else if (this._helpCounters.landingSurfaces < 710) {
+            this._helpCounters.landingSurfacesVerticalSpeed += this._helpCounters.landingSurfacesGravity;
+            this._landingSurfacesVerticalUpdate2(false);
+        } else if (this._helpCounters.landingSurfaces === 710) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfacesPlantBlocks.show();
+            this._helpTexts.landingSurfacesWaterBlocks.show();
+            this._helpTexts.landingSurfacesIceBlocks.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            let currPos = this._helpMeshes.lander4.position;
+            this._helpActors.landingSurfacesExplosion1 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
+            currPos = this._helpMeshes.lander5.position;
+            this._helpActors.landingSurfacesExplosion2 = new Explosion(
+                this._scene,
+                currPos.x,
+                currPos.z,
+                {
+                    radius: 0.3,
+                    renderedInert: false,
+                    segments: 128,
+                    y: -8
+                });
+        } else if (this._helpCounters.landingSurfaces < 812) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfacesPlantBlocks.show();
+            this._helpTexts.landingSurfacesWaterBlocks.show();
+            this._helpTexts.landingSurfacesIceBlocks.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            this._helpActors.landingSurfacesExplosion1 && this._helpActors.landingSurfacesExplosion1.endCycle();
+            this._helpActors.landingSurfacesExplosion2 && this._helpActors.landingSurfacesExplosion2.endCycle();
+        } else if (this._helpCounters.landingSurfaces === 812) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfacesPlantBlocks.show();
+            this._helpTexts.landingSurfacesWaterBlocks.show();
+            this._helpTexts.landingSurfacesIceBlocks.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+
+            this._scene.remove(this._helpActors.landingSurfacesExplosion1);
+            this._helpActors.landingSurfacesExplosion1 = null;
+            this._scene.remove(this._helpActors.landingSurfacesExplosion2);
+            this._helpActors.landingSurfacesExplosion2 = null;
+        } else if (this._helpCounters.landingSurfaces <= 870) {
+            this._helpMeshes.lander3.visible = true;
+            this._helpTexts.landingSurfacesPlantBlocks.show();
+            this._helpTexts.landingSurfacesWaterBlocks.show();
+            this._helpTexts.landingSurfacesIceBlocks.show();
+            this._helpTexts.landingSurfacesLeftSafe.show();
+            this._helpTexts.landingSurfacesMiddleDanger.show();
+            this._helpTexts.landingSurfacesRightDanger.show();
+        }
+        //#endregion
+
+        this._helpCounters.landingSurfaces++;
     }
 
     /**
@@ -1506,6 +2000,68 @@ export class HelpCtrl {
     }
 
     /**
+     * Updates text and graphics during part 1 of landing surfaces section demonstration.
+     * @param mainThrusterOn whether turn main thruster graphics on
+     */
+    private _landingSurfacesVerticalUpdate1(mainThrusterOn: boolean): void {
+        let currPos = this._helpMeshes.lander3.position;
+        this._helpMeshes.lander3.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingSurfacesVerticalSpeed);
+        currPos = this._helpMeshes.lander3.position;
+        this._helpActors.mainThruster3.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        currPos = this._helpMeshes.lander4.position;
+        this._helpMeshes.lander4.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingSurfacesVerticalSpeed);
+        currPos = this._helpMeshes.lander4.position;
+        this._helpActors.mainThruster4.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        currPos = this._helpMeshes.lander5.position;
+        this._helpMeshes.lander5.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingSurfacesVerticalSpeed);
+        currPos = this._helpMeshes.lander5.position;
+        this._helpActors.mainThruster5.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        this._helpTexts.landingSurfaces4FlatBlocks.show();
+        this._helpTexts.landingSurfacesNoGaps.show();
+        this._helpTexts.landingSurfacesNoLedges.show();
+        this._helpTexts.landingSurfacesLeftSafe.show();
+        this._helpTexts.landingSurfacesMiddleDanger.show();
+        this._helpTexts.landingSurfacesRightDanger.show();
+        this._helpMeshes.lander3.visible = true;
+        this._helpMeshes.lander4.visible = true;
+        this._helpMeshes.lander5.visible = true;
+    }
+
+    /**
+     * Updates text and graphics during part 2 of landing surfaces section demonstration.
+     * @param mainThrusterOn whether turn main thruster graphics on
+     */
+    private _landingSurfacesVerticalUpdate2(mainThrusterOn: boolean): void {
+        let currPos = this._helpMeshes.lander3.position;
+        this._helpMeshes.lander3.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingSurfacesVerticalSpeed);
+        currPos = this._helpMeshes.lander3.position;
+        this._helpActors.mainThruster3.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        currPos = this._helpMeshes.lander4.position;
+        this._helpMeshes.lander4.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingSurfacesVerticalSpeed);
+        currPos = this._helpMeshes.lander4.position;
+        this._helpActors.mainThruster4.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        currPos = this._helpMeshes.lander5.position;
+        this._helpMeshes.lander5.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingSurfacesVerticalSpeed);
+        currPos = this._helpMeshes.lander5.position;
+        this._helpActors.mainThruster5.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        this._helpTexts.landingSurfacesPlantBlocks.show();
+        this._helpTexts.landingSurfacesWaterBlocks.show();
+        this._helpTexts.landingSurfacesIceBlocks.show();
+        this._helpTexts.landingSurfacesLeftSafe.show();
+        this._helpTexts.landingSurfacesMiddleDanger.show();
+        this._helpTexts.landingSurfacesRightDanger.show();
+        this._helpMeshes.lander3.visible = true;
+        this._helpMeshes.lander4.visible = true;
+        this._helpMeshes.lander5.visible = true;
+    }
+
+    /**
      * Updates text and graphics during horizontal threshold section demonstration.
      * @param leftSideThrusterOn whether turn left side thruster graphics on
      * @param rightSideThrusterOn whether turn right side thruster graphics on
@@ -1607,6 +2163,7 @@ export class HelpCtrl {
         this._endCycleThresholds();
         this._endCycleAstronautControls();
         this._endCycleMiningControls();
+        this._endCycleLandingSurfaces();
     }
 
     /**
@@ -1688,22 +2245,50 @@ export class HelpCtrl {
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.hide();
-        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBase.length; row++) {
-            if (this._helpTerrainMeshes.landingSurfacesBase[row]) {
-                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBase[row].length; col++) {
-                    if (this._helpTerrainMeshes.landingSurfacesBase[row][col]) {
-                        this._helpTerrainMeshes.landingSurfacesBase[row][col].visible = false;
+        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart1.length; row++) {
+            if (this._helpTerrainMeshes.landingSurfacesBasePart1[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart1[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingSurfacesBasePart1[row][col]) {
+                        this._helpTerrainMeshes.landingSurfacesBasePart1[row][col].visible = false;
+                    }
+                }
+            }
+        }
+        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart2.length; row++) {
+            if (this._helpTerrainMeshes.landingSurfacesBasePart2[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart2[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingSurfacesBasePart2[row][col]) {
+                        this._helpTerrainMeshes.landingSurfacesBasePart2[row][col].visible = false;
                     }
                 }
             }
         }
 
-        this._helpTexts.landingSurfaces4LevelBlocks.hide();
+        this._helpTexts.landingSurfaces4FlatBlocks.hide();
         this._helpTexts.landingSurfacesNoGaps.hide();
         this._helpTexts.landingSurfacesNoLedges.hide();
+        this._helpTexts.landingSurfacesPlantBlocks.hide();
+        this._helpTexts.landingSurfacesWaterBlocks.hide();
+        this._helpTexts.landingSurfacesIceBlocks.hide();
         this._helpTexts.landingSurfacesLeftSafe.hide();
         this._helpTexts.landingSurfacesMiddleDanger.hide();
         this._helpTexts.landingSurfacesRightDanger.hide();
+        this._helpMeshes.lander3.visible = false;
+        this._helpMeshes.lander4.visible = false;
+        this._helpMeshes.lander5.visible = false;
+
+        if (this._helpActors.landingSurfacesExplosion1) {
+            this._scene.remove(this._helpActors.landingSurfacesExplosion1.getMesh());
+            this._helpActors.landingSurfacesExplosion1 = null;
+        }
+        if (this._helpActors.landingSurfacesExplosion2) {
+            this._scene.remove(this._helpActors.landingSurfacesExplosion2.getMesh());
+            this._helpActors.landingSurfacesExplosion2 = null;
+        }
+
+        this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
+        this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
+        this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
     }
 
     /**
@@ -1718,6 +2303,14 @@ export class HelpCtrl {
         this._helpTexts.landingThresholdVerticalSpeed.resize({ height, left: (left + width - (0.49 * width)), top: (0.065 * height), width });
         this._helpTexts.landingThresholdDanger.resize({ height, left: (left + width - (0.49 * width)), top: (0.08 * height), width });
         this._helpTexts.landingThresholdSafe.resize({ height, left: (left + width - (0.49 * width)), top: (0.08 * height), width });
+
+        this._helpTexts.landingSurfacesLeftSafe.resize({ height, left: (left + (0.062 * width)), top: (0.78 * height), width: width });
+        this._helpTexts.landingSurfacesMiddleDanger.resize({ height, left: (left + (0.195 * width)), top: (0.78 * height), width });
+        this._helpTexts.landingSurfacesRightDanger.resize({ height, left: (left + (0.3225 * width)), top: (0.78 * height), width });
+
+        this._helpTexts.landingSurfaces4FlatBlocks.resize({ height, left: (left + (0.058 * width)), top: (0.9745 * height), width });
+        this._helpTexts.landingSurfacesNoGaps.resize({ height, left: (left + (0.21 * width)), top: (0.9745 * height), width });
+        this._helpTexts.landingSurfacesNoLedges.resize({ height, left: (left + (0.33 * width)), top: (0.9745 * height), width });
 
         this._helpButtons.mineButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
         this._helpButtons.minePressedButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
@@ -1774,22 +2367,34 @@ export class HelpCtrl {
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.show();
-        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBase.length; row++) {
-            if (this._helpTerrainMeshes.landingSurfacesBase[row]) {
-                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBase[row].length; col++) {
-                    if (this._helpTerrainMeshes.landingSurfacesBase[row][col]) {
-                        this._helpTerrainMeshes.landingSurfacesBase[row][col].visible = true;
+        this._helpCounters.landingSurfaces = 0;
+        this._helpCounters.landingSurfacesVerticalSpeed = 0;
+
+        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart1.length; row++) {
+            if (this._helpTerrainMeshes.landingSurfacesBasePart1[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart1[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingSurfacesBasePart1[row][col]) {
+                        this._helpTerrainMeshes.landingSurfacesBasePart1[row][col].visible = true;
                     }
                 }
             }
         }
-        this._helpCounters.landingSurfaces = 0;
+        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart2.length; row++) {
+            if (this._helpTerrainMeshes.landingSurfacesBasePart2[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBasePart2[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingSurfacesBasePart2[row][col]) {
+                        this._helpTerrainMeshes.landingSurfacesBasePart2[row][col].visible = false;
+                    }
+                }
+            }
+        }
 
-        this._helpTexts.landingSurfaces4LevelBlocks.show();
-        this._helpTexts.landingSurfacesNoGaps.show();
-        this._helpTexts.landingSurfacesNoLedges.show();
-        this._helpTexts.landingSurfacesLeftSafe.show();
-        this._helpTexts.landingSurfacesMiddleDanger.show();
-        this._helpTexts.landingSurfacesRightDanger.show();
+        this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
+        this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2]);
+        this._helpMeshes.lander5.position.set(HELP_LANDER_5_POSITION[0], HELP_LANDER_5_POSITION[1], HELP_LANDER_5_POSITION[2]);
+
+        this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
+        this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
+        this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
     }
 }
