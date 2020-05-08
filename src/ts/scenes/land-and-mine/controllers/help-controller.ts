@@ -1384,7 +1384,7 @@ export class HelpCtrl {
                 currPos.x,
                 currPos.z,
                 {
-                    radius: 0.3,
+                    radius: 0.2,
                     renderedInert: false,
                     segments: 128,
                     y: -8
@@ -1395,7 +1395,7 @@ export class HelpCtrl {
                 currPos.x,
                 currPos.z,
                 {
-                    radius: 0.3,
+                    radius: 0.2,
                     renderedInert: false,
                     segments: 128,
                     y: -8
@@ -1519,7 +1519,7 @@ export class HelpCtrl {
                 currPos.x,
                 currPos.z,
                 {
-                    radius: 0.3,
+                    radius: 0.2,
                     renderedInert: false,
                     segments: 128,
                     y: -8
@@ -1530,7 +1530,7 @@ export class HelpCtrl {
                 currPos.x,
                 currPos.z,
                 {
-                    radius: 0.3,
+                    radius: 0.2,
                     renderedInert: false,
                     segments: 128,
                     y: -8

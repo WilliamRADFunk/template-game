@@ -72,7 +72,7 @@ export class Explosion implements Collidable {
         this.explosionMaterial = new MeshBasicMaterial({
             color: (!!_options.renderedInert) ? 0x05EDFF : 0xF9A602,
             opacity: 1,
-            transparent: true
+            transparent: false
         });
         this.explosion = new Mesh(this.explosionGeometry, this.explosionMaterial);
         this.explosion.position.set(x, (_options.y || -0.25), z);
@@ -91,6 +91,7 @@ export class Explosion implements Collidable {
                 this.explosion.scale.set(this.currentExplosionScale, this.currentExplosionScale, this.currentExplosionScale);
             } else {
                 this.currentExplosionScale -= 0.02;
+                this.explosionMaterial.transparent = true;
                 this.explosionMaterial.opacity = this.currentExplosionScale;
             }
             if (this.isExplosionGrowing && this.currentExplosionScale >= 2) {
