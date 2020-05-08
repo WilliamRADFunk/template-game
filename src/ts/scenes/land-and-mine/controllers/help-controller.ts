@@ -31,9 +31,12 @@ import { FreestyleText } from "../../../controls/text/freestyle-text";
 import { RightTopStatsText4 } from "../../../controls/text/stats/right-top-stats-text-4";
 import { TextBase } from "../../../controls/text/text-base";
 import { TextType } from "../../../controls/text/text-type";
+import { LeftBottomMiddleTitleText } from "../../../controls/text/title/left-bottom-middle-title-text";
 import { LeftBottomTitleText } from "../../../controls/text/title/left-bottom-title-text";
 import { LeftTopMiddleTitleText } from "../../../controls/text/title/left-top-middle-title-text";
 import { LeftTopTitleText } from "../../../controls/text/title/left-top-title-text";
+import { RightBottomMiddleTitleText } from "../../../controls/text/title/right-bottom-middle-title-text";
+import { RightBottomTitleText } from "../../../controls/text/title/right-bottom-title-text";
 import { RightTopMiddleTitleText } from "../../../controls/text/title/right-top-middle-title-text";
 import { RightTopTitleText } from "../../../controls/text/title/right-top-title-text";
 
@@ -371,7 +374,10 @@ export class HelpCtrl {
         this._buildHelpScreenThresholds(groundGeo, { height, left, top: null, width });
         this._buildHelpScreenAstronautControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, { height, left, top: null, width });
         this._buildHelpScreenMiningControls(arrowGeo, arrowMat, keyGeo, keyDownMat, keyUpMat, { height, left, top: null, width });
+        this._buildHelpScreenLoadUnload({ height, left, top: null, width });
+        this._buildHelpScreenBlockTypes({ height, left, top: null, width });
         this._buildHelpScreenLandingSurfaces(groundGeo, { height, left, top: null, width });
+        this._buildHelpScreenControlPanel({ height, left, top: null, width });
     }
 
     /**
@@ -465,6 +471,36 @@ export class HelpCtrl {
             border,
             TextType.STATIC);
         this._helpTexts.astronautControlsTitle.hide();
+    }
+
+    /**
+     * Creates everything needed for the Block Types panel.
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenBlockTypes(position: HTMLElementPosition): void {
+        // Block Types Text graphics
+        this._helpTexts.blockTypesTitle = new RightBottomMiddleTitleText(
+            'Block Types',
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.blockTypesTitle.hide();
+    }
+
+    /**
+     * Creates everything needed for the Control Panel panel.
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenControlPanel(position: HTMLElementPosition): void {
+        // Control Panel Text graphics
+        this._helpTexts.controlPanelTitle = new RightBottomTitleText(
+            'Control Panel',
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.controlPanelTitle.hide();
     }
 
     /**
@@ -878,6 +914,21 @@ export class HelpCtrl {
             border,
             TextType.STATIC);
         this._helpTexts.landingSurfacesTitle.hide();
+    }
+
+    /**
+     * Creates everything needed for the Load/Unload panel.
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenLoadUnload(position: HTMLElementPosition): void {
+        // Load & Unload Text graphics
+        this._helpTexts.loadUnloadTitle = new LeftBottomMiddleTitleText(
+            'Load / Unload',
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.loadUnloadTitle.hide();
     }
 
     /**
@@ -2247,6 +2298,12 @@ export class HelpCtrl {
         this._drillBits[0].visible = false;
         this._drillBits.length = 1;
 
+        // Load & Unload
+        this._helpTexts.loadUnloadTitle.hide();
+
+        // Block Types
+        this._helpTexts.blockTypesTitle.hide();
+
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.hide();
         for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBasePart1.length; row++) {
@@ -2293,6 +2350,9 @@ export class HelpCtrl {
         this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
         this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
         this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
+
+        // Control Panel
+        this._helpTexts.controlPanelTitle.hide();
     }
 
     /**
@@ -2374,6 +2434,12 @@ export class HelpCtrl {
         this._helpTexts.miningControlsTitle.show();
         this._helpCounters.mining = 0;
 
+        // Load & Unload
+        this._helpTexts.loadUnloadTitle.show();
+
+        // Block Types
+        this._helpTexts.blockTypesTitle.show();
+
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.show();
         this._helpCounters.landingSurfaces = 0;
@@ -2405,5 +2471,8 @@ export class HelpCtrl {
         this._helpActors.mainThruster3.endCycle(HELP_MAIN_THRUSTER_3_POSITION, false);
         this._helpActors.mainThruster4.endCycle(HELP_MAIN_THRUSTER_4_POSITION, false);
         this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
+
+        // Control Panel
+        this._helpTexts.controlPanelTitle.show();
     }
 }
