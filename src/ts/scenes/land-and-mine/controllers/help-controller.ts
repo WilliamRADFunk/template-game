@@ -115,6 +115,11 @@ const HELP_LANDER_4_POSITION: [number, number, number] = [-3.14, -8, 4];
 const HELP_LANDER_5_POSITION: [number, number, number] = [-1.625, -8, 4];
 
 /**
+ * Sets the starting position of the bottom middle left lander.
+ */
+const HELP_LANDER_6_POSITION: [number, number, number] = [-3.14, -8, 1.9];
+
+/**
  * Sets the starting position of the top left main thruster.
  */
 const HELP_MAIN_THRUSTER_1_POSITION: [number, number, number] = [
@@ -220,6 +225,11 @@ export class HelpCtrl {
         landingThresholdsGravity: 0.0005,
         landingThresholdsHorizontalSpeed: 0,
         landingThresholdsVerticalSpeed: 0,
+        loadUnload: 0,
+        loadUnloadClear: 720,
+        loadUnloadCurrPositionX: HELP_LANDER_6_POSITION[0],
+        loadUnloadCurrPositionY: HELP_LANDER_6_POSITION[1] - 3,
+        loadUnloadCurrPositionZ: HELP_LANDER_6_POSITION[2] + 0.3,
         mining: 0,
         miningClear: 720,
         thrust: 0,
@@ -237,7 +247,8 @@ export class HelpCtrl {
     private _helpTerrainMeshes: { [key: string]: (Mesh[][] | Object3D[][]) } = {
         landingSurfacesBasePart1: [] as Mesh[][] | Object3D[][],
         landingSurfacesBasePart2: [] as Mesh[][] | Object3D[][],
-        landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][]
+        landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][],
+        loadUnload: [] as Mesh[][] | Object3D[][]
     }
 
     /**
@@ -370,13 +381,20 @@ export class HelpCtrl {
         (keyDownMat as any).shininess = 0;
         keyDownMat.transparent = true;
 
+        const commonRockMat = new MeshBasicMaterial({
+            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
         this._buildHelpScreenLandingControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, keyUpMat, { height, left, top: null, width });
-        this._buildHelpScreenThresholds(groundGeo, { height, left, top: null, width });
+        this._buildHelpScreenThresholds(groundGeo, commonRockMat, { height, left, top: null, width });
         this._buildHelpScreenAstronautControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, { height, left, top: null, width });
         this._buildHelpScreenMiningControls(arrowGeo, arrowMat, keyGeo, keyDownMat, keyUpMat, { height, left, top: null, width });
-        this._buildHelpScreenLoadUnload({ height, left, top: null, width });
+        this._buildHelpScreenLoadUnload(groundGeo, commonRockMat, { height, left, top: null, width });
         this._buildHelpScreenBlockTypes({ height, left, top: null, width });
-        this._buildHelpScreenLandingSurfaces(groundGeo, { height, left, top: null, width });
+        this._buildHelpScreenLandingSurfaces(groundGeo, commonRockMat, { height, left, top: null, width });
         this._buildHelpScreenControlPanel({ height, left, top: null, width });
     }
 
@@ -600,17 +618,13 @@ export class HelpCtrl {
     /**
      * Creates everything needed for the Landing Surfaces panel.
      * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param commonRockMat the material used to make all the ground meshes in this panel
      * @param position initial positioning parameters from window size
      */
-    private _buildHelpScreenLandingSurfaces(groundGeo: PlaneGeometry, position: HTMLElementPosition): void {
-        // The base ground for landing
-        const commonRockMat = new MeshBasicMaterial({
-            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
-
+    private _buildHelpScreenLandingSurfaces(
+        groundGeo: PlaneGeometry,
+        commonRockMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
         // 0: colStart
         // 1: colEnd
         // 2: rowStart
@@ -917,13 +931,70 @@ export class HelpCtrl {
     }
 
     /**
-     * Creates everything needed for the Load/Unload panel.
+     * Creates everything needed for the Load & Unload panel.
+     * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param commonRockMat the material used to make all the ground meshes in this panel
      * @param position initial positioning parameters from window size
      */
-    private _buildHelpScreenLoadUnload(position: HTMLElementPosition): void {
+    private _buildHelpScreenLoadUnload(
+        groundGeo: PlaneGeometry,
+        commonRockMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
+        // Ground Meshes
+        for (let row = 34; row < 38; row++) {
+            this._helpTerrainMeshes.loadUnload[row] = [];
+            for (let col = 1.5; col < 56.5; col++) {
+                const block = new Mesh( groundGeo, commonRockMat );
+                    block.name = `Landing Surfaces - Ground - Base`;
+                    block.position.set(-6 + (col/10), -7, 6 - row/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.loadUnload[row][col - 0.5] = block;
+            }
+        }
+
+        // Load & Unload Lander graphics
+        this._helpMeshes.lander6 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander6.position.set(HELP_LANDER_6_POSITION[0], HELP_LANDER_6_POSITION[1], HELP_LANDER_6_POSITION[2]);
+        this._helpMeshes.lander6.visible = false;
+        this._helpMeshes.lander6.scale.set(2, 2, 2);
+        this._scene.add(this._helpMeshes.lander6);
+
+        // Create astronaut mining team for astronaut controls
+        this._helpActors.astronautsLoadUnload = createMiningTeam(
+            {
+                astronaut1: this._textures.astronaut1,
+                astronaut2: this._textures.astronaut2,
+                astronaut3: this._textures.astronaut3,
+                astronautSuffocation1: this._textures.astronautSuffocation1,
+                astronautSuffocation2: this._textures.astronautSuffocation2,
+                astronautSuffocation3: this._textures.astronautSuffocation3,
+                astronautSuffocation4: this._textures.astronautSuffocation4,
+                astronautSuffocation5: this._textures.astronautSuffocation5
+            },
+            {
+                miningEquipment1: this._textures.miningEquipment1,
+                miningEquipment2: this._textures.miningEquipment2
+            }).slice(0, 9);
+
+        // Position the miners on the screen, make them larger, and hide them.
+        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
+            this._scene.add(astro.mesh);
+            astro.mesh.scale.set(2.5, 2.5, 2.5);
+            astro.mesh.visible = false;
+            if (index === 1) {
+                astro.mesh.position.set(HELP_LANDER_6_POSITION[0], HELP_LANDER_6_POSITION[1] - 3, HELP_LANDER_6_POSITION[2] + 0.3);
+            } else if (index % 3 === 0) {
+                astro.mesh.position.set(HELP_LANDER_6_POSITION[0] - 0.3, HELP_LANDER_6_POSITION[1] - 3, HELP_LANDER_6_POSITION[2] + 0.3);
+            } else {
+                astro.mesh.position.set(HELP_LANDER_6_POSITION[0] + 0.3, HELP_LANDER_6_POSITION[1] - 3, HELP_LANDER_6_POSITION[2] + 0.3);
+            }
+        });
+
         // Load & Unload Text graphics
         this._helpTexts.loadUnloadTitle = new LeftBottomMiddleTitleText(
-            'Load / Unload',
+            'Load & Unload',
             position,
             COLORS.neutral,
             border,
@@ -1118,16 +1189,14 @@ export class HelpCtrl {
     /**
      * Creates everything needed for the Landing Thresholds panel.
      * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param commonRockMat the material used to make all the ground meshes in this panel
      * @param position initial positioning parameters from window size
      */
-    private _buildHelpScreenThresholds(groundGeo: PlaneGeometry, position: HTMLElementPosition): void {
+    private _buildHelpScreenThresholds(
+        groundGeo: PlaneGeometry,
+        commonRockMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
         // The ground for landing
-        const commonRockMat = new MeshBasicMaterial({
-            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
         for (let row = 27; row < 31; row++) {
             this._helpTerrainMeshes.landingThresholdsGroundSpeed[row] = [];
             for (let col = -0.5; col < 59; col++) {
@@ -1247,8 +1316,6 @@ export class HelpCtrl {
      * Calls the next frame in the animation cycle specific to upper-middle-left panel - Astronaut Controls.
      */
     private _endCycleAstronautControls(): void {
-        this._helpCounters.thrust++;
-
         // Astronaut walking section
         if (this._helpCounters.astroWalk > this._helpCounters.astroWalkClear) {
             this._helpCounters.astroWalk = 0;
@@ -1328,6 +1395,8 @@ export class HelpCtrl {
             this._helpMeshes.arrowLeft.visible = true;
             this._helpMeshes.keysLeft.visible = true;
         }
+
+        this._helpCounters.thrust++;
     }
 
     /**
@@ -1622,6 +1691,105 @@ export class HelpCtrl {
         //#endregion
 
         this._helpCounters.landingSurfaces++;
+    }
+
+    /**
+     * Runs the walking animation in the load and unload section.
+     * @param newXPos new x coord to be applied to mining team
+     */
+    private _loadUnloadWalkingAnimation(newXPos: number): void {
+        // Move the team
+        this._helpCounters.loadUnloadCurrPositionX += newXPos;
+        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
+            this._scene.add(astro.mesh);
+            astro.mesh.scale.set(2.5, 2.5, 2.5);
+            astro.mesh.visible = false;
+            if (index === 1) {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            } else if (index % 3 === 0) {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX - 0.3,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            } else {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX + 0.3,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            }
+        });
+        // Move the legs
+        if (this._helpCounters.loadUnload % 10 < 5) {
+            this._helpActors.astronautsLoadUnload[0].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[2].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[6].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[8].mesh.visible = true;
+        } else {
+            this._helpActors.astronautsLoadUnload[0].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[2].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[6].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[8].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[3].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[5].mesh.visible = true;
+        }
+    }
+
+    /**
+     * Runs the standing animation in the load and unload section.
+     */
+    private _loadUnloadStandingAnimation(): void {
+        this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[6].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[8].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[0].mesh.visible = true;
+        this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+        this._helpActors.astronautsLoadUnload[2].mesh.visible = true;
+    }
+
+    /**
+     * Calls the next frame in the animation cycle specific to bottom-middle-left panel - Load & Unload.
+     */
+    private _endCycleLoadUnload(): void {
+        if (this._helpCounters.loadUnload > this._helpCounters.loadUnloadClear) {
+            this._helpCounters.loadUnload = 0;
+            this._helpCounters.loadUnloadCurrPositionX = HELP_LANDER_6_POSITION[0];
+            this._helpCounters.loadUnloadCurrPositionY = HELP_LANDER_6_POSITION[1] - 3;
+            this._helpCounters.loadUnloadCurrPositionZ = HELP_LANDER_6_POSITION[2] + 0.3;
+        }
+
+        this._helpActors.astronautsLoadUnload[1].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
+
+        if (this._helpCounters.loadUnload === 0) {
+            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[3].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[5].mesh.visible = true;
+        } else if (this._helpCounters.loadUnload < 60) {
+            this._loadUnloadStandingAnimation();
+        } else if (this._helpCounters.loadUnload < 180) {
+            this._loadUnloadWalkingAnimation(-0.01);
+        } else if (this._helpCounters.loadUnload < 240) {
+            this._loadUnloadStandingAnimation();
+        } else if (this._helpCounters.loadUnload < 480) {
+            this._loadUnloadWalkingAnimation(0.01);
+        } else if (this._helpCounters.loadUnload < 540) {
+            this._loadUnloadStandingAnimation();
+        } else if (this._helpCounters.loadUnload < 660) {
+            this._loadUnloadWalkingAnimation(-0.01);
+        } else if (this._helpCounters.loadUnload < 721) {
+            this._loadUnloadStandingAnimation();
+        }
+
+        this._helpCounters.loadUnload++;
     }
 
     /**
@@ -2218,6 +2386,7 @@ export class HelpCtrl {
         this._endCycleThresholds();
         this._endCycleAstronautControls();
         this._endCycleMiningControls();
+        this._endCycleLoadUnload();
         this._endCycleLandingSurfaces();
     }
 
@@ -2300,6 +2469,22 @@ export class HelpCtrl {
 
         // Load & Unload
         this._helpTexts.loadUnloadTitle.hide();
+        for (let row = 0; row < this._helpTerrainMeshes.loadUnload.length; row++) {
+            if (this._helpTerrainMeshes.loadUnload[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.loadUnload[row].length; col++) {
+                    if (this._helpTerrainMeshes.loadUnload[row][col]) {
+                        this._helpTerrainMeshes.loadUnload[row][col].visible = false;
+                    }
+                }
+            }
+        }
+        this._helpMeshes.lander6.visible = false;
+        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor) => {
+            astro.mesh.visible = false;
+        });
+        this._helpCounters.loadUnloadCurrPositionX = HELP_LANDER_6_POSITION[0];
+        this._helpCounters.loadUnloadCurrPositionY = HELP_LANDER_6_POSITION[1] - 3;
+        this._helpCounters.loadUnloadCurrPositionZ = HELP_LANDER_6_POSITION[2] + 0.3;
 
         // Block Types
         this._helpTexts.blockTypesTitle.hide();
@@ -2436,6 +2621,16 @@ export class HelpCtrl {
 
         // Load & Unload
         this._helpTexts.loadUnloadTitle.show();
+        for (let row = 0; row < this._helpTerrainMeshes.loadUnload.length; row++) {
+            if (this._helpTerrainMeshes.loadUnload[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.loadUnload[row].length; col++) {
+                    if (this._helpTerrainMeshes.loadUnload[row][col]) {
+                        this._helpTerrainMeshes.loadUnload[row][col].visible = true;
+                    }
+                }
+            }
+        }
+        this._helpMeshes.lander6.visible = true;
 
         // Block Types
         this._helpTexts.blockTypesTitle.show();
