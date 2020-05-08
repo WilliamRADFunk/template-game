@@ -2151,6 +2151,10 @@ export class HelpCtrl {
         Object.keys(this._helpTexts)
             .filter(key => !!this._helpTexts[key])
             .forEach(key => this._helpTexts[key].dispose());
+
+        Object.keys(this._helpButtons)
+            .filter(key => !!this._helpButtons[key])
+            .forEach(key => this._helpButtons[key].dispose());
     }
 
     /**
@@ -2193,7 +2197,7 @@ export class HelpCtrl {
         this._helpActors.sideThruster2Right.endCycle(HELP_SIDE_THRUSTER_2_POSITION, false);
         this._helpActors.mainThruster2.endCycle(HELP_MAIN_THRUSTER_2_POSITION, false);
         this._helpTexts.landingThresholdHorizontalThreshold.hide();
-        this._helpTexts.landingThresholdHorizontalSpeed.show();
+        this._helpTexts.landingThresholdHorizontalSpeed.hide();
         this._helpTexts.landingThresholdDanger.hide();
         this._helpTexts.landingThresholdSafe.hide();
         this._helpTexts.landingThresholdVerticalSpeed.hide();
@@ -2300,6 +2304,7 @@ export class HelpCtrl {
             .forEach(key => this._helpTexts[key].resize({ height, left, top, width }));
 
 
+        this._helpTexts.landingThresholdHorizontalSpeed.resize({ height, left: (left + width - (0.49 * width)), top: (0.065 * height), width });
         this._helpTexts.landingThresholdVerticalSpeed.resize({ height, left: (left + width - (0.49 * width)), top: (0.065 * height), width });
         this._helpTexts.landingThresholdDanger.resize({ height, left: (left + width - (0.49 * width)), top: (0.08 * height), width });
         this._helpTexts.landingThresholdSafe.resize({ height, left: (left + width - (0.49 * width)), top: (0.08 * height), width });
@@ -2308,9 +2313,13 @@ export class HelpCtrl {
         this._helpTexts.landingSurfacesMiddleDanger.resize({ height, left: (left + (0.195 * width)), top: (0.78 * height), width });
         this._helpTexts.landingSurfacesRightDanger.resize({ height, left: (left + (0.3225 * width)), top: (0.78 * height), width });
 
-        this._helpTexts.landingSurfaces4FlatBlocks.resize({ height, left: (left + (0.058 * width)), top: (0.9745 * height), width });
+        this._helpTexts.landingSurfaces4FlatBlocks.resize({ height, left: (left + (0.059 * width)), top: (0.9745 * height), width });
         this._helpTexts.landingSurfacesNoGaps.resize({ height, left: (left + (0.21 * width)), top: (0.9745 * height), width });
         this._helpTexts.landingSurfacesNoLedges.resize({ height, left: (left + (0.33 * width)), top: (0.9745 * height), width });
+
+        this._helpTexts.landingSurfacesPlantBlocks.resize({ height, left: (left + (0.062 * width)), top: (0.9745 * height), width });
+        this._helpTexts.landingSurfacesWaterBlocks.resize({ height, left: (left + (0.19 * width)), top: (0.9745 * height), width });
+        this._helpTexts.landingSurfacesIceBlocks.resize({ height, left: (left + (0.33 * width)), top: (0.9745 * height), width });
 
         this._helpButtons.mineButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
         this._helpButtons.minePressedButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
