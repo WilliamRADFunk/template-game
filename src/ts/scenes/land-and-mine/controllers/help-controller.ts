@@ -27,11 +27,15 @@ import { RightTopMiddlePanel } from "../../../controls/panels/right-top-middle-p
 import { RightTopPanel } from "../../../controls/panels/right-top-panel";
 
 // HTML Texts
+import { FreestyleText } from "../../../controls/text/freestyle-text";
+import { RightTopStatsText4 } from "../../../controls/text/stats/right-top-stats-text-4";
 import { TextBase } from "../../../controls/text/text-base";
 import { TextType } from "../../../controls/text/text-type";
+import { LeftBottomTitleText } from "../../../controls/text/title/left-bottom-title-text";
 import { LeftTopMiddleTitleText } from "../../../controls/text/title/left-top-middle-title-text";
 import { LeftTopTitleText } from "../../../controls/text/title/left-top-title-text";
 import { RightTopMiddleTitleText } from "../../../controls/text/title/right-top-middle-title-text";
+import { RightTopTitleText } from "../../../controls/text/title/right-top-title-text";
 
 // Buttons
 import { ButtonBase } from "../../../controls/buttons/button-base";
@@ -39,19 +43,18 @@ import { MineButton } from "../../../controls/buttons/mine-button";
 import { PackItUpButton } from "../../../controls/buttons/pack-it-up-button";
 import { BUTTON_COLORS, BUTTON_COLORS_INVERSE } from "../../../styles/button-colors";
 
-// Constants and Singletons
+// Interfaces
 import { Actor } from "../../../models/actor";
+import { HTMLElementPosition } from "../../../models/html-element-position";
+import { LanderSpecifications } from "../../../models/lander-specifications";
+import { PlanetLandColors, PlanetSpecifications } from "../../../models/planet-specifications";
+
+// Constants and Singletons
 import { SoundinatorSingleton } from "../../../soundinator";
 import { COLORS } from "../../../styles/colors";
-import { noOp } from "../../../utils/no-op";
-import { RightTopTitleText } from "../../../controls/text/title/right-top-title-text";
-import { PlanetLandColors, PlanetSpecifications } from "../../../models/planet-specifications";
 import { colorLuminance } from "../../../utils/color-shader";
-import { LanderSpecifications } from "../../../models/lander-specifications";
-import { RightTopStatsText4 } from "../../../controls/text/stats/right-top-stats-text-4";
-import { FreestyleText } from "../../../controls/text/freestyle-text";
+import { noOp } from "../../../utils/no-op";
 import { Explosion } from "../../../weapons/explosion";
-import { HTMLElementPosition } from "../../../models/html-element-position";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -156,6 +159,8 @@ export class HelpCtrl {
     private _helpCounters: { [key: string]: number } = {
         astroWalk: 0,
         astroWalkClear: 360,
+        landingSurfaces: 0,
+        landingSurfacesClear: 360,
         landingThresholds: 0,
         landingThresholdsClear: 2130,
         landingThresholdsGravity: 0.0005,
@@ -177,6 +182,7 @@ export class HelpCtrl {
      * All of the terrain-based meshes contained in the help screen.
      */
     private _helpTerrainMeshes: { [key: string]: (Mesh[][] | Object3D[][]) } = {
+        landingSurfacesBase: [] as Mesh[][] | Object3D[][],
         landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][]
     }
 
@@ -277,6 +283,7 @@ export class HelpCtrl {
         this._helpPanels.rightBottomPanel.hide();
 
         const arrowGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
+        const groundGeo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
         const keyGeo = new PlaneGeometry( 1.1, 0.4, 10, 10 );
 
         const arrowMat = new MeshBasicMaterial();
@@ -310,9 +317,10 @@ export class HelpCtrl {
         keyDownMat.transparent = true;
 
         this._buildHelpScreenLandingControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, keyUpMat, { height, left, top: null, width });
-        this._buildHelpScreenThresholds({ height, left, top: null, width });
+        this._buildHelpScreenThresholds(groundGeo, { height, left, top: null, width });
         this._buildHelpScreenAstronautControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, { height, left, top: null, width });
         this._buildHelpScreenMiningControls(arrowGeo, arrowMat, keyGeo, keyDownMat, keyUpMat, { height, left, top: null, width });
+        this._buildHelpScreenLandingSurfaces(groundGeo, { height, left, top: null, width });
     }
 
     /**
@@ -503,6 +511,176 @@ export class HelpCtrl {
     }
 
     /**
+     * Creates everything needed for the Landing Surfaces panel.
+     * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param position initial positioning parameters from window size
+     */
+    private _buildHelpScreenLandingSurfaces(groundGeo: PlaneGeometry, position: HTMLElementPosition): void {
+        // The base ground for landing
+        const commonRockMat = new MeshBasicMaterial({
+            color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
+        // 0: colStart
+        // 1: colEnd
+        // 2: rowStart
+        // 3: rowEnd
+        // 4: modifier
+        const baseGroundBounds = [
+            [ 10.75, 16.75, 3, 7, -0.75],
+            [ 26, 32, 3, 7, 0],
+            [ 41.25, 47.25, 3, 7, -0.25]
+        ];
+        baseGroundBounds.forEach(bounds => {
+            for (let row = bounds[2]; row < bounds[3]; row++) {
+                if (!this._helpTerrainMeshes.landingSurfacesBase[row]) {
+                    this._helpTerrainMeshes.landingSurfacesBase[row] = [];
+                }
+                for (let col = bounds[0]; col < bounds[1]; col++) {
+                    const block = new Mesh( groundGeo, commonRockMat );
+                    block.name = `Landing Thresholds - Ground - Speed`;
+                    block.position.set(-6 + (col/10), -7, 6 - row/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.landingSurfacesBase[row][col + bounds[4]] = block;
+                }
+            }
+        });
+        // 0: colStart
+        // 1: modifier
+        // 2, 3, 4, 5, 6, 7: place block
+        const groundObstructionBounds = [
+            [ 10.75, -0.75, true, false, false, false, false, true ],
+            [ 26, 0, true, true, true, false, true, true ],
+            [ 41.25, -0.25, true, false, true, true, true, true ]
+        ];
+        const obstructionRow = baseGroundBounds[0][3];
+        this._helpTerrainMeshes.landingSurfacesBase[obstructionRow] = [];
+        groundObstructionBounds.forEach(bounds => {
+            for (let col = 0; col < 6; col++) {
+                if (bounds[col + 2]) {
+                    const block = new Mesh( groundGeo, commonRockMat );
+                    block.name = `Landing Thresholds - Ground - Speed`;
+                    block.position.set(-6 + ((Number(bounds[0]) + col)/10), -7, 6 - obstructionRow/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.landingSurfacesBase[obstructionRow][Number(bounds[0]) + col + Number(bounds[1])] = block;
+                }
+            }
+        });
+
+        // Landing Surfaces 4 Level Blocks Text graphics
+        this._helpTexts.landingSurfaces4LevelBlocks = new FreestyleText(
+            '4+ level blocks',
+            {
+                height: position.height,
+                left: (position.left + (0.058 * position.width)),
+                top: (0.9745 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingSurfaces4LevelBlocks.hide();
+
+        // Landing Surfaces Left Safe Text graphics
+        this._helpTexts.landingSurfacesLeftSafe = new FreestyleText(
+            'Safe to Land',
+            {
+                height: position.height,
+                left: (position.left + (0.062 * position.width)),
+                top: (0.78 * position.height),
+                width: position.width
+            },
+            COLORS.highlighted,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingSurfacesLeftSafe.hide();
+
+        // Landing Surfaces No Gaps Text graphics
+        this._helpTexts.landingSurfacesNoGaps = new FreestyleText(
+            'No gaps',
+            {
+                height: position.height,
+                left: (position.left + (0.21 * position.width)),
+                top: (0.9745 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingSurfacesNoGaps.hide();
+
+        // Landing Surfaces Right Danger Text graphics
+        this._helpTexts.landingSurfacesMiddleDanger = new FreestyleText(
+            'Crash Risk!',
+            {
+                height: position.height,
+                left: (position.left + (0.195 * position.width)),
+                top: (0.78 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingSurfacesMiddleDanger.hide();
+
+        // Landing Surfaces No Ledges Text graphics
+        this._helpTexts.landingSurfacesNoLedges = new FreestyleText(
+            'No ledges',
+            {
+                height: position.height,
+                left: (position.left + (0.33 * position.width)),
+                top: (0.9745 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.landingSurfacesNoLedges.hide();
+
+        // Landing Surfaces Middle Danger Text graphics
+        this._helpTexts.landingSurfacesRightDanger = new FreestyleText(
+            'Crash Risk!',
+            {
+                height: position.height,
+                left: (position.left + (0.3225 * position.width)),
+                top: (0.78 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingSurfacesRightDanger.hide();
+
+        // Lander Text graphics
+        this._helpTexts.landingSurfacesTitle = new LeftBottomTitleText(
+            'Landing Surfaces',
+            position,
+            COLORS.neutral,
+            border,
+            TextType.STATIC);
+        this._helpTexts.landingSurfacesTitle.hide();
+    }
+
+    /**
      * Creates everything needed for the Mining Controls panel.
      * @param arrowGeo the geometry used to make all the arrow meshes in this panel
      * @param arrowMat the material used to make all the arrow meshes in this panel
@@ -688,11 +866,11 @@ export class HelpCtrl {
 
     /**
      * Creates everything needed for the Landing Thresholds panel.
+     * @param groundGeo the geometry used to make all the ground meshes in this panel
      * @param position initial positioning parameters from window size
      */
-    private _buildHelpScreenThresholds(position: HTMLElementPosition): void {
+    private _buildHelpScreenThresholds(groundGeo: PlaneGeometry, position: HTMLElementPosition): void {
         // The ground for landing
-        const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
         const commonRockMat = new MeshBasicMaterial({
             color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
             opacity: 1,
@@ -702,7 +880,7 @@ export class HelpCtrl {
         for (let row = 27; row < 31; row++) {
             this._helpTerrainMeshes.landingThresholdsGroundSpeed[row] = [];
             for (let col = -0.5; col < 59; col++) {
-                const block = new Mesh( geo, commonRockMat );
+                const block = new Mesh( groundGeo, commonRockMat );
                 block.name = `Landing Thresholds - Ground - Speed`;
                 block.position.set((col/10), -7, -6 + row/10);
                 block.rotation.set(1.5708, 0, 0);
@@ -1507,6 +1685,25 @@ export class HelpCtrl {
         });
         this._drillBits[0].visible = false;
         this._drillBits.length = 1;
+
+        // Landing Surfaces
+        this._helpTexts.landingSurfacesTitle.hide();
+        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBase.length; row++) {
+            if (this._helpTerrainMeshes.landingSurfacesBase[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBase[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingSurfacesBase[row][col]) {
+                        this._helpTerrainMeshes.landingSurfacesBase[row][col].visible = false;
+                    }
+                }
+            }
+        }
+
+        this._helpTexts.landingSurfaces4LevelBlocks.hide();
+        this._helpTexts.landingSurfacesNoGaps.hide();
+        this._helpTexts.landingSurfacesNoLedges.hide();
+        this._helpTexts.landingSurfacesLeftSafe.hide();
+        this._helpTexts.landingSurfacesMiddleDanger.hide();
+        this._helpTexts.landingSurfacesRightDanger.hide();
     }
 
     /**
@@ -1574,5 +1771,25 @@ export class HelpCtrl {
         this._helpMeshes.mouseLeftMining.visible = false;
         this._helpTexts.miningControlsTitle.show();
         this._helpCounters.mining = 0;
+
+        // Landing Surfaces
+        this._helpTexts.landingSurfacesTitle.show();
+        for (let row = 0; row < this._helpTerrainMeshes.landingSurfacesBase.length; row++) {
+            if (this._helpTerrainMeshes.landingSurfacesBase[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingSurfacesBase[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingSurfacesBase[row][col]) {
+                        this._helpTerrainMeshes.landingSurfacesBase[row][col].visible = true;
+                    }
+                }
+            }
+        }
+        this._helpCounters.landingSurfaces = 0;
+
+        this._helpTexts.landingSurfaces4LevelBlocks.show();
+        this._helpTexts.landingSurfacesNoGaps.show();
+        this._helpTexts.landingSurfacesNoLedges.show();
+        this._helpTexts.landingSurfacesLeftSafe.show();
+        this._helpTexts.landingSurfacesMiddleDanger.show();
+        this._helpTexts.landingSurfacesRightDanger.show();
     }
 }
