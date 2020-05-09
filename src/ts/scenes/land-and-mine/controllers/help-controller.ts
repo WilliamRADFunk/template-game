@@ -60,6 +60,8 @@ import { noOp } from "../../../utils/no-op";
 import { Explosion } from "../../../weapons/explosion";
 import { UnloadButton } from "../../../controls/buttons/unload-button";
 import { LoadButton } from "../../../controls/buttons/load-button";
+import { ProfileBase } from "../../../controls/profiles/profile-base";
+import { RightBottomMiddleProfile } from "../../../controls/profiles/right-bottom-middle-profile";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -203,12 +205,12 @@ export class HelpCtrl {
     /**
      * All of the actors contained in the help screen.
      */
-    private _helpActors: { [key: string]: any } = {}
+    private _helpActors: { [key: string]: any } = {};
 
     /**
      * All of the buttons contained in the help screen.
      */
-    private _helpButtons: { [key: string]: ButtonBase } = {}
+    private _helpButtons: { [key: string]: ButtonBase } = {};
 
     /**
      * All of the counters, and counter clearing threasholds.
@@ -236,12 +238,22 @@ export class HelpCtrl {
         miningClear: 720,
         thrust: 0,
         thrustClear: 360
-    }
+    };
 
     /**
      * All of the meshes contained in the help screen.
      */
-    private _helpMeshes: { [key: string]: Mesh | Object3D } = {}
+    private _helpMeshes: { [key: string]: Mesh | Object3D } = {};
+
+    /**
+     * All of the background panels contained in the help screen.
+     */
+    private _helpPanels: { [key: string]: PanelBase } = {};
+
+    /**
+     * The profile image contained in the help screen.
+     */
+    private _helpProfile: ProfileBase;
 
     /**
      * All of the terrain-based meshes contained in the help screen.
@@ -256,12 +268,7 @@ export class HelpCtrl {
     /**
      * All of the HTML text contained in the help screen.
      */
-    private _helpTexts: { [key: string]: TextBase } = {}
-
-    /**
-     * All of the background panels contained in the help screen.
-     */
-    private _helpPanels: { [key: string]: PanelBase } = {}
+    private _helpTexts: { [key: string]: TextBase } = {};
 
     /**
      * All the details about the ship needed for determining speed, suffocation, and crashes.
@@ -556,6 +563,10 @@ export class HelpCtrl {
      * @param position initial positioning parameters from window size
      */
     private _buildHelpScreenBlockTypes(position: HTMLElementPosition): void {
+        // Profile Image graphics
+        this._helpProfile = new RightBottomMiddleProfile(this._scene, this._textures.scienceOfficerProfile1, true);
+        this._helpProfile.hide();
+
         // Block Types Text graphics
         this._helpTexts.blockTypesTitle = new RightBottomMiddleTitleText(
             'Block Types',
@@ -2717,6 +2728,7 @@ export class HelpCtrl {
 
         // Block Types
         this._helpTexts.blockTypesTitle.hide();
+        this._helpProfile.hide();
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.hide();
@@ -2871,6 +2883,7 @@ export class HelpCtrl {
 
         // Block Types
         this._helpTexts.blockTypesTitle.show();
+        this._helpProfile.show();
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.show();

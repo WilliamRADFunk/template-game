@@ -63,6 +63,7 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     miningEquipment2: ['assets/images/mining-equipment-02.png', null],
     mouse: ['assets/images/mouse.png', null],
     mouseLeft: ['assets/images/mouse-left.png', null],
+    scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
     ship: ['assets/images/ship.png', null]
 };
 /**
@@ -905,7 +906,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
     const landAndMine = new LandAndMine(
         scenes.landAndMine,
         {
-            ship: TEXTURES.lander[1],
+            arrow: TEXTURES.arrow[1],
             astronaut1: TEXTURES.astronaut1[1],
             astronaut2: TEXTURES.astronaut2[1],
             astronaut3: TEXTURES.astronaut3[1],
@@ -914,17 +915,18 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             astronautSuffocation3: TEXTURES.astronautSuffocation3[1],
             astronautSuffocation4: TEXTURES.astronautSuffocation4[1],
             astronautSuffocation5: TEXTURES.astronautSuffocation5[1],
-            miningEquipment1: TEXTURES.miningEquipment1[1],
-            miningEquipment2: TEXTURES.miningEquipment2[1],
-            miningDrill: TEXTURES.miningDrill[1],
-            minedSquare1: TEXTURES.minedSquare1[1],
-            arrow: TEXTURES.arrow[1],
             keysForDown: TEXTURES.keysForDown[1],
-            keysForUp: TEXTURES.keysForUp[1],
             keysForLeft: TEXTURES.keysForLeft[1],
             keysForRight: TEXTURES.keysForRight[1],
+            keysForUp: TEXTURES.keysForUp[1],
+            minedSquare1: TEXTURES.minedSquare1[1],
+            miningDrill: TEXTURES.miningDrill[1],
+            miningEquipment1: TEXTURES.miningEquipment1[1],
+            miningEquipment2: TEXTURES.miningEquipment2[1],
             mouse: TEXTURES.mouse[1],
-            mouseLeft: TEXTURES.mouseLeft[1]
+            mouseLeft: TEXTURES.mouseLeft[1],
+            scienceOfficerProfile1: TEXTURES.scienceOfficerProfile1[1],
+            ship: TEXTURES.lander[1]
         },
         planetSpec,
         landerSpec);

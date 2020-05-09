@@ -157,7 +157,7 @@ export class ShipLayout {
         const shipInterior = createShipInteriorFrame(shipIntTexture);
         this._actors.push(shipInterior);
         this._scene.add(shipInterior.mesh);
-        this._actors.push(new RightTopProfile(this._scene, dialogueTexture).profile);
+        this._actors.push(new RightTopProfile(this._scene, dialogueTexture, false).profile);
 
         techPellets.forEach(pellet => {
             const pelletMaterial = new MeshBasicMaterial({

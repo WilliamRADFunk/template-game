@@ -906,12 +906,12 @@ export class DevMenu {
 //#endregion
 
 //#region Page 2
-        this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer);
-        this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2);
-        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer);
+        this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2, false);
+        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer, false);
+        this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2, false);
+        this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, this._textures.engineer2, false);
+        this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2, false);
+        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer, false);
         this._page2profiles.leftBottomMiddleProfile.hide();
         this._page2profiles.leftTopMiddleProfile.hide();
         this._page2profiles.leftTopProfile.hide();
@@ -983,8 +983,8 @@ export class DevMenu {
 //#endregion
 
 //#region Page 3
-        this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2);
-        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer);
+        this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2, false);
+        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer, false);
         this._page3profiles.leftBottomProfile3.hide();
         this._page3profiles.rightBottomProfile3.hide();
 
