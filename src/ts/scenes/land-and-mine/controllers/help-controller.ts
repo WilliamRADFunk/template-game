@@ -58,6 +58,8 @@ import { COLORS } from "../../../styles/colors";
 import { colorLuminance } from "../../../utils/color-shader";
 import { noOp } from "../../../utils/no-op";
 import { Explosion } from "../../../weapons/explosion";
+import { UnloadButton } from "../../../controls/buttons/unload-button";
+import { LoadButton } from "../../../controls/buttons/load-button";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -226,7 +228,7 @@ export class HelpCtrl {
         landingThresholdsHorizontalSpeed: 0,
         landingThresholdsVerticalSpeed: 0,
         loadUnload: 0,
-        loadUnloadClear: 720,
+        loadUnloadClear: 840,
         loadUnloadCurrPositionX: HELP_LANDER_6_POSITION[0],
         loadUnloadCurrPositionY: HELP_LANDER_6_POSITION[1] - 3,
         loadUnloadCurrPositionZ: HELP_LANDER_6_POSITION[2] + 0.3,
@@ -350,6 +352,7 @@ export class HelpCtrl {
         const arrowGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
         const groundGeo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
         const keyGeo = new PlaneGeometry( 1.1, 0.4, 10, 10 );
+        const mouseGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
 
         const arrowMat = new MeshBasicMaterial();
         arrowMat.map = this._textures.arrow;
@@ -381,6 +384,18 @@ export class HelpCtrl {
         (keyDownMat as any).shininess = 0;
         keyDownMat.transparent = true;
 
+        const mouseLeftMat = new MeshBasicMaterial();
+        mouseLeftMat.map = this._textures.mouseLeft;
+        mouseLeftMat.map.minFilter = LinearFilter;
+        (mouseLeftMat as any).shininess = 0;
+        mouseLeftMat.transparent = true;
+
+        const mouseMat = new MeshBasicMaterial();
+        mouseMat.map = this._textures.mouse;
+        mouseMat.map.minFilter = LinearFilter;
+        (mouseMat as any).shininess = 0;
+        mouseMat.transparent = true;
+
         const commonRockMat = new MeshBasicMaterial({
             color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], 6 / 10),
             opacity: 1,
@@ -388,14 +403,59 @@ export class HelpCtrl {
             side: DoubleSide
         });
 
-        this._buildHelpScreenLandingControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, keyUpMat, { height, left, top: null, width });
-        this._buildHelpScreenThresholds(groundGeo, commonRockMat, { height, left, top: null, width });
-        this._buildHelpScreenAstronautControls(arrowGeo, arrowMat, keyGeo, keyLeftMat, keyRightMat, { height, left, top: null, width });
-        this._buildHelpScreenMiningControls(arrowGeo, arrowMat, keyGeo, keyDownMat, keyUpMat, { height, left, top: null, width });
-        this._buildHelpScreenLoadUnload(groundGeo, commonRockMat, { height, left, top: null, width });
-        this._buildHelpScreenBlockTypes({ height, left, top: null, width });
-        this._buildHelpScreenLandingSurfaces(groundGeo, commonRockMat, { height, left, top: null, width });
-        this._buildHelpScreenControlPanel({ height, left, top: null, width });
+        this._buildHelpScreenLandingControls(
+            arrowGeo,
+            arrowMat,
+            keyGeo,
+            keyLeftMat,
+            keyRightMat,
+            keyUpMat,
+            { height, left, top: null, width });
+
+        this._buildHelpScreenThresholds(
+            groundGeo,
+            commonRockMat,
+            { height, left, top: null, width });
+
+        this._buildHelpScreenAstronautControls(
+            arrowGeo,
+            arrowMat,
+            keyGeo,
+            keyLeftMat,
+            keyRightMat,
+            { height, left, top: null, width });
+
+        this._buildHelpScreenMiningControls(
+            arrowGeo,
+            arrowMat,
+            keyGeo,
+            mouseGeo,
+            keyDownMat,
+            keyUpMat,
+            mouseMat,
+            mouseLeftMat,
+            { height, left, top: null, width });
+
+        this._buildHelpScreenLoadUnload(
+            arrowGeo,
+            groundGeo,
+            mouseGeo,
+            arrowMat,
+            commonRockMat,
+            mouseMat,
+            mouseLeftMat,
+            { height, left, top: null, width });
+
+        this._buildHelpScreenBlockTypes(
+            { height, left, top: null, width });
+
+        this._buildHelpScreenLandingSurfaces(
+            groundGeo,
+            commonRockMat,
+            { height, left, top: null, width });
+
+        this._buildHelpScreenControlPanel(
+            { height, left, top: null, width });
     }
 
     /**
@@ -932,13 +992,23 @@ export class HelpCtrl {
 
     /**
      * Creates everything needed for the Load & Unload panel.
+     * @param arrowGeo the geometry used to make all the arrow meshes in this panel
      * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param mouseGeo the geometry used to make all the mouse meshes in this panel
+     * @param arrowMat the material used to make all the arrow meshes in this panel
      * @param commonRockMat the material used to make all the ground meshes in this panel
+     * @param mouseMat the material used to make the unpressed mouse mesh in this panel
+     * @param mouseLeftMat the material used to make the left mouse mesh in this panel
      * @param position initial positioning parameters from window size
      */
     private _buildHelpScreenLoadUnload(
+        arrowGeo: PlaneGeometry,
         groundGeo: PlaneGeometry,
+        mouseGeo: PlaneGeometry,
+        arrowMat: MeshBasicMaterial,
         commonRockMat: MeshBasicMaterial,
+        mouseMat: MeshBasicMaterial,
+        mouseLeftMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Ground Meshes
         for (let row = 34; row < 38; row++) {
@@ -992,6 +1062,112 @@ export class HelpCtrl {
             }
         });
 
+        // Mouse Left Button graphics
+        const mouseLeft = new Mesh(mouseGeo, mouseLeftMat);
+        mouseLeft.name = 'Mouse Left Mesh LoadUnload';
+        mouseLeft.position.set(HELP_LANDER_6_POSITION[0] - 1.2, HELP_LANDER_6_POSITION[1] - 1, HELP_LANDER_6_POSITION[2] - 0.9);
+        mouseLeft.rotation.set(-1.5708, 0, 0);
+        this._scene.add(mouseLeft);
+        mouseLeft.visible = false;
+        this._helpMeshes.mouseLeftLoadUnload = mouseLeft;
+
+        // Mouse Unpressed graphics
+        const mouse = new Mesh(mouseGeo, mouseMat);
+        mouse.name = 'Mouse Mesh LoadUnload';
+        mouse.position.set(HELP_LANDER_6_POSITION[0] - 1.2, HELP_LANDER_6_POSITION[1] - 1, HELP_LANDER_6_POSITION[2] - 0.9);
+        mouse.rotation.set(-1.5708, 0, 0);
+        this._scene.add(mouse);
+        mouse.visible = false;
+        this._helpMeshes.mouseLoadUnload = mouse;
+
+        // Left Arrow graphics
+        const arrowLeft = new Mesh(arrowGeo, arrowMat);
+        arrowLeft.name = 'Left Arrow Load & Unload Mesh';
+        arrowLeft.position.set(HELP_LANDER_6_POSITION[0] + 1, HELP_LANDER_6_POSITION[1] - 1, HELP_LANDER_6_POSITION[2] - 1.05);
+        arrowLeft.rotation.set(-1.5708, 0, 3.1416);
+        this._scene.add(arrowLeft);
+        arrowLeft.visible = false;
+        this._helpMeshes.arrowLeftLoadUnload = arrowLeft;
+
+        // Right Arrow graphics
+        const arrowRight = new Mesh(arrowGeo, arrowMat);
+        arrowRight.name = 'Right Arrow Load & Unload Mesh';
+        arrowRight.position.set(HELP_LANDER_6_POSITION[0] - 1, HELP_LANDER_6_POSITION[1] - 1, HELP_LANDER_6_POSITION[2] - 1.05);
+        arrowRight.rotation.set(-1.5708, 0, 0);
+        this._scene.add(arrowRight);
+        arrowRight.visible = false;
+        this._helpMeshes.arrowRightLoadUnload = arrowRight;
+
+        // Unload Button graphic
+        this._helpButtons.unloadButton = new UnloadButton(
+            {
+                height: position.height,
+                left: (position.left + (0.17 * position.width)),
+                top: (0.56 * position.height),
+                width: position.width
+            },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            0.75);
+        this._helpButtons.unloadButton.hide();
+
+        // Unload Button Pressed graphic
+        this._helpButtons.unloadPressedButton = new UnloadButton(
+            {
+                height: position.height,
+                left: (position.left + (0.17 * position.width)),
+                top: (0.56 * position.height),
+                width: position.width
+            },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            true,
+            0.75);
+        this._helpButtons.unloadPressedButton.hide();
+
+        // Load Button graphic
+        this._helpButtons.loadButton = new LoadButton(
+            {
+                height: position.height,
+                left: (position.left + (0.19 * position.width)),
+                top: (0.56 * position.height),
+                width: position.width
+            },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            0.75);
+        this._helpButtons.loadButton.hide();
+
+        // Load Button Pressed graphic
+        this._helpButtons.loadPressedButton = new LoadButton(
+            {
+                height: position.height,
+                left: (position.left + (0.19 * position.width)),
+                top: (0.56 * position.height),
+                width: position.width
+            },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            true,
+            0.75);
+        this._helpButtons.loadPressedButton.hide();
+
+        // Mine Button graphic
+        this._helpButtons.mineLoadUnloadButton = new MineButton(
+            {
+                height: position.height,
+                left: (position.left + (0.19 * position.width)),
+                top: (0.56 * position.height),
+                width: position.width
+            },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            0.75);
+        this._helpButtons.mineLoadUnloadButton.hide();
+
         // Load & Unload Text graphics
         this._helpTexts.loadUnloadTitle = new LeftBottomMiddleTitleText(
             'Load & Unload',
@@ -1007,16 +1183,22 @@ export class HelpCtrl {
      * @param arrowGeo the geometry used to make all the arrow meshes in this panel
      * @param arrowMat the material used to make all the arrow meshes in this panel
      * @param keyGeo the geometry used to make all the key meshes in this panel
+     * @param mouseGeo the geometry used to make all the mouse meshes in this panel
      * @param keyDownMat the material used to make the down keys mesh in this panel
      * @param keyUpMat the material used to make the up keys mesh in this panel
+     * @param mouseMat the material used to make the unpressed mouse mesh in this panel
+     * @param mouseLeftMat the material used to make the left mouse mesh in this panel
      * @param position initial positioning parameters from window size
      */
     private _buildHelpScreenMiningControls(
         arrowGeo: PlaneGeometry,
         arrowMat: MeshBasicMaterial,
         keyGeo: PlaneGeometry,
+        mouseGeo: PlaneGeometry,
         keyDownMat: MeshBasicMaterial,
         keyUpMat: MeshBasicMaterial,
+        mouseMat: MeshBasicMaterial,
+        mouseLeftMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Create astronaut mining team for mining controls.
         this._helpActors.miners = createMiningTeam(
@@ -1086,13 +1268,6 @@ export class HelpCtrl {
         this._helpMeshes.keysDownMining = keyDown;
 
         // Mouse Left Button graphics
-        const mouseGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
-        const mouseLeftMat = new MeshBasicMaterial();
-        mouseLeftMat.map = this._textures.mouseLeft;
-        mouseLeftMat.map.minFilter = LinearFilter;
-        (mouseLeftMat as any).shininess = 0;
-        mouseLeftMat.transparent = true;
-
         const mouseLeft = new Mesh(mouseGeo, mouseLeftMat);
         mouseLeft.name = 'Mouse Left Mesh Mining';
         mouseLeft.position.set(HELP_LANDER_1_POSITION[0] + 3.73, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 2.25);
@@ -1102,12 +1277,6 @@ export class HelpCtrl {
         this._helpMeshes.mouseLeftMining = mouseLeft;
 
         // Mouse Unpressed graphics
-        const mouseMat = new MeshBasicMaterial();
-        mouseMat.map = this._textures.mouse;
-        mouseMat.map.minFilter = LinearFilter;
-        (mouseMat as any).shininess = 0;
-        mouseMat.transparent = true;
-
         const mouse = new Mesh(mouseGeo, mouseMat);
         mouse.name = 'Mouse Mesh Mining';
         mouse.position.set(HELP_LANDER_1_POSITION[0] + 3.73, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] + 2.25);
@@ -1694,67 +1863,6 @@ export class HelpCtrl {
     }
 
     /**
-     * Runs the walking animation in the load and unload section.
-     * @param newXPos new x coord to be applied to mining team
-     */
-    private _loadUnloadWalkingAnimation(newXPos: number): void {
-        // Move the team
-        this._helpCounters.loadUnloadCurrPositionX += newXPos;
-        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
-            this._scene.add(astro.mesh);
-            astro.mesh.scale.set(2.5, 2.5, 2.5);
-            astro.mesh.visible = false;
-            if (index === 1) {
-                astro.mesh.position.set(
-                    this._helpCounters.loadUnloadCurrPositionX,
-                    this._helpCounters.loadUnloadCurrPositionY,
-                    this._helpCounters.loadUnloadCurrPositionZ);
-            } else if (index % 3 === 0) {
-                astro.mesh.position.set(
-                    this._helpCounters.loadUnloadCurrPositionX - 0.3,
-                    this._helpCounters.loadUnloadCurrPositionY,
-                    this._helpCounters.loadUnloadCurrPositionZ);
-            } else {
-                astro.mesh.position.set(
-                    this._helpCounters.loadUnloadCurrPositionX + 0.3,
-                    this._helpCounters.loadUnloadCurrPositionY,
-                    this._helpCounters.loadUnloadCurrPositionZ);
-            }
-        });
-        // Move the legs
-        if (this._helpCounters.loadUnload % 10 < 5) {
-            this._helpActors.astronautsLoadUnload[0].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[2].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
-            this._helpActors.astronautsLoadUnload[6].mesh.visible = true;
-            this._helpActors.astronautsLoadUnload[8].mesh.visible = true;
-        } else {
-            this._helpActors.astronautsLoadUnload[0].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[2].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[6].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[8].mesh.visible = false;
-            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
-            this._helpActors.astronautsLoadUnload[3].mesh.visible = true;
-            this._helpActors.astronautsLoadUnload[5].mesh.visible = true;
-        }
-    }
-
-    /**
-     * Runs the standing animation in the load and unload section.
-     */
-    private _loadUnloadStandingAnimation(): void {
-        this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
-        this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
-        this._helpActors.astronautsLoadUnload[6].mesh.visible = false;
-        this._helpActors.astronautsLoadUnload[8].mesh.visible = false;
-        this._helpActors.astronautsLoadUnload[0].mesh.visible = true;
-        this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
-        this._helpActors.astronautsLoadUnload[2].mesh.visible = true;
-    }
-
-    /**
      * Calls the next frame in the animation cycle specific to bottom-middle-left panel - Load & Unload.
      */
     private _endCycleLoadUnload(): void {
@@ -1765,28 +1873,57 @@ export class HelpCtrl {
             this._helpCounters.loadUnloadCurrPositionZ = HELP_LANDER_6_POSITION[2] + 0.3;
         }
 
-        this._helpActors.astronautsLoadUnload[1].mesh.visible = false;
-        this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
-        this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor) => {
+            astro.mesh.visible = false;
+        });
+        this._helpButtons.unloadButton.hide();
+        this._helpButtons.loadButton.hide();
+        this._helpButtons.loadPressedButton.hide();
+        this._helpButtons.unloadPressedButton.hide();
+        this._helpButtons.mineLoadUnloadButton.hide();
+        this._helpMeshes.mouseLeftLoadUnload.visible = false;
+        this._helpMeshes.mouseLoadUnload.visible = false;
+        this._helpMeshes.arrowLeftLoadUnload.visible = false;
+        this._helpMeshes.arrowRightLoadUnload.visible = false;
 
-        if (this._helpCounters.loadUnload === 0) {
-            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
-            this._helpActors.astronautsLoadUnload[3].mesh.visible = true;
-            this._helpActors.astronautsLoadUnload[5].mesh.visible = true;
-        } else if (this._helpCounters.loadUnload < 60) {
+        if (this._helpCounters.loadUnload < 60) {
+            this._helpButtons.unloadButton.show();
+            this._helpMeshes.mouseLoadUnload.visible = true;
+        } else if (this._helpCounters.loadUnload < 90) {
+            this._helpButtons.unloadPressedButton.show();
+            this._helpMeshes.mouseLeftLoadUnload.visible = true;
+        } else if (this._helpCounters.loadUnload < 150) {
+            this._helpButtons.loadButton.show();
+            this._helpMeshes.mouseLoadUnload.visible = true;
             this._loadUnloadStandingAnimation();
-        } else if (this._helpCounters.loadUnload < 180) {
+        } else if (this._helpCounters.loadUnload < 270) {
+            this._helpButtons.loadButton.show();
             this._loadUnloadWalkingAnimation(-0.01);
-        } else if (this._helpCounters.loadUnload < 240) {
+        } else if (this._helpCounters.loadUnload < 330) {
+            this._helpMeshes.arrowRightLoadUnload.visible = true;
+            this._helpButtons.mineLoadUnloadButton.show();
             this._loadUnloadStandingAnimation();
-        } else if (this._helpCounters.loadUnload < 480) {
+        } else if (this._helpCounters.loadUnload < 570) {
+            this._helpButtons.loadButton.show();
             this._loadUnloadWalkingAnimation(0.01);
-        } else if (this._helpCounters.loadUnload < 540) {
+        } else if (this._helpCounters.loadUnload < 630) {
+            this._helpMeshes.arrowLeftLoadUnload.visible = true;
+            this._helpButtons.mineLoadUnloadButton.show();
             this._loadUnloadStandingAnimation();
-        } else if (this._helpCounters.loadUnload < 660) {
+        } else if (this._helpCounters.loadUnload < 750) {
+            this._helpButtons.loadButton.show();
             this._loadUnloadWalkingAnimation(-0.01);
-        } else if (this._helpCounters.loadUnload < 721) {
+        } else if (this._helpCounters.loadUnload < 780) {
+            this._helpButtons.loadButton.show();
+            this._helpMeshes.mouseLoadUnload.visible = true;
             this._loadUnloadStandingAnimation();
+        } else if (this._helpCounters.loadUnload < 810) {
+            this._helpButtons.loadPressedButton.show();
+            this._helpMeshes.mouseLeftLoadUnload.visible = true;
+            this._loadUnloadStandingAnimation();
+        } else if (this._helpCounters.loadUnload < 841) {
+            this._helpButtons.unloadButton.show();
+            this._helpMeshes.mouseLoadUnload.visible = true;
         }
 
         this._helpCounters.loadUnload++;
@@ -2341,6 +2478,67 @@ export class HelpCtrl {
     }
 
     /**
+     * Runs the standing animation in the load and unload section.
+     */
+    private _loadUnloadStandingAnimation(): void {
+        this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[6].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[8].mesh.visible = false;
+        this._helpActors.astronautsLoadUnload[0].mesh.visible = true;
+        this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+        this._helpActors.astronautsLoadUnload[2].mesh.visible = true;
+    }
+
+    /**
+     * Runs the walking animation in the load and unload section.
+     * @param newXPos new x coord to be applied to mining team
+     */
+    private _loadUnloadWalkingAnimation(newXPos: number): void {
+        // Move the team
+        this._helpCounters.loadUnloadCurrPositionX += newXPos;
+        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
+            this._scene.add(astro.mesh);
+            astro.mesh.scale.set(2.5, 2.5, 2.5);
+            astro.mesh.visible = false;
+            if (index === 1) {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            } else if (index % 3 === 0) {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX - 0.3,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            } else {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX + 0.3,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            }
+        });
+        // Move the legs
+        if (this._helpCounters.loadUnload % 10 < 5) {
+            this._helpActors.astronautsLoadUnload[0].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[2].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[3].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[5].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[6].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[8].mesh.visible = true;
+        } else {
+            this._helpActors.astronautsLoadUnload[0].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[2].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[6].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[8].mesh.visible = false;
+            this._helpActors.astronautsLoadUnload[1].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[3].mesh.visible = true;
+            this._helpActors.astronautsLoadUnload[5].mesh.visible = true;
+        }
+    }
+
+    /**
      * Creates a drill bit and places it at the position set by parameters.
      * @param x coordinate for the drill bit's position
      * @param y coordinate for the drill bit's position
@@ -2485,6 +2683,37 @@ export class HelpCtrl {
         this._helpCounters.loadUnloadCurrPositionX = HELP_LANDER_6_POSITION[0];
         this._helpCounters.loadUnloadCurrPositionY = HELP_LANDER_6_POSITION[1] - 3;
         this._helpCounters.loadUnloadCurrPositionZ = HELP_LANDER_6_POSITION[2] + 0.3;
+        this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
+            this._scene.add(astro.mesh);
+            astro.mesh.scale.set(2.5, 2.5, 2.5);
+            astro.mesh.visible = false;
+            if (index === 1) {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            } else if (index % 3 === 0) {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX - 0.3,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            } else {
+                astro.mesh.position.set(
+                    this._helpCounters.loadUnloadCurrPositionX + 0.3,
+                    this._helpCounters.loadUnloadCurrPositionY,
+                    this._helpCounters.loadUnloadCurrPositionZ);
+            }
+        });
+        this._helpButtons.unloadButton.hide();
+        this._helpButtons.unloadPressedButton.hide();
+        this._helpButtons.loadButton.hide();
+        this._helpButtons.loadPressedButton.hide();
+        this._helpButtons.mineLoadUnloadButton.hide();
+        this._helpMeshes.mouseLeftLoadUnload.visible = false;
+        this._helpMeshes.mouseLoadUnload.visible = false;
+        this._helpMeshes.arrowLeftLoadUnload.visible = false;
+        this._helpMeshes.arrowRightLoadUnload.visible = false;
+        this._helpCounters.loadUnload = 0;
 
         // Block Types
         this._helpTexts.blockTypesTitle.hide();
@@ -2566,10 +2795,16 @@ export class HelpCtrl {
         this._helpTexts.landingSurfacesWaterBlocks.resize({ height, left: (left + (0.19 * width)), top: (0.9745 * height), width });
         this._helpTexts.landingSurfacesIceBlocks.resize({ height, left: (left + (0.33 * width)), top: (0.9745 * height), width });
 
-        this._helpButtons.mineButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
-        this._helpButtons.minePressedButton.resize({ left: left + (0.685 * width), height, top: height - (0.67 * height), width });
-        this._helpButtons.packUpButton.resize({ left: left + (0.663 * width), height, top: height - (0.67 * height), width });
-        this._helpButtons.packUpPressedButton.resize({ left: left + (0.663 * width), height, top: height - (0.67 * height), width });
+        this._helpButtons.mineButton.resize({ height, left: left + (0.685 * width), top: height - (0.67 * height), width });
+        this._helpButtons.minePressedButton.resize({ height, left: left + (0.685 * width), top: height - (0.67 * height), width });
+        this._helpButtons.packUpButton.resize({ height, left: left + (0.663 * width), top: height - (0.67 * height), width });
+        this._helpButtons.packUpPressedButton.resize({ height, left: left + (0.663 * width), top: height - (0.67 * height), width });
+
+        this._helpButtons.mineLoadUnloadButton.resize({ height, left: left + (0.19 * width), top: (0.56 * height), width });
+        this._helpButtons.loadButton.resize({ height, left: left + (0.19 * width), top: (0.56 * height), width });
+        this._helpButtons.loadPressedButton.resize({ height, left: left + (0.19 * width), top: (0.56 * height), width });
+        this._helpButtons.unloadButton.resize({ height, left: (left + (0.17 * width)), top: (0.56 * height), width });
+        this._helpButtons.unloadPressedButton.resize({ height, left: left + (0.17 * width), top: (0.56 * height), width });
     }
 
     /**
@@ -2631,6 +2866,8 @@ export class HelpCtrl {
             }
         }
         this._helpMeshes.lander6.visible = true;
+        this._helpButtons.unloadButton.show();
+        this._helpMeshes.mouseLoadUnload.visible = true;
 
         // Block Types
         this._helpTexts.blockTypesTitle.show();

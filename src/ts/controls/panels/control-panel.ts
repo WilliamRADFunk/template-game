@@ -284,13 +284,15 @@ export class ControlPanel {
         this.element.style.left = `${position.left + (0.8555 * position.width)}px`;
         this.element.style.fontSize = `${0.03 * position.width}px`;
 
+        this._buttons.exitHelpButton.resize({ height: position.height, left: position.left + (0.964 * position.width), top: ( 0.964 * position.height), width: position.width });
+        this._buttons.exitSettingsButton.resize({ height: position.height, left: position.left + (0.93 * position.width), top: ( 0.964 * position.height), width: position.width });
         this._buttons.helpButton.resize({ height: position.height, left: position.left + (0.964 * position.width), top: ( 0.964 * position.height), width: position.width });
+        this._buttons.pauseButton.resize({ height: position.height, left: position.left + (0.862 * position.width), top: ( 0.964 * position.height), width: position.width });
+        this._buttons.playButton.resize({ height: position.height, left: position.left + (0.862 * position.width), top: ( 0.964 * position.height), width: position.width });
         this._buttons.settingsButton.resize({ height: position.height, left: position.left + (0.93 * position.width), top: ( 0.964 * position.height), width: position.width });
         this._buttons.soundMuffledButton.resize({ height: position.height, left: position.left + (0.896 * position.width), top: ( 0.964 * position.height), width: position.width });
         this._buttons.soundOffButton.resize({ height: position.height, left: position.left + (0.896 * position.width), top: ( 0.964 * position.height), width: position.width });
         this._buttons.soundOnButton.resize({ height: position.height, left: position.left + (0.896 * position.width), top: ( 0.964 * position.height), width: position.width });
-        this._buttons.pauseButton.resize({ height: position.height, left: position.left + (0.862 * position.width), top: ( 0.964 * position.height), width: position.width });
-        this._buttons.playButton.resize({ height: position.height, left: position.left + (0.862 * position.width), top: ( 0.964 * position.height), width: position.width });
     }
 
     /**
