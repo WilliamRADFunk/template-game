@@ -159,6 +159,11 @@ export class LandAndMine {
     private _currentOxygenLevel: number = 100;
 
     /**
+     * MeshGrid locations of demo blocks to be hidden and revealed when entering and exiting unload mode.
+     */
+    private _demoBlockCoords: [number, number, number][];
+
+    /**
      * Reference to current explosion if there is one.
      */
     private _explosion: Explosion = null;
@@ -553,6 +558,13 @@ export class LandAndMine {
 
         this._freezeWater(iceMat);
 
+        this._demoBlockCoords = [
+            [ 118, 58, 65 ],
+            [ 116, 58, 59 ],
+            [ 114, 58, 66 ],
+            [ 111, 58, 59 ]
+        ];
+
         // Creates the 7 shades of common rocks for demo display in top center of screen.
         for (let x = 58; x < 65; x++) {
             const index = x - 58;
@@ -591,7 +603,7 @@ export class LandAndMine {
         frozenWater.position.set(-6 + (59/10) + 0.05, 15, 6 - 114/10 + 0.05);
         frozenWater.rotation.set(1.5708, 0, 0);
         this._scene.add(frozenWater);
-        this._meshGrid[114][59] = frozenWater;
+        this._meshGrid[114][60] = frozenWater;
 
         // Creates the 5 shades of plant/food blocks for demo display in top center of screen.
         for (let y = 61; y < 66; y++) {
@@ -711,15 +723,6 @@ export class LandAndMine {
     }
 
     /**
-     * Makes all existing buttons clickable.
-     */
-    private _enableAllButtons(): void {
-        Object.keys(this._buttons)
-            .filter(key => !!this._buttons[key])
-            .forEach(key => this._buttons[key].enable());
-    }
-
-    /**
      * Populates mesh land in a downwards fashion to create above and below ground bodies of water.
      * @param x coordinate from which to start populating sideways from
      * @param y coordinate from which to start populating sideways from
@@ -750,6 +753,15 @@ export class LandAndMine {
                 waterAbove = false;
             }
         }
+    }
+
+    /**
+     * Makes all existing buttons clickable.
+     */
+    private _enableAllButtons(): void {
+        Object.keys(this._buttons)
+            .filter(key => !!this._buttons[key])
+            .forEach(key => this._buttons[key].enable());
     }
 
     /**
@@ -853,6 +865,19 @@ export class LandAndMine {
     }
 
     /**
+     * Hides demo blocks at top of screen.
+     */
+    private _hideForEnterAstronautMode(): void {
+        this._demoBlockCoords.forEach(coord => {
+            for (let col = coord[1]; col < coord[2]; col++) {
+                this._meshGrid[coord[0]][col].visible = false;
+            }
+        });
+
+        this._txtCtrl.zoomIn();
+    }
+
+    /**
      * Creates all of the html elements for the first time on scene creation.
      */
     private _onInitialize(sceneType: SceneType): void {
@@ -951,6 +976,8 @@ export class LandAndMine {
                 this._camera.position.set(equipmentPos.x, this._camera.position.y, equipmentPos.z);
                 this._camera.zoom = 4;
                 this._camera.updateProjectionMatrix();
+
+                this._hideForEnterAstronautMode();
             }
             this._state = prevState;
         };
@@ -960,6 +987,7 @@ export class LandAndMine {
             // TODO: Hide settings ctrl
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
+            this._showForExitAstronautMode();
             this._txtCtrl.show();
             if (prevState === LandAndMineState.mining
                 || prevState === LandAndMineState.walkingAwayFromLander
@@ -968,6 +996,8 @@ export class LandAndMine {
                 this._camera.position.set(equipmentPos.x, this._camera.position.y, equipmentPos.z);
                 this._camera.zoom = 4;
                 this._camera.updateProjectionMatrix();
+
+                this._hideForEnterAstronautMode();
             }
             this._state = prevState;
         };
@@ -1012,6 +1042,7 @@ export class LandAndMine {
                     button.hide();
                 }
             });
+            this._hideForEnterAstronautMode();
             this._txtCtrl.hide();
             this._camera.position.set(0, this._camera.position.y, 0);
             this._camera.zoom = 1;
@@ -1052,6 +1083,7 @@ export class LandAndMine {
                 const landerPos = this._lander.mesh.position;
 
                 this._miningCtrl.disembark(landerPos);
+                this._hideForEnterAstronautMode();
             }
         };
 
@@ -1070,6 +1102,7 @@ export class LandAndMine {
                 this._buttons.unloadButton.show();
 
                 this._miningCtrl.loadMiners();
+                this._showForExitAstronautMode();
                 this._lootCtrl.loadLoot();
             }
         };
@@ -1135,6 +1168,19 @@ export class LandAndMine {
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].resize({ left: left + (0.425 * width), height, top: height - (0.75 * height), width }));
         this._helpCtrl.onWindowResize(height, left, null, width);
+    }
+
+    /**
+     * Shows demo blocks at top of screen.
+     */
+    private _showForExitAstronautMode(): void {
+        this._demoBlockCoords.forEach(coord => {
+            for (let col = coord[1]; col < coord[2]; col++) {
+                this._meshGrid[coord[0]][col].visible = true;
+            }
+        });
+
+        this._txtCtrl.show();
     }
 
     /**
@@ -1342,6 +1388,8 @@ export class LandAndMine {
                     this._camera.position.set(0, this._camera.position.y, 0);
                     this._camera.zoom = 1;
                     this._camera.updateProjectionMatrix();
+
+                    this._showForExitAstronautMode();
                 }, 100);
                 return;
             } else {

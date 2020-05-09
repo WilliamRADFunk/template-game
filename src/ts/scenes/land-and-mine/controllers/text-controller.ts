@@ -335,4 +335,13 @@ export class TextCtrl {
     public update(name: string, value: string): void {
         this._textElements[name].update(value);
     }
+
+    /**
+     * Hides text not relevant to miners
+     */
+    public zoomIn(): void {
+        this.hide();
+        this._textElements.oxygenLevel.show();
+        this._textElements.fuelLevel.show();
+    }
 }
