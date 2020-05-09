@@ -103,7 +103,8 @@ export enum LandAndMineState {
     'mining' = 7,
     'suffocating' = 8,
     'newGame' = 9,
-    'tutorial' = 10
+    'tutorial' = 10,
+    'settings' = 11
 }
 
 /**
@@ -956,6 +957,7 @@ export class LandAndMine {
 
         const exitSettings = (prevState: LandAndMineState) => {
             this._enableAllButtons();
+            // TODO: Hide settings ctrl
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
             this._txtCtrl.show();
@@ -1003,8 +1005,8 @@ export class LandAndMine {
         const settings = () => {
             this._disableAllButtons();
             const prevState = this._state;
-            this._state = LandAndMineState.paused;
-            Object.values(this._buttons).forEach(button => {
+            this._state = LandAndMineState.settings;
+            Object.values(this._buttons).filter(x => !!x).forEach(button => {
                 if (button.isVisible()) {
                     this._stateStoredObjects.push(button);
                     button.hide();
@@ -1233,6 +1235,12 @@ export class LandAndMine {
         // Game is in help mode. Play animations from help screen.
         if (this._state === LandAndMineState.tutorial) {
             this._helpCtrl.endCycle();
+
+            return;
+        }
+        // Game is in settings mode. Activate settings screen.
+        if (this._state === LandAndMineState.settings) {
+            // TODO: Settings endCycle if there is one.
 
             return;
         }

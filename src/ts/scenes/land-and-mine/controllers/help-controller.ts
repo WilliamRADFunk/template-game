@@ -569,7 +569,7 @@ export class HelpCtrl {
 
         // Block Types Text graphics
         this._helpTexts.blockTypesTitle = new RightBottomMiddleTitleText(
-            'Block Types',
+            'Blocks, Fuel, & Oxygen',
             position,
             COLORS.neutral,
             border,
