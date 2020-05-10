@@ -50,7 +50,7 @@ import { BUTTON_COLORS, BUTTON_COLORS_INVERSE } from "../../../styles/button-col
 import { Actor } from "../../../models/actor";
 import { HTMLElementPosition } from "../../../models/html-element-position";
 import { LanderSpecifications } from "../../../models/lander-specifications";
-import { PlanetLandColors, PlanetSpecifications, OreTypeColors } from "../../../models/planet-specifications";
+import { PlanetLandColors, PlanetSpecifications, OreTypeColors, SkyColors } from "../../../models/planet-specifications";
 
 // Constants and Singletons
 import { SoundinatorSingleton } from "../../../soundinator";
@@ -108,17 +108,17 @@ const HELP_LANDER_2_POSITION: [number, number, number] = [2.75, -9, -5];
 /**
  * Sets the starting position of the first bottom left lander.
  */
-const HELP_LANDER_3_POSITION: [number, number, number] = [-4.675, -8, 4];
+const HELP_LANDER_3_POSITION: [number, number, number] = [-4.675, -9, 4];
 
 /**
  * Sets the starting position of the second bottom left lander.
  */
-const HELP_LANDER_4_POSITION: [number, number, number] = [-3.14, -8, 4];
+const HELP_LANDER_4_POSITION: [number, number, number] = [-3.14, -9, 4];
 
 /**
  * Sets the starting position of the third bottom left lander.
  */
-const HELP_LANDER_5_POSITION: [number, number, number] = [-1.625, -8, 4];
+const HELP_LANDER_5_POSITION: [number, number, number] = [-1.625, -9, 4];
 
 /**
  * Sets the starting position of the bottom middle left lander.
@@ -223,7 +223,7 @@ export class HelpCtrl {
         blockTypes: 0,
         blockTypesClear: 7310,
         landingLeaving: 0,
-        landingLeavingClear: 870,
+        landingLeavingClear: 1260,
         landingLeavingFlashOn: 1,
         landingLeavingGravity: 0.0001,
         landingLeavingVerticalSpeed: 0,
@@ -266,6 +266,7 @@ export class HelpCtrl {
         blockTypes: [] as Mesh[][] | Object3D[][],
         landingLeavingBasePart1: [] as Mesh[][] | Object3D[][],
         landingLeavingBasePart2: [] as Mesh[][] | Object3D[][],
+        landingLeavingBasePart3: [] as Mesh[][] | Object3D[][],
         landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][],
         loadUnload: [] as Mesh[][] | Object3D[][]
     }
@@ -1098,7 +1099,51 @@ export class HelpCtrl {
             }
         });
 
-        // Landing Thresholds Lander graphics
+        // Landing and Leaving Escape Line graphics
+        const escapeLineMat = new MeshBasicMaterial({
+            color: 0x008080,
+            opacity: 0.5,
+            transparent: true,
+            side: DoubleSide
+        });
+        const escapeRow = 12;
+        this._helpTerrainMeshes.landingLeavingBasePart3[escapeRow] = [];
+        for (let col = 1.5; col < 56.5; col++) {
+            const block = new Mesh( groundGeo, escapeLineMat );
+                block.name = `Landing & Leaving - Escape - Base`;
+                block.position.set(-6 + (col/10), -6.5, 6 - escapeRow/10);
+                block.rotation.set(1.5708, 0, 0);
+                block.visible = false;
+                this._scene.add(block);
+                this._helpTerrainMeshes.landingLeavingBasePart3[escapeRow][col - 0.5] = block;
+        }
+
+        // Landing & Leaving Sky graphics
+        const skyMats: MeshBasicMaterial[] = [];
+        for (let i = 0; i < 9; i++) {
+            const skyMat = new MeshBasicMaterial({
+                color: colorLuminance(SkyColors[this._planetSpecifications.skyBase], i / 10),
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            skyMats.push(skyMat);
+        }
+        for (let row = 1; row < escapeRow; row++) {
+            this._helpTerrainMeshes.landingLeavingBasePart3[row] = [];
+            const skyMatToBeUsed = (row - 1) < 9 ? skyMats[row - 1] : skyMats[8];
+            for (let col = 1.5; col < 56.5; col++) {
+                const block = new Mesh( groundGeo, skyMatToBeUsed );
+                    block.name = `Landing & Leaving - Sky - Base`;
+                    block.position.set(-6 + (col/10), -6.5, 6 - row/10);
+                    block.rotation.set(1.5708, 0, 0);
+                    block.visible = false;
+                    this._scene.add(block);
+                    this._helpTerrainMeshes.landingLeavingBasePart3[row][col - 0.5] = block;
+            }
+        }
+
+        // Landing & Leaving Lander graphics
         this._helpMeshes.lander3 = createLander(this._textures.ship).mesh;
         this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
         this._helpMeshes.lander3.visible = false;
@@ -1200,7 +1245,7 @@ export class HelpCtrl {
             0);
         this._helpTexts.landingLeavingWaterBlocks.hide();
 
-        // Landing & Leaving Right Danger Text graphics
+        // Landing & Leaving Middle Danger Text graphics
         this._helpTexts.landingLeavingMiddleDanger = new FreestyleText(
             'Crash Risk!',
             {
@@ -1248,7 +1293,7 @@ export class HelpCtrl {
             0);
         this._helpTexts.landingLeavingIceBlocks.hide();
 
-        // Landing & Leaving Middle Danger Text graphics
+        // Landing & Leaving Right Danger Text graphics
         this._helpTexts.landingLeavingRightDanger = new FreestyleText(
             'Crash Risk!',
             {
@@ -1263,6 +1308,54 @@ export class HelpCtrl {
             0.017,
             0);
         this._helpTexts.landingLeavingRightDanger.hide();
+
+        // Landing & Leaving Still In Game Text graphics
+        this._helpTexts.landingLeavingStillInGame = new FreestyleText(
+            'Still in game area',
+            {
+                height: position.height,
+                left: (position.left + (0.020 * position.width)),
+                top: (0.78 * position.height),
+                width: position.width
+            },
+            COLORS.highlighted,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingLeavingStillInGame.hide();
+
+        // Landing & Leaving Still In Game Text graphics
+        this._helpTexts.landingLeavingEscapeLine = new FreestyleText(
+            'Escape Line',
+            {
+                height: position.height,
+                left: (position.left + (0.020 * position.width)),
+                top: (0.87 * position.height),
+                width: position.width
+            },
+            `#${escapeLineMat.color.getHexString()}`,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingLeavingEscapeLine.hide();
+
+        // Landing & Leaving Escaped Text graphics
+        this._helpTexts.landingLeavingEscaped = new FreestyleText(
+            'Successful Escape!',
+            {
+                height: position.height,
+                left: (position.left + (0.30 * position.width)),
+                top: (0.78 * position.height),
+                width: position.width
+            },
+            COLORS.highlighted,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.landingLeavingEscaped.hide();
 
         // Lander Text graphics
         this._helpTexts.landingLeavingTitle = new LeftBottomTitleText(
@@ -2050,6 +2143,15 @@ export class HelpCtrl {
                     }
                 }
             }
+            for (let row = 0; row < this._helpTerrainMeshes.landingLeavingBasePart3.length; row++) {
+                if (this._helpTerrainMeshes.landingLeavingBasePart3[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingLeavingBasePart3[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingLeavingBasePart3[row][col]) {
+                            this._helpTerrainMeshes.landingLeavingBasePart3[row][col].visible = false;
+                        }
+                    }
+                }
+            }
             this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
             this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2]);
             this._helpMeshes.lander5.position.set(HELP_LANDER_5_POSITION[0], HELP_LANDER_5_POSITION[1], HELP_LANDER_5_POSITION[2]);
@@ -2068,6 +2170,9 @@ export class HelpCtrl {
         this._helpTexts.landingLeavingLeftSafe.hide();
         this._helpTexts.landingLeavingMiddleDanger.hide();
         this._helpTexts.landingLeavingRightDanger.hide();
+        this._helpTexts.landingLeavingStillInGame.hide();
+        this._helpTexts.landingLeavingEscaped.hide();
+        this._helpTexts.landingLeavingEscapeLine.hide();
         this._helpMeshes.lander3.visible = false;
         this._helpMeshes.lander4.visible = false;
         this._helpMeshes.lander5.visible = false;
@@ -2304,7 +2409,7 @@ export class HelpCtrl {
             this._helpActors.landingLeavingExplosion1 = null;
             this._scene.remove(this._helpActors.landingLeavingExplosion2);
             this._helpActors.landingLeavingExplosion2 = null;
-        } else if (this._helpCounters.landingLeaving <= 870) {
+        } else if (this._helpCounters.landingLeaving < 870) {
             this._helpMeshes.lander3.visible = true;
             this._helpTexts.landingLeavingPlantBlocks.show();
             this._helpTexts.landingLeavingWaterBlocks.show();
@@ -2312,6 +2417,51 @@ export class HelpCtrl {
             this._helpTexts.landingLeavingLeftSafe.show();
             this._helpTexts.landingLeavingMiddleDanger.show();
             this._helpTexts.landingLeavingRightDanger.show();
+        } else if (this._helpCounters.landingLeaving === 870) {
+            this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2] + 2.25);
+            this._helpCounters.landingLeavingVerticalSpeed = 0;
+            this._helpMeshes.lander4.visible = true;
+            for (let row = 0; row < this._helpTerrainMeshes.landingLeavingBasePart2.length; row++) {
+                if (this._helpTerrainMeshes.landingLeavingBasePart2[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingLeavingBasePart2[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingLeavingBasePart2[row][col]) {
+                            this._helpTerrainMeshes.landingLeavingBasePart2[row][col].visible = false;
+                        }
+                    }
+                }
+            }
+            for (let row = 0; row < this._helpTerrainMeshes.landingLeavingBasePart3.length; row++) {
+                if (this._helpTerrainMeshes.landingLeavingBasePart3[row]) {
+                    for (let col = 0; col < this._helpTerrainMeshes.landingLeavingBasePart3[row].length; col++) {
+                        if (this._helpTerrainMeshes.landingLeavingBasePart3[row][col]) {
+                            this._helpTerrainMeshes.landingLeavingBasePart3[row][col].visible = true;
+                        }
+                    }
+                }
+            }
+            this._helpTexts.landingLeavingStillInGame.show();
+            this._helpTexts.landingLeavingEscapeLine.show();
+        } else if (this._helpCounters.landingLeaving < 1110) {
+            this._helpTexts.landingLeavingStillInGame.show();
+            this._helpCounters.landingLeavingVerticalSpeed += this._helpCounters.landingLeavingGravity - 0.00015;
+            this._landingLeavingVerticalUpdate3(true);
+        } else if (this._helpCounters.landingLeaving < 1170) {
+            this._helpMeshes.lander4.visible = true;
+            this._helpCounters.landingLeavingFlashOn = this._helpCounters.landingLeaving % 10 === 0
+                ? Number(!this._helpCounters.landingLeavingFlashOn)
+                : this._helpCounters.landingLeavingFlashOn;
+
+            if (!!this._helpCounters.landingLeavingFlashOn) {
+                this._helpTexts.landingLeavingEscaped.show();
+                this._helpTexts.landingLeavingEscapeLine.show();
+            } else {
+                this._helpTexts.landingLeavingEscaped.hide();
+                this._helpTexts.landingLeavingEscapeLine.hide();
+            }
+        } else {
+            this._helpTexts.landingLeavingEscaped.show();
+            this._helpCounters.landingLeavingVerticalSpeed += this._helpCounters.landingLeavingGravity - 0.00015;
+            this._landingLeavingVerticalUpdate3(true);
         }
         //#endregion
 
@@ -2874,6 +3024,20 @@ export class HelpCtrl {
     }
 
     /**
+     * Updates text and graphics during part 3 of landing & leaving section demonstration.
+     * @param mainThrusterOn whether turn main thruster graphics on
+     */
+    private _landingLeavingVerticalUpdate3(mainThrusterOn: boolean): void {
+        let currPos = this._helpMeshes.lander4.position;
+        this._helpMeshes.lander4.position.set(currPos.x, currPos.y, currPos.z + this._helpCounters.landingLeavingVerticalSpeed);
+        currPos = this._helpMeshes.lander4.position;
+        this._helpActors.mainThruster4.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET_SMALL], mainThrusterOn);
+
+        this._helpTexts.landingLeavingEscapeLine.show();
+        this._helpMeshes.lander4.visible = true;
+    }
+
+    /**
      * Updates text and graphics during horizontal threshold section demonstration.
      * @param leftSideThrusterOn whether turn left side thruster graphics on
      * @param rightSideThrusterOn whether turn right side thruster graphics on
@@ -3219,6 +3383,15 @@ export class HelpCtrl {
                 }
             }
         }
+        for (let row = 0; row < this._helpTerrainMeshes.landingLeavingBasePart3.length; row++) {
+            if (this._helpTerrainMeshes.landingLeavingBasePart3[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingLeavingBasePart3[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingLeavingBasePart3[row][col]) {
+                        this._helpTerrainMeshes.landingLeavingBasePart3[row][col].visible = false;
+                    }
+                }
+            }
+        }
 
         this._helpTexts.landingLeaving4FlatBlocks.hide();
         this._helpTexts.landingLeavingNoGaps.hide();
@@ -3229,6 +3402,9 @@ export class HelpCtrl {
         this._helpTexts.landingLeavingLeftSafe.hide();
         this._helpTexts.landingLeavingMiddleDanger.hide();
         this._helpTexts.landingLeavingRightDanger.hide();
+        this._helpTexts.landingLeavingStillInGame.hide();
+        this._helpTexts.landingLeavingEscaped.hide();
+        this._helpTexts.landingLeavingEscapeLine.hide();
         this._helpMeshes.lander3.visible = false;
         this._helpMeshes.lander4.visible = false;
         this._helpMeshes.lander5.visible = false;
@@ -3267,6 +3443,10 @@ export class HelpCtrl {
         this._helpTexts.landingLeavingLeftSafe.resize({ height, left: (left + (0.062 * width)), top: (0.78 * height), width: width });
         this._helpTexts.landingLeavingMiddleDanger.resize({ height, left: (left + (0.195 * width)), top: (0.78 * height), width });
         this._helpTexts.landingLeavingRightDanger.resize({ height, left: (left + (0.3225 * width)), top: (0.78 * height), width });
+
+        this._helpTexts.landingLeavingStillInGame.resize({ height, left: (left + (0.020 * width)), top: (0.78 * height), width: width });
+        this._helpTexts.landingLeavingEscaped.resize({ height, left: (left + (0.30 * width)), top: (0.78 * height), width });
+        this._helpTexts.landingLeavingEscapeLine.resize({ height, left: (left + (0.020 * width)), top: (0.87 * height), width });
 
         this._helpTexts.landingLeaving4FlatBlocks.resize({ height, left: (left + (0.059 * width)), top: (0.9745 * height), width });
         this._helpTexts.landingLeavingNoGaps.resize({ height, left: (left + (0.21 * width)), top: (0.9745 * height), width });
@@ -3386,6 +3566,15 @@ export class HelpCtrl {
                 for (let col = 0; col < this._helpTerrainMeshes.landingLeavingBasePart2[row].length; col++) {
                     if (this._helpTerrainMeshes.landingLeavingBasePart2[row][col]) {
                         this._helpTerrainMeshes.landingLeavingBasePart2[row][col].visible = false;
+                    }
+                }
+            }
+        }
+        for (let row = 0; row < this._helpTerrainMeshes.landingLeavingBasePart3.length; row++) {
+            if (this._helpTerrainMeshes.landingLeavingBasePart3[row]) {
+                for (let col = 0; col < this._helpTerrainMeshes.landingLeavingBasePart3[row].length; col++) {
+                    if (this._helpTerrainMeshes.landingLeavingBasePart3[row][col]) {
+                        this._helpTerrainMeshes.landingLeavingBasePart3[row][col].visible = false;
                     }
                 }
             }
