@@ -220,8 +220,8 @@ export class HelpCtrl {
     private _helpCounters: { [key: string]: number } = {
         astroWalk: 0,
         astroWalkClear: 360,
-        blockTypes: 5570,
-        blockTypesClear: 6050,
+        blockTypes: 0,
+        blockTypesClear: 7310,
         landingSurfaces: 0,
         landingSurfacesClear: 870,
         landingSurfacesFlashOn: 1,
@@ -473,8 +473,6 @@ export class HelpCtrl {
             { height, left, top: null, width });
 
         this._buildHelpScreenBlockTypes(
-            groundGeo,
-            innerWaterGeo,
             iceMat,
             waterMat,
             { height, left, top: null, width });
@@ -586,15 +584,11 @@ export class HelpCtrl {
 
     /**
      * Creates everything needed for the Block Types panel.
-     * @param groundGeo the geometry used to make all the ground meshes in this panel
-     * @param innerWaterGeo the geometry used to make all the inner water for ice meshes in this panel
      * @param iceMat the material used to make all the ice meshes in this panel
      * @param waterMat the material used to make all the water meshes in this panel
      * @param position initial positioning parameters from window size
      */
     private _buildHelpScreenBlockTypes(
-        groundGeo: PlaneGeometry,
-        innerWaterGeo: PlaneGeometry,
         iceMat: MeshBasicMaterial,
         waterMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
@@ -723,6 +717,24 @@ export class HelpCtrl {
             0);
         this._helpTexts.blockTypesExample.hide();
 
+        // Block Types Oxygen Full Text graphics
+        this._helpTexts.blockTypesWindSpeed = new FreestyleText(
+            '*** Wind Speed: 0.000',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesWindSpeed.hide();
+
+        const geo = new PlaneGeometry( 0.3, 0.3, 10, 10 );
+        const innerGeo = new PlaneGeometry( 0.2, 0.2, 10, 10 );
         // Ore Block Type graphic
         const row = 35;
         const startCol = 71;
@@ -734,9 +746,9 @@ export class HelpCtrl {
             side: DoubleSide
         });
 
-        const oreBlock = new Mesh( groundGeo, oreTypeMat );
+        const oreBlock = new Mesh( geo, oreTypeMat );
         oreBlock.name = `${Math.random()} - demo - ore block - `;
-        oreBlock.position.set(-6 + (startCol/10), -7, 6 - row/10);
+        oreBlock.position.set(-6 + (startCol/10), -7, 6 - row/10 - 0.025);
         oreBlock.rotation.set(1.5708, 0, 0);
         oreBlock.visible = false;
         this._scene.add(oreBlock);
@@ -756,10 +768,10 @@ export class HelpCtrl {
         this._helpTerrainMeshes.blockTypes[1] = [];
 
         for (let x = startCol; x < startCol + 7; x++) {
-            const index = x - 70;
-            const block = new Mesh( groundGeo, commonRockMats[index] );
+            const index = x - startCol;
+            const block = new Mesh( geo, commonRockMats[index] );
             block.name = `${Math.random()} - demo - common rocks - ${index} - `;
-            block.position.set(-6 + (x/10) + (0.05 * index), -7, 6 - row/10);
+            block.position.set(-6 + (x/10) + (0.25 * index), -7, 6 - row/10 - 0.025);
             block.rotation.set(1.5708, 0, 0);
             block.visible = false;
             this._scene.add(block);
@@ -769,23 +781,23 @@ export class HelpCtrl {
         // Water & Ice Block Type graphics
         this._helpTerrainMeshes.blockTypes[2] = [];
 
-        const waterBlock = new Mesh( groundGeo, waterMat );
+        const waterBlock = new Mesh( geo, waterMat );
         waterBlock.name = `${Math.random()} - demo - water block - `;
-        waterBlock.position.set(-6 + (startCol/10), -7, 6 - row/10);
+        waterBlock.position.set(-6 + (startCol/10), -7, 6 - row/10 - 0.025);
         waterBlock.rotation.set(1.5708, 0, 0);
         waterBlock.visible = false;
         this._scene.add(waterBlock);
         this._helpTerrainMeshes.blockTypes[2].push(waterBlock);
-        const iceBlock = new Mesh( groundGeo, iceMat );
+        const iceBlock = new Mesh( geo, iceMat );
         iceBlock.name = `${Math.random()} - demo - ice block outer - `;
-        iceBlock.position.set(-6 + ((startCol + 1)/10) + 0.05, -6.5, 6 - row/10);
+        iceBlock.position.set(-6 + ((startCol + 1)/10) + 0.25, -6.5, 6 - row/10 - 0.025);
         iceBlock.rotation.set(1.5708, 0, 0);
         iceBlock.visible = false;
         this._scene.add(iceBlock);
         this._helpTerrainMeshes.blockTypes[2].push(iceBlock);
-        const frozenWater = new Mesh( innerWaterGeo, waterMat );
+        const frozenWater = new Mesh( innerGeo, waterMat );
         frozenWater.name = `${Math.random()} - demo - ice block inner - `;
-        frozenWater.position.set(-6 + ((startCol + 1)/10) + 0.05, -7, 6 - row/10);
+        frozenWater.position.set(-6 + ((startCol + 1)/10) + 0.25, -7, 6 - row/10 - 0.025);
         frozenWater.rotation.set(1.5708, 0, 0);
         frozenWater.visible = false;
         this._scene.add(frozenWater);
@@ -808,9 +820,9 @@ export class HelpCtrl {
 
         for (let y = startCol; y < startCol + 5; y++) {
             const index = y - startCol;
-            const block = new Mesh( groundGeo, lifeMats[index] );
+            const block = new Mesh( geo, lifeMats[index] );
             block.name = `${Math.random()} - demo - food - ${index} - `;
-            block.position.set(-6 + (y/10) + (0.05 * index), -7, 6 - row/10);
+            block.position.set(-6 + (y/10) + (0.25 * index), -7, 6 - row/10 - 0.025);
             block.rotation.set(1.5708, 0, 0);
             block.visible = false;
             this._scene.add(block);
@@ -827,9 +839,9 @@ export class HelpCtrl {
             side: DoubleSide
         });
 
-        const dangerBlock = new Mesh( groundGeo, dangerMat );
+        const dangerBlock = new Mesh( geo, dangerMat );
         dangerBlock.name = `${Math.random()} - demo - danger block - `;
-        dangerBlock.position.set(-6 + (startCol/10), -7, 6 - row/10);
+        dangerBlock.position.set(-6 + (startCol/10), -7, 6 - row/10 - 0.025);
         dangerBlock.rotation.set(1.5708, 0, 0);
         dangerBlock.visible = false;
         this._scene.add(dangerBlock);
@@ -1812,6 +1824,8 @@ export class HelpCtrl {
             this._helpCounters.blockTypes = 0;
             this._helpTexts.blockTypesDialogue.update(dialogues['Fuel'], true);
             this._helpTexts.blockTypesExample.hide();
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.000');
+            this._helpTexts.blockTypesWindSpeed.hide();
             this._helpTerrainMeshes.blockTypes[0][0].visible = false;
             this._helpTerrainMeshes.blockTypes[1].forEach(block => {
                 block.visible = false;
@@ -1831,69 +1845,142 @@ export class HelpCtrl {
         this._helpTexts.blockTypesOxygenFull.hide();
         this._helpTexts.blockTypesOxygenDanger.hide();
         this._helpTexts.blockTypesOxygenEmpty.hide();
+        this._helpTexts.blockTypesExample.hide();
+        this._helpTexts.blockTypesWindSpeed.hide();
+        this._helpTerrainMeshes.blockTypes[0][0].visible = false;
+        this._helpTerrainMeshes.blockTypes[1].forEach(block => {
+            block.visible = false;
+        });
+        this._helpTerrainMeshes.blockTypes[2].forEach(block => {
+            block.visible = false;
+        });
+        this._helpTerrainMeshes.blockTypes[3].forEach(block => {
+            block.visible = false;
+        });
+        this._helpTerrainMeshes.blockTypes[4].forEach(block => {
+            block.visible = false;
+        });
 
 
-        if (this._helpCounters.blockTypes < 420) { // Good
+        if (this._helpCounters.blockTypes < 420) {
             this._helpTexts.blockTypesFuelFull.show();
-        } else if (this._helpCounters.blockTypes === 420) { // Good
+        } else if (this._helpCounters.blockTypes === 420) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Fuel2'], true);
-        } else if (this._helpCounters.blockTypes < 750) { // Good
+        } else if (this._helpCounters.blockTypes < 750) {
             this._helpTexts.blockTypesFuelDanger.show();
-        } else if (this._helpCounters.blockTypes === 750) { // Good
+        } else if (this._helpCounters.blockTypes === 750) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Fuel3'], true);
-        } else if (this._helpCounters.blockTypes < 1290) { // Good
+        } else if (this._helpCounters.blockTypes < 1290) {
             this._helpTexts.blockTypesFuelEmpty.show();
-        } else if (this._helpCounters.blockTypes === 1290) { // Good
+        } else if (this._helpCounters.blockTypes === 1290) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Oxygen'], true);
-        } else if (this._helpCounters.blockTypes < 1890) { // Good
+        } else if (this._helpCounters.blockTypes < 1890) {
             this._helpTexts.blockTypesOxygenFull.show();
-        } else if (this._helpCounters.blockTypes === 1890) { // Good
+        } else if (this._helpCounters.blockTypes === 1890) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Oxygen2'], true);
-        } else if (this._helpCounters.blockTypes < 2230) { // Good
+        } else if (this._helpCounters.blockTypes < 2230) {
             this._helpTexts.blockTypesOxygenDanger.show();
-        } else if (this._helpCounters.blockTypes === 2230) { // Good
+        } else if (this._helpCounters.blockTypes === 2230) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Oxygen3'], true);
-        } else if (this._helpCounters.blockTypes < 2960) { // Good
+        } else if (this._helpCounters.blockTypes < 2960) {
             this._helpTexts.blockTypesOxygenEmpty.show();
-        } else if (this._helpCounters.blockTypes === 2960) { // Good
+        } else if (this._helpCounters.blockTypes === 2960) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Ore'], true);
             this._helpTexts.blockTypesExample.show();
             this._helpTerrainMeshes.blockTypes[0][0].visible = true;
-        } else if (this._helpCounters.blockTypes === 3440) { // Good
+        } else if (this._helpCounters.blockTypes < 3440) {
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[0][0].visible = true;
+        } else if (this._helpCounters.blockTypes === 3440) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Common'], true);
             this._helpTexts.blockTypesExample.show();
-            this._helpTerrainMeshes.blockTypes[0][0].visible = false;
             this._helpTerrainMeshes.blockTypes[1].forEach(block => {
                 block.visible = true;
             });
-        } else if (this._helpCounters.blockTypes === 3960) { // Good
-            this._helpTexts.blockTypesDialogue.update(dialogues['Water'], true);
+        } else if (this._helpCounters.blockTypes < 3960) {
             this._helpTexts.blockTypesExample.show();
             this._helpTerrainMeshes.blockTypes[1].forEach(block => {
-                block.visible = false;
+                block.visible = true;
             });
+        } else if (this._helpCounters.blockTypes === 3960) {
+            this._helpTexts.blockTypesDialogue.update(dialogues['Water'], true);
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[2].forEach(block => {
+                block.visible = true;
+            });
+        } else if (this._helpCounters.blockTypes < 4580) {
+            this._helpTexts.blockTypesExample.show();
             this._helpTerrainMeshes.blockTypes[2].forEach(block => {
                 block.visible = true;
             });
         } else if (this._helpCounters.blockTypes === 4580) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Plant'], true);
             this._helpTexts.blockTypesExample.show();
-            this._helpTerrainMeshes.blockTypes[2].forEach(block => {
-                block.visible = false;
+            this._helpTerrainMeshes.blockTypes[3].forEach(block => {
+                block.visible = true;
             });
+        } else if (this._helpCounters.blockTypes < 5150) {
+            this._helpTexts.blockTypesExample.show();
             this._helpTerrainMeshes.blockTypes[3].forEach(block => {
                 block.visible = true;
             });
         } else if (this._helpCounters.blockTypes === 5150) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Danger'], true);
             this._helpTexts.blockTypesExample.show();
-            this._helpTerrainMeshes.blockTypes[3].forEach(block => {
-                block.visible = false;
-            });
+            this._helpTerrainMeshes.blockTypes[4][0].visible = true;
+        } else if (this._helpCounters.blockTypes < 5570) {
+            this._helpTexts.blockTypesExample.show();
             this._helpTerrainMeshes.blockTypes[4][0].visible = true;
         } else if (this._helpCounters.blockTypes === 5570) {
             this._helpTexts.blockTypesDialogue.update(dialogues['Wind'], true);
-            this._helpTerrainMeshes.blockTypes[4][0].visible = false;
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6080) {
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes === 6080) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: <span class="fa fa-long-arrow-left"></span> 0.0002');
+            this._helpTexts.blockTypesWindSpeed.show();
+            this._helpTexts.blockTypesDialogue.update(dialogues['Wind2'], true);
+        } else if (this._helpCounters.blockTypes < 6140) {
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6200) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.0002 <span class="fa fa-long-arrow-right"></span>');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6260) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: <span class="fa fa-long-arrow-left"></span> 0.0002');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6320) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.0002 <span class="fa fa-long-arrow-right"></span>');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6380) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: <span class="fa fa-long-arrow-left"></span> 0.0002');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6440) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.0002 <span class="fa fa-long-arrow-right"></span>');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6500) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: <span class="fa fa-long-arrow-left"></span> 0.0002');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6560) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.0002 <span class="fa fa-long-arrow-right"></span>');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6620) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: <span class="fa fa-long-arrow-left"></span> 0.0002');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes < 6680) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.0002 <span class="fa fa-long-arrow-right"></span>');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes === 6680) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.000');
+            this._helpTexts.blockTypesWindSpeed.show();
+            this._helpTexts.blockTypesDialogue.update(dialogues['Wind3'], true);
+        } else if (this._helpCounters.blockTypes < 6680) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.0005 <span class="fa fa-long-arrow-right"></span>');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else if (this._helpCounters.blockTypes === 6680) {
+            this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.000');
+            this._helpTexts.blockTypesWindSpeed.show();
+        } else {
+            this._helpTexts.blockTypesWindSpeed.show();
         }
 
         this._helpTexts.blockTypesDialogue.cycle();
@@ -3098,6 +3185,8 @@ export class HelpCtrl {
         this._helpTexts.blockTypesOxygenDanger.hide();
         this._helpTexts.blockTypesOxygenEmpty.hide();
         this._helpTexts.blockTypesExample.hide();
+        this._helpTexts.blockTypesWindSpeed.update('*** Wind Speed: 0.000');
+        this._helpTexts.blockTypesWindSpeed.hide();
         this._helpTerrainMeshes.blockTypes[0][0].visible = false;
         this._helpTerrainMeshes.blockTypes[1].forEach(block => {
             block.visible = false;
@@ -3267,6 +3356,7 @@ export class HelpCtrl {
         this._helpTexts.blockTypesDialogue.update(dialogues['Fuel'], true);
         this._helpTexts.blockTypesDialogue.show();
         this._helpTexts.blockTypesFuelFull.show();
+        this._helpTexts.blockTypesWindSpeed.hide();
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.show();

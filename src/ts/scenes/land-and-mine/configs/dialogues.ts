@@ -27,7 +27,7 @@ Improved engineering can reduce the rate of oxygen consumed."`,
 Only the materials loaded onto the lander will be brought back. Material carried by miners will be lost."`,
 
     'Ore': `<br><br>
-"This is the block type representing "ore" found on this planetoid.<br><br>
+"This is the block type representing 'ore' found on this planetoid.<br><br>
 The amount they represent varies based on quantity readout."`,
 
     'Common': `<br><br>
@@ -55,7 +55,7 @@ Find the wind readout at the top of the game screen to know the wind speed."`,
 Also, there may be debris blowing about, which should demonstrate wind direciton."`,
 
     'Wind3': `<br><br>
-"Thrusting in the same direction as wind will increase your speed significantly.<br><br>
+"Thrusting in the same direction as wind will increase your speed.<br><br>
 Thrusting against wind, will thwart your progress.<br><br>
-Note: Without horizontal thrusting, the wind will, at most, decrease your speed to a stand still."`,
+Without thrusting, the wind will at most null your speed."`,
 };
