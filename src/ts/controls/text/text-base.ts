@@ -17,11 +17,6 @@ export class TextBase {
     private _currentIndex: number = 0;
 
     /**
-     * Counter of cycles in holding
-     */
-    private _holdCount: number = -1;
-
-    /**
      * Flag to denote text is in fade-in mode.
      */
     private _isFadeIn: boolean = true;
@@ -184,15 +179,18 @@ export class TextBase {
 
     /**
      * Updates the content of the text.
+     * @param sentence the new text content
+     * @param isDialogueText if disalogue text, then text content should start at empty and build a character at a time
      */
-    public update(sentence?: string): void {
+    public update(sentence?: string, isDialogueText?: boolean): void {
         this._isFadeIn = true;
         this._isHolding = false;
         this._counter = 1;
         this._currentIndex = 0;
         this._isFinished = false;
         if (sentence) {
-            this.element.innerHTML = this.sentence = sentence;
+            this.sentence = sentence;
+            this.element.innerHTML = isDialogueText ? '' : sentence;
 
             this.element.onclick = () => {
                 this.element.innerHTML = sentence;

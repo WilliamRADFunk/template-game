@@ -50,7 +50,7 @@ import { BUTTON_COLORS, BUTTON_COLORS_INVERSE } from "../../../styles/button-col
 import { Actor } from "../../../models/actor";
 import { HTMLElementPosition } from "../../../models/html-element-position";
 import { LanderSpecifications } from "../../../models/lander-specifications";
-import { PlanetLandColors, PlanetSpecifications } from "../../../models/planet-specifications";
+import { PlanetLandColors, PlanetSpecifications, OreTypeColors } from "../../../models/planet-specifications";
 
 // Constants and Singletons
 import { SoundinatorSingleton } from "../../../soundinator";
@@ -62,6 +62,8 @@ import { UnloadButton } from "../../../controls/buttons/unload-button";
 import { LoadButton } from "../../../controls/buttons/load-button";
 import { ProfileBase } from "../../../controls/profiles/profile-base";
 import { RightBottomMiddleProfile } from "../../../controls/profiles/right-bottom-middle-profile";
+import { RightBottomMiddleDialogueText } from "../../../controls/text/dialogue/right-bottom-middle-dialogue-text";
+import { dialogues } from "../configs/dialogues";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -218,6 +220,8 @@ export class HelpCtrl {
     private _helpCounters: { [key: string]: number } = {
         astroWalk: 0,
         astroWalkClear: 360,
+        blockTypes: 5570,
+        blockTypesClear: 6050,
         landingSurfaces: 0,
         landingSurfacesClear: 870,
         landingSurfacesFlashOn: 1,
@@ -259,6 +263,7 @@ export class HelpCtrl {
      * All of the terrain-based meshes contained in the help screen.
      */
     private _helpTerrainMeshes: { [key: string]: (Mesh[][] | Object3D[][]) } = {
+        blockTypes: [] as Mesh[][] | Object3D[][],
         landingSurfacesBasePart1: [] as Mesh[][] | Object3D[][],
         landingSurfacesBasePart2: [] as Mesh[][] | Object3D[][],
         landingThresholdsGroundSpeed: [] as Mesh[][] | Object3D[][],
@@ -358,6 +363,7 @@ export class HelpCtrl {
 
         const arrowGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
         const groundGeo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+        const innerWaterGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
         const keyGeo = new PlaneGeometry( 1.1, 0.4, 10, 10 );
         const mouseGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
 
@@ -410,6 +416,19 @@ export class HelpCtrl {
             side: DoubleSide
         });
 
+        const waterMat = new MeshBasicMaterial({
+            color: 0x006FCE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+        const iceMat = new MeshBasicMaterial({
+            color: 0xEEEEEE,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
         this._buildHelpScreenLandingControls(
             arrowGeo,
             arrowMat,
@@ -454,11 +473,18 @@ export class HelpCtrl {
             { height, left, top: null, width });
 
         this._buildHelpScreenBlockTypes(
+            groundGeo,
+            innerWaterGeo,
+            iceMat,
+            waterMat,
             { height, left, top: null, width });
 
         this._buildHelpScreenLandingSurfaces(
             groundGeo,
+            innerWaterGeo,
             commonRockMat,
+            iceMat,
+            waterMat,
             { height, left, top: null, width });
 
         this._buildHelpScreenControlPanel(
@@ -560,12 +586,254 @@ export class HelpCtrl {
 
     /**
      * Creates everything needed for the Block Types panel.
+     * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param innerWaterGeo the geometry used to make all the inner water for ice meshes in this panel
+     * @param iceMat the material used to make all the ice meshes in this panel
+     * @param waterMat the material used to make all the water meshes in this panel
      * @param position initial positioning parameters from window size
      */
-    private _buildHelpScreenBlockTypes(position: HTMLElementPosition): void {
+    private _buildHelpScreenBlockTypes(
+        groundGeo: PlaneGeometry,
+        innerWaterGeo: PlaneGeometry,
+        iceMat: MeshBasicMaterial,
+        waterMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
         // Profile Image graphics
         this._helpProfile = new RightBottomMiddleProfile(this._scene, this._textures.scienceOfficerProfile1, true);
         this._helpProfile.hide();
+
+        // Dialogue Text graphics
+        this._helpTexts.blockTypesDialogue = new RightBottomMiddleDialogueText(
+            dialogues['Fuel'],
+            position,
+            COLORS.neutral,
+            border,
+            TextType.DIALOGUE);
+        this._helpTexts.blockTypesDialogue.hide();
+
+        // Block Types Fuel Full Text graphics
+        this._helpTexts.blockTypesFuelFull = new FreestyleText(
+            '*** Fuel: 100%',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesFuelFull.hide();
+
+        // Block Types Fuel Danger Text graphics
+        this._helpTexts.blockTypesFuelDanger = new FreestyleText(
+            '*** Fuel: 20%',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesFuelDanger.hide();
+
+        // Block Types Fuel Empty Text graphics
+        this._helpTexts.blockTypesFuelEmpty = new FreestyleText(
+            '*** Fuel: 0%',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesFuelEmpty.hide();
+
+        // Block Types Oxygen Full Text graphics
+        this._helpTexts.blockTypesOxygenFull = new FreestyleText(
+            '*** Oxygen: 100%',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesOxygenFull.hide();
+
+        // Block Types Oxygen Danger Text graphics
+        this._helpTexts.blockTypesOxygenDanger = new FreestyleText(
+            '*** Oxygen: 20%',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesOxygenDanger.hide();
+
+        // Block Types Oxygen Empty Text graphics
+        this._helpTexts.blockTypesOxygenEmpty = new FreestyleText(
+            '*** Oxygen: 0%',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.selected,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesOxygenEmpty.hide();
+
+        // Block Types Example Text graphics
+        this._helpTexts.blockTypesExample = new FreestyleText(
+            'Example:',
+            {
+                height: position.height,
+                left: (position.left + (0.50 * position.width)),
+                top: (0.69 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.017,
+            0);
+        this._helpTexts.blockTypesExample.hide();
+
+        // Ore Block Type graphic
+        const row = 35;
+        const startCol = 71;
+
+        const oreTypeMat = new MeshBasicMaterial({
+            color: OreTypeColors[this._planetSpecifications.ore],
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
+        const oreBlock = new Mesh( groundGeo, oreTypeMat );
+        oreBlock.name = `${Math.random()} - demo - ore block - `;
+        oreBlock.position.set(-6 + (startCol/10), -7, 6 - row/10);
+        oreBlock.rotation.set(1.5708, 0, 0);
+        oreBlock.visible = false;
+        this._scene.add(oreBlock);
+        this._helpTerrainMeshes.blockTypes[0] = [oreBlock];
+
+        // Common Block Type graphics
+        const commonRockMats: MeshBasicMaterial[] = [];
+        for (let i = 0; i < 7; i++) {
+            const commonRockMat = new MeshBasicMaterial({
+                color: colorLuminance(PlanetLandColors[this._planetSpecifications.planetBase], i / 10),
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            commonRockMats.push(commonRockMat);
+        }
+        this._helpTerrainMeshes.blockTypes[1] = [];
+
+        for (let x = startCol; x < startCol + 7; x++) {
+            const index = x - 70;
+            const block = new Mesh( groundGeo, commonRockMats[index] );
+            block.name = `${Math.random()} - demo - common rocks - ${index} - `;
+            block.position.set(-6 + (x/10) + (0.05 * index), -7, 6 - row/10);
+            block.rotation.set(1.5708, 0, 0);
+            block.visible = false;
+            this._scene.add(block);
+            this._helpTerrainMeshes.blockTypes[1].push(block);
+        }
+
+        // Water & Ice Block Type graphics
+        this._helpTerrainMeshes.blockTypes[2] = [];
+
+        const waterBlock = new Mesh( groundGeo, waterMat );
+        waterBlock.name = `${Math.random()} - demo - water block - `;
+        waterBlock.position.set(-6 + (startCol/10), -7, 6 - row/10);
+        waterBlock.rotation.set(1.5708, 0, 0);
+        waterBlock.visible = false;
+        this._scene.add(waterBlock);
+        this._helpTerrainMeshes.blockTypes[2].push(waterBlock);
+        const iceBlock = new Mesh( groundGeo, iceMat );
+        iceBlock.name = `${Math.random()} - demo - ice block outer - `;
+        iceBlock.position.set(-6 + ((startCol + 1)/10) + 0.05, -6.5, 6 - row/10);
+        iceBlock.rotation.set(1.5708, 0, 0);
+        iceBlock.visible = false;
+        this._scene.add(iceBlock);
+        this._helpTerrainMeshes.blockTypes[2].push(iceBlock);
+        const frozenWater = new Mesh( innerWaterGeo, waterMat );
+        frozenWater.name = `${Math.random()} - demo - ice block inner - `;
+        frozenWater.position.set(-6 + ((startCol + 1)/10) + 0.05, -7, 6 - row/10);
+        frozenWater.rotation.set(1.5708, 0, 0);
+        frozenWater.visible = false;
+        this._scene.add(frozenWater);
+        this._helpTerrainMeshes.blockTypes[2].push(frozenWater);
+
+        // Plant/Food Block Type graphics
+        this._helpTerrainMeshes.blockTypes[3] = [];
+
+        const lifeMats: MeshBasicMaterial[] = [];
+        const lifeMatColorBase = '008000';
+        for (let i = 0; i < 5; i++) {
+            const lifeMat = new MeshBasicMaterial({
+                color: colorLuminance(lifeMatColorBase, i / 10),
+                opacity: 1,
+                transparent: true,
+                side: DoubleSide
+            });
+            lifeMats.push(lifeMat);
+        }
+
+        for (let y = startCol; y < startCol + 5; y++) {
+            const index = y - startCol;
+            const block = new Mesh( groundGeo, lifeMats[index] );
+            block.name = `${Math.random()} - demo - food - ${index} - `;
+            block.position.set(-6 + (y/10) + (0.05 * index), -7, 6 - row/10);
+            block.rotation.set(1.5708, 0, 0);
+            block.visible = false;
+            this._scene.add(block);
+            this._helpTerrainMeshes.blockTypes[3].push(block);
+        }
+
+        // Danger Block Type graphics
+        this._helpTerrainMeshes.blockTypes[4] = [];
+
+        const dangerMat = new MeshBasicMaterial({
+            color: 0xFF0000,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
+
+        const dangerBlock = new Mesh( groundGeo, dangerMat );
+        dangerBlock.name = `${Math.random()} - demo - danger block - `;
+        dangerBlock.position.set(-6 + (startCol/10), -7, 6 - row/10);
+        dangerBlock.rotation.set(1.5708, 0, 0);
+        dangerBlock.visible = false;
+        this._scene.add(dangerBlock);
+        this._helpTerrainMeshes.blockTypes[4].push(dangerBlock);
 
         // Block Types Text graphics
         this._helpTexts.blockTypesTitle = new RightBottomMiddleTitleText(
@@ -689,12 +957,18 @@ export class HelpCtrl {
     /**
      * Creates everything needed for the Landing Surfaces panel.
      * @param groundGeo the geometry used to make all the ground meshes in this panel
+     * @param innerWaterGeo the geometry used to make all the inner water for ice meshes in this panel
      * @param commonRockMat the material used to make all the ground meshes in this panel
+     * @param iceMat the material used to make all the ice meshes in this panel
+     * @param waterMat the material used to make all the water meshes in this panel
      * @param position initial positioning parameters from window size
      */
     private _buildHelpScreenLandingSurfaces(
         groundGeo: PlaneGeometry,
+        innerWaterGeo: PlaneGeometry,
         commonRockMat: MeshBasicMaterial,
+        iceMat: MeshBasicMaterial,
+        waterMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // 0: colStart
         // 1: colEnd
@@ -760,19 +1034,6 @@ export class HelpCtrl {
             transparent: true,
             side: DoubleSide
         });
-        const waterMat = new MeshBasicMaterial({
-            color: 0x006FCE,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
-        const iceMat = new MeshBasicMaterial({
-            color: 0xEEEEEE,
-            opacity: 1,
-            transparent: true,
-            side: DoubleSide
-        });
-        const innerWaterGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
 
         // 0: colStart
         // 1: modifier
@@ -1541,6 +1802,103 @@ export class HelpCtrl {
         }
 
         this._helpCounters.astroWalk++;
+    }
+
+    /**
+     * Calls the next frame in the animation cycle specific to lower-middle-right panel - Blocks, Fuel, & Oxygen.
+     */
+    private _endCycleBlockTypes(): void {
+        if (this._helpCounters.blockTypes > this._helpCounters.blockTypesClear) {
+            this._helpCounters.blockTypes = 0;
+            this._helpTexts.blockTypesDialogue.update(dialogues['Fuel'], true);
+            this._helpTexts.blockTypesExample.hide();
+            this._helpTerrainMeshes.blockTypes[0][0].visible = false;
+            this._helpTerrainMeshes.blockTypes[1].forEach(block => {
+                block.visible = false;
+            });
+            this._helpTerrainMeshes.blockTypes[2].forEach(block => {
+                block.visible = false;
+            });
+            this._helpTerrainMeshes.blockTypes[3].forEach(block => {
+                block.visible = false;
+            });
+            this._helpTerrainMeshes.blockTypes[4][0].visible = false;
+        }
+
+        this._helpTexts.blockTypesFuelFull.hide();
+        this._helpTexts.blockTypesFuelDanger.hide();
+        this._helpTexts.blockTypesFuelEmpty.hide();
+        this._helpTexts.blockTypesOxygenFull.hide();
+        this._helpTexts.blockTypesOxygenDanger.hide();
+        this._helpTexts.blockTypesOxygenEmpty.hide();
+
+
+        if (this._helpCounters.blockTypes < 420) { // Good
+            this._helpTexts.blockTypesFuelFull.show();
+        } else if (this._helpCounters.blockTypes === 420) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Fuel2'], true);
+        } else if (this._helpCounters.blockTypes < 750) { // Good
+            this._helpTexts.blockTypesFuelDanger.show();
+        } else if (this._helpCounters.blockTypes === 750) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Fuel3'], true);
+        } else if (this._helpCounters.blockTypes < 1290) { // Good
+            this._helpTexts.blockTypesFuelEmpty.show();
+        } else if (this._helpCounters.blockTypes === 1290) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Oxygen'], true);
+        } else if (this._helpCounters.blockTypes < 1890) { // Good
+            this._helpTexts.blockTypesOxygenFull.show();
+        } else if (this._helpCounters.blockTypes === 1890) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Oxygen2'], true);
+        } else if (this._helpCounters.blockTypes < 2230) { // Good
+            this._helpTexts.blockTypesOxygenDanger.show();
+        } else if (this._helpCounters.blockTypes === 2230) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Oxygen3'], true);
+        } else if (this._helpCounters.blockTypes < 2960) { // Good
+            this._helpTexts.blockTypesOxygenEmpty.show();
+        } else if (this._helpCounters.blockTypes === 2960) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Ore'], true);
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[0][0].visible = true;
+        } else if (this._helpCounters.blockTypes === 3440) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Common'], true);
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[0][0].visible = false;
+            this._helpTerrainMeshes.blockTypes[1].forEach(block => {
+                block.visible = true;
+            });
+        } else if (this._helpCounters.blockTypes === 3960) { // Good
+            this._helpTexts.blockTypesDialogue.update(dialogues['Water'], true);
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[1].forEach(block => {
+                block.visible = false;
+            });
+            this._helpTerrainMeshes.blockTypes[2].forEach(block => {
+                block.visible = true;
+            });
+        } else if (this._helpCounters.blockTypes === 4580) {
+            this._helpTexts.blockTypesDialogue.update(dialogues['Plant'], true);
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[2].forEach(block => {
+                block.visible = false;
+            });
+            this._helpTerrainMeshes.blockTypes[3].forEach(block => {
+                block.visible = true;
+            });
+        } else if (this._helpCounters.blockTypes === 5150) {
+            this._helpTexts.blockTypesDialogue.update(dialogues['Danger'], true);
+            this._helpTexts.blockTypesExample.show();
+            this._helpTerrainMeshes.blockTypes[3].forEach(block => {
+                block.visible = false;
+            });
+            this._helpTerrainMeshes.blockTypes[4][0].visible = true;
+        } else if (this._helpCounters.blockTypes === 5570) {
+            this._helpTexts.blockTypesDialogue.update(dialogues['Wind'], true);
+            this._helpTerrainMeshes.blockTypes[4][0].visible = false;
+        }
+
+        this._helpTexts.blockTypesDialogue.cycle();
+
+        this._helpCounters.blockTypes++;
     }
 
     /**
@@ -2596,6 +2954,7 @@ export class HelpCtrl {
         this._endCycleAstronautControls();
         this._endCycleMiningControls();
         this._endCycleLoadUnload();
+        this._endCycleBlockTypes();
         this._endCycleLandingSurfaces();
     }
 
@@ -2727,8 +3086,29 @@ export class HelpCtrl {
         this._helpCounters.loadUnload = 0;
 
         // Block Types
+        this._helpCounters.blockTypes = 0;
         this._helpTexts.blockTypesTitle.hide();
         this._helpProfile.hide();
+        this._helpTexts.blockTypesDialogue.hide();
+        this._helpTexts.blockTypesDialogue.update('', true);
+        this._helpTexts.blockTypesFuelFull.hide();
+        this._helpTexts.blockTypesFuelDanger.hide();
+        this._helpTexts.blockTypesFuelEmpty.hide();
+        this._helpTexts.blockTypesOxygenFull.hide();
+        this._helpTexts.blockTypesOxygenDanger.hide();
+        this._helpTexts.blockTypesOxygenEmpty.hide();
+        this._helpTexts.blockTypesExample.hide();
+        this._helpTerrainMeshes.blockTypes[0][0].visible = false;
+        this._helpTerrainMeshes.blockTypes[1].forEach(block => {
+            block.visible = false;
+        });
+        this._helpTerrainMeshes.blockTypes[2].forEach(block => {
+            block.visible = false;
+        });
+        this._helpTerrainMeshes.blockTypes[3].forEach(block => {
+            block.visible = false;
+        });
+        this._helpTerrainMeshes.blockTypes[4][0].visible = false;
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.hide();
@@ -2884,6 +3264,9 @@ export class HelpCtrl {
         // Block Types
         this._helpTexts.blockTypesTitle.show();
         this._helpProfile.show();
+        this._helpTexts.blockTypesDialogue.update(dialogues['Fuel'], true);
+        this._helpTexts.blockTypesDialogue.show();
+        this._helpTexts.blockTypesFuelFull.show();
 
         // Landing Surfaces
         this._helpTexts.landingSurfacesTitle.show();
