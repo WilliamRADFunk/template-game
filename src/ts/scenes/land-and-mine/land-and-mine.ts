@@ -140,6 +140,11 @@ export class LandAndMine {
     private _controlPanel: ControlPanel;
 
     /**
+     * Counter to control operations per cycle.
+     */
+    private _counter: number = 0;
+
+    /**
      * The current amount of fuel remaining.
      */
     private _currentFuelLevel: number = 100;
@@ -163,6 +168,11 @@ export class LandAndMine {
      * MeshGrid locations of demo blocks to be hidden and revealed when entering and exiting unload mode.
      */
     private _demoBlockCoords: [number, number, number][];
+
+    /**
+     * All the meshes for demo at top of screen that con't be interacted with, rolled into one Object3D for performace.
+     */
+    private _demoMeshes: Object3D = new Object3D();
 
     /**
      * Reference to current explosion if there is one.
@@ -273,6 +283,11 @@ export class LandAndMine {
      * Text and button objects that were visible before player entered help or settings mode.
      */
     private _stateStoredObjects: (ButtonBase | TextBase)[] = [];
+
+    /**
+     * All the terrain and sky meshes that con't be interacted with, rolled into one Object3D for performace.
+     */
+    private _staticMeshes: Object3D = new Object3D();
 
     /**
      * Reference to the game's Text Controller.
@@ -549,15 +564,23 @@ export class LandAndMine {
                 }
 
                 const block = new Mesh( geo, material );
-                block.name = `${Math.random()} - ground - `;
-                block.position.set(-6 + (col/10), 15, 6 - row/10);
+                block.position.set(-6 + (col/10), 16, 6 - row/10);
                 block.rotation.set(1.5708, 0, 0);
-                this._scene.add(block);
                 this._meshGrid[row][col] = block;
             }
         }
 
         this._freezeWater(iceMat);
+
+        for (let row = 0; row < this._meshGrid.length; row++) {
+            for (let col = 0; col < this._meshGrid[row].length; col++) {
+                if (this._meshGrid[row][col]) {
+                    this._staticMeshes.add(this._meshGrid[row][col]);
+                }
+            }
+        }
+
+        this._scene.add(this._staticMeshes);
 
         this._demoBlockCoords = [
             [ 118, 58, 65 ],
@@ -570,60 +593,46 @@ export class LandAndMine {
         for (let x = 58; x < 65; x++) {
             const index = x - 58;
             const block = new Mesh( geo, commonRockMats[index] );
-            block.name = `${Math.random()} - demo - common rocks - ${index} - `;
             block.position.set(-6 + (x/10) + (0.05 * index), 15, 6 - 118/10 - 0.05);
             block.rotation.set(1.5708, 0, 0);
-            this._scene.add(block);
-            this._meshGrid[118][x] = block;
+            this._demoMeshes.add(block);
         }
 
         // Creates the 1 danger/impenetrable block for demo display in top center of screen.
         const dangerBlock = new Mesh( geo, dangerMat );
-        dangerBlock.name = `${Math.random()} - demo - danger block - `;
         dangerBlock.position.set(-6 + (58/10), 15, 6 - 116/10);
         dangerBlock.rotation.set(1.5708, 0, 0);
-        this._scene.add(dangerBlock);
-        this._meshGrid[116][58] = dangerBlock;
+        this._demoMeshes.add(dangerBlock);
 
         // Creates the 1 water and 1 ice block for demo display in top center of screen.
         const waterBlock = new Mesh( geo, waterMat );
-        waterBlock.name = `${Math.random()} - demo - water block - `;
         waterBlock.position.set(-6 + (58/10), 15, 6 - 114/10 + 0.05);
         waterBlock.rotation.set(1.5708, 0, 0);
-        this._scene.add(waterBlock);
-        this._meshGrid[114][58] = waterBlock;
+        this._demoMeshes.add(waterBlock);
         const innerWaterGeo = new PlaneGeometry( 0.05, 0.05, 10, 10 );
         const iceBlock = new Mesh( geo, iceMat );
-        iceBlock.name = `${Math.random()} - demo - ice block outer - `;
         iceBlock.position.set(-6 + (59/10) + 0.05, 15.5, 6 - 114/10 + 0.05);
         iceBlock.rotation.set(1.5708, 0, 0);
-        this._scene.add(iceBlock);
-        this._meshGrid[114][59] = iceBlock;
+        this._demoMeshes.add(iceBlock);
         const frozenWater = new Mesh( innerWaterGeo, waterMat );
-        frozenWater.name = `${Math.random()} - demo - ice block inner - `;
         frozenWater.position.set(-6 + (59/10) + 0.05, 15, 6 - 114/10 + 0.05);
         frozenWater.rotation.set(1.5708, 0, 0);
-        this._scene.add(frozenWater);
-        this._meshGrid[114][60] = frozenWater;
+        this._demoMeshes.add(frozenWater);
 
         // Creates the 5 shades of plant/food blocks for demo display in top center of screen.
         for (let y = 61; y < 66; y++) {
             const index = y - 61;
             const block = new Mesh( geo, lifeMats[index] );
-            block.name = `${Math.random()} - demo - food - ${index} - `;
             block.position.set(-6 + (y/10) + (0.05 * index), 15, 6 - 114/10 + 0.05);
             block.rotation.set(1.5708, 0, 0);
-            this._scene.add(block);
-            this._meshGrid[114][y] = block;
+            this._demoMeshes.add(block);
         }
 
         // Creates the 1 collectable ore block for demo display in top center of screen.
         const oreBlock = new Mesh( geo, oreTypeMat );
-        oreBlock.name = `${Math.random()} - demo - ore block - `;
         oreBlock.position.set(-6 + (58/10), 15, 6 - 111/10 - 0.025);
         oreBlock.rotation.set(1.5708, 0, 0);
-        this._scene.add(oreBlock);
-        this._meshGrid[111][58] = oreBlock;
+        this._demoMeshes.add(oreBlock);
     }
 
     /**
@@ -705,11 +714,25 @@ export class LandAndMine {
             [row - 4, left],
             [row - 4, right]
         ];
+        const geo = new PlaneGeometry( 0.105, 0.105, 10, 10 );
+        const blackMat = new MeshBasicMaterial({
+            color: 0x000000,
+            opacity: 1,
+            transparent: true,
+            side: DoubleSide
+        });
         destroyedTiles.forEach(tile => {
-            if (this._grid[tile[0]][tile[1]] > 2) {
-                this._meshGrid[tile[0]][tile[1]] && this._scene.remove(this._meshGrid[tile[0]][tile[1]]);
-                this._grid[tile[0]][tile[1]] = 0;
-                this._meshGrid[tile[0]][tile[1]] = null;
+            const row = tile[0];
+            const col = tile[1];
+            if (this._grid[row][col] > 2) {
+                this._meshGrid[row][col] && this._scene.remove(this._meshGrid[row][col]);
+                this._grid[row][col] = 0;
+                this._meshGrid[row][col] = null;
+                const block = new Mesh( geo, blackMat );
+                block.position.set(-6 + (col/10), 14, 6 - row/10);
+                block.rotation.set(1.5708, 0, 0);
+                this._meshGrid[row][col] = block;
+                this._staticMeshes.add(block);
             }
         });
     }
@@ -843,14 +866,12 @@ export class LandAndMine {
                     const iceBlock = new Object3D();
                     // Ice border
                     let block = new Mesh( outerGeo, iceMat );
-                    block.name = `${Math.random()} - ice exterior - `;
-                    block.position.set(-6 + (col/10), 15.5, 6 - row/10);
+                    block.position.set(-6 + (col/10), 16.5, 6 - row/10);
                     block.rotation.set(1.5708, 0, 0);
                     iceBlock.add(block);
                     // Watery center
                     block = new Mesh( innerGeo, waterMat );
-                    block.name = `${Math.random()} - water interior - `;
-                    block.position.set(-6 + (col/10), 15, 6 - row/10);
+                    block.position.set(-6 + (col/10), 16, 6 - row/10);
                     block.rotation.set(1.5708, 0, 0);
                     iceBlock.add(block);
 
@@ -869,12 +890,7 @@ export class LandAndMine {
      * Hides demo blocks at top of screen.
      */
     private _hideForEnterAstronautMode(): void {
-        this._demoBlockCoords.forEach(coord => {
-            for (let col = coord[1]; col < coord[2]; col++) {
-                this._meshGrid[coord[0]][col].visible = false;
-            }
-        });
-
+        this._demoMeshes.visible = false;
         this._txtCtrl.zoomIn();
     }
 
@@ -965,6 +981,9 @@ export class LandAndMine {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         const exitHelp = (prevState: LandAndMineState) => {
+            this._demoMeshes.visible = true;
+            this._staticMeshes.visible = true;
+            this._lander.mesh.visible = true;
             this._enableAllButtons();
             this._helpCtrl.hide();
             this._stateStoredObjects.forEach(obj => obj && obj.show());
@@ -984,6 +1003,9 @@ export class LandAndMine {
         };
 
         const exitSettings = (prevState: LandAndMineState) => {
+            this._demoMeshes.visible = true;
+            this._staticMeshes.visible = true;
+            this._lander.mesh.visible = true;
             this._enableAllButtons();
             // TODO: Hide settings ctrl
             this._stateStoredObjects.forEach(obj => obj && obj.show());
@@ -1004,6 +1026,9 @@ export class LandAndMine {
         };
 
         const help = () => {
+            this._demoMeshes.visible = false;
+            this._staticMeshes.visible = false;
+            this._lander.mesh.visible = false;
             this._disableAllButtons();
             const prevState = this._state;
             this._state = LandAndMineState.tutorial;
@@ -1034,6 +1059,9 @@ export class LandAndMine {
         };
 
         const settings = () => {
+            this._demoMeshes.visible = false;
+            this._staticMeshes.visible = false;
+            this._lander.mesh.visible = false;
             this._disableAllButtons();
             const prevState = this._state;
             this._state = LandAndMineState.settings;
@@ -1175,12 +1203,7 @@ export class LandAndMine {
      * Shows demo blocks at top of screen.
      */
     private _showForExitAstronautMode(): void {
-        this._demoBlockCoords.forEach(coord => {
-            for (let col = coord[1]; col < coord[2]; col++) {
-                this._meshGrid[coord[0]][col].visible = true;
-            }
-        });
-
+        this._demoMeshes.visible = true;
         this._txtCtrl.show();
     }
 

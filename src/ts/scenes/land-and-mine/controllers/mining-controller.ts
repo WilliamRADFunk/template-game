@@ -312,7 +312,7 @@ export class MiningCtrl {
                 const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
                 const minedBlockPos = minedBlock.position;
 
-                const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
+                const geo = new PlaneGeometry( 0.105, 0.105, 10, 10 );
                 const minedMat = new MeshPhongMaterial({
                     color: '#FFFFFF',
                     map: this._textures.minedSquare1,
@@ -320,7 +320,7 @@ export class MiningCtrl {
                     transparent: true
                 });
                 const minedMesh = new Mesh(geo, minedMat);
-                minedMesh.position.set(currDrillPos.x, minedBlockPos.y, currDrillPos.z + 0.051);
+                minedMesh.position.set(currDrillPos.x, minedBlockPos.y - 1, currDrillPos.z + 0.051);
                 minedMesh.rotation.set(-1.5708, 0, 0);
                 minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
 

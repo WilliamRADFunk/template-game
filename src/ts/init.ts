@@ -30,6 +30,9 @@ import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
 import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
 import { LanderSpecifications } from './models/lander-specifications';
 
+import * as stats from 'stats.js';
+const statsPanel = new stats();
+
 const TEXTURES: { [key: string]: [string, Texture] } = {
     arrow: ['assets/images/arrow.png', null],
     asteroid: ['assets/images/asteroid.png', null],
@@ -948,7 +951,9 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             scenes.landAndMine.scene = null;
             return;
         } else {
+            statsPanel.begin();
             const layout: { [key: number]: number } = landAndMine.endCycle();
+            statsPanel.end();
             if (layout) {
                 let output = `Loot received:
                     Lander = ${layout[-3]},
