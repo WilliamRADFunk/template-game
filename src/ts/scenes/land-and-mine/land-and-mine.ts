@@ -722,16 +722,16 @@ export class LandAndMine {
             side: DoubleSide
         });
         destroyedTiles.forEach(tile => {
-            const row = tile[0];
-            const col = tile[1];
-            if (this._grid[row][col] > 2) {
-                this._meshGrid[row][col] && this._scene.remove(this._meshGrid[row][col]);
-                this._grid[row][col] = 0;
-                this._meshGrid[row][col] = null;
+            const _row = tile[0];
+            const _col = tile[1];
+            if (this._grid[_row][_col] > 2) {
+                this._meshGrid[_row][_col] && this._scene.remove(this._meshGrid[_row][_col]);
+                this._grid[_row][_col] = 0;
+                this._meshGrid[_row][_col] = null;
                 const block = new Mesh( geo, blackMat );
-                block.position.set(-6 + (col/10), 14, 6 - row/10);
+                block.position.set(-6 + (_col/10), 14, 6 - _row/10);
                 block.rotation.set(1.5708, 0, 0);
-                this._meshGrid[row][col] = block;
+                this._meshGrid[_row][_col] = block;
                 this._staticMeshes.add(block);
             }
         });
