@@ -104,7 +104,8 @@ export enum LandAndMineState {
     'suffocating' = 8,
     'newGame' = 9,
     'tutorial' = 10,
-    'settings' = 11
+    'settings' = 11,
+    'autopilot' = 12
 }
 
 /**
@@ -1346,6 +1347,52 @@ export class LandAndMine {
         }
 
         // After successfully reaching escape velocity, no more fuel or oxygen should be spent.
+        if (this._state === LandAndMineState.autopilot) {
+            if (this._currentFuelLevel > 0) {
+                this._isLeftThrusting = false;
+                this._isRightThrusting = false;
+                this._isVerticalThrusting = true;
+                this._currentLanderHorizontalSpeed = 0;
+
+                this._currentFuelLevel -= this._landerSpecifications.fuelBurn;
+
+                // Update Readout for remaining fuel
+                this._txtCtrl.update('fuelLevel', `Fuel Level: ${Math.abs(this._currentFuelLevel).toFixed(0)} %`);
+                this._txtCtrl.changeColorBelowThreshold(20, Math.abs(this._currentFuelLevel), 'fuelLevel');
+
+                this._lander.mesh.position.set(currPos.x + this._currentLanderHorizontalSpeed, currPos.y, currPos.z + this._currentLanderVerticalSpeed);
+                this._currentLanderVerticalSpeed += this._planetSpecifications.gravity - VERTICAL_THRUST;
+                this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], true);
+                this._leftThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+                this._rightThruster.endCycle([currPos.x, currPos.y + SIDE_THRUSTER_Y_OFFSET, currPos.z + SIDE_THRUSTER_Z_OFFSET], false);
+
+                this._txtCtrl.update('verticalSpeed', `Descent Speed: ${this._currentLanderVerticalSpeed.toFixed(4)}`);
+                this._txtCtrl.changeColorAboveThreshold(this._landerSpecifications.verticalCrashMargin, this._currentLanderVerticalSpeed, 'verticalSpeed');
+            } else if (this._currentLanderVerticalSpeed >= 0) {
+                this._isVerticalThrusting = false;
+                this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+                this._crashedEffects(currPos, ((100 * currPos.x) % 10) < 5 ? Math.floor((10 * currPos.x) + 60) : Math.ceil((10 * currPos.x) + 60), landerRow);
+                return;
+            } else {
+                this._currentLanderVerticalSpeed += this._planetSpecifications.gravity
+                this._isVerticalThrusting = false;
+                this._mainThruster.endCycle([currPos.x, currPos.y + MAIN_THRUSTER_Y_OFFSET, currPos.z + MAIN_THRUSTER_Z_OFFSET], false);
+                return;
+            }
+
+            // If ship reaches a certain altitude they've escaped.
+            if (landerRow >= 110) {
+                this._state = LandAndMineState.escaped;
+                return;
+            }
+
+            if (landerRow > 120) {
+                return this._lootCtrl.getLoot();
+            }
+            return;
+        }
+
+        // After successfully reaching escape velocity, no more fuel or oxygen should be spent.
         if (this._state === LandAndMineState.escaped) {
             this._isLeftThrusting = false;
             this._isRightThrusting = false;
@@ -1383,7 +1430,7 @@ export class LandAndMine {
                 this._buttons.loadButton.hide();
                 this._buttons.unloadButton.hide();
                 this._buttons.packUpButton.hide();
-                this._state = LandAndMineState.escaped;
+                this._state = LandAndMineState.autopilot;
                 setTimeout(() => {
                     this._camera.position.set(0, this._camera.position.y, 0);
                     this._camera.zoom = 1;
@@ -1410,7 +1457,7 @@ export class LandAndMine {
             if (this._state !== LandAndMineState.mining
                 && this._state !== LandAndMineState.walkingAwayFromLander
                 && this._state !== LandAndMineState.walkingByLander) {
-                this._state = LandAndMineState.escaped;
+                this._state = LandAndMineState.autopilot;
             } else {
                 this._state = LandAndMineState.suffocating;
                 SoundinatorSingleton.stopDrilling();
