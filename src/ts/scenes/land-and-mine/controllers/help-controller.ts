@@ -64,6 +64,7 @@ import { ProfileBase } from "../../../controls/profiles/profile-base";
 import { RightBottomMiddleProfile } from "../../../controls/profiles/right-bottom-middle-profile";
 import { RightBottomMiddleDialogueText } from "../../../controls/text/dialogue/right-bottom-middle-dialogue-text";
 import { dialogues } from "../configs/dialogues";
+import { FreestyleSquareButton } from "../../../controls/buttons/freestyle-square-button";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -195,6 +196,22 @@ const DRILL_BIT_START_POSITION: [number, number, number] = [
     HELP_LANDER_1_POSITION[2] + 3];
 
 /**
+ * Sets the starting position of the bottom right down arrow.
+ */
+const CONTROL_PANEL_ARROW_START_POSITION: [number, number, number] = [
+    HELP_LANDER_1_POSITION[0] + 4.6,
+    HELP_LANDER_1_POSITION[1] - 3,
+    HELP_LANDER_1_POSITION[2] + 7.75];
+
+    /**
+     * Sets the starting position of the bottom right mouse.
+     */
+    const CONTROL_PANEL_MOUSE_START_POSITION: [number, number, number] = [
+        CONTROL_PANEL_ARROW_START_POSITION[0],
+        CONTROL_PANEL_ARROW_START_POSITION[1],
+        CONTROL_PANEL_ARROW_START_POSITION[2] + 1.25];
+
+/**
  * @class
  * The help controller class - coordinates everything on the help screen.
  */
@@ -222,6 +239,8 @@ export class HelpCtrl {
         astroWalkClear: 360,
         blockTypes: 0,
         blockTypesClear: 7310,
+        controlPanel: 0,
+        controlPanelClear: 360,
         landingLeaving: 0,
         landingLeavingClear: 1260,
         landingLeavingFlashOn: 1,
@@ -487,6 +506,11 @@ export class HelpCtrl {
             { height, left, top: null, width });
 
         this._buildHelpScreenControlPanel(
+            arrowGeo,
+            mouseGeo,
+            arrowMat,
+            mouseMat,
+            mouseLeftMat,
             { height, left, top: null, width });
     }
 
@@ -860,9 +884,116 @@ export class HelpCtrl {
 
     /**
      * Creates everything needed for the Control Panel panel.
+     * @param arrowGeo the geometry used to make all the arrow meshes in this panel
+     * @param mouseGeo the geometry used to make all the mouse meshes in this panel
+     * @param arrowMat the material used to make all the arrow meshes in this panel
+     * @param mouseMat the material used to make the unpressed mouse mesh in this panel
+     * @param mouseLeftMat the material used to make the left mouse mesh in this panel
      * @param position initial positioning parameters from window size
      */
-    private _buildHelpScreenControlPanel(position: HTMLElementPosition): void {
+    private _buildHelpScreenControlPanel(
+        arrowGeo: PlaneGeometry,
+        mouseGeo: PlaneGeometry,
+        arrowMat: MeshBasicMaterial,
+        mouseMat: MeshBasicMaterial,
+        mouseLeftMat: MeshBasicMaterial,
+        position: HTMLElementPosition): void {
+        // Down Arrow graphics
+        const arrowDown = new Mesh(arrowGeo, arrowMat);
+        arrowDown.position.set(CONTROL_PANEL_ARROW_START_POSITION[0], CONTROL_PANEL_ARROW_START_POSITION[1], CONTROL_PANEL_ARROW_START_POSITION[2]);
+        arrowDown.rotation.set(-1.5708, 0, -1.5708);
+        this._scene.add(arrowDown);
+        arrowDown.visible = false;
+        this._helpMeshes.arrowDownControlPanel = arrowDown;
+
+        // Mouse Left Button graphics
+        const mouseLeft = new Mesh(mouseGeo, mouseLeftMat);
+        mouseLeft.position.set(CONTROL_PANEL_MOUSE_START_POSITION[0], CONTROL_PANEL_MOUSE_START_POSITION[1], CONTROL_PANEL_MOUSE_START_POSITION[2]);
+        mouseLeft.rotation.set(-1.7708, 0, 0);
+        this._scene.add(mouseLeft);
+        mouseLeft.visible = false;
+        this._helpMeshes.mouseLeftControlPanel = mouseLeft;
+
+        // Mouse Unpressed graphics
+        const mouse = new Mesh(mouseGeo, mouseMat);
+        mouse.position.set(CONTROL_PANEL_MOUSE_START_POSITION[0], CONTROL_PANEL_MOUSE_START_POSITION[1], CONTROL_PANEL_MOUSE_START_POSITION[2]);
+        mouse.rotation.set(-1.5708, 0, 0);
+        this._scene.add(mouse);
+        mouse.visible = false;
+        this._helpMeshes.mouseControlPanel = mouse;
+
+        this._helpButtons.exitHelpButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.784 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            false,
+            'fa-sign-out',
+            0.5);
+
+        this._helpButtons.exitSettingsButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.75 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            false,
+            'fa-sign-out',
+            0.5);
+
+        this._helpButtons.helpButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.784 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            'fa-question',
+            0.5);
+
+        this._helpButtons.settingsButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.75 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            'fa-gear',
+            0.5);
+
+        this._helpButtons.soundMuffledButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            () => {},
+            false,
+            'fa-volume-down',
+            0.5);
+
+        this._helpButtons.soundOffButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            false,
+            'fa-volume-off',
+            0.5);
+
+        this._helpButtons.soundOnButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            'fa-volume-up',
+            0.5);
+
+        this._helpButtons.pauseButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.682 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            true,
+            'fa-pause',
+            0.5);
+
+        this._helpButtons.playButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.682 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS,
+            noOp,
+            false,
+            'fa-play',
+            0.5);
+
         // Control Panel Text graphics
         this._helpTexts.controlPanelTitle = new RightBottomTitleText(
             'Control Panel',
@@ -2082,6 +2213,22 @@ export class HelpCtrl {
     }
 
     /**
+     * Calls the next frame in the animation cycle specific to lower-right panel - Control Panel.
+     */
+    private _endCycleControlPanel(): void {
+        if (this._helpCounters.controlPanel > this._helpCounters.controlPanelClear) {
+            this._helpCounters.controlPanel = 0;
+        }
+
+        this._helpButtons.helpButton.show();
+        this._helpButtons.settingsButton.show();
+        this._helpButtons.soundOnButton.show();
+        this._helpButtons.pauseButton.show();
+
+        this._helpCounters.controlPanel++;
+    }
+
+    /**
      * Calls the next frame in the animation cycle specific to upper-left panel - Lander Controls.
      */
     private _endCycleLanderControls(): void {
@@ -3207,6 +3354,7 @@ export class HelpCtrl {
         this._endCycleLoadUnload();
         this._endCycleBlockTypes();
         this._endCycleLandingLeaving();
+        this._endCycleControlPanel();
     }
 
     /**
@@ -3424,6 +3572,9 @@ export class HelpCtrl {
 
         // Control Panel
         this._helpTexts.controlPanelTitle.hide();
+        this._helpMeshes.arrowDownControlPanel.visible = false;
+        this._helpMeshes.mouseControlPanel.visible = false;
+        this._helpMeshes.mouseLeftControlPanel.visible = false;
     }
 
     /**
@@ -3590,5 +3741,12 @@ export class HelpCtrl {
 
         // Control Panel
         this._helpTexts.controlPanelTitle.show();
+        this._helpMeshes.arrowDownControlPanel.visible = true;
+        this._helpMeshes.mouseControlPanel.visible = true;
+        this._helpMeshes.mouseLeftControlPanel.visible = false;
+        this._helpButtons.helpButton.show();
+        this._helpButtons.settingsButton.show();
+        this._helpButtons.soundOnButton.show();
+        this._helpButtons.pauseButton.show();
     }
 }
