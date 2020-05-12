@@ -71,7 +71,7 @@ export class MiningCtrl {
     /**
      * The mesh array with meshes of all tiles on game map.
      */
-    private _meshGrid: Mesh[][] = [];
+    private _positionGrid: Vector3[][] = [];
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -89,7 +89,7 @@ export class MiningCtrl {
      * @param camera            camera in the scene for zomming in and out from mining team
      * @param textures          textures needed to make ThreeJS objects
      * @param grid              the grid array with values of all tiles on game map
-     * @param meshGrid          the mesh array with meshes of all tiles on game map
+     * @param positionGrid      the Vector3 array with positions of all tiles on game map
      * @param lootCtrl          reference to the Loot Controller to add or remove loot from tally
      * @param maxDrillLength    total number of squares the drill can reach when mining
      */
@@ -98,13 +98,13 @@ export class MiningCtrl {
         camera: OrthographicCamera,
         textures: { [key: string]: Texture },
         grid: number[][],
-        meshGrid: Mesh[][],
+        positionGrid: Vector3[][],
         lootCtrl: LootCtrl,
         maxDrillLength: number) {
         this._scene = scene;
         this._camera = camera;
         this._grid = grid;
-        this._meshGrid = meshGrid;
+        this._positionGrid = positionGrid;
         this._textures = textures;
         this._lootCtrl = lootCtrl;
         this._maxDrillLength = maxDrillLength;
@@ -181,7 +181,7 @@ export class MiningCtrl {
                     break;
                 }
             }
-            let newAstroPos = this._meshGrid[astroLeftRow][astroLeftCol].position;
+            let newAstroPos = this._positionGrid[astroLeftRow][astroLeftCol];
             newPositions.left = [newAstroPos.x, astroLeftPos.y, newAstroPos.z];
 
             for (let z = 109; z > 0; z--) {
@@ -190,7 +190,7 @@ export class MiningCtrl {
                     break;
                 }
             }
-            newAstroPos = this._meshGrid[miningEquipmentRow][miningEquipmentCol].position;
+            newAstroPos = this._positionGrid[miningEquipmentRow][miningEquipmentCol];
             newPositions.middle = [newAstroPos.x, miningEquipmentPos.y, newAstroPos.z];
 
             for (let z = 109; z > 0; z--) {
@@ -199,7 +199,7 @@ export class MiningCtrl {
                     break;
                 }
             }
-            newAstroPos = this._meshGrid[astroRightRow][astroRightCol].position;
+            newAstroPos = this._positionGrid[astroRightRow][astroRightCol];
             newPositions.right = [newAstroPos.x, astroRightPos.y, newAstroPos.z];
         } else if (right) {
             if (astroLeftCol > 120) {
@@ -221,7 +221,7 @@ export class MiningCtrl {
                     break;
                 }
             }
-            let newAstroPos = this._meshGrid[astroLeftRow][astroLeftCol].position;
+            let newAstroPos = this._positionGrid[astroLeftRow][astroLeftCol];
             newPositions.left = [newAstroPos.x, astroLeftPos.y, newAstroPos.z];
 
             for (let z = 109; z > 0; z--) {
@@ -230,7 +230,7 @@ export class MiningCtrl {
                     break;
                 }
             }
-            newAstroPos = this._meshGrid[miningEquipmentRow][miningEquipmentCol].position;
+            newAstroPos = this._positionGrid[miningEquipmentRow][miningEquipmentCol];
             newPositions.middle = [newAstroPos.x, miningEquipmentPos.y, newAstroPos.z];
 
             for (let z = 109; z > 0; z--) {
@@ -239,7 +239,7 @@ export class MiningCtrl {
                     break;
                 }
             }
-            newAstroPos = this._meshGrid[astroRightRow][astroRightCol].position;
+            newAstroPos = this._positionGrid[astroRightRow][astroRightCol];
             newPositions.right = [newAstroPos.x, astroRightPos.y, newAstroPos.z];
         }
         return newPositions;
@@ -257,9 +257,9 @@ export class MiningCtrl {
         const landerBottom = landerPos.z + 0.11;
         const landerRow = Math.floor((-10 * landerBottom) + 60);
         const landerCol = ((100 * landerPos.x) % 10) < 5 ? Math.floor((10 * landerPos.x) + 60) : Math.ceil((10 * landerPos.x) + 60);
-        const astroLeftPos = this._meshGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120].position;
-        const miningEquipmentPos = this._meshGrid[landerRow][landerCol].position;
-        const astroRightPos = this._meshGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0].position;
+        const astroLeftPos = this._positionGrid[landerRow][landerCol !== 0 ? landerCol - 1 : 120];
+        const miningEquipmentPos = this._positionGrid[landerRow][landerCol];
+        const astroRightPos = this._positionGrid[landerRow][landerCol !== 120 ? landerCol + 1 : 0];
 
         astroLeft.mesh.position.set(astroLeftPos.x, astroLeft.mesh.position.y, astroLeftPos.z);
         astroLeft.mesh.visible = true;
@@ -309,8 +309,7 @@ export class MiningCtrl {
                     SoundinatorSingleton.playBlap();
                 }
                 this._grid[centerDrillRowAfter][drillCol] = 4;
-                const minedBlock = this._meshGrid[centerDrillRowAfter][drillCol];
-                const minedBlockPos = minedBlock.position;
+                const minedBlockPos = this._positionGrid[centerDrillRowAfter][drillCol];
 
                 const geo = new PlaneGeometry( 0.105, 0.105, 10, 10 );
                 const minedMat = new MeshPhongMaterial({
@@ -320,11 +319,8 @@ export class MiningCtrl {
                     transparent: true
                 });
                 const minedMesh = new Mesh(geo, minedMat);
-                minedMesh.position.set(currDrillPos.x, minedBlockPos.y - 1, currDrillPos.z + 0.051);
+                minedMesh.position.set(currDrillPos.x, minedBlockPos.y - 1.5, currDrillPos.z + 0.051);
                 minedMesh.rotation.set(-1.5708, 0, 0);
-                minedMesh.name = `Mined-Square-${Math.floor(Math.random() * 100)}`;
-
-                this._scene.remove(minedBlock);
                 this._scene.add(minedMesh);
             }
         } else if (centerRowBefore !== centerDrillRowAfter) {
@@ -340,7 +336,6 @@ export class MiningCtrl {
                 const drillMesh = new Mesh(drillGeo, drillMat);
                 drillMesh.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
                 drillMesh.rotation.set(-1.5708, 0, 0);
-                drillMesh.name = `Mining-Drill-${this._drillBits.length}`;
                 this._drillBits.push(drillMesh);
                 this._scene.add(drillMesh);
             }
@@ -448,7 +443,6 @@ export class MiningCtrl {
         const drillMesh = new Mesh(drillGeo, drillMat);
         drillMesh.position.set(miningEquipPos.x, miningEquipPos.y - 3, miningEquipPos.z);
         drillMesh.rotation.set(-1.5708, 0, 0);
-        drillMesh.name = 'Mining-Drill-1';
         this._drillBits.push(drillMesh);
         this._scene.add(drillMesh);
 

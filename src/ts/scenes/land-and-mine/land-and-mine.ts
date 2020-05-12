@@ -247,7 +247,7 @@ export class LandAndMine {
     /**
      * The mesh array with meshes of all tiles on game map.
      */
-    private _meshGrid: Mesh[][] = [];
+    private _positionGrid: Vector3[][] = [];
 
     /**
      * Quanity to assign as loot when a lootable block is mined.
@@ -383,7 +383,7 @@ export class LandAndMine {
             this._camera,
             textures,
             this._grid,
-            this._meshGrid,
+            this._positionGrid,
             this._lootCtrl,
             landerSpecifications.drillLength);
     }
@@ -538,7 +538,7 @@ export class LandAndMine {
         const geo = new PlaneGeometry( 0.1, 0.1, 10, 10 );
 
         for (let row = 0; row < this._grid.length; row++) {
-            this._meshGrid[row] = [];
+            this._positionGrid[row] = [];
             for (let col = 0; col < this._grid[row].length; col++) {
                 let material;
                 if (!this._grid[row][col]) {
@@ -564,21 +564,14 @@ export class LandAndMine {
                 }
 
                 const block = new Mesh( geo, material );
-                block.position.set(-6 + (col/10), 16, 6 - row/10);
+                block.position.set(-6 + (col/10), 17, 6 - row/10);
                 block.rotation.set(1.5708, 0, 0);
-                this._meshGrid[row][col] = block;
+                this._positionGrid[row][col] = block.position;
+                this._staticMeshes.add(block);
             }
         }
 
         this._freezeWater(iceMat);
-
-        for (let row = 0; row < this._meshGrid.length; row++) {
-            for (let col = 0; col < this._meshGrid[row].length; col++) {
-                if (this._meshGrid[row][col]) {
-                    this._staticMeshes.add(this._meshGrid[row][col]);
-                }
-            }
-        }
 
         this._scene.add(this._staticMeshes);
 
@@ -633,6 +626,8 @@ export class LandAndMine {
         oreBlock.position.set(-6 + (58/10), 15, 6 - 111/10 - 0.025);
         oreBlock.rotation.set(1.5708, 0, 0);
         this._demoMeshes.add(oreBlock);
+
+        this._scene.add(this._demoMeshes);
     }
 
     /**
@@ -714,7 +709,7 @@ export class LandAndMine {
             [row - 4, left],
             [row - 4, right]
         ];
-        const geo = new PlaneGeometry( 0.105, 0.105, 10, 10 );
+        const geo = new PlaneGeometry( 0.12, 0.12, 10, 10 );
         const blackMat = new MeshBasicMaterial({
             color: 0x000000,
             opacity: 1,
@@ -725,13 +720,10 @@ export class LandAndMine {
             const _row = tile[0];
             const _col = tile[1];
             if (this._grid[_row][_col] > 2) {
-                this._meshGrid[_row][_col] && this._scene.remove(this._meshGrid[_row][_col]);
                 this._grid[_row][_col] = 0;
-                this._meshGrid[_row][_col] = null;
                 const block = new Mesh( geo, blackMat );
-                block.position.set(-6 + (_col/10), 14, 6 - _row/10);
+                block.position.set(-6 + (_col/10), 15, 6 - _row/10);
                 block.rotation.set(1.5708, 0, 0);
-                this._meshGrid[_row][_col] = block;
                 this._staticMeshes.add(block);
             }
         });
@@ -859,10 +851,6 @@ export class LandAndMine {
         for (let col = 0; col < 121; col++) {
             for (let row = 109; row > 0; row--) {
                 if (this._grid[row][col] === 3) {
-                    // Remove water block
-                    this._meshGrid[row][col] && this._scene.remove(this._meshGrid[row][col]);
-                    this._meshGrid[row][col] = null;
-
                     const iceBlock = new Object3D();
                     // Ice border
                     let block = new Mesh( outerGeo, iceMat );
@@ -876,8 +864,7 @@ export class LandAndMine {
                     iceBlock.add(block);
 
                     // Place new ice block in mesh grid
-                    this._scene.add(iceBlock);
-                    this._meshGrid[row][col] = iceBlock as Mesh;
+                    this._staticMeshes.add(iceBlock);
                     break;
                 } else if (this._grid[row][col] > 3) {
                     break;
