@@ -240,7 +240,7 @@ export class HelpCtrl {
         blockTypes: 0,
         blockTypesClear: 7310,
         controlPanel: 0,
-        controlPanelClear: 360,
+        controlPanelClear: 1230,
         landingLeaving: 0,
         landingLeavingClear: 1260,
         landingLeavingFlashOn: 1,
@@ -930,9 +930,25 @@ export class HelpCtrl {
             'fa-sign-out',
             0.5);
 
+        this._helpButtons.exitHelpPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.784 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
+            'fa-sign-out',
+            0.5);
+
         this._helpButtons.exitSettingsButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.75 * position.width), top: ( 0.85 * position.height), width: position.width },
             BUTTON_COLORS,
+            noOp,
+            false,
+            'fa-sign-out',
+            0.5);
+
+        this._helpButtons.exitSettingsPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.75 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
             noOp,
             false,
             'fa-sign-out',
@@ -942,7 +958,15 @@ export class HelpCtrl {
             { height: position.height, left: position.left + (0.784 * position.width), top: ( 0.85 * position.height), width: position.width },
             BUTTON_COLORS,
             noOp,
-            true,
+            false,
+            'fa-question',
+            0.5);
+
+        this._helpButtons.helpPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.784 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
             'fa-question',
             0.5);
 
@@ -950,13 +974,29 @@ export class HelpCtrl {
             { height: position.height, left: position.left + (0.75 * position.width), top: ( 0.85 * position.height), width: position.width },
             BUTTON_COLORS,
             noOp,
-            true,
+            false,
+            'fa-gear',
+            0.5);
+
+        this._helpButtons.settingsPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.75 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
             'fa-gear',
             0.5);
 
         this._helpButtons.soundMuffledButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
             BUTTON_COLORS,
+            () => {},
+            false,
+            'fa-volume-down',
+            0.5);
+
+        this._helpButtons.soundMuffledPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
             () => {},
             false,
             'fa-volume-down',
@@ -970,11 +1010,27 @@ export class HelpCtrl {
             'fa-volume-off',
             0.5);
 
+        this._helpButtons.soundOffPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
+            'fa-volume-off',
+            0.5);
+
         this._helpButtons.soundOnButton = new FreestyleSquareButton(
             { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
             BUTTON_COLORS,
             noOp,
-            true,
+            false,
+            'fa-volume-up',
+            0.5);
+
+        this._helpButtons.soundOnPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.716 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
             'fa-volume-up',
             0.5);
 
@@ -982,7 +1038,15 @@ export class HelpCtrl {
             { height: position.height, left: position.left + (0.682 * position.width), top: ( 0.85 * position.height), width: position.width },
             BUTTON_COLORS,
             noOp,
-            true,
+            false,
+            'fa-pause',
+            0.5);
+
+        this._helpButtons.pausePressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.682 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
             'fa-pause',
             0.5);
 
@@ -993,6 +1057,145 @@ export class HelpCtrl {
             false,
             'fa-play',
             0.5);
+
+        this._helpButtons.playPressedButton = new FreestyleSquareButton(
+            { height: position.height, left: position.left + (0.682 * position.width), top: ( 0.85 * position.height), width: position.width },
+            BUTTON_COLORS_INVERSE,
+            noOp,
+            false,
+            'fa-play',
+            0.5);
+
+        // Control Panel Game Paused Text graphics
+        this._helpTexts.controlPanelGamePaused = new FreestyleText(
+            'Game paused',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.49 * position.width)),
+                top: (0.96 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.controlPanelGamePaused.hide();
+
+        // Control Panel Game In Play Text graphics
+        this._helpTexts.controlPanelGameInPlay = new FreestyleText(
+            'Game in play',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.49 * position.width)),
+                top: (0.96 * position.height),
+                width: position.width
+            },
+            COLORS.highlighted,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.controlPanelGameInPlay.hide();
+
+        // Control Panel Sound On Text graphics
+        this._helpTexts.controlPanelSoundOn = new FreestyleText(
+            'Sound On',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.3 * position.width)),
+                top: (0.96 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.controlPanelSoundOn.hide();
+
+        // Control Panel Sound Off Text graphics
+        this._helpTexts.controlPanelSoundOff = new FreestyleText(
+            'Sound Off',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.3 * position.width)),
+                top: (0.96 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.controlPanelSoundOff.hide();
+
+        // Control Panel Sound Muffled Text graphics
+        this._helpTexts.controlPanelSoundMuffled = new FreestyleText(
+            'Sound Low',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.3 * position.width)),
+                top: (0.96 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0);
+        this._helpTexts.controlPanelSoundMuffled.hide();
+
+        // Control Panel In-Game Mode Text graphics
+        this._helpTexts.controlPanelInGameMode = new FreestyleText(
+            'In-Game Mode',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.15 * position.width)),
+                top: (0.85 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0,
+            'right');
+        this._helpTexts.controlPanelInGameMode.hide();
+
+        // Control Panel Settings Mode Text graphics
+        this._helpTexts.controlPanelSettingsMode = new FreestyleText(
+            'Settings Mode',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.15 * position.width)),
+                top: (0.85 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0,
+            'right');
+        this._helpTexts.controlPanelSettingsMode.hide();
+
+        // Control Panel Help Mode Text graphics
+        this._helpTexts.controlPanelHelpMode = new FreestyleText(
+            'Help Mode',
+            {
+                height: position.height,
+                left: (position.left + position.width - (0.15 * position.width)),
+                top: (0.85 * position.height),
+                width: position.width
+            },
+            COLORS.neutral,
+            border,
+            TextType.STATIC,
+            0.015,
+            0,
+            'right');
+        this._helpTexts.controlPanelHelpMode.hide();
 
         // Control Panel Text graphics
         this._helpTexts.controlPanelTitle = new RightBottomTitleText(
@@ -2218,12 +2421,287 @@ export class HelpCtrl {
     private _endCycleControlPanel(): void {
         if (this._helpCounters.controlPanel > this._helpCounters.controlPanelClear) {
             this._helpCounters.controlPanel = 0;
+            this._helpMeshes.arrowDownControlPanel.position.set(CONTROL_PANEL_ARROW_START_POSITION[0], CONTROL_PANEL_ARROW_START_POSITION[1], CONTROL_PANEL_ARROW_START_POSITION[2]);
+            this._helpMeshes.mouseControlPanel.position.set(CONTROL_PANEL_MOUSE_START_POSITION[0], CONTROL_PANEL_MOUSE_START_POSITION[1], CONTROL_PANEL_MOUSE_START_POSITION[2]);
+            this._helpMeshes.mouseLeftControlPanel.position.set(CONTROL_PANEL_MOUSE_START_POSITION[0], CONTROL_PANEL_MOUSE_START_POSITION[1], CONTROL_PANEL_MOUSE_START_POSITION[2]);
+            this._helpMeshes.mouseControlPanel.visible = true;
+            this._helpMeshes.mouseLeftControlPanel.visible = false;
         }
 
-        this._helpButtons.helpButton.show();
-        this._helpButtons.settingsButton.show();
-        this._helpButtons.soundOnButton.show();
-        this._helpButtons.pauseButton.show();
+        this._helpButtons.helpButton.hide();
+        this._helpButtons.settingsButton.hide();
+        this._helpButtons.soundOnButton.hide();
+        this._helpButtons.pauseButton.hide();
+        this._helpButtons.exitHelpButton.hide();
+        this._helpButtons.exitHelpPressedButton.hide();
+        this._helpButtons.exitSettingsButton.hide();
+        this._helpButtons.exitSettingsPressedButton.hide();
+        this._helpButtons.helpButton.hide();
+        this._helpButtons.helpPressedButton.hide();
+        this._helpButtons.settingsButton.hide();
+        this._helpButtons.settingsPressedButton.hide();
+        this._helpButtons.soundOffButton.hide();
+        this._helpButtons.soundOffPressedButton.hide();
+        this._helpButtons.soundMuffledButton.hide();
+        this._helpButtons.soundMuffledPressedButton.hide();
+        this._helpButtons.soundOnButton.hide();
+        this._helpButtons.soundOnPressedButton.hide();
+        this._helpButtons.pauseButton.hide();
+        this._helpButtons.pausePressedButton.hide();
+        this._helpButtons.playButton.hide();
+        this._helpButtons.playPressedButton.hide();
+        this._helpTexts.controlPanelGamePaused.hide();
+        this._helpTexts.controlPanelGameInPlay.hide();
+        this._helpTexts.controlPanelSoundOn.hide();
+        this._helpTexts.controlPanelSoundOff.hide();
+        this._helpTexts.controlPanelSoundMuffled.hide();
+        this._helpTexts.controlPanelInGameMode.hide();
+        this._helpTexts.controlPanelSettingsMode.hide();
+        this._helpTexts.controlPanelHelpMode.hide();
+        this._helpMeshes.mouseControlPanel.visible = false;
+        this._helpMeshes.mouseLeftControlPanel.visible = false;
+
+        if (this._helpCounters.controlPanel < 60) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 90) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pausePressedButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 150) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.playButton.show();
+            this._helpTexts.controlPanelGamePaused.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 180) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.playPressedButton.show();
+            this._helpTexts.controlPanelGamePaused.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 240) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 300) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            const currArrowPos = this._helpMeshes.arrowDownControlPanel.position;
+            this._helpMeshes.arrowDownControlPanel.position.set(currArrowPos.x + 0.007, currArrowPos.y, currArrowPos.z);
+            const currMousePos = this._helpMeshes.mouseControlPanel.position;
+            this._helpMeshes.mouseControlPanel.position.set(currMousePos.x + 0.007, currMousePos.y, currMousePos.z);
+            this._helpMeshes.mouseLeftControlPanel.position.set(currMousePos.x + 0.007, currMousePos.y, currMousePos.z);
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 360) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 390) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnPressedButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 450) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOffButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOff.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 480) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOffPressedButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOff.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 540) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundMuffledButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundMuffled.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 570) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundMuffledPressedButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundMuffled.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 630) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 690) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            const currArrowPos = this._helpMeshes.arrowDownControlPanel.position;
+            this._helpMeshes.arrowDownControlPanel.position.set(currArrowPos.x + 0.007, currArrowPos.y, currArrowPos.z);
+            const currMousePos = this._helpMeshes.mouseControlPanel.position;
+            this._helpMeshes.mouseControlPanel.position.set(currMousePos.x + 0.007, currMousePos.y, currMousePos.z);
+            this._helpMeshes.mouseLeftControlPanel.position.set(currMousePos.x + 0.007, currMousePos.y, currMousePos.z);
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 750) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 780) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsPressedButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 840) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.exitSettingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelGamePaused.show();
+            this._helpTexts.controlPanelSettingsMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 870) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.exitSettingsPressedButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGamePaused.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelSettingsMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 930) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 990) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            const currArrowPos = this._helpMeshes.arrowDownControlPanel.position;
+            this._helpMeshes.arrowDownControlPanel.position.set(currArrowPos.x + 0.007, currArrowPos.y, currArrowPos.z);
+            const currMousePos = this._helpMeshes.mouseControlPanel.position;
+            this._helpMeshes.mouseControlPanel.position.set(currMousePos.x + 0.007, currMousePos.y, currMousePos.z);
+            this._helpMeshes.mouseLeftControlPanel.position.set(currMousePos.x + 0.007, currMousePos.y, currMousePos.z);
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 1050) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 1080) {
+            this._helpButtons.helpPressedButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 1140) {
+            this._helpButtons.exitHelpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGamePaused.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelHelpMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel < 1170) {
+            this._helpButtons.exitHelpPressedButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGamePaused.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelHelpMode.show();
+            this._helpMeshes.mouseLeftControlPanel.visible = true;
+        } else if (this._helpCounters.controlPanel <= 1230) {
+            this._helpButtons.helpButton.show();
+            this._helpButtons.settingsButton.show();
+            this._helpButtons.soundOnButton.show();
+            this._helpButtons.pauseButton.show();
+            this._helpTexts.controlPanelGameInPlay.show();
+            this._helpTexts.controlPanelSoundOn.show();
+            this._helpTexts.controlPanelInGameMode.show();
+            this._helpMeshes.mouseControlPanel.visible = true;
+        }
 
         this._helpCounters.controlPanel++;
     }
@@ -3571,10 +4049,40 @@ export class HelpCtrl {
         this._helpActors.mainThruster5.endCycle(HELP_MAIN_THRUSTER_5_POSITION, false);
 
         // Control Panel
+        this._helpCounters.controlPanel = 0;
         this._helpTexts.controlPanelTitle.hide();
         this._helpMeshes.arrowDownControlPanel.visible = false;
+        this._helpMeshes.arrowDownControlPanel.position.set(CONTROL_PANEL_ARROW_START_POSITION[0], CONTROL_PANEL_ARROW_START_POSITION[1], CONTROL_PANEL_ARROW_START_POSITION[2]);
         this._helpMeshes.mouseControlPanel.visible = false;
+        this._helpMeshes.mouseControlPanel.position.set(CONTROL_PANEL_MOUSE_START_POSITION[0], CONTROL_PANEL_MOUSE_START_POSITION[1], CONTROL_PANEL_MOUSE_START_POSITION[2]);
         this._helpMeshes.mouseLeftControlPanel.visible = false;
+        this._helpMeshes.mouseLeftControlPanel.position.set(CONTROL_PANEL_MOUSE_START_POSITION[0], CONTROL_PANEL_MOUSE_START_POSITION[1], CONTROL_PANEL_MOUSE_START_POSITION[2]);
+        this._helpButtons.exitHelpButton.hide();
+        this._helpButtons.exitHelpPressedButton.hide();
+        this._helpButtons.exitSettingsButton.hide();
+        this._helpButtons.exitSettingsPressedButton.hide();
+        this._helpButtons.helpButton.hide();
+        this._helpButtons.helpPressedButton.hide();
+        this._helpButtons.settingsButton.hide();
+        this._helpButtons.settingsPressedButton.hide();
+        this._helpButtons.soundOffButton.hide();
+        this._helpButtons.soundOffPressedButton.hide();
+        this._helpButtons.soundMuffledButton.hide();
+        this._helpButtons.soundMuffledPressedButton.hide();
+        this._helpButtons.soundOnButton.hide();
+        this._helpButtons.soundOnPressedButton.hide();
+        this._helpButtons.pauseButton.hide();
+        this._helpButtons.pausePressedButton.hide();
+        this._helpButtons.playButton.hide();
+        this._helpButtons.playPressedButton.hide();
+        this._helpTexts.controlPanelGamePaused.hide();
+        this._helpTexts.controlPanelGameInPlay.hide();
+        this._helpTexts.controlPanelSoundOn.hide();
+        this._helpTexts.controlPanelSoundOff.hide();
+        this._helpTexts.controlPanelSoundMuffled.hide();
+        this._helpTexts.controlPanelInGameMode.hide();
+        this._helpTexts.controlPanelSettingsMode.hide();
+        this._helpTexts.controlPanelHelpMode.hide();
     }
 
     /**
@@ -3626,6 +4134,33 @@ export class HelpCtrl {
         this._helpButtons.loadPressedButton.resize({ height, left: left + (0.19 * width), top: (0.56 * height), width });
         this._helpButtons.unloadButton.resize({ height, left: (left + (0.17 * width)), top: (0.56 * height), width });
         this._helpButtons.unloadPressedButton.resize({ height, left: left + (0.17 * width), top: (0.56 * height), width });
+
+        this._helpButtons.exitHelpButton.resize({ height: height, left: left + (0.784 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.exitHelpPressedButton.resize({ height: height, left: left + (0.784 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.exitSettingsButton.resize({ height: height, left: left + (0.75 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.exitSettingsPressedButton.resize({ height: height, left: left + (0.75 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.helpButton.resize({ height: height, left: left + (0.784 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.helpPressedButton.resize({ height: height, left: left + (0.784 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.settingsButton.resize({ height: height, left: left + (0.75 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.settingsPressedButton.resize({ height: height, left: left + (0.75 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.soundOffButton.resize({ height: height, left: left + (0.716 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.soundOffPressedButton.resize({ height: height, left: left + (0.716 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.soundMuffledButton.resize({ height: height, left: left + (0.716 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.soundMuffledPressedButton.resize({ height: height, left: left + (0.716 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.soundOnButton.resize({ height: height, left: left + (0.716 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.soundOnPressedButton.resize({ height: height, left: left + (0.716 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.pauseButton.resize({ height: height, left: left + (0.682 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.pausePressedButton.resize({ height: height, left: left + (0.682 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.playButton.resize({ height: height, left: left + (0.682 * width), top: ( 0.85 * height), width: width });
+        this._helpButtons.playPressedButton.resize({ height: height, left: left + (0.682 * width), top: ( 0.85 * height), width: width });
+        this._helpTexts.controlPanelGamePaused.resize({ height: height, left: (left + width - (0.49 * width)), top: ( 0.96 * height), width: width });
+        this._helpTexts.controlPanelGameInPlay.resize({ height: height, left: (left + width - (0.49 * width)), top: ( 0.96 * height), width: width });
+        this._helpTexts.controlPanelSoundOn.resize({ height: height, left: (left + width - (0.3 * width)), top: ( 0.96 * height), width: width });
+        this._helpTexts.controlPanelSoundOff.resize({ height: height, left: (left + width - (0.3 * width)), top: ( 0.96 * height), width: width });
+        this._helpTexts.controlPanelSoundMuffled.resize({ height: height, left: (left + width - (0.3 * width)), top: ( 0.96 * height), width: width });
+        this._helpTexts.controlPanelInGameMode.resize({ height: height, left: (left + width - (0.15 * width)), top: ( 0.85 * height), width: width });
+        this._helpTexts.controlPanelSettingsMode.resize({ height: height, left: (left + width - (0.15 * width)), top: ( 0.85 * height), width: width });
+        this._helpTexts.controlPanelHelpMode.resize({ height: height, left: (left + width - (0.15 * width)), top: ( 0.85 * height), width: width });
     }
 
     /**

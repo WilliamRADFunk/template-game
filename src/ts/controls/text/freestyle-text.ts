@@ -34,9 +34,10 @@ export class FreestyleText extends TextBase {
         border: string,
         type: TextType,
         fontSize?: number,
-        topPadding?: number) {
+        topPadding?: number,
+        alignment?: string) {
         index++;
-        super(`freestyle-text-${index}`, sentence, color, 'left', border, type);
+        super(`freestyle-text-${index}`, sentence, color, alignment || 'left', border, type);
 
         this._fontSize = fontSize || 0.0175;
         this._topPadding = topPadding || 0.006875;
