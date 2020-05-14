@@ -6,14 +6,24 @@
 	<meta name="viewport" content="width=device-width,maximum-scale=1">
 	<meta name="copyright" content="2020 © William Robert Funk" />
 	<link href="https://fonts.googleapis.com/css?family=Luckiest+Guy&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/loading-bar.min.css"/>
 	<!-- Styles specific to this application -->
 	<link rel="stylesheet" href="css/styles.css">
+	<!-- Loading bar -->
+	<script type="text/javascript" src="js/loading-bar.min.js"></script>
 	<!-- Game data/mechanics -->
 	<script type="text/javascript" src="js/bundle.js"></script>
 </head>
 <body>
-	<div id="mainview"></div>
+	<div id="loading">
+		<div
+			class="ldBar label-center"
+			data-value="10"
+			data-preset="bubble"
+			style="height: 180px; width: 180px;"></div>
+	</div>
+	<div class="hidden" id="mainview"></div>
 </body>
 <script>window.onload = window.init;</script>
 </html>

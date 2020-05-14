@@ -390,21 +390,37 @@ const SOUND_LOADERS: { name: string; loader: AudioLoader; path: string; }[] = SO
  * List of loaded audio files.
  */
 const SOUNDS: { [key: string]: Audio; } = {};
+
+/**
+ * Total number of assets to load.
+ */
+const TOTAL_ASSET_COUNT_TO_LOAD = Object.values(TEXTURES).length + 1 + SOUND_LOADERS.length;
+
+/**
+ * Tracks number of assets loaded.
+ */
+let assetsLoadedCount = 0;
+
 /**
  * Passes the callback functions to font and texture loaders,
  * each fitted with their chance to check if all others are done.
  */
 const loadAssets = () => {
     SoundinatorSingleton.addListener(AUDIO_LISTENER);
+    const loadingBar = document.getElementById('loading').getElementsByClassName('ldBar')[0];
     Object.keys(TEXTURES).forEach(key => {
         (new TextureLoader()).load( TEXTURES[key][0], texture => {
             TEXTURES[key][1] = texture;
+            assetsLoadedCount++;
+            (loadingBar as any).ldBar.set((assetsLoadedCount / TOTAL_ASSET_COUNT_TO_LOAD) * 100);
             checkAssetsLoaded();
         });
     });
     // Callback function to set the scoreboard font once it is finished loading.
     (new FontLoader()).load( 'assets/fonts/Luckiest_Guy_Regular.json', font => {
         gameFont = font;
+        assetsLoadedCount++;
+        (loadingBar as any).ldBar.set((assetsLoadedCount / TOTAL_ASSET_COUNT_TO_LOAD) * 100);
         checkAssetsLoaded();
     });
     // Get the ball rolling on each of the sound file loads.
@@ -415,6 +431,8 @@ const loadAssets = () => {
                 const sound = (new Audio(AUDIO_LISTENER)).setBuffer(soundBuffer);
                 sound.setLoop(false);
                 SOUNDS[soundLoader.name] = sound;
+                assetsLoadedCount++;
+                (loadingBar as any).ldBar.set((assetsLoadedCount / TOTAL_ASSET_COUNT_TO_LOAD) * 100);
                 checkAssetsLoaded();
             },
             (xhr: { loaded: number; total: number;}) => {
@@ -432,7 +450,14 @@ const checkAssetsLoaded = () => {
         !Object.keys(TEXTURES).some(key => !TEXTURES[key][1]) &&
         Object.keys(SOUNDS).length === SOUND_LOADERS.length) {
         SoundinatorSingleton.addSounds(SOUNDS);
-        loadMenu();
+
+        setTimeout(() => {
+            const loading = document.getElementById('loading');
+            loading.classList.add('hidden');
+            const mainview = document.getElementById('mainview');
+            mainview.classList.remove('hidden');
+            loadMenu();
+        }, 500);
     }
 };
 const loadDevMenu = () => {
@@ -469,9 +494,14 @@ const loadDevMenu = () => {
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
         else WIDTH = HEIGHT;
         scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
-        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        document.getElementById('mainview').style.width = WIDTH + 'px';
-        document.getElementById('mainview').style.height = HEIGHT + 'px';
+        const loading = document.getElementById('loading');
+        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        loading.style.width = WIDTH + 'px';
+        loading.style.height = HEIGHT + 'px';
+        const mainview = document.getElementById('mainview');
+        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        mainview.style.width = WIDTH + 'px';
+        mainview.style.height = HEIGHT + 'px';
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
@@ -615,9 +645,14 @@ const loadGameMenu = () => {
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
         else WIDTH = HEIGHT;
         scenes.menu.renderer.setSize( WIDTH, HEIGHT );
-        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        document.getElementById('mainview').style.width = WIDTH + 'px';
-        document.getElementById('mainview').style.height = HEIGHT + 'px';
+        const loading = document.getElementById('loading');
+        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        loading.style.width = WIDTH + 'px';
+        loading.style.height = HEIGHT + 'px';
+        const mainview = document.getElementById('mainview');
+        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        mainview.style.width = WIDTH + 'px';
+        mainview.style.height = HEIGHT + 'px';
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
@@ -761,9 +796,14 @@ const loadIntroScene = () => {
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
         else WIDTH = HEIGHT;
         scenes.intro.renderer.setSize( WIDTH, HEIGHT );
-        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        document.getElementById('mainview').style.width = WIDTH + 'px';
-        document.getElementById('mainview').style.height = HEIGHT + 'px';
+        const loading = document.getElementById('loading');
+        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        loading.style.width = WIDTH + 'px';
+        loading.style.height = HEIGHT + 'px';
+        const mainview = document.getElementById('mainview');
+        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        mainview.style.width = WIDTH + 'px';
+        mainview.style.height = HEIGHT + 'px';
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
@@ -890,9 +930,14 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
         else WIDTH = HEIGHT;
         scenes.landAndMine.renderer.setSize( WIDTH, HEIGHT );
-        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        document.getElementById('mainview').style.width = WIDTH + 'px';
-        document.getElementById('mainview').style.height = HEIGHT + 'px';
+        const loading = document.getElementById('loading');
+        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        loading.style.width = WIDTH + 'px';
+        loading.style.height = HEIGHT + 'px';
+        const mainview = document.getElementById('mainview');
+        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        mainview.style.width = WIDTH + 'px';
+        mainview.style.height = HEIGHT + 'px';
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
@@ -1028,9 +1073,14 @@ const loadShipLayoutScene = () => {
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
         else WIDTH = HEIGHT;
         scenes.shipLayout.renderer.setSize( WIDTH, HEIGHT );
-        document.getElementById('mainview').style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        document.getElementById('mainview').style.width = WIDTH + 'px';
-        document.getElementById('mainview').style.height = HEIGHT + 'px';
+        const loading = document.getElementById('loading');
+        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        loading.style.width = WIDTH + 'px';
+        loading.style.height = HEIGHT + 'px';
+        const mainview = document.getElementById('mainview');
+        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        mainview.style.width = WIDTH + 'px';
+        mainview.style.height = HEIGHT + 'px';
     };
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
@@ -1100,5 +1150,15 @@ const loadShipLayoutScene = () => {
  * Called by DOM when page is finished loading. Now load assets, then the game.
  */
 export default () => {
+    let INITIAL_WIDTH = window.innerWidth * 0.99;
+    let INITIAL_HEIGHT = window.innerHeight * 0.99;
+    if(INITIAL_WIDTH < INITIAL_HEIGHT) INITIAL_HEIGHT = INITIAL_WIDTH;
+    else INITIAL_WIDTH = INITIAL_HEIGHT;
+
+    const loading = document.getElementById('loading');
+    loading.style.left = (((window.innerWidth * 0.99) - INITIAL_WIDTH) / 2) + 'px';
+    loading.style.width = INITIAL_WIDTH + 'px';
+    loading.style.height = INITIAL_HEIGHT + 'px';
+
     loadAssets();
 }

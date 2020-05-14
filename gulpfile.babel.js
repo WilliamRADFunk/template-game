@@ -106,6 +106,20 @@ gulp.task('font-awesome', () => {
     .pipe(connect.reload());
 });
 
+gulp.task('loading-bar', () => {
+  log('== Copying loading-bar.min.css to dist ==');
+  return gulp.src('src/scss/loading-bar.min.css')
+    .pipe(gulp.dest('dist/css'))
+    .pipe(connect.reload());
+});
+
+gulp.task('loading-bar-script', () => {
+  log('== Copying loading-bar.min.js to dist ==');
+  return gulp.src('src/assets/libraries/loading-bar.min.js')
+    .pipe(gulp.dest('dist/js'))
+    .pipe(connect.reload());
+});
+
 gulp.task('font-awesome-fonts', () => {
   log('== Copying font-awesome fonts to dist ==');
   return gulp.src('src/scss/font-awesome/fonts/*.*')
@@ -195,7 +209,8 @@ gulp.task('watch', () => {
 gulp.task('build', gulp.series(
   'clean:dist',
   ['tslint', 'sasslint'],
-  ['assets', 'html', 'sass', 'font-awesome', 'font-awesome-fonts', 'typescript'],
+  ['assets', 'html', 'sass', 'loading-bar', 'font-awesome', 'font-awesome-fonts', 'typescript'],
+  'loading-bar-script',
   'bundle',
   'fuglify'
 ));
@@ -211,7 +226,8 @@ gulp.task('lint', gulp.series(
 
 gulp.task('default', gulp.series(
   'clean:dist',
-  ['assets', 'html', 'sass', 'font-awesome', 'font-awesome-fonts', 'typescript'],
+  ['assets', 'html', 'sass', 'loading-bar', 'font-awesome', 'font-awesome-fonts', 'typescript'],
+  'loading-bar-script',
   'bundle',
   'fuglify',
   'connect'
