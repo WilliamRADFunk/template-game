@@ -618,7 +618,7 @@ export class HelpCtrl {
         waterMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Profile Image graphics
-        this._helpProfile = new RightBottomMiddleProfile(this._scene, this._textures.scienceOfficerProfile1, true);
+        this._helpProfile = new RightBottomMiddleProfile(this._scene, this._textures.miningOfficerProfile1, true);
         this._helpProfile.hide();
 
         // Dialogue Text graphics

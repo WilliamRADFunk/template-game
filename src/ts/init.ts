@@ -64,6 +64,7 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     miningDrill: ['assets/images/mining-drill.png', null],
     miningEquipment1: ['assets/images/mining-equipment-01.png', null],
     miningEquipment2: ['assets/images/mining-equipment-02.png', null],
+    miningOfficerProfile1: ['assets/images/mining-officer-profile-01.png', null],
     mouse: ['assets/images/mouse.png', null],
     mouseLeft: ['assets/images/mouse-left.png', null],
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
@@ -928,7 +929,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             miningEquipment2: TEXTURES.miningEquipment2[1],
             mouse: TEXTURES.mouse[1],
             mouseLeft: TEXTURES.mouseLeft[1],
-            scienceOfficerProfile1: TEXTURES.scienceOfficerProfile1[1],
+            miningOfficerProfile1: TEXTURES.miningOfficerProfile1[1],
             ship: TEXTURES.lander[1]
         },
         planetSpec,
