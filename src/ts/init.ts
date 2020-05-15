@@ -613,6 +613,8 @@ const loadDevMenu = () => {
         {
             engineer: TEXTURES.engineerProfile[1],
             engineer2: TEXTURES.engineer2Profile[1],
+            miner1: TEXTURES.miningOfficerProfile1[1],
+            science1: TEXTURES.scienceOfficerProfile1[1],
             enzmann: TEXTURES.enzmannOutside[1],
             arrow: TEXTURES.arrow[1]
         });
@@ -1071,7 +1073,7 @@ const loadAncientRuinsScene = () => {
  * Game's intro scene. Only starts when all assets are finished loading.
  */
 const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
-    scenes.ancientRuins.active = true;
+    scenes.landAndMine.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
     let HEIGHT: number = window.innerHeight * 0.99;

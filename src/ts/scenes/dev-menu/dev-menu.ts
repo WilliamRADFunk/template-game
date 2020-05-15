@@ -908,11 +908,11 @@ export class DevMenu {
 
 //#region Page 2
         this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2, false);
-        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.engineer, false);
+        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.miner1, false);
         this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2, false);
         this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, this._textures.engineer2, false);
         this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2, false);
-        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.engineer, false);
+        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.science1, false);
         this._page2profiles.leftBottomMiddleProfile.hide();
         this._page2profiles.leftTopMiddleProfile.hide();
         this._page2profiles.leftTopProfile.hide();
@@ -1082,7 +1082,7 @@ export class DevMenu {
         this._buttons.launchAncientRuinsSceneButton.resize({ left: left + (0.54 * width), height, top: 0.20 * height, width });
         let groupLeftStart = 0.015;
 
-        
+
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
         
