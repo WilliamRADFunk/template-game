@@ -27,10 +27,10 @@ import { ShipLayout } from './scenes/ship-layout/ship-layout';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { ENVIRONMENT } from './environment';
 import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
-import { PlanetSpecifications, OreTypes } from './models/planet-specifications';
+import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandTypes, SkyTypes } from './models/planet-specifications';
 import { LanderSpecifications } from './models/lander-specifications';
-
 import * as stats from 'stats.js';
+import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
 const statsPanel = new stats();
 
 const TEXTURES: { [key: string]: [string, Texture] } = {
@@ -70,16 +70,26 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
     ship: ['assets/images/ship.png', null]
 };
+
 /**
  * The thing that hears sound.
  */
 const AUDIO_LISTENER: AudioListener = new AudioListener();
+
 /**
  * The loaded font, used for the scoreboard.
  */
 let gameFont: Font;
 
 const scenes: { [ key: string ]: SceneType } = {
+    ancientRuins: {
+        active: false,
+        camera: null,
+        instance: null,
+        raycaster: null,
+        renderer: null,
+        scene: null
+    },
     devMenu: {
         active: false,
         camera: null,
@@ -121,6 +131,7 @@ const scenes: { [ key: string ]: SceneType } = {
         scene: null
     }
 };
+
 /**
  * Sound file paths
  */
@@ -376,6 +387,7 @@ const SOUND_PATHS: { name: string; path: string; }[] = [
         path: 'assets/audio/wind.mp3'
     }
 ];
+
 /**
  * Loads the audio files.
  */
@@ -386,6 +398,7 @@ const SOUND_LOADERS: { name: string; loader: AudioLoader; path: string; }[] = SO
         path: x.path
     };
 });
+
 /**
  * List of loaded audio files.
  */
@@ -442,6 +455,7 @@ const loadAssets = () => {
         );
     });
 };
+
 /**
  * Checks to see if all assets are finished loaded. If so, start rendering the game.
  */
@@ -460,6 +474,10 @@ const checkAssetsLoaded = () => {
         }, 500);
     }
 };
+
+/**
+ * Loads the dev menu with all the mini games and game sections separated as testable/playable games.
+ */
 const loadDevMenu = () => {
     scenes.devMenu.active = true;
     // Establish initial window size.
@@ -506,6 +524,14 @@ const loadDevMenu = () => {
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
     // Click event listeners that activates certain menu options.
+    const activateAncientRuinsScene = () => {
+        scenes.devMenu.active = false;
+        window.removeEventListener( 'resize', onWindowResize, false);
+        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        setTimeout(() => {
+            loadAncientRuinsScene();
+        }, 50);
+    };
     const activateIntroScene = () => {
         scenes.devMenu.active = false;
         window.removeEventListener( 'resize', onWindowResize, false);
@@ -574,6 +600,7 @@ const loadDevMenu = () => {
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
         {
+            activateAncientRuinsScene,
             activateGameMenu,
             activateIntroScene,
             activateLandAndMineScene,
@@ -592,6 +619,10 @@ const loadDevMenu = () => {
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();
 };
+
+/**
+ * Kick off function for rendering the dev menu scene.
+ */
 const startDevMenuRendering = () => {
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
@@ -614,6 +645,10 @@ const startDevMenuRendering = () => {
     scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
 	requestAnimationFrame( render );
 };
+
+/**
+ * Loads the game menu with the actual gameplay starting point
+ */
 const loadGameMenu = () => {
     scenes.menu.active = true;
     // Establish initial window size.
@@ -681,7 +716,27 @@ const loadGameMenu = () => {
                     scenes.menu.active = false;
                     window.removeEventListener( 'resize', onWindowResize, false);
                     container.removeChild( (scenes.menu.renderer as any).domElement );
-                    loadShipLayoutScene();
+                    loadLandAndMineScene(
+                        {
+                            gravity: 0.0001,
+                            hasWater: true,
+                            isFrozen: false,
+                            isLife: true,
+                            ore: OreTypes.Gold,
+                            oreQuantity: OreQuantity.Average,
+                            peakElevation: 3,
+                            planetBase: PlanetLandTypes.Red,
+                            skyBase: SkyTypes.Blue,
+                            wind: 0
+                        },
+                        {
+                            drillLength: 5,
+                            fuelBurn: 0.05,
+                            horizontalCrashMargin: 0.001,
+                            oxygenBurn: 0.02,
+                            verticalCrashMargin: 0.01
+                        }
+                    );
                 }, 750);
                 SoundinatorSingleton.playBidooo();
                 return;
@@ -739,6 +794,10 @@ const loadGameMenu = () => {
     scenes.menu.raycaster = raycaster;
     startMenuRendering();
 };
+
+/**
+ * Kick off function for rendering the real menu scene.
+ */
 const startMenuRendering = () => {
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
@@ -754,11 +813,13 @@ const startMenuRendering = () => {
     scenes.menu.renderer.render( scenes.menu.scene, scenes.menu.camera );
 	requestAnimationFrame( render );
 };
+
 /**
  * Environment specific menu.
  * Dev environment loads Dev menu, while Prod environment loads regular menu.
  */
 const loadMenu = ENVIRONMENT === 'production' ? loadGameMenu : loadDevMenu;
+
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
@@ -816,7 +877,7 @@ const loadIntroScene = () => {
     clickBarrier.rotation.set(1.5708, 0, 0);
     scenes.intro.scene.add(clickBarrier);
 
-    // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
+    // Click event listener to register user click.
     const raycaster = new Raycaster();
     document.onclick = event => {
         const mouse = new Vector2();
@@ -896,8 +957,121 @@ const loadIntroScene = () => {
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
+const loadAncientRuinsScene = () => {
+    scenes.ancientRuins.active = true;
+    // Establish initial window size.
+    let WIDTH: number = window.innerWidth * 0.99;
+    let HEIGHT: number = window.innerHeight * 0.99;
+    // Create ThreeJS scene.
+    scenes.ancientRuins.scene = new Scene();
+    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
+    scenes.ancientRuins.renderer = ((window as any)['WebGLRenderingContext'])
+        ? new WebGLRenderer()
+        : new CanvasRenderer();
+    // Make it black and size it to window.
+    (scenes.ancientRuins.renderer as any).setClearColor(0x000000, 0);
+    scenes.ancientRuins.renderer.setSize( WIDTH, HEIGHT );
+    (scenes.ancientRuins.renderer as any).autoClear = false;
+    // An all around brightish light that hits everything equally.
+    scenes.ancientRuins.scene.add(new AmbientLight(0xCCCCCC));
+    // Render to the html container.
+    const container = document.getElementById('mainview');
+	container.appendChild( (scenes.ancientRuins.renderer as any).domElement );
+    // Set up player's ability to see the game, and focus center on planet.
+    scenes.ancientRuins.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
+	scenes.ancientRuins.camera.position.set(0, -20, 0);
+    scenes.ancientRuins.camera.lookAt(scenes.ancientRuins.scene.position);
+    scenes.ancientRuins.camera.add(AUDIO_LISTENER);
+    /**
+     * Gracefully handles a change in window size, by recalculating shape and updating scenes.ancientRuins.camera and scenes.ancientRuins.renderer.
+     */
+    const onWindowResize = () => {
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
+        else WIDTH = HEIGHT;
+        scenes.ancientRuins.renderer.setSize( WIDTH, HEIGHT );
+        const loading = document.getElementById('loading');
+        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        loading.style.width = WIDTH + 'px';
+        loading.style.height = HEIGHT + 'px';
+        const mainview = document.getElementById('mainview');
+        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+        mainview.style.width = WIDTH + 'px';
+        mainview.style.height = HEIGHT + 'px';
+    };
+    onWindowResize();
+    window.addEventListener( 'resize', onWindowResize, false);
+    // Create the click collision layer
+    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
+    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
+    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
+    clickBarrier.name = 'Click Barrier';
+    clickBarrier.position.set(0, 50, 0);
+    clickBarrier.rotation.set(1.5708, 0, 0);
+    scenes.ancientRuins.scene.add(clickBarrier);
+
+    // Click event listener to register user click.
+    const raycaster = new Raycaster();
+    const ancientRuins = new AncientRuins(
+        scenes.ancientRuins,
+        {
+            arrow: TEXTURES.arrow[1]
+        });
+    scenes.ancientRuins.raycaster = raycaster;
+    /**
+     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
+     */
+    const render = () => {
+        if (!scenes.ancientRuins.active) {
+            ancientRuins.dispose();
+            // Remove renderer from the html container, and remove event listeners.
+            window.removeEventListener( 'resize', onWindowResize, false);
+            container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
+            // Clear up memory used by ancientRuins scene.
+            scenes.ancientRuins.camera = null;
+            scenes.ancientRuins.instance = null;
+            scenes.ancientRuins.raycaster = null;
+            scenes.ancientRuins.renderer = null;
+            scenes.ancientRuins.scene = null;
+            return;
+        } else {
+            statsPanel.begin();
+            const output: any = ancientRuins.endCycle();
+            statsPanel.end();
+            if (output) {
+                console.log('Output', output);
+                ancientRuins.dispose();
+                scenes.ancientRuins.active = false;
+                window.alert(output);
+                // Remove renderer from the html container, and remove event listeners.
+                window.removeEventListener( 'resize', onWindowResize, false);
+                container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
+                // Clear up memory used by ancientRuins scene.
+                scenes.ancientRuins.camera = null;
+                scenes.ancientRuins.instance = null;
+                scenes.ancientRuins.raycaster = null;
+                scenes.ancientRuins.renderer = null;
+                scenes.ancientRuins.scene = null;
+                setTimeout(() => {
+                    loadMenu();
+                }, 10);
+                return;
+            }
+        }
+        scenes.ancientRuins.renderer.render( scenes.ancientRuins.scene, scenes.ancientRuins.camera );
+        requestAnimationFrame( render );
+    };
+    // Kick off the first render loop iteration.
+    scenes.ancientRuins.renderer.render( scenes.ancientRuins.scene, scenes.ancientRuins.camera );
+	requestAnimationFrame( render );
+};
+
+/**
+ * Game's intro scene. Only starts when all assets are finished loading.
+ */
 const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
-    scenes.landAndMine.active = true;
+    scenes.ancientRuins.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
     let HEIGHT: number = window.innerHeight * 0.99;
@@ -950,7 +1124,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
     clickBarrier.rotation.set(1.5708, 0, 0);
     scenes.landAndMine.scene.add(clickBarrier);
 
-    // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
+    // Click event listener to register user click.
     const raycaster = new Raycaster();
     const landAndMine = new LandAndMine(
         scenes.landAndMine,
@@ -1093,7 +1267,7 @@ const loadShipLayoutScene = () => {
     clickBarrier.rotation.set(1.5708, 0, 0);
     scenes.shipLayout.scene.add(clickBarrier);
 
-    // Click event listener that turns shield on or off if player clicks on planet. Fire weapon otherwise.
+    // Click event listener to register user click.
     const raycaster = new Raycaster();
     const shipLayout = new ShipLayout(
         scenes.shipLayout,

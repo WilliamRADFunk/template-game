@@ -43,6 +43,7 @@ import { PlusButton } from "../../controls/buttons/plus-button";
 import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-button";
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
+import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -939,6 +940,26 @@ export class DevMenu {
             true);
         this._page2buttons.launchPlanetRaidSceneButton.hide();
 
+        this._page2textElements.rightTopDialogueText2 = new RightTopDialogueText(
+            `This is the launching point for Ancient Ruins scene. Click load button to launch it.`,
+            { left, height, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.DIALOGUE);
+        this._page2textElements.rightTopDialogueText2.hide();
+
+        onClick = () => {
+            this._page2buttons.launchAncientRuinsSceneButton.disable();
+            callbacks.activateAncientRuinsScene();
+        };
+
+        this._page2buttons.launchAncientRuinsSceneButton = new LoadButton(
+            { left: left + (0.54 * width), height, top: 0.20 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+        this._page2buttons.launchAncientRuinsSceneButton.hide();
+
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
             'Previous Page',
             { left, height, top: null, width },
@@ -1058,11 +1079,16 @@ export class DevMenu {
         Object.keys(this._textElements).forEach(el =>this._textElements[el] && this._textElements[el].resize({ left, height, top: null, width }));
 
         // Update various buttons and freestyle texts.
+        this._buttons.launchAncientRuinsSceneButton.resize({ left: left + (0.54 * width), height, top: 0.20 * height, width });
+        let groupLeftStart = 0.015;
+
+        
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
+        
 
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.175 * width), height, top: 0.785 * height, width });
-        const groupLeftStart = 0.015;
+        groupLeftStart = 0.015;
 //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
         this._textElements.freestyleHThresholdText.resize({ left: left + (rowSub2Left * width), height, top: 0.755 * height, width });
