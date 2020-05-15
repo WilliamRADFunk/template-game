@@ -3,6 +3,7 @@ import { Scene, Texture } from "three";
 import { SceneType } from "../../models/scene-type";
 import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
+import { getIntersections } from "../../utils/get-intersections";
 
 /**
  * @class
@@ -13,6 +14,18 @@ export class AncientRuins {
      * Reference to the main Control Panel.
      */
     private _controlPanel: ControlPanel;
+
+    /**
+     * The grid array with values of all tiles on game map.
+     * [row][col][elevation]
+     * [elevation] 0    Ground tile on which a player might stand and interact. Also triggers events.
+     * [elevation] 1    Obstruction tile. Might be a person, boulder, wall, or tree trunk. Can interact with mouse clicks, but can't move into space.
+     * [elevation] 2    Overhead tile such as low ceiling of building. Can move "under" and must turn semi-transparent.
+     * [elevation] 3    High overhead tile like tree canopy or high ceiling. Can move "under" and must turn semi-trnsparent.
+     * Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
+     * 
+     */
+    private _grid: number[][][] = [];
 
     /**
      * Reference to _onWindowResize so that it can be removed later.
@@ -32,7 +45,7 @@ export class AncientRuins {
     /**
      * Constructor for the Ancient Ruins (Scene) class
      * @param scene     graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param textures  all the needed textures for land and mine.
+     * @param textures  all the needed textures for ancient ruins.
      */
     constructor(
         scene: SceneType,
@@ -45,12 +58,36 @@ export class AncientRuins {
         this._onInitialize(scene);
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
+
+        for (let row = 0; row < 121; row++) {
+            for (let col = 0; col < 121; col++) {
+                for (let elev = 0; elev < 4; elev++) {
+                    // TODO: Populate ruins
+                }
+            }
+        }
     }
 
     /**
      * Creates all of the html elements for the first time on scene creation.
      */
     private _onInitialize(sceneType: SceneType): void {
+        // DOM Events
+        const container = document.getElementById('mainview');
+        document.oncontextmenu = event => {
+            return false;
+        };
+        document.onclick = event => {
+            event.preventDefault();
+            // Three JS object intersections.
+            getIntersections(event, container, sceneType).forEach(el => {
+
+            });
+        };
+        document.onmousemove = event => {
+
+        };
+
         // Get window dimmensions
         let width = window.innerWidth * 0.99;
         let height = window.innerHeight * 0.99;
