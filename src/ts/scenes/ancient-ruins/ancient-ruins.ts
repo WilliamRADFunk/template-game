@@ -22,7 +22,9 @@ export class AncientRuins {
      * [elevation] 1    Obstruction tile. Might be a person, boulder, wall, or tree trunk. Can interact with mouse clicks, but can't move into space.
      * [elevation] 2    Overhead tile such as low ceiling of building. Can move "under" and must turn semi-transparent.
      * [elevation] 3    High overhead tile like tree canopy or high ceiling. Can move "under" and must turn semi-trnsparent.
-     * Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
+     * Light:           Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
+     * Type:            [row][col][elevation] % 100 gives "type" of tile
+     * Directionality:  Math.floor([row][col][elevation] / 100) gives directionality of tile (ie. 0 centered, 1 top-facing, 2 right-facing, etc.) allows for higher numbers and greater flexibility.
      * 
      */
     private _grid: number[][][] = [];
