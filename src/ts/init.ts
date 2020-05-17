@@ -44,6 +44,8 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     astronautSuffocation3: ['assets/images/astronaut-suffocation-03.png', null],
     astronautSuffocation4: ['assets/images/astronaut-suffocation-04.png', null],
     astronautSuffocation5: ['assets/images/astronaut-suffocation-05.png', null],
+    dirtCenterCenter01: ['assets/images/dirt-tile-center-center-01.png', null],
+    dirtCenterCenter02: ['assets/images/dirt-tile-center-center-02.png', null],
     earth: ['assets/images/earth.png', null],
     enceladus: ['assets/images/enceladus.png', null],
     // The loaded texture, used for the ship layout dialogue engineer profile 1.
@@ -54,6 +56,16 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     enzmannLayout: ['assets/images/enzmann-layout.png', null],
     enzmannOutside: ['assets/images/enzmann-outside.png', null],
     fire: ['assets/images/fire.png', null],
+    greenGrassCenter01: ['assets/images/grass-tile-green-center-01.png', null],
+    greenGrassCenter02: ['assets/images/grass-tile-green-center-02.png', null],
+    greenGrassBottomCenterDirt1: ['assets/images/grass-tile-green-bottom-center-dirt-01.png', null],
+    greenGrassBottomLeftDirt1: ['assets/images/grass-tile-green-bottom-left-dirt-01.png', null],
+    greenGrassBottomRightDirt1: ['assets/images/grass-tile-green-bottom-right-dirt-01.png', null],
+    greenGrassCenterLeftDirt1: ['assets/images/grass-tile-green-center-left-dirt-01.png', null],
+    greenGrassCenterRightDirt1: ['assets/images/grass-tile-green-center-right-dirt-01.png', null],
+    greenGrassTopCenterDirt1: ['assets/images/grass-tile-green-top-center-dirt-01.png', null],
+    greenGrassTopLeftDirt1: ['assets/images/grass-tile-green-top-left-dirt-01.png', null],
+    greenGrassTopRightDirt1: ['assets/images/grass-tile-green-top-right-dirt-01.png', null],
     keysForDown: ['assets/images/keys-down.png', null],
     keysForLeft: ['assets/images/keys-left.png', null],
     keysForRight: ['assets/images/keys-right.png', null],
@@ -68,17 +80,7 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     mouse: ['assets/images/mouse.png', null],
     mouseLeft: ['assets/images/mouse-left.png', null],
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
-    ship: ['assets/images/ship.png', null],
-    greenGrassCenter01: ['assets/images/grass-tile-green-center-01.png', null],
-    greenGrassCenter02: ['assets/images/grass-tile-green-center-02.png', null],
-    greenGrassBottomCenterDirt1: ['assets/images/grass-tile-green-bottom-center-dirt-01.png', null],
-    greenGrassBottomLeftDirt1: ['assets/images/grass-tile-green-bottom-left-dirt-01.png', null],
-    greenGrassBottomRightDirt1: ['assets/images/grass-tile-green-bottom-right-dirt-01.png', null],
-    greenGrassCenterLeftDirt1: ['assets/images/grass-tile-green-center-left-dirt-01.png', null],
-    greenGrassCenterRightDirt1: ['assets/images/grass-tile-green-center-right-dirt-01.png', null],
-    greenGrassTopCenterDirt1: ['assets/images/grass-tile-green-top-center-dirt-01.png', null],
-    greenGrassTopLeftDirt1: ['assets/images/grass-tile-green-top-left-dirt-01.png', null],
-    greenGrassTopRightDirt1: ['assets/images/grass-tile-green-top-right-dirt-01.png', null]
+    ship: ['assets/images/ship.png', null]
 };
 
 /**
@@ -1028,6 +1030,8 @@ const loadAncientRuinsScene = () => {
     const ancientRuins = new AncientRuins(
         scenes.ancientRuins,
         {
+            dirtCenterCenter01: TEXTURES.dirtCenterCenter01[1],
+            dirtCenterCenter02: TEXTURES.dirtCenterCenter02[1],
             greenGrassCenter01: TEXTURES.greenGrassCenter01[1],
             greenGrassCenter02: TEXTURES.greenGrassCenter02[1],
             greenGrassBottomCenterDirt1: TEXTURES.greenGrassBottomCenterDirt1[1],

@@ -1,9 +1,50 @@
-import { AdditiveBlending, CanvasTexture, DoubleSide, Mesh, MeshPhongMaterial, PlaneGeometry, Scene, Sprite, SpriteMaterial, Texture, Vector2, LinearFilter } from "three";
+import {
+    DoubleSide,
+    LinearFilter,
+    Mesh,
+    MeshPhongMaterial,
+    PlaneGeometry,
+    Scene,
+    Texture } from "three";
 
 import { SceneType } from "../../models/scene-type";
 import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
+
+const grassAgainstDirtLookupTable: { [key: string]: number } = {
+    '0000': 2,
+    '1000': 3,
+    '1100': 4,
+    '0100': 5,
+    '0110': 6,
+    '0010': 7,
+    '0011': 8,
+    '0001': 9,
+    '1001': 10,
+    '10000010': 10,
+    '10000011': 10,
+    '11000011': 10,
+    '10000111': 10,
+    '11000111': 10,
+    '10100010': 11,
+    '11100010': 11,
+    '10100011': 11,
+    '11100011': 11,
+    '10101000': 12,
+    '11101000': 12,
+    '10111000': 12,
+    '11111000': 12,
+    '00101010': 13,
+    '00111010': 13,
+    '00101110': 13,
+    '00111110': 13,
+    '10001010': 14,
+    '10001011': 14,
+    '10001110': 14,
+    '10001111': 14,
+    '1111': 15
+};
 
 interface MaterialMap {
     [key: string]: {
@@ -24,7 +65,7 @@ export class AncientRuins {
      * 
      */
     private _ancientRuinsSpec: any = {
-        grassPercentage: 0.1,
+        grassPercentage: 0.3,
         grassColor: 'green',
         hasPlants: true
     };
@@ -42,14 +83,30 @@ export class AncientRuins {
     /**
      * The grid array with values of all tiles on game map.
      * [row][col][elevation]
-     * [elevation] 0    Ground tile on which a player might stand and interact. Also triggers events.
-     * [elevation] 1    Obstruction tile. Might be a person, boulder, wall, or tree trunk. Can interact with mouse clicks, but can't move into space.
-     * [elevation] 2    Overhead tile such as low ceiling of building. Can move "under" and must turn semi-transparent.
-     * [elevation] 3    High overhead tile like tree canopy or high ceiling. Can move "under" and must turn semi-trnsparent.
+     * [elevation] 0    Special designation tiles. Treasure, Traps, Etc.
+     * [elevation] 1    Ground tile on which a player might stand and interact. Also triggers events.
+     * [elevation] 2    Obstruction tile. Might be a person, boulder, wall, or tree trunk. Can interact with mouse clicks, but can't move into space.
+     * [elevation] 3    Overhead tile such as low ceiling of building. Can move "under" and must turn semi-transparent.
+     * [elevation] 4    High overhead tile like tree canopy or high ceiling. Can move "under" and must turn semi-trnsparent.
      * Light:           Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
      * Type:            [row][col][elevation] % 100 gives "type" of tile
      * Directionality:  Math.floor([row][col][elevation] / 100) gives directionality of tile (ie. 0 centered, 1 top-facing, 2 right-facing, etc.) allows for higher numbers and greater flexibility.
      *
+     * 2: Green Grass (whole tile)
+     * 3: Green Grass (Brown at top)
+     * 4: Green Grass (Brown at top & right)
+     * 5: Green Grass (Brown at right)
+     * 6: Green Grass (Brown at right & bottom)
+     * 7: Green Grass (Brown at bottom)
+     * 8: Green Grass (Brown at bottom & left)
+     * 9: Green Grass (Brown at left)
+     * 10: Green Grass (Brown at left & top)
+     * 11: Green Grass (Brown at left & top & right)
+     * 12: Green Grass (Brown at top & right & bottom)
+     * 13: Green Grass (Brown at right & bottom & left)
+     * 14: Green Grass (Brown at bottom & left & top)
+     * 15: Green Grass (Brown all around)
+     * 100: Brown dirt (whole tile)
      */
     private _grid: number[][][] = [];
 
@@ -62,8 +119,14 @@ export class AncientRuins {
      * All of the materials contained in this scene.
      */
     private _materials: MaterialMap = {
+        dirt: {
+            brown: {
+                complete: {}
+            }
+        },
         grass: {
             green: {
+                complete: {},
                 dirt: {},
                 gravel: {},
                 water: {}
@@ -104,12 +167,101 @@ export class AncientRuins {
 
         this._makeGrass();
 
-        // Check grass results
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
-                // for (let elev = 0; elev < 4; elev++) { }
                 if (this._grid[row][col][1] === 1) {
-                    const block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter2 );
+                    this._modifyGrassForSurrounds(row, col);
+                }
+            }
+        }
+        
+        this._createGroundMeshes();
+    }
+
+    /**
+     * Checks a given tile for grass, and adds 10% chance to spread.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     * @returns additional spread percentage for grass
+     */
+    private _checkGrassSpread(row: number, col: number): number {
+        // If non-zero, then it's a grass tile, thus increasing grass spread another 10%
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === 1) ? 0.1 : 0;
+    }
+
+    /**
+     * Uses the tile grid to make meshes that match tile values.
+     */
+    private _createGroundMeshes(): void {
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                let block;
+                switch(this._grid[row][col][1]) {
+                    case 2: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].complete.centerCenter2 );
+                        break;
+                    }
+                    case 3: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomCenter );
+                        break;
+                    }
+                    case 4: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomLeft );
+                        break;
+                    }
+                    case 5: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerLeft );
+                        break;
+                    }
+                    case 6: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topLeft );
+                        break;
+                    }
+                    case 7: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topCenter );
+                        break;
+                    }
+                    case 8: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topRight );
+                        break;
+                    }
+                    case 9: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerRight );
+                        break;
+                    }
+                    case 10: {
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomRight );
+                        break;
+                    }
+                    case 11: {
+                        console.log(11);
+                        break;
+                    }
+                    case 12: {
+                        console.log(12);
+                        break;
+                    }
+                    case 13: {
+                        console.log(13);
+                        break;
+                    }
+                    case 14: {
+                        console.log(14);
+                        break;
+                    }
+                    case 15: {
+                        console.log(15);
+                        break;
+                    }
+                    case 100: {
+                        block = new Mesh( this._geometry, this._materials.dirt.brown.complete.centerCenter1 );
+                        break;
+                    }
+                    default: {
+                        console.log(this._grid[row][col][1]);
+                    }
+                }
+                if (block) {
                     block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
                     block.rotation.set(-1.5708, 0, 0);
                     this._scene.add(block);
@@ -119,21 +271,19 @@ export class AncientRuins {
     }
 
     /**
-     * Checks a given tile for grass, and adds 10% chance to spread.
+     * Checks out of bound scenarios for the tile grid.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
-     * @returns additional spread percentage for grass
+     * @returns TRUE is in grid range | FALSE not in grid range
      */
-    private _checkGrassSurroundings(row: number, col: number): number {
+    private _isInBounds(row: number, col: number): boolean {
         // Check out of bounds.
         if (row < 0 || row > 29) {
-            return 0;
+            return false;
         } else if (col < 0 || col > 29) {
-            return 0;
+            return false;
         }
-
-        // If non-zero, then it's a grass tile, thus increasing grass spread another 10%
-        return (this._grid[row][col][1] === 1) ? 0.1 : 0;
+        return true;
     }
 
     /**
@@ -153,7 +303,7 @@ export class AncientRuins {
                 if (Math.random() < this._ancientRuinsSpec.grassPercentage) {
                     this._grid[row][col][1] = 1;
                 } else {
-                    this._grid[row][col][1] = 0;
+                    this._grid[row][col][1] = 100;
                 }
             }
         }
@@ -161,17 +311,17 @@ export class AncientRuins {
         // Organically let the grass spread
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
-                if (!this._grid[row][col][1]) {
+                if (this._grid[row][col][1] !== 1) {
                     let hasGrassPercentage = 0.01
-                        + this._checkGrassSurroundings(row + 1, col - 1)
-                        + this._checkGrassSurroundings(row, col - 1)
-                        + this._checkGrassSurroundings(row - 1, col - 1)
-                        + this._checkGrassSurroundings(row + 1, col)
-                        + this._checkGrassSurroundings(row - 1, col)
-                        + this._checkGrassSurroundings(row + 1, col + 1)
-                        + this._checkGrassSurroundings(row, col + 1)
-                        + this._checkGrassSurroundings(row - 1, col + 1)
-                    this._grid[row][col][1] = (Math.random() < hasGrassPercentage) ? 1 : 0;
+                        + this._checkGrassSpread(row + 1, col - 1)
+                        + this._checkGrassSpread(row, col - 1)
+                        + this._checkGrassSpread(row - 1, col - 1)
+                        + this._checkGrassSpread(row + 1, col)
+                        + this._checkGrassSpread(row - 1, col)
+                        + this._checkGrassSpread(row + 1, col + 1)
+                        + this._checkGrassSpread(row, col + 1)
+                        + this._checkGrassSpread(row - 1, col + 1)
+                    this._grid[row][col][1] = (Math.random() < hasGrassPercentage) ? 1 : 100;
                 }
             }
         }
@@ -181,23 +331,41 @@ export class AncientRuins {
      * Makes all the tile materials for the game map.
      */
     private _makeMaterials(): void {
-        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter1 = new MeshPhongMaterial({
+        this._materials.dirt.brown.complete.centerCenter1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.dirtCenterCenter01,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.dirt.brown.complete.centerCenter1.map.minFilter = LinearFilter;
+
+        this._materials.dirt.brown.complete.centerCenter2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.dirtCenterCenter02,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.dirt.brown.complete.centerCenter2.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.centerCenter1 = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassCenter01,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter1.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.centerCenter1.map.minFilter = LinearFilter;
 
-        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter2 = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.centerCenter2 = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassCenter02,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter2.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.centerCenter2.map.minFilter = LinearFilter;
 
         this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomCenter = new MeshPhongMaterial({
             color: '#FFFFFF',
@@ -270,6 +438,25 @@ export class AncientRuins {
             transparent: false
         });
         this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topRight.map.minFilter = LinearFilter;
+    }
+
+    /**
+     * Checks a given tile's surrounds for grass and updates value to match neighboring dirt tiles.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     */
+    private _modifyGrassForSurrounds(row: number, col: number): void {
+        const top = this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] > 99 ? 1 : 0;
+        const topRight = this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] > 99 ? 1 : 0;
+        const right = this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] > 99 ? 1 : 0;
+        const bottomRight = this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] > 99 ? 1 : 0;
+        const bottom = this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] > 99 ? 1 : 0;
+        const bottomLeft = this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] > 99 ? 1 : 0;
+        const left = this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] > 99 ? 1 : 0;
+        const topLeft = this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] > 99 ? 1 : 0;
+
+        const key = `${top}${right}${bottom}${left}`;
+        this._grid[row][col][1] = grassAgainstDirtLookupTable[key] || 2;
     }
 
     /**
