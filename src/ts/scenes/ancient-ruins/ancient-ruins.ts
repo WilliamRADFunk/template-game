@@ -52,7 +52,10 @@ export class AncientRuins {
     private _ancientRuinsSpec: any = {
         grassPercentage: 0.3,
         grassColor: 'green',
-        hasPlants: true
+        hasPlants: true,
+        hasWater: true,
+        waterColor: 'blue',
+        waterPercentage: 0.1
     };
 
     /**
