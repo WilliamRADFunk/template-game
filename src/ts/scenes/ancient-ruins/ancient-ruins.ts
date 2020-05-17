@@ -8,7 +8,9 @@ import { getIntersections } from "../../utils/get-intersections";
 interface MaterialMap {
     [key: string]: {
         [key: string]: {
-            [key: string]: MeshPhongMaterial;
+            [key: string]: {
+                [key: string]: MeshPhongMaterial;
+            }
         }
     }
 }
@@ -19,9 +21,23 @@ interface MaterialMap {
  */
 export class AncientRuins {
     /**
+     * 
+     */
+    private _ancientRuinsSpec: any = {
+        grassPercentage: 0.1,
+        grassColor: 'green',
+        hasPlants: true
+    };
+
+    /**
      * Reference to the main Control Panel.
      */
     private _controlPanel: ControlPanel;
+
+    /**
+     * 
+     */
+    private _geometry: PlaneGeometry = new PlaneGeometry( 0.4, 0.4, 10, 10 );
 
     /**
      * The grid array with values of all tiles on game map.
@@ -46,11 +62,12 @@ export class AncientRuins {
      * All of the materials contained in this scene.
      */
     private _materials: MaterialMap = {
-        grassWithDirt: {
-            green: { }
-        },
         grass: {
-            green: { }
+            green: {
+                dirt: {},
+                gravel: {},
+                water: {}
+            }
         }
     };
 
@@ -76,133 +93,183 @@ export class AncientRuins {
         this._scene = scene.scene;
         this._textures = textures;
 
+
+
         // Text, Button, and Event Listeners
         this._onInitialize(scene);
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
 
-        this._materials.grass.green.centerCenter1 = new MeshPhongMaterial({
+        this._makeMaterials();
+
+        this._makeGrass();
+
+        // Check grass results
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                // for (let elev = 0; elev < 4; elev++) { }
+                if (this._grid[row][col][1] === 1) {
+                    const block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter2 );
+                    block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
+                    block.rotation.set(-1.5708, 0, 0);
+                    this._scene.add(block);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks a given tile for grass, and adds 10% chance to spread.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     * @returns additional spread percentage for grass
+     */
+    private _checkGrassSurroundings(row: number, col: number): number {
+        // Check out of bounds.
+        if (row < 0 || row > 29) {
+            return 0;
+        } else if (col < 0 || col > 29) {
+            return 0;
+        }
+
+        // If non-zero, then it's a grass tile, thus increasing grass spread another 10%
+        return (this._grid[row][col][1] === 1) ? 0.1 : 0;
+    }
+
+    /**
+     * Sets up the grid with grass values.
+     */
+    private _makeGrass(): void {
+        // If no plants on planet, don't spawn grass.
+        if (!this._ancientRuinsSpec.hasPlants) {
+            return;
+        }
+
+        // Seed the grass
+        for (let row = 0; row < 30; row++) {
+            this._grid[row] = [];
+            for (let col = 0; col < 30; col++) {
+                this._grid[row][col] = [];
+                if (Math.random() < this._ancientRuinsSpec.grassPercentage) {
+                    this._grid[row][col][1] = 1;
+                } else {
+                    this._grid[row][col][1] = 0;
+                }
+            }
+        }
+
+        // Organically let the grass spread
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                if (!this._grid[row][col][1]) {
+                    let hasGrassPercentage = 0.01
+                        + this._checkGrassSurroundings(row + 1, col - 1)
+                        + this._checkGrassSurroundings(row, col - 1)
+                        + this._checkGrassSurroundings(row - 1, col - 1)
+                        + this._checkGrassSurroundings(row + 1, col)
+                        + this._checkGrassSurroundings(row - 1, col)
+                        + this._checkGrassSurroundings(row + 1, col + 1)
+                        + this._checkGrassSurroundings(row, col + 1)
+                        + this._checkGrassSurroundings(row - 1, col + 1)
+                    this._grid[row][col][1] = (Math.random() < hasGrassPercentage) ? 1 : 0;
+                }
+            }
+        }
+    }
+
+    /**
+     * Makes all the tile materials for the game map.
+     */
+    private _makeMaterials(): void {
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter1 = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassCenter01,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grass.green.centerCenter1.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter1.map.minFilter = LinearFilter;
 
-        this._materials.grass.green.centerCenter2 = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter2 = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassCenter02,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grass.green.centerCenter2.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerCenter2.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.bottomCenter = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomCenter = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassBottomCenterDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.bottomCenter.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomCenter.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.bottomLeft = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomLeft = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassBottomLeftDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.bottomLeft.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomLeft.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.bottomRight = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomRight = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassBottomRightDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.bottomRight.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.bottomRight.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.centerLeft = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerLeft = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassCenterLeftDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.centerLeft.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerLeft.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.centerRight = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerRight = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassCenterRightDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.centerRight.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.centerRight.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.topCenter = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topCenter = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassTopCenterDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.topCenter.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topCenter.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.topLeft = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topLeft = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassTopLeftDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.topLeft.map.minFilter = LinearFilter;
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topLeft.map.minFilter = LinearFilter;
 
-        this._materials.grassWithDirt.green.topRight = new MeshPhongMaterial({
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topRight = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.greenGrassTopRightDirt1,
             shininess: 0,
             side: DoubleSide,
             transparent: false
         });
-        this._materials.grassWithDirt.green.topRight.map.minFilter = LinearFilter;
-
-        const geo = new PlaneGeometry( 0.4, 0.4, 10, 10 );
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                // for (let elev = 0; elev < 4; elev++) {
-                    let block;
-                    if (row === 29 && col > 0 && col < 29) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.bottomCenter );
-                    } else if (row === 0 && col > 0 && col < 29) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.topCenter );
-                    } else if (col === 29 && row > 0 && row < 29) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.centerLeft );
-                    } else if (col === 0 && row > 0 && row < 29) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.centerRight );
-                    } else if (row === 29 && col === 0) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.bottomRight );
-                    } else if (row === 29 && col === 29) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.bottomLeft );
-                    } else if (row === 0 && col === 29) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.topLeft );
-                    } else if (row === 0 && col === 0) {
-                        block = new Mesh( geo, this._materials.grassWithDirt.green.topRight );
-                    } else if ((row + col) % 2 === 0) {
-                        block = new Mesh( geo, this._materials.grass.green.centerCenter1 );
-                    } else {
-                        block = new Mesh( geo, this._materials.grass.green.centerCenter2 );
-                    }
-                    block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
-                    block.rotation.set(-1.5708, 0, 0);
-                    this._scene.add(block);
-                // }
-            }
-        }
+        this._materials.grass[this._ancientRuinsSpec.grassColor].dirt.topRight.map.minFilter = LinearFilter;
     }
 
     /**
