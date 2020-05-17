@@ -1,9 +1,17 @@
-import { Scene, Texture } from "three";
+import { AdditiveBlending, CanvasTexture, DoubleSide, Mesh, MeshPhongMaterial, PlaneGeometry, Scene, Sprite, SpriteMaterial, Texture, Vector2, LinearFilter } from "three";
 
 import { SceneType } from "../../models/scene-type";
 import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
+
+interface MaterialMap {
+    [key: string]: {
+        [key: string]: {
+            [key: string]: MeshPhongMaterial;
+        }
+    }
+}
 
 /**
  * @class
@@ -25,7 +33,7 @@ export class AncientRuins {
      * Light:           Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
      * Type:            [row][col][elevation] % 100 gives "type" of tile
      * Directionality:  Math.floor([row][col][elevation] / 100) gives directionality of tile (ie. 0 centered, 1 top-facing, 2 right-facing, etc.) allows for higher numbers and greater flexibility.
-     * 
+     *
      */
     private _grid: number[][][] = [];
 
@@ -35,12 +43,24 @@ export class AncientRuins {
     private _listenerRef: () => void;
 
     /**
+     * All of the materials contained in this scene.
+     */
+    private _materials: MaterialMap = {
+        grassWithDirt: {
+            green: { }
+        },
+        grass: {
+            green: { }
+        }
+    };
+
+    /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
 
     /**
-     * All of the textures contained in the help screen.
+     * All of the textures contained in this scene.
      */
     private _textures: { [key: string]: Texture } = {};
 
@@ -61,11 +81,126 @@ export class AncientRuins {
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
 
-        for (let row = 0; row < 121; row++) {
-            for (let col = 0; col < 121; col++) {
-                for (let elev = 0; elev < 4; elev++) {
-                    // TODO: Populate ruins
-                }
+        this._materials.grass.green.centerCenter1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassCenter01,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass.green.centerCenter1.map.minFilter = LinearFilter;
+
+        this._materials.grass.green.centerCenter2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassCenter02,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass.green.centerCenter2.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.bottomCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassBottomCenterDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.bottomCenter.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.bottomLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassBottomLeftDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.bottomLeft.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.bottomRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassBottomRightDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.bottomRight.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.centerLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassCenterLeftDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.centerLeft.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.centerRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassCenterRightDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.centerRight.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.topCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassTopCenterDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.topCenter.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.topLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassTopLeftDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.topLeft.map.minFilter = LinearFilter;
+
+        this._materials.grassWithDirt.green.topRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.greenGrassTopRightDirt1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grassWithDirt.green.topRight.map.minFilter = LinearFilter;
+
+        const geo = new PlaneGeometry( 0.4, 0.4, 10, 10 );
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                // for (let elev = 0; elev < 4; elev++) {
+                    let block;
+                    if (row === 29 && col > 0 && col < 29) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.bottomCenter );
+                    } else if (row === 0 && col > 0 && col < 29) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.topCenter );
+                    } else if (col === 29 && row > 0 && row < 29) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.centerLeft );
+                    } else if (col === 0 && row > 0 && row < 29) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.centerRight );
+                    } else if (row === 29 && col === 0) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.bottomRight );
+                    } else if (row === 29 && col === 29) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.bottomLeft );
+                    } else if (row === 0 && col === 29) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.topLeft );
+                    } else if (row === 0 && col === 0) {
+                        block = new Mesh( geo, this._materials.grassWithDirt.green.topRight );
+                    } else if ((row + col) % 2 === 0) {
+                        block = new Mesh( geo, this._materials.grass.green.centerCenter1 );
+                    } else {
+                        block = new Mesh( geo, this._materials.grass.green.centerCenter2 );
+                    }
+                    block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
+                    block.rotation.set(-1.5708, 0, 0);
+                    this._scene.add(block);
+                // }
             }
         }
     }

@@ -68,7 +68,17 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     mouse: ['assets/images/mouse.png', null],
     mouseLeft: ['assets/images/mouse-left.png', null],
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
-    ship: ['assets/images/ship.png', null]
+    ship: ['assets/images/ship.png', null],
+    greenGrassCenter01: ['assets/images/grass-tile-green-center-01.png', null],
+    greenGrassCenter02: ['assets/images/grass-tile-green-center-02.png', null],
+    greenGrassBottomCenterDirt1: ['assets/images/grass-tile-green-bottom-center-dirt-01.png', null],
+    greenGrassBottomLeftDirt1: ['assets/images/grass-tile-green-bottom-left-dirt-01.png', null],
+    greenGrassBottomRightDirt1: ['assets/images/grass-tile-green-bottom-right-dirt-01.png', null],
+    greenGrassCenterLeftDirt1: ['assets/images/grass-tile-green-center-left-dirt-01.png', null],
+    greenGrassCenterRightDirt1: ['assets/images/grass-tile-green-center-right-dirt-01.png', null],
+    greenGrassTopCenterDirt1: ['assets/images/grass-tile-green-top-center-dirt-01.png', null],
+    greenGrassTopLeftDirt1: ['assets/images/grass-tile-green-top-left-dirt-01.png', null],
+    greenGrassTopRightDirt1: ['assets/images/grass-tile-green-top-right-dirt-01.png', null]
 };
 
 /**
@@ -1018,7 +1028,16 @@ const loadAncientRuinsScene = () => {
     const ancientRuins = new AncientRuins(
         scenes.ancientRuins,
         {
-            arrow: TEXTURES.arrow[1]
+            greenGrassCenter01: TEXTURES.greenGrassCenter01[1],
+            greenGrassCenter02: TEXTURES.greenGrassCenter02[1],
+            greenGrassBottomCenterDirt1: TEXTURES.greenGrassBottomCenterDirt1[1],
+            greenGrassBottomLeftDirt1: TEXTURES.greenGrassBottomLeftDirt1[1],
+            greenGrassBottomRightDirt1: TEXTURES.greenGrassBottomRightDirt1[1],
+            greenGrassCenterLeftDirt1: TEXTURES.greenGrassCenterLeftDirt1[1],
+            greenGrassCenterRightDirt1: TEXTURES.greenGrassCenterRightDirt1[1],
+            greenGrassTopCenterDirt1: TEXTURES.greenGrassTopCenterDirt1[1],
+            greenGrassTopLeftDirt1: TEXTURES.greenGrassTopLeftDirt1[1],
+            greenGrassTopRightDirt1: TEXTURES.greenGrassTopRightDirt1[1]
         });
     scenes.ancientRuins.raycaster = raycaster;
     /**
@@ -1036,11 +1055,11 @@ const loadAncientRuinsScene = () => {
             scenes.ancientRuins.raycaster = null;
             scenes.ancientRuins.renderer = null;
             scenes.ancientRuins.scene = null;
+            statsPanel.end();
             return;
         } else {
-            statsPanel.begin();
+            statsPanel.update();
             const output: any = ancientRuins.endCycle();
-            statsPanel.end();
             if (output) {
                 console.log('Output', output);
                 ancientRuins.dispose();
@@ -1055,6 +1074,7 @@ const loadAncientRuinsScene = () => {
                 scenes.ancientRuins.raycaster = null;
                 scenes.ancientRuins.renderer = null;
                 scenes.ancientRuins.scene = null;
+                statsPanel.end();
                 setTimeout(() => {
                     loadMenu();
                 }, 10);
@@ -1064,6 +1084,7 @@ const loadAncientRuinsScene = () => {
         scenes.ancientRuins.renderer.render( scenes.ancientRuins.scene, scenes.ancientRuins.camera );
         requestAnimationFrame( render );
     };
+    statsPanel.begin();
     // Kick off the first render loop iteration.
     scenes.ancientRuins.renderer.render( scenes.ancientRuins.scene, scenes.ancientRuins.camera );
 	requestAnimationFrame( render );
