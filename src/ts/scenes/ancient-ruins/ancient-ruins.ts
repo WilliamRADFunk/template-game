@@ -126,12 +126,14 @@ export class AncientRuins {
      */
     private _ancientRuinsSpec: any = {
         dirtMaterial: 'Dirt',
-        grassPercentage: 0.3,
         grassColor: 'green',
+        grassPercentage: 0.3,
+        grassSpreadability: 0.15,
         hasPlants: true,
         hasWater: true,
         waterColor: 'blue',
-        waterPercentage: 0.025
+        waterPercentage: 0.025,
+        waterSpreadability: 0.1
     };
 
     /**
@@ -314,7 +316,7 @@ export class AncientRuins {
      */
     private _checkGrassSpread(row: number, col: number): number {
         // If non-zero, then it's a grass tile, thus increasing grass spread another 15%
-        return (this._isInBounds(row, col) && this._grid[row][col][1] === 1) ? 0.15 : 0;
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === 1) ? this._ancientRuinsSpec.grassSpreadability : 0;
     }
 
     /**
@@ -325,7 +327,7 @@ export class AncientRuins {
      */
     private _checkWaterSpread(row: number, col: number): number {
         // If non-zero, then it's a water tile, thus increasing water spread another 10%
-        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? 0.1 : 0;
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? this._ancientRuinsSpec.waterSpreadability : 0;
     }
 
     /**
