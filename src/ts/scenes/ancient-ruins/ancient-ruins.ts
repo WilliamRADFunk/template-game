@@ -274,6 +274,7 @@ export class AncientRuins {
 
         this._makeWater();
 
+        // Shapes water to smooth its edges against dirt and grass tiles.
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
                 if (this._grid[row][col][1] === 20) {
@@ -282,10 +283,22 @@ export class AncientRuins {
             }
         }
 
+        // Shapes grass to smooth its edges against dirt and water tiles.
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
                 if (this._grid[row][col][1] === 1) {
                     this._modifyGrassForSurrounds(row, col);
+                }
+            }
+        }
+
+        // Sets obstruction over deep water.
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                if (this._grid[row][col][1] === 20) {
+                    this._grid[row][col][2] = 1; // Water is too deep to cross.
+                } else {
+                    this._grid[row][col][2] = 0; // Traversable tile.
                 }
             }
         }
