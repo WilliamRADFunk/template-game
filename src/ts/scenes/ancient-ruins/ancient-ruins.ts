@@ -12,7 +12,7 @@ import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
 
-const greenGrassAgainstDirtLookupTable: { [key: string]: number } = {
+const grassAgainstDirtLookupTable: { [key: string]: number } = {
     '0000': 2,
     '1000': 3,
     '1100': 4,
@@ -33,6 +33,59 @@ const greenGrassAgainstDirtLookupTable: { [key: string]: number } = {
     '1111': 19
 };
 
+const waterAgainstDirtLookupTable: { [key: string]: number } = {
+    '0000-0000': 20,
+    '1000-0000': 21,
+    '1000-1000': 21,
+    '1000-0001': 21,
+    '1000-1001': 21,
+    '1100-0000': 22,
+    '1100-1000': 22,
+    '1100-0100': 22,
+    '1100-0001': 22,
+    '1100-1001': 22,
+    '1100-0101': 22,
+    '1100-1101': 22,
+    '1100-1100': 22,
+    '0100-0000': 23,
+    '0100-1000': 23,
+    '0100-0100': 23,
+    '0100-1100': 23,
+    '0110-0000': 24,
+    '0110-0100': 24,
+    '0110-1000': 24,
+    '0110-0010': 24,
+    '0110-1100': 24,
+    '0110-0110': 24,
+    '0110-1010': 24,
+    '0110-1110': 24,
+    '0010-0000': 25,
+    '0010-0100': 25,
+    '0010-0010': 25,
+    '0010-0110': 25,
+    '0011-0000': 26,
+    '0011-0010': 26,
+    '0011-0100': 26,
+    '0011-0001': 26,
+    '0011-0110': 26,
+    '0011-0011': 26,
+    '0011-0101': 26,
+    '0011-0111': 26,
+    '0001-0000': 27,
+    '0001-0010': 27,
+    '0001-0001': 27,
+    '0001-0011': 27,
+    '1001-0000': 28,
+    '1001-0001': 28,
+    '1001-1000': 28,
+    '1001-0010': 28,
+    '1001-1010': 28,
+    '1001-0011': 28,
+    '1001-1001': 28,
+    '1001-1011': 28,
+    '1111-0000': 29
+};
+
 interface MaterialMap {
     [key: string]: {
         [key: string]: {
@@ -49,7 +102,7 @@ interface MaterialMap {
  */
 export class AncientRuins {
     /**
-     *
+     * Specification of what the planet and ruins below should look like.
      */
     private _ancientRuinsSpec: any = {
         dirtMaterial: 'Dirt',
@@ -67,7 +120,7 @@ export class AncientRuins {
     private _controlPanel: ControlPanel;
 
     /**
-     *
+     * Tile geometry that makes up the ground tiles.
      */
     private _geometry: PlaneGeometry = new PlaneGeometry( 0.4, 0.4, 10, 10 );
 
@@ -196,6 +249,14 @@ export class AncientRuins {
 
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
+                if (this._grid[row][col][1] === 20) {
+                    this._modifyWaterForSurrounds(row, col);
+                }
+            }
+        }
+
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
                 if (this._grid[row][col][1] === 1) {
                     this._modifyGrassForSurrounds(row, col);
                 }
@@ -224,7 +285,7 @@ export class AncientRuins {
      */
     private _checkWaterSpread(row: number, col: number): number {
         // If non-zero, then it's a water tile, thus increasing water spread another 10%
-        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? 0.1 : 0;
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? 0.15 : 0;
     }
 
     /**
@@ -474,6 +535,90 @@ export class AncientRuins {
                         + this._checkWaterSpread(row - 1, col + 1)
                     if (Math.random() < hasWaterPercentage) {
                         this._grid[row][col][1] = 20;
+                    }
+                }
+            }
+        }
+
+        // Check minimum water reqs.
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                if (this._grid[row][col][1] === 20) {
+                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === 20) || !this._isInBounds(row + 1, col);
+                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === 20) || !this._isInBounds(row - 1, col);
+                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === 20) || !this._isInBounds(row, col - 1);
+                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === 20) || !this._isInBounds(row, col + 1);
+
+                    const upperLeftCorner = (this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === 20) || !this._isInBounds(row + 1, col - 1)
+                    const upperRightCorner = (this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === 20) || !this._isInBounds(row + 1, col + 1);
+                    const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === 20) || !this._isInBounds(row - 1, col - 1)
+                    const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === 20) || !this._isInBounds(row - 1, col + 1);
+
+                    if ([above, below, left, right].every(x => !x)) {
+                        continue;
+                    }
+                    if (!above && !below) {
+                        if (lowerLeftCorner || lowerRightCorner) {
+                            this._grid[row - 1][col][1] = 20;
+                            this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = 20);
+                            this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = 20);
+                        } else {
+                            this._grid[row + 1][col][1] = 20;
+                            this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = 20);
+                            this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = 20);
+                        }
+                    }
+                    if (!left && !right) {
+                        if (lowerLeftCorner || upperLeftCorner) {
+                            this._grid[row][col - 1][1] = 20;
+                            this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = 20);
+                            this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = 20);
+                        } else {
+                            this._grid[row][col + 1][1] = 20;
+                            this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = 20);
+                            this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = 20);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Remove waters with only 1 tile thickness
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                if (this._grid[row][col][1] === 20) {
+                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === 20) || !this._isInBounds(row + 1, col);
+                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === 20) || !this._isInBounds(row - 1, col);
+                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === 20) || !this._isInBounds(row, col - 1);
+                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === 20) || !this._isInBounds(row, col + 1);
+
+                    if ([above, below, left, right].every(x => !x)) {
+                        continue;
+                    }
+                    if (!above && !below) {
+                        this._grid[row][col][1] = 100;
+                        continue;
+                    } else if (!left && !right) {
+                        this._grid[row][col][1] = 100;
+                        continue;
+                    }
+
+                    const upperLeftCorner = (this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === 20) || !this._isInBounds(row + 1, col - 1)
+                    const upperRightCorner = (this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === 20) || !this._isInBounds(row + 1, col + 1);
+                    const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === 20) || !this._isInBounds(row - 1, col - 1)
+                    const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === 20) || !this._isInBounds(row - 1, col + 1);
+
+                    if (above && right && !upperRightCorner) {
+                        this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = 20);
+                    }
+                    if (below && right && !lowerRightCorner) {
+                        this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = 20);
+                    }
+                    if (below && left && !lowerLeftCorner) {
+                        this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = 20);
+                    }
+                    if (above && left && !upperLeftCorner) {
+                        this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = 20);
                     }
                 }
             }
@@ -782,7 +927,30 @@ export class AncientRuins {
         } else if (key === '0000' && [topRight, bottomRight, bottomLeft, topLeft].some(x => !!x)) {
             key = 'mixed';
         }
-        this._grid[row][col][1] = greenGrassAgainstDirtLookupTable[key] || 2;
+        this._grid[row][col][1] = grassAgainstDirtLookupTable[key] || 2;
+    }
+
+    /**
+     * Checks a given tile's surrounds for water and updates value to match neighboring dirt tiles.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     */
+    private _modifyWaterForSurrounds(row: number, col: number): void {
+        const top = this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] < 20 || this._grid[row + 1][col][1] > 99) ? 1 : 0;
+        const topRight = this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] < 20 || this._grid[row + 1][col + 1][1] > 99) ? 1 : 0;
+        const right = this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] < 20 || this._grid[row][col + 1][1] > 99) ? 1 : 0;
+        const bottomRight = this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] < 20 || this._grid[row - 1][col + 1][1] > 99) ? 1 : 0;
+        const bottom = this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] < 20 || this._grid[row - 1][col][1] > 99) ? 1 : 0;
+        const bottomLeft = this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] < 20 || this._grid[row - 1][col - 1][1] > 99) ? 1 : 0;
+        const left = this._isInBounds(row, col - 1) && (this._grid[row][col - 1][1] < 20 || this._grid[row][col - 1][1] > 99) ? 1 : 0;
+        const topLeft = this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] < 20 || this._grid[row + 1][col - 1][1] > 99) ? 1 : 0;
+
+        // 1 === non-water tile found
+        // 0 === water tile found
+
+        let key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
+        console.log(key);
+        this._grid[row][col][1] = waterAgainstDirtLookupTable[key] || 20;
     }
 
     /**
