@@ -83,7 +83,27 @@ const waterAgainstDirtLookupTable: { [key: string]: number } = {
     '1001-0011': 28,
     '1001-1001': 28,
     '1001-1011': 28,
-    '1111-0000': 29
+    '0000-0001': 29,
+    '0000-1000': 30,
+    '0000-0100': 31,
+    '0000-0010': 32,
+    '0000-0101': 33,
+    '0000-1010': 34,
+    '1111-1111': 35,
+    '1111-0111': 35,
+    '1111-1011': 35,
+    '1111-1101': 35,
+    '1111-1110': 35,
+    '1111-1100': 35,
+    '1111-0110': 35,
+    '1111-0011': 35,
+    '1111-1001': 35,
+    '1111-1000': 35,
+    '1111-0100': 35,
+    '1111-0010': 35,
+    '1111-0001': 35,
+    '1111-0000': 35
+
 };
 
 interface MaterialMap {
@@ -163,6 +183,13 @@ export class AncientRuins {
      * 26: Blue Water (Dirt/Gravel/Sand at bottom & left)
      * 27: Blue Water (Dirt/Gravel/Sand at left)
      * 28: Blue Water (Dirt/Gravel/Sand at left & top)
+     * 29: Blue Water (Dirt/Gravel/Sand at upper-left)
+     * 30: Blue Water (Dirt/Gravel/Sand at upper-right)
+     * 31: Blue Water (Dirt/Gravel/Sand at lower-left)
+     * 32: Blue Water (Dirt/Gravel/Sand at lower-right)
+     * 33: Blue Water (Dirt/Gravel/Sand at upper-left lower-right)
+     * 34: Blue Water (Dirt/Gravel/Sand at upper-right lower-left)
+     * 35: Blue Water (Dirt/Gravel/Sand at top & bottom, left & right)
      * 100: Brown Dirt (whole tile) version 1
      * 101: Brown Dirt (whole tile) version 2
      * 102: Grey Gravel (whole tile) version 1
@@ -285,7 +312,7 @@ export class AncientRuins {
      */
     private _checkWaterSpread(row: number, col: number): number {
         // If non-zero, then it's a water tile, thus increasing water spread another 10%
-        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? 0.15 : 0;
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? 0.1 : 0;
     }
 
     /**
@@ -406,6 +433,34 @@ export class AncientRuins {
                     }
                     case 28: {
                         block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight );
+                        break;
+                    }
+                    case 29: {
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRightTip );
+                        break;
+                    }
+                    case 30: {
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftTip );
+                        break;
+                    }
+                    case 31: {
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftTip );
+                        break;
+                    }
+                    case 32: {
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRightTip );
+                        break;
+                    }
+                    case 33: {
+                        console.log('33');
+                        break;
+                    }
+                    case 34: {
+                        console.log('34');
+                        break;
+                    }
+                    case 35: {
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter );
                         break;
                     }
                     case 100: {
@@ -623,6 +678,28 @@ export class AncientRuins {
                 }
             }
         }
+
+        // Eliminate rare occasions where fill in block connect a former stand alone pond into a 1 thickness stream.
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                if (this._grid[row][col][1] === 20) {
+                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === 20) || !this._isInBounds(row + 1, col);
+                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === 20) || !this._isInBounds(row - 1, col);
+                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === 20) || !this._isInBounds(row, col - 1);
+                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === 20) || !this._isInBounds(row, col + 1);
+
+                    if (!above && !below && ((left && !right) || (!left && right))) {
+                        this._grid[row][col][1] = 101;
+                    }
+                    if (!left && !right && ((above && !below) || (!above && below))) {
+                        this._grid[row][col][1] = 101;
+                    }
+                    if ([above, below, left, right].every(x => !x) && Math.random() < 0.5) {
+                        this._grid[row][col][1] = 101;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -649,6 +726,15 @@ export class AncientRuins {
         this._materials.dirt.brown.complete.centerCenter2.map.minFilter = LinearFilter;
 
         // Water Materials
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterCenterDirt1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
+
         this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1 = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterComplete01`],
@@ -676,6 +762,15 @@ export class AncientRuins {
         });
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
 
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeftTip${this._ancientRuinsSpec.dirtMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftTip.map.minFilter = LinearFilter;
+
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRight${this._ancientRuinsSpec.dirtMaterial}1`],
@@ -684,6 +779,15 @@ export class AncientRuins {
             transparent: false
         });
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRightTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRightTip${this._ancientRuinsSpec.dirtMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRightTip.map.minFilter = LinearFilter;
 
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
             color: '#FFFFFF',
@@ -721,6 +825,15 @@ export class AncientRuins {
         });
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
 
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeftTip${this._ancientRuinsSpec.dirtMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftTip.map.minFilter = LinearFilter;
+
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRight${this._ancientRuinsSpec.dirtMaterial}1`],
@@ -729,6 +842,15 @@ export class AncientRuins {
             transparent: false
         });
         this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRightTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRightTip${this._ancientRuinsSpec.dirtMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRightTip.map.minFilter = LinearFilter;
 
         // Grass materials
         this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
@@ -949,7 +1071,6 @@ export class AncientRuins {
         // 0 === water tile found
 
         let key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
-        console.log(key);
         this._grid[row][col][1] = waterAgainstDirtLookupTable[key] || 20;
     }
 
