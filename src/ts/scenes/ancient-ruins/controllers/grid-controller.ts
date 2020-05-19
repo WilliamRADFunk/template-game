@@ -3,6 +3,7 @@ import {
     LinearFilter,
     Mesh,
     MeshPhongMaterial,
+    Object3D,
     PlaneGeometry,
     Scene,
     Texture } from "three";
@@ -44,6 +45,7 @@ const waterAgainstDirtLookupTable: { [key: string]: number } = {
     '1100-0101': 22,
     '1100-1101': 22,
     '1100-1100': 22,
+    '1000-0101': 22,
     '0100-0000': 23,
     '0100-1000': 23,
     '0100-0100': 23,
@@ -68,6 +70,7 @@ const waterAgainstDirtLookupTable: { [key: string]: number } = {
     '0011-0011': 26,
     '0011-0101': 26,
     '0011-0111': 26,
+    '0010-0001': 26,
     '0001-0000': 27,
     '0001-0010': 27,
     '0001-0001': 27,
@@ -99,7 +102,9 @@ const waterAgainstDirtLookupTable: { [key: string]: number } = {
     '1111-0100': 35,
     '1111-0010': 35,
     '1111-0001': 35,
-    '1111-0000': 35
+    '1111-0000': 35,
+    '1111-1010': 35,
+    '1111-0101': 35
 };
 
 interface MaterialMap {
@@ -240,6 +245,9 @@ export class GridCtrl {
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
 
+        // All meshes added here first to be added as single mesh to the scene.
+        const megaMesh = new Object3D();
+
         this._makeMaterials();
 
         this._makeGrass();
@@ -253,9 +261,11 @@ export class GridCtrl {
         this._modifyGrassesForEdges();
 
         // Sets obstruction over deep water.
-        this._dropBouldersInWater();
+        this._dropBouldersInWater(megaMesh);
 
-        this._createGroundMeshes();
+        this._createGroundMeshes(megaMesh);
+
+        this._scene.add(megaMesh);
     }
 
     /**
@@ -282,8 +292,9 @@ export class GridCtrl {
 
     /**
      * Uses the tile grid to make meshes that match tile values.
+     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      */
-    private _createGroundMeshes(): void {
+    private _createGroundMeshes(megaMesh: Object3D): void {
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
                 let block;
@@ -459,7 +470,7 @@ export class GridCtrl {
                 if (block) {
                     block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
                     block.rotation.set(-1.5708, 0, 0);
-                    this._scene.add(block);
+                    megaMesh.add(block);
                 }
             }
         }
@@ -467,8 +478,9 @@ export class GridCtrl {
 
     /**
      * Randomly drops boulders in the deep waters, and sets them to obstructed.
+     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      */
-    private _dropBouldersInWater(): void {
+    private _dropBouldersInWater(megaMesh: Object3D): void {
         const waterBoulderMats: MeshPhongMaterial[] = [
             this._materials.rock.brown.water.variation1,
             this._materials.rock.brown.water.variation2,
@@ -489,7 +501,7 @@ export class GridCtrl {
                     if (block) {
                         block.position.set(-5.8 + (col/2.5), 15, 5.8 - row/2.5)
                         block.rotation.set(-1.5708, 0, 0);
-                        this._scene.add(block);
+                        megaMesh.add(block);
                     }
                 } else {
                     this._grid[row][col][2] = 0; // Traversable tile.
