@@ -228,6 +228,18 @@ export class AncientRuins {
                 water: {}
             }
         },
+        rock: {
+            brown: {
+                dirt: {},
+                gravel: {},
+                water: {}
+            },
+            grey: {
+                dirt: {},
+                gravel: {},
+                water: {}
+            }
+        },
         sand: {
             beige: {
                 complete: {}
@@ -294,11 +306,29 @@ export class AncientRuins {
             }
         }
 
+        const waterBoulderMats: MeshPhongMaterial[] = [
+            this._materials.rock.brown.water.variation1,
+            this._materials.rock.brown.water.variation2,
+            this._materials.rock.brown.water.variation3,
+            this._materials.rock.grey.water.variation1,
+            this._materials.rock.grey.water.variation2,
+            this._materials.rock.grey.water.variation3
+        ];
+
         // Sets obstruction over deep water.
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
                 if (this._grid[row][col][1] === 20) {
                     this._grid[row][col][2] = 1; // Water is too deep to cross.
+                    let block;
+                    if (Math.random() < 0.06) {
+                        block = new Mesh( this._geometry, waterBoulderMats[Math.floor(Math.random() * 5)]);
+                    }
+                    if (block) {
+                        block.position.set(-5.8 + (col/2.5), 15, 5.8 - row/2.5)
+                        block.rotation.set(-1.5708, 0, 0);
+                        this._scene.add(block);
+                    }
                 } else {
                     this._grid[row][col][2] = 0; // Traversable tile.
                 }
@@ -570,7 +600,7 @@ export class AncientRuins {
                 }
             }
         }
-    }    
+    }
 
     /**
      * Sets up the grid with water values.
@@ -721,6 +751,61 @@ export class AncientRuins {
      * Makes all the tile materials for the game map.
      */
     private _makeMaterials(): void {
+        // Rock Materials
+        this._materials.rock.brown.water.variation1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterBrown1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.brown.water.variation1.map.minFilter = LinearFilter;
+
+        this._materials.rock.brown.water.variation2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterBrown2,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.brown.water.variation2.map.minFilter = LinearFilter;
+
+        this._materials.rock.brown.water.variation3 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterBrown3,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.brown.water.variation3.map.minFilter = LinearFilter;
+
+        this._materials.rock.grey.water.variation1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterGrey1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.grey.water.variation1.map.minFilter = LinearFilter;
+
+        this._materials.rock.grey.water.variation2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterGrey2,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.grey.water.variation2.map.minFilter = LinearFilter;
+
+        this._materials.rock.grey.water.variation3 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterGrey3,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.grey.water.variation3.map.minFilter = LinearFilter;
+
         // Dirt Materials
         this._materials.dirt.brown.complete.centerCenter1 = new MeshPhongMaterial({
             color: '#FFFFFF',

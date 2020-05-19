@@ -102,6 +102,12 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     miningOfficerProfile1: ['assets/images/mining-officer-profile-01.png', null],
     mouse: ['assets/images/mouse.png', null],
     mouseLeft: ['assets/images/mouse-left.png', null],
+    rockWaterBrown1: ['assets/images/rock-water-brown-01.png', null],
+    rockWaterBrown2: ['assets/images/rock-water-brown-02.png', null],
+    rockWaterBrown3: ['assets/images/rock-water-brown-03.png', null],
+    rockWaterGrey1: ['assets/images/rock-water-grey-01.png', null],
+    rockWaterGrey2: ['assets/images/rock-water-grey-02.png', null],
+    rockWaterGrey3: ['assets/images/rock-water-grey-03.png', null],
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
     ship: ['assets/images/ship.png', null]
 };
@@ -1087,7 +1093,13 @@ const loadAncientRuinsScene = () => {
             greenGrassTopCenterDirt1: TEXTURES.greenGrassTopCenterDirt1[1],
             greenGrassTopLeftDirt1: TEXTURES.greenGrassTopLeftDirt1[1],
             greenGrassTopLeftRightDirt1: TEXTURES.greenGrassTopLeftRightDirt1[1],
-            greenGrassTopRightDirt1: TEXTURES.greenGrassTopRightDirt1[1]
+            greenGrassTopRightDirt1: TEXTURES.greenGrassTopRightDirt1[1],
+            rockWaterBrown1: TEXTURES.rockWaterBrown1[1],
+            rockWaterBrown2: TEXTURES.rockWaterBrown2[1],
+            rockWaterBrown3: TEXTURES.rockWaterBrown3[1],
+            rockWaterGrey1: TEXTURES.rockWaterGrey1[1],
+            rockWaterGrey2: TEXTURES.rockWaterGrey2[1],
+            rockWaterGrey3: TEXTURES.rockWaterGrey3[1],
         });
     scenes.ancientRuins.raycaster = raycaster;
     /**
