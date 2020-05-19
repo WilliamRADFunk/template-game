@@ -8,8 +8,30 @@ import {
     Scene,
     Texture } from "three";
 
+// Lookup table for bridge tiles when assigning edge graphics.
+const bridgeLookupTable: { [key: string]: number } = {
+    '0000': 2,
+    '1000': 3,
+    '1100': 4,
+    '0100': 5,
+    '0110': 6,
+    '0010': 7,
+    '0011': 8,
+    '0001': 9,
+    '1001': 10,
+    '1101': 11,
+    '1110': 12,
+    '0111': 13,
+    '1011': 14,
+    '1010': 15,
+    '0101': 16,
+    'sparse': 17,
+    'mixed': 18,
+    '1111': 19
+};
+
 // Lookup table for grass tiles when assigning edge graphics.
-const grassAgainstDirtLookupTable: { [key: string]: number } = {
+const grassLookupTable: { [key: string]: number } = {
     '0000': 2,
     '1000': 3,
     '1100': 4,
@@ -31,7 +53,7 @@ const grassAgainstDirtLookupTable: { [key: string]: number } = {
 };
 
 // Lookup table for water tiles when assigning edge graphics.
-const waterAgainstDirtLookupTable: { [key: string]: number } = {
+const waterLookupTable: { [key: string]: number } = {
     '0000-0000': 20,
     '1000-0000': 21,
     '1000-1000': 21,
@@ -174,6 +196,28 @@ export class GridCtrl {
      * 33: Blue Water (Dirt/Gravel/Sand at upper-left lower-right)
      * 34: Blue Water (Dirt/Gravel/Sand at upper-right lower-left)
      * 35: Blue Water (Dirt/Gravel/Sand at top & bottom, left & right)
+     * 36: Bridge Start Horizontal (Wood/Concrete/Steel)
+     * 37: Bridge End Horizontal (Wood/Concrete/Steel)
+     * 38: Bridge Bottom Intact Horizontal (Wood/Concrete/Steel)
+     * 39: Bridge Bottom Damaged Horizontal (Wood/Concrete/Steel)
+     * 40: Bridge Bottom Destroyed Horizontal (Wood/Concrete/Steel)
+     * 41: Bridge Middle Intact Horizontal (Wood/Concrete/Steel)
+     * 42: Bridge Middle Damaged Horizontal (Wood/Concrete/Steel)
+     * 43: Bridge Middle Destroyed Horizontal (Wood/Concrete/Steel)
+     * 44: Bridge Top Intact Horizontal (Wood/Concrete/Steel)
+     * 45: Bridge Top Damaged Horizontal (Wood/Concrete/Steel)
+     * 46: Bridge Top Destroyed Horizontal (Wood/Concrete/Steel)
+     * 47: Bridge Start Vertical (Wood/Concrete/Steel)
+     * 48: Bridge End Vertical (Wood/Concrete/Steel)
+     * 49: Bridge Right Intact Vertical (Wood/Concrete/Steel)
+     * 50: Bridge Right Damaged Vertical (Wood/Concrete/Steel)
+     * 51: Bridge Right Destroyed Vertical (Wood/Concrete/Steel)
+     * 52: Bridge Middle Intact Vertical (Wood/Concrete/Steel)
+     * 53: Bridge Middle Damaged Vertical (Wood/Concrete/Steel)
+     * 54: Bridge Middle Destroyed Vertical (Wood/Concrete/Steel)
+     * 55: Bridge Left Intact Vertical (Wood/Concrete/Steel)
+     * 56: Bridge Left Damaged Vertical (Wood/Concrete/Steel)
+     * 57: Bridge Left Destroyed Vertical (Wood/Concrete/Steel)
      * 100: Brown Dirt (whole tile) version 1
      * 101: Brown Dirt (whole tile) version 2
      * 102: Grey Gravel (whole tile) version 1
@@ -1114,7 +1158,7 @@ export class GridCtrl {
         } else if (key === '0000' && [topRight, bottomRight, bottomLeft, topLeft].some(x => !!x)) {
             key = 'mixed';
         }
-        this._grid[row][col][1] = grassAgainstDirtLookupTable[key] || 2;
+        this._grid[row][col][1] = grassLookupTable[key] || 2;
     }
 
     /**
@@ -1162,7 +1206,7 @@ export class GridCtrl {
         // 0 === water tile found
 
         let key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
-        this._grid[row][col][1] = waterAgainstDirtLookupTable[key] || 20;
+        this._grid[row][col][1] = waterLookupTable[key] || 20;
     }
 
     /**
