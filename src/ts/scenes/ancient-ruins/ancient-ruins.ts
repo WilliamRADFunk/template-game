@@ -12,6 +12,7 @@ import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
 import { GridCtrl } from "./controllers/grid-controller";
+import { AncientRuinsSpecifications, GroundMaterial, GrassColor, WaterColor, WaterBiome, RuinsBiome } from "../../models/ancient-ruins-specifications";
 
 /**
  * @class
@@ -21,14 +22,16 @@ export class AncientRuins {
     /**
      * Specification of what the planet and ruins below should look like.
      */
-    private _ancientRuinsSpec: any = {
-        dirtMaterial: 'Dirt',
-        grassColor: 'green',
+    private _ancientRuinsSpec: AncientRuinsSpecifications = {
+        biomeRuins: RuinsBiome.CEMETERY,
+        biomeWater: WaterBiome.LAKES,
+        groundMaterial: GroundMaterial.DIRT,
+        grassColor: GrassColor.GREEN,
         grassPercentage: 0.3,
         grassSpreadability: 0.15,
         hasPlants: true,
         hasWater: true,
-        waterColor: 'blue',
+        waterColor: WaterColor.BLUE,
         waterPercentage: 0.025,
         waterSpreadability: 0.1
     };

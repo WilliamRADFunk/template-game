@@ -7,6 +7,7 @@ import {
     PlaneGeometry,
     Scene,
     Texture } from "three";
+import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
 
 // Lookup table for bridge tiles when assigning edge graphics.
 const bridgeLookupTable: { [key: string]: number } = {
@@ -106,9 +107,11 @@ const waterLookupTable: { [key: string]: number } = {
     '1001-1001': 28,
     '1001-1011': 28,
     '0000-0001': 29,
+    '1000-1010': 29,
     '0000-1000': 30,
     '0000-0100': 31,
     '0000-0010': 32,
+    '0010-1010': 32,
     '0000-0101': 33,
     '0000-1010': 34,
     '1111-1111': 35,
@@ -143,7 +146,7 @@ export class GridCtrl {
     /**
      * Specification of what the planet and ruins below should look like.
      */
-    private _ancientRuinsSpec: any;
+    private _ancientRuinsSpec: AncientRuinsSpecifications;
 
     /**
      * Tile geometry that makes up the ground tiles.
@@ -348,75 +351,75 @@ export class GridCtrl {
                         break;
                     }
                     case 3: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomCenter );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter );
                         break;
                     }
                     case 4: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft );
                         break;
                     }
                     case 5: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft );
                         break;
                     }
                     case 6: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft );
                         break;
                     }
                     case 7: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topCenter );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter );
                         break;
                     }
                     case 8: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight );
                         break;
                     }
                     case 9: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight );
                         break;
                     }
                     case 10: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight );
                         break;
                     }
                     case 11: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftRight );
                         break;
                     }
                     case 12: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottomRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomRight );
                         break;
                     }
                     case 13: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftRight );
                         break;
                     }
                     case 14: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottomLeft );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomLeft );
                         break;
                     }
                     case 15: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottom );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottom );
                         break;
                     }
                     case 16: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].leftRight );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].leftRight );
                         break;
                     }
                     case 17: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].sparse );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].sparse );
                         break;
                     }
                     case 18: {
                         if (Math.random() < 0.25) {
-                            block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].mixed );
+                            block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].mixed );
                         } else {
                             block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2 );
                         }
                         break;
                     }
                     case 19: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter );
+                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter );
                         break;
                     }
                     case 20: {
@@ -424,51 +427,51 @@ export class GridCtrl {
                         break;
                     }
                     case 21: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomCenter );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter );
                         break;
                     }
                     case 22: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft );
                         break;
                     }
                     case 23: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft );
                         break;
                     }
                     case 24: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft );
                         break;
                     }
                     case 25: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topCenter );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter );
                         break;
                     }
                     case 26: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight );
                         break;
                     }
                     case 27: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerRight );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight );
                         break;
                     }
                     case 28: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight );
                         break;
                     }
                     case 29: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRightTip );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRightTip );
                         break;
                     }
                     case 30: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftTip );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftTip );
                         break;
                     }
                     case 31: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftTip );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftTip );
                         break;
                     }
                     case 32: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRightTip );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRightTip );
                         break;
                     }
                     case 33: {
@@ -480,7 +483,7 @@ export class GridCtrl {
                         break;
                     }
                     case 35: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter );
+                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter );
                         break;
                     }
                     case 100: {
@@ -571,11 +574,54 @@ export class GridCtrl {
     }
 
     /**
+     * Makes water tiles specific to an oceanside look and feel
+     */
+    private _makeBeaches(): void {
+        // TODO: Pick left, top, or right randomly to place the ocean.
+    }
+
+    /**
+     * Makes an ancient cemetery on the map.
+     */
+    private _makeCemetery(): void {
+        // TODO: Scatter tombstones, and funeral plots all about. Have at least on mausoleum styled structure somewhere.
+        // Must make sure any interactable cemetery tiles are not on flooded tiles.
+    }
+
+    /**
+     * Makes an ancient city on the map.
+     */
+    private _makeCity(): void {
+        // TODO: Cover upper 2/3rds of the map with buildings, roads, lighting, vehicles.
+        // Optionally choose to do nothing, add craters, or other signs of how the city was destroyed.
+    }
+
+    /**
+     * Makes water tiles specific to a narrow creek.
+     */
+    private _makeCreek(): void {
+        // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
+        // Must be at least 10 tile apart depending on direction.
+        // Rivers must be 2 tiles thick at all points along its length.
+    }
+
+    /**
      * Sets up the grid with grass values.
      */
     private _makeGrass(): void {
         // If no plants on planet, don't spawn grass.
         if (!this._ancientRuinsSpec.hasPlants) {
+            for (let row = 0; row < 30; row++) {
+                this._grid[row] = [];
+                for (let col = 0; col < 30; col++) {
+                    this._grid[row][col] = [];
+                    if (Math.floor(Math.random() * 10) % 2 === 0) {
+                        this._grid[row][col][1] = 100;
+                    } else {
+                        this._grid[row][col][1] = 101;
+                    }
+                }
+            }
             return;
         }
 
@@ -612,14 +658,412 @@ export class GridCtrl {
     }
 
     /**
-     * Sets up the grid with water values.
+     * Makes water tiles specific to large, centrally-located lake.
      */
-    private _makeWater(): void {
-        // If no water on planet, don't spawn water.
-        if (!this._ancientRuinsSpec.hasWater) {
-            return;
-        }
+    private _makeLargeLake(): void {
+        // TODO: Pick rough center location, draw rough radius of 8-10 tiles, and randomize the edge.
+        // Once done, fill in interior spaces with full water.
+    }
 
+    /**
+     * Makes all the tile materials for the game map.
+     */
+    private _makeMaterials(): void {
+        // Rock Materials
+        this._materials.rock.brown.water.variation1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterBrown1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.brown.water.variation1.map.minFilter = LinearFilter;
+
+        this._materials.rock.brown.water.variation2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterBrown2,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.brown.water.variation2.map.minFilter = LinearFilter;
+
+        this._materials.rock.brown.water.variation3 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterBrown3,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.brown.water.variation3.map.minFilter = LinearFilter;
+
+        this._materials.rock.grey.water.variation1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterGrey1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.grey.water.variation1.map.minFilter = LinearFilter;
+
+        this._materials.rock.grey.water.variation2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterGrey2,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.grey.water.variation2.map.minFilter = LinearFilter;
+
+        this._materials.rock.grey.water.variation3 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.rockWaterGrey3,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.rock.grey.water.variation3.map.minFilter = LinearFilter;
+
+        // Dirt Materials
+        this._materials.dirt.brown.complete.centerCenter1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.dirtCenterCenter01,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.dirt.brown.complete.centerCenter1.map.minFilter = LinearFilter;
+
+        this._materials.dirt.brown.complete.centerCenter2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.dirtCenterCenter02,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.dirt.brown.complete.centerCenter2.map.minFilter = LinearFilter;
+
+        // Water Materials
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterCenterDirt1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterComplete01`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomCenter${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeftTip${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftTip.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRightTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRightTip${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRightTip.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopCenter${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeftTip${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftTip.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
+
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRightTip = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRightTip${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRightTip.map.minFilter = LinearFilter;
+
+        // Grass materials
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterCenter01`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassComplete01`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete1.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassComplete02`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomCenter${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomLeftRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftRight.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].leftRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassLeftRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].leftRight.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].mixed = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassMixed${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].mixed.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].sparse = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassSparse${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].sparse.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottom = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottom${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottom.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottomLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomLeft.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottomRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomRight.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopCenter${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopLeft${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopLeftRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftRight.map.minFilter = LinearFilter;
+
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopRight${this._ancientRuinsSpec.groundMaterial}1`],
+            shininess: 0,
+            side: DoubleSide,
+            transparent: false
+        });
+        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
+    }
+
+    /**
+     * Makes an ancient monastery somewhere roughly in the center of the map.
+     */
+    private _makeMonastery(): void {
+        // TODO: Randomly places a large religious structure somewhere in center of map.
+        // If in water biome like large lake, must make sure a bridge reaches an entrance.
+    }
+
+    /**
+     * Makes water tiles specific to a long map-spanning river.
+     */
+    private _makeRiver(): void {
+        // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
+        // Must be at least 10 tile apart depending on direction.
+        // Rivers must be no less than 4 tile thick at any point, but can be wider (max. 8 tiles).
+    }
+
+    /**
+     * Makes water tiles specific to series of lakes
+     */
+    private _makeSmallLakes(): void {
         // Seed the water
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
@@ -754,384 +1198,99 @@ export class GridCtrl {
                 }
             }
         }
+
+        // TODO: Test for lakes too long or too wide and shave them down.
     }
 
     /**
-     * Makes all the tile materials for the game map.
+     * Makes ruins structures relavant to the biomeRuins
      */
-    private _makeMaterials(): void {
-        // Rock Materials
-        this._materials.rock.brown.water.variation1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterBrown1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.rock.brown.water.variation1.map.minFilter = LinearFilter;
+    private _makeStructures(): void {
+        switch(this._ancientRuinsSpec.biomeRuins) {
+            case RuinsBiome.CEMETERY: {
+                this._makeCemetery();
+                break;
+            }
+            case RuinsBiome.MONASTERY: {
+                this._makeMonastery();
+                break;
+            }
+            case RuinsBiome.VILLAGE: {
+                this._makeVillage();
+                break;
+            }
+            case RuinsBiome.TOWN: {
+                this._makeTown();
+                break;
+            }
+            case RuinsBiome.CITY: {
+                this._makeCity();
+                break;
+            }
+            case RuinsBiome.MILITARY_BASE: {
+                this._makeMilitaryBase();
+                break;
+            }
+            case RuinsBiome.LIBRARY: {
+                this._makeLibrary();
+                break;
+            }
+            default: {
+                console.error('Invalid Ruins Biome in Ancient Ruins');
+            }
+        }
+    }
 
-        this._materials.rock.brown.water.variation2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterBrown2,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.rock.brown.water.variation2.map.minFilter = LinearFilter;
+    /**
+     * Makes an ancient town on the map.
+     */
+    private _makeTown(): void {
+        // TODO: Starting roughly at the center, randomly choose between scattered, circular, square, or row format
+        // Add 6-10 small structures, and a rough road. Randomly decide whether to put small funeral plot.
+    }
 
-        this._materials.rock.brown.water.variation3 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterBrown3,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.rock.brown.water.variation3.map.minFilter = LinearFilter;
+    /**
+     * Makes an ancient village on the map.
+     */
+    private _makeVillage(): void {
+        // TODO: Randomly choose between top-left, top-right, and center to place 3-4 small structure
+        // Add a well-like structure, and some fencing for animals.
+    }
 
-        this._materials.rock.grey.water.variation1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterGrey1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.rock.grey.water.variation1.map.minFilter = LinearFilter;
+    /**
+     * Sets up the grid with water values.
+     */
+    private _makeWater(): void {
+        // If no water on planet, don't spawn water.
+        if (!this._ancientRuinsSpec.hasWater) {
+            return;
+        }
 
-        this._materials.rock.grey.water.variation2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterGrey2,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.rock.grey.water.variation2.map.minFilter = LinearFilter;
-
-        this._materials.rock.grey.water.variation3 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterGrey3,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.rock.grey.water.variation3.map.minFilter = LinearFilter;
-
-        // Dirt Materials
-        this._materials.dirt.brown.complete.centerCenter1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.dirtCenterCenter01,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.dirt.brown.complete.centerCenter1.map.minFilter = LinearFilter;
-
-        this._materials.dirt.brown.complete.centerCenter2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.dirtCenterCenter02,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.dirt.brown.complete.centerCenter2.map.minFilter = LinearFilter;
-
-        // Water Materials
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterCenterDirt1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterComplete01`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomCenter${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomCenter.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeftTip${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftTip.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRightTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRightTip${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRightTip.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerRight.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopCenter${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topCenter.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeftTip${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftTip.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRightTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRightTip${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRightTip.map.minFilter = LinearFilter;
-
-        // Grass materials
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterCenter01`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassComplete01`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete1.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassComplete02`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomCenter${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomCenter.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomLeftRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomLeftRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].centerRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].leftRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassLeftRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].leftRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].mixed = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassMixed${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].mixed.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].sparse = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassSparse${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].sparse.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottom = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottom${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottom.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottomLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottomLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottomLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottomRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottomRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topBottomRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopCenter${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topCenter.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopLeft${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopLeftRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topLeftRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopRight${this._ancientRuinsSpec.dirtMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.dirtMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
+        switch(this._ancientRuinsSpec.biomeWater) {
+            case WaterBiome.SMALL_LAKES: {
+                this._makeSmallLakes();
+                break;
+            }
+            case WaterBiome.LARGE_LAKE: {
+                this._makeLargeLake();
+                break;
+            }
+            case WaterBiome.BEACH: {
+                this._makeBeaches();
+                break;
+            }
+            case WaterBiome.BEACH: {
+                this._makeCreek();
+                break;
+            }
+            case WaterBiome.RIVER: {
+                this._makeRiver();
+                break;
+            }
+            default: {
+                console.error('Invalid Water Biome in Ancient Ruins');
+            }
+        }
     }
 
     /**
