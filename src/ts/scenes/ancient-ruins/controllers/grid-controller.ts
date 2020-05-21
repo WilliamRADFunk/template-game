@@ -1111,6 +1111,9 @@ export class GridCtrl {
                 }
             }
         }
+
+        // TODO: Make at least one brindge over the river (type depends on tech level).
+        // If vertical river, optionally add a pier.
     }
 
     /**
