@@ -310,6 +310,8 @@ export class GridCtrl {
         // Sets obstruction over deep water.
         this._dropBouldersInWater(megaMesh);
 
+        this._makeStructures();
+
         this._createGroundMeshes(megaMesh);
 
         this._scene.add(megaMesh);
@@ -1072,7 +1074,22 @@ export class GridCtrl {
     private _makeRiver(): void {
         // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
         // Must be at least 10 tile apart depending on direction.
-        // Rivers must be no less than 4 tile thick at any point, but can be wider (max. 8 tiles).
+        // Rivers must be no less than 4 tile thick at any point, but can't be wider (max. 8 tiles).
+        const flowsHorizontally = Math.random() < 0.5;
+        const maxThickness = Math.floor(Math.random() * 8) + 4;
+        const startRow = Math.floor(Math.random() * 20) + 10;
+        const startCol = startRow;
+        
+
+        if (flowsHorizontally) {
+            this._grid[startRow][0][1] = 20;
+            for (let col = 1; col < 30; col++) {
+                const upOrDown = ((Math.random() < 0.5)
+                this._grid[startRow][col][1] = 20;
+            }
+        } else {
+
+        }
     }
 
     /**
