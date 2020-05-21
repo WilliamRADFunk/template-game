@@ -24,7 +24,7 @@ export class AncientRuins {
      */
     private _ancientRuinsSpec: AncientRuinsSpecifications = {
         biomeRuins: RuinsBiome.CEMETERY,
-        biomeWater: WaterBiome.LAKES,
+        biomeWater: WaterBiome.SMALL_LAKES,
         groundMaterial: GroundMaterial.DIRT,
         grassColor: GrassColor.GREEN,
         grassPercentage: 0.3,

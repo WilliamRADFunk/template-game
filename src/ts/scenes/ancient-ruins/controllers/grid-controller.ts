@@ -666,6 +666,14 @@ export class GridCtrl {
     }
 
     /**
+     * Makes ancient library.
+     */
+    private _makeLibrary(): void {
+        // TODO: either a cluster of small connected buildings, or one large building. Rows of shelves for scrolls, books, or pictures.
+        // Depending on tech level could actually be a server farm for digital data storage.
+    }
+
+    /**
      * Makes all the tile materials for the game map.
      */
     private _makeMaterials(): void {
@@ -1041,6 +1049,13 @@ export class GridCtrl {
             transparent: false
         });
         this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
+    }
+
+    /**
+     * Makes an ancient military base somewhereon the map.
+     */
+    private _makeMilitaryBase(): void {
+        // TODO: centrally located with large hangers, concrete bunkers, missile silos, etc.
     }
 
     /**
