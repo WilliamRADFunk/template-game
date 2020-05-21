@@ -1072,23 +1072,44 @@ export class GridCtrl {
      * Makes water tiles specific to a long map-spanning river.
      */
     private _makeRiver(): void {
-        // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
-        // Must be at least 10 tile apart depending on direction.
-        // Rivers must be no less than 4 tile thick at any point, but can't be wider (max. 8 tiles).
         const flowsHorizontally = Math.random() < 0.5;
-        const maxThickness = Math.floor(Math.random() * 8) + 4;
-        const startRow = Math.floor(Math.random() * 20) + 10;
+        const startRow = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
         const startCol = startRow;
-        
 
         if (flowsHorizontally) {
-            this._grid[startRow][0][1] = 20;
-            for (let col = 1; col < 30; col++) {
-                const upOrDown = ((Math.random() < 0.5)
-                this._grid[startRow][col][1] = 20;
+            let prevRow = startRow;
+            for (let col = 0; col < 30; col += 3) {
+                const upOrDown = startRow < 15;
+                const amount = Math.floor(Math.random() * (2 - 0 + 1));
+                prevRow = upOrDown ? prevRow + amount : prevRow - amount;
+
+                const thickness = Math.floor(Math.random() * (4 - 2 + 1)) + 2;
+                for (let t = 0; t <= thickness; t++) {
+                    this._isInBounds(prevRow + t, col) && (this._grid[prevRow + t][col][1] = 20);
+                    this._isInBounds(prevRow + t, col + 1) && (this._grid[prevRow + t][col + 1][1] = 20);
+                    this._isInBounds(prevRow + t, col + 2) && (this._grid[prevRow + t][col + 2][1] = 20);
+                    this._isInBounds(prevRow - t, col) && (this._grid[prevRow - t][col][1] = 20);
+                    this._isInBounds(prevRow - t, col + 1) && (this._grid[prevRow - t][col + 1][1] = 20);
+                    this._isInBounds(prevRow - t, col + 2) && (this._grid[prevRow - t][col + 2][1] = 20);
+                }
             }
         } else {
+            let prevCol = startCol;
+            for (let row = 0; row < 30; row += 3) {
+                const leftOrRight = startCol > 15;
+                const amount = Math.floor(Math.random() * (2 - 0 + 1));
+                prevCol = leftOrRight ? prevCol - amount : prevCol + amount;
 
+                const thickness = Math.floor(Math.random() * (4 - 2 + 1)) + 2;
+                for (let t = 0; t <= thickness; t++) {
+                    this._isInBounds(row, prevCol + t) && (this._grid[row][prevCol + t][1] = 20);
+                    this._isInBounds(row + 1, prevCol + t) && (this._grid[row + 1][prevCol + t][1] = 20);
+                    this._isInBounds(row + 2, prevCol + t) && (this._grid[row + 2][prevCol + t][1] = 20);
+                    this._isInBounds(row, prevCol - t) && (this._grid[row][prevCol - t][1] = 20);
+                    this._isInBounds(row + 1, prevCol - t) && (this._grid[row + 1][prevCol - t][1] = 20);
+                    this._isInBounds(row + 2, prevCol - t) && (this._grid[row + 2][prevCol - t][1] = 20);
+                }
+            }
         }
     }
 

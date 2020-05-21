@@ -1061,7 +1061,7 @@ const loadAncientRuinsScene = () => {
         {
             blueWaterBottomCenterDirt1: TEXTURES.blueWaterBottomCenterDirt1[1],
             blueWaterBottomLeftDirt1: TEXTURES.blueWaterBottomLeftDirt1[1],
-            blueWaterBottomLeftTipDirt1: TEXTURES.blueWaterBottomLeftDirt1[1],
+            blueWaterBottomLeftTipDirt1: TEXTURES.blueWaterBottomLeftTipDirt1[1],
             blueWaterBottomRightDirt1: TEXTURES.blueWaterBottomRightDirt1[1],
             blueWaterBottomRightTipDirt1: TEXTURES.blueWaterBottomRightTipDirt1[1],
             blueWaterCenterCenterDirt1: TEXTURES.blueWaterCenterCenterDirt1[1],
