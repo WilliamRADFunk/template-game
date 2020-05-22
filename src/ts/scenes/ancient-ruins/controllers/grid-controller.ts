@@ -6,7 +6,11 @@ import {
     Object3D,
     PlaneGeometry,
     Scene,
-    Texture } from "three";
+    Texture, 
+    TextureLoader,
+    SpriteMaterial,
+    Sprite,
+    Vector2} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
 
 // Lookup table for bridge tiles when assigning edge graphics.
@@ -333,6 +337,19 @@ export class GridCtrl {
         this._dropBouldersInWater(megaMesh);
 
         this._scene.add(megaMesh);
+
+        // var spriteMaterial = new SpriteMaterial({
+        //     map: this._textures.spriteMap,
+        //     side: DoubleSide,
+
+        // });
+        // spriteMaterial.map.offset = new Vector2((1 / 4) * 3, 1 / 4);
+        // spriteMaterial.map.repeat = new Vector2(1 / 4, 1 / 4);
+        // var sprite = new Sprite( spriteMaterial );
+        // sprite.position.set(0, 10, 0);
+        // sprite.rotation.set(-1.5708, 0, 0);
+        // sprite.scale.set(1 / 4, 1 / 4, 1 / 4);
+        // this._scene.add( sprite );
     }
 
     /**
@@ -793,6 +810,10 @@ export class GridCtrl {
                 } else {
                     this._grid[row][col][1] = 100;
                 }
+                this._grid[row][col][0] = 0;
+                this._grid[row][col][2] = 0;
+                this._grid[row][col][3] = 0;
+                this._grid[row][col][4] = 0;
             }
         }
 
@@ -1497,19 +1518,26 @@ export class GridCtrl {
 
         // Vertical Bridge
         if (flowsHorizontally) {
-            const randomCol = Math.floor(Math.random() * (29 - 2 + 1)) + 2;
+            let randomCol;
             let bottomRow;
             let topRow;
-            for (let i = 0; i < 30; i++) {
-                if (this._grid[i][randomCol][1] === 20) {
-                    bottomRow = i;
-                    break;
+            while(true) {
+                randomCol = Math.floor(Math.random() * (27 - 2 + 1)) + 2;
+                for (let i = 0; i < 30; i++) {
+                    if (this._grid[i][randomCol][1] === 20) {
+                        bottomRow = i;
+                        break;
+                    }
                 }
-            }
-            for (let j = bottomRow; j < 30; j++) {
-                if (this._grid[j][randomCol][1] === 20) {
-                    topRow = j;
-                } else {
+                for (let j = bottomRow; j < 30; j++) {
+                    if (this._grid[j][randomCol][1] === 20) {
+                        topRow = j;
+                    } else {
+                        break;
+                    }
+                }
+                // Ensures the randomly selected point along the river has land on both sides.
+                if (bottomRow !== 0 && topRow !== 29) {
                     break;
                 }
             }
@@ -1546,19 +1574,26 @@ export class GridCtrl {
             }
         // Horizontal Bridge
         } else {
-            const randomRow = Math.floor(Math.random() * (29 - 2 + 1)) + 2;
+            let randomRow;
             let colLeft;
             let colRight;
-            for (let i = 0; i < 30; i++) {
-                if (this._grid[randomRow][i][1] === 20) {
-                    colLeft = i;
-                    break;
+            while(true) {
+                randomRow = Math.floor(Math.random() * (27 - 2 + 1)) + 2;
+                for (let i = 0; i < 30; i++) {
+                    if (this._grid[randomRow][i][1] === 20) {
+                        colLeft = i;
+                        break;
+                    }
                 }
-            }
-            for (let j = colLeft; j < 30; j++) {
-                if (this._grid[randomRow][j][1] === 20) {
-                    colRight = j;
-                } else {
+                for (let j = colLeft; j < 30; j++) {
+                    if (this._grid[randomRow][j][1] === 20) {
+                        colRight = j;
+                    } else {
+                        break;
+                    }
+                }
+                // Ensures the randomly selected point along the river has land on both sides.
+                if (colLeft !== 0 && colRight !== 29) {
                     break;
                 }
             }

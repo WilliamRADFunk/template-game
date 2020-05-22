@@ -134,7 +134,8 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     rockWaterGrey2: ['assets/images/rock-water-grey-02.png', null],
     rockWaterGrey3: ['assets/images/rock-water-grey-03.png', null],
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
-    ship: ['assets/images/ship.png', null]
+    ship: ['assets/images/ship.png', null],
+    spriteMap: ['assets/images/green-grass-brown-dirt.jpg', null]
 };
 
 /**
@@ -1150,6 +1151,7 @@ const loadAncientRuinsScene = () => {
             rockWaterGrey1: TEXTURES.rockWaterGrey1[1],
             rockWaterGrey2: TEXTURES.rockWaterGrey2[1],
             rockWaterGrey3: TEXTURES.rockWaterGrey3[1],
+            spriteMap: TEXTURES.spriteMap[1]
         });
     scenes.ancientRuins.raycaster = raycaster;
     /**
