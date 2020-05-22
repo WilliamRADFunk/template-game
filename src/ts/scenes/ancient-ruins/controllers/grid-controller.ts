@@ -221,6 +221,9 @@ export class GridCtrl {
      * 55: Bridge Left Intact Vertical (Wood/Concrete/Steel)
      * 56: Bridge Left Damaged Vertical (Wood/Concrete/Steel)
      * 57: Bridge Left Destroyed Vertical (Wood/Concrete/Steel)
+     * 58: Pier (Ends on right)
+     * 59: Pier (Open both sides)
+     * 60: Pier (Ends on left)
      * 100: Brown Dirt (whole tile) version 1
      * 101: Brown Dirt (whole tile) version 2
      * 102: Grey Gravel (whole tile) version 1
@@ -234,6 +237,13 @@ export class GridCtrl {
      * All of the materials contained in this scene.
      */
     private _materials: MaterialMap = {
+        bridge: {
+            wood: {
+                damaged: {},
+                destroyed: {},
+                intact: {}
+            }
+        },
         dirt: {
             brown: {
                 complete: {}
@@ -250,6 +260,12 @@ export class GridCtrl {
                 dirt: {},
                 gravel: {},
                 water: {}
+            }
+        },
+        pier: {
+            wood: {
+                end: {},
+                middle: {}
             }
         },
         rock: {
@@ -307,12 +323,14 @@ export class GridCtrl {
         // Shapes grass to smooth its edges against dirt and water tiles.
         this._modifyGrassesForEdges();
 
-        // Sets obstruction over deep water.
-        this._dropBouldersInWater(megaMesh);
-
         this._makeStructures();
 
         this._createGroundMeshes(megaMesh);
+
+        this._createTraverseLevelMeshes(megaMesh);
+
+        // Sets obstruction over deep water.
+        this._dropBouldersInWater(megaMesh);
 
         this._scene.add(megaMesh);
     }
@@ -513,12 +531,148 @@ export class GridCtrl {
                         break;
                     }
                     default: {
-                        console.log(this._grid[row][col][1]);
+                        console.log('_createGroundMeshes', this._grid[row][col][1]);
                     }
                 }
                 if (block) {
                     block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
                     block.rotation.set(-1.5708, 0, 0);
+                    megaMesh.add(block);
+                }
+            }
+        }
+    }
+
+    /**
+     * Uses the tile grid to make meshes that match tile values.
+     * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     */
+    private _createTraverseLevelMeshes(megaMesh: Object3D): void {
+        for (let row = 0; row < 30; row++) {
+            for (let col = 0; col < 30; col++) {
+                let block: Mesh;
+                let posX = -5.8 + (col/2.5);
+                let posZ = 5.8 - row/2.5;
+                let scaleX = 1;
+                let scaleZ = 1;
+                switch(this._grid[row][col][2]) {
+                    case 36: {
+                        posX -= 0.01;
+                        scaleX += 0.1;
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.startHorizontal1 );
+                        break;
+                    }
+                    case 37: {
+                        posX += 0.01;
+                        scaleX += 0.1;
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.endHorizontal1 );
+                        break;
+                    }
+                    case 38: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.bottomMiddleHorizontal1 );
+                        break;
+                    }
+                    case 39: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.bottomMiddleHorizontal1 );
+                        break;
+                    }
+                    case 40: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.bottomMiddleHorizontal1 );
+                        break;
+                    }
+                    case 41: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.middleMiddleHorizontal1 );
+                        break;
+                    }
+                    case 42: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.middleMiddleHorizontal1 );
+                        break;
+                    }
+                    case 43: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.middleMiddleHorizontal1 );
+                        break;
+                    }
+                    case 44: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.topMiddleHorizontal1 );
+                        break;
+                    }
+                    case 45: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.topMiddleHorizontal1 );
+                        break;
+                    }
+                    case 46: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.topMiddleHorizontal1 );
+                        break;
+                    }
+                    case 47: {
+                        posZ -= 0.01;
+                        scaleZ += 0.1;
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.startVertical1 );
+                        break;
+                    }
+                    case 48: {
+                        posZ += 0.02;
+                        scaleZ += 0.1;
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.endVertical1 );
+                        break;
+                    }
+                    case 49: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.rightMiddleVertical1 );
+                        break;
+                    }
+                    case 50: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.rightMiddleVertical1 );
+                        break;
+                    }
+                    case 51: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.rightMiddleVertical1 );
+                        break;
+                    }
+                    case 52: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.middleMiddleVertical1 );
+                        break;
+                    }
+                    case 53: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.middleMiddleVertical1 );
+                        break;
+                    }
+                    case 54: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.middleMiddleVertical1 );
+                        break;
+                    }
+                    case 55: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.leftMiddleVertical1 );
+                        break;
+                    }
+                    case 56: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.leftMiddleVertical1 );
+                        break;
+                    }
+                    case 57: {
+                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.leftMiddleVertical1 );
+                        break;
+                    }
+                    case 58: {
+                        block = new Mesh( this._geometry, this._materials.pier.wood.end.left );
+                        break;
+                    }
+                    case 59: {
+                        block = new Mesh( this._geometry, this._materials.pier.wood.middle.complete );
+                        break;
+                    }
+                    case 60: {
+                        block = new Mesh( this._geometry, this._materials.pier.wood.end.right );
+                        break;
+                    }
+                    default: {
+                        console.log('_createTraverseLevelMeshes', this._grid[row][col][2]);
+                    }
+                }
+                if (block) {
+                    block.position.set(posX, 15, posZ)
+                    block.rotation.set(-1.5708, 0, 0);
+                    block.scale.set(scaleX, scaleZ, scaleZ);
+                    block.updateMatrix();
                     megaMesh.add(block);
                 }
             }
@@ -541,7 +695,7 @@ export class GridCtrl {
 
         for (let row = 0; row < 30; row++) {
             for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] === 20) {
+                if (this._grid[row][col][1] === 20 && !this._grid[row][col][2]) {
                     this._grid[row][col][2] = 1; // Water is too deep to cross.
                     let block;
                     if (Math.random() < 0.06) {
@@ -552,8 +706,6 @@ export class GridCtrl {
                         block.rotation.set(-1.5708, 0, 0);
                         megaMesh.add(block);
                     }
-                } else {
-                    this._grid[row][col][2] = 0; // Traversable tile.
                 }
             }
         }
@@ -622,6 +774,10 @@ export class GridCtrl {
                     } else {
                         this._grid[row][col][1] = 101;
                     }
+                    this._grid[row][col][0] = 0;
+                    this._grid[row][col][2] = 0;
+                    this._grid[row][col][3] = 0;
+                    this._grid[row][col][4] = 0;
                 }
             }
             return;
@@ -679,13 +835,240 @@ export class GridCtrl {
      * Makes all the tile materials for the game map.
      */
     private _makeMaterials(): void {
+        // Pier Materials
+        this._materials.pier.wood.end.left = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.pierWoodEndLeft1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.pier.wood.end.left.map.minFilter = LinearFilter;
+
+        this._materials.pier.wood.end.right = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.pierWoodEndRight1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.pier.wood.end.right.map.minFilter = LinearFilter;
+
+        this._materials.pier.wood.middle.complete = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.pierWoodMiddleComplete1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.pier.wood.middle.complete.map.minFilter = LinearFilter;
+
+        // Bridge Materials
+        this._materials.bridge.wood.damaged.bottomMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDamagedBottomMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.damaged.bottomMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.damaged.middleMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDamagedMiddleMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.damaged.middleMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.damaged.topMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDamagedTopMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.damaged.topMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.damaged.leftMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDamagedLeftMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.damaged.leftMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.damaged.middleMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDamagedMiddleMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.damaged.middleMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.damaged.rightMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDamagedRightMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.damaged.rightMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.destroyed.bottomMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDestroyedBottomMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.destroyed.bottomMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.destroyed.middleMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDestroyedMiddleMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.destroyed.middleMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.destroyed.topMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDestroyedTopMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.destroyed.topMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.destroyed.leftMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDestroyedLeftMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.destroyed.leftMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.destroyed.middleMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDestroyedMiddleMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.destroyed.middleMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.destroyed.rightMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodDestroyedRightMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.destroyed.rightMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.bottomMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactBottomMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.bottomMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.middleMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactMiddleMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.middleMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.topMiddleHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactTopMiddleHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.topMiddleHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.endHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactEndHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.endHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.startHorizontal1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactStartHorizontal1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.startHorizontal1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.leftMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactLeftMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.leftMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.middleMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactMiddleMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.middleMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.rightMiddleVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactRightMiddleVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.rightMiddleVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.endVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactEndVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.endVertical1.map.minFilter = LinearFilter;
+
+        this._materials.bridge.wood.intact.startVertical1 = new MeshPhongMaterial({
+            color: '#FFFFFF',
+            map: this._textures.bridgeWoodIntactStartVertical1,
+            shininess: 0,
+            side: DoubleSide,
+            transparent: true
+        });
+        this._materials.bridge.wood.intact.startVertical1.map.minFilter = LinearFilter;
+
         // Rock Materials
         this._materials.rock.brown.water.variation1 = new MeshPhongMaterial({
             color: '#FFFFFF',
             map: this._textures.rockWaterBrown1,
             shininess: 0,
             side: DoubleSide,
-            transparent: false
+            transparent: true
         });
         this._materials.rock.brown.water.variation1.map.minFilter = LinearFilter;
 
@@ -694,7 +1077,7 @@ export class GridCtrl {
             map: this._textures.rockWaterBrown2,
             shininess: 0,
             side: DoubleSide,
-            transparent: false
+            transparent: true
         });
         this._materials.rock.brown.water.variation2.map.minFilter = LinearFilter;
 
@@ -703,7 +1086,7 @@ export class GridCtrl {
             map: this._textures.rockWaterBrown3,
             shininess: 0,
             side: DoubleSide,
-            transparent: false
+            transparent: true
         });
         this._materials.rock.brown.water.variation3.map.minFilter = LinearFilter;
 
@@ -712,7 +1095,7 @@ export class GridCtrl {
             map: this._textures.rockWaterGrey1,
             shininess: 0,
             side: DoubleSide,
-            transparent: false
+            transparent: true
         });
         this._materials.rock.grey.water.variation1.map.minFilter = LinearFilter;
 
@@ -721,7 +1104,7 @@ export class GridCtrl {
             map: this._textures.rockWaterGrey2,
             shininess: 0,
             side: DoubleSide,
-            transparent: false
+            transparent: true
         });
         this._materials.rock.grey.water.variation2.map.minFilter = LinearFilter;
 
@@ -730,7 +1113,7 @@ export class GridCtrl {
             map: this._textures.rockWaterGrey3,
             shininess: 0,
             side: DoubleSide,
-            transparent: false
+            transparent: true
         });
         this._materials.rock.grey.water.variation3.map.minFilter = LinearFilter;
 
@@ -1112,8 +1495,183 @@ export class GridCtrl {
             }
         }
 
-        // TODO: Make at least one brindge over the river (type depends on tech level).
-        // If vertical river, optionally add a pier.
+        // Vertical Bridge
+        if (flowsHorizontally) {
+            const randomCol = Math.floor(Math.random() * (29 - 2 + 1)) + 2;
+            let bottomRow;
+            let topRow;
+            for (let i = 0; i < 30; i++) {
+                if (this._grid[i][randomCol][1] === 20) {
+                    bottomRow = i;
+                    break;
+                }
+            }
+            for (let j = bottomRow; j < 30; j++) {
+                if (this._grid[j][randomCol][1] === 20) {
+                    topRow = j;
+                } else {
+                    break;
+                }
+            }
+            let leftCol = randomCol;
+            let currCol = randomCol;
+            while (this._isInBounds(bottomRow, currCol - 1)
+                && this._grid[bottomRow][currCol - 1][1] === 20
+                && this._isInBounds(bottomRow - 1, currCol - 1)
+                && this._grid[bottomRow - 1][currCol - 1][1] !== 20
+                && this._isInBounds(topRow + 1, currCol - 1)
+                && this._grid[topRow + 1][currCol - 1][1] !== 20) {
+                leftCol = currCol - 1;
+                currCol = leftCol;
+            }
+            const cols = [leftCol, leftCol + 1, leftCol + 2];
+            for (let row = bottomRow; row <= topRow; row++) {
+                if (row !== bottomRow && row !== topRow) { // Everything in the middle
+                    this._grid[row][cols[0]][2] = (Math.random() < 0.25) ? 56 : (Math.random() < 0.25) ? 57 : 55;
+                    this._grid[row][cols[1]][2] = (Math.random() < 0.25) ? 53 : (Math.random() < 0.25) ? 54 : 52;
+                    this._grid[row][cols[2]][2] = (Math.random() < 0.25) ? 50 : (Math.random() < 0.25) ? 51 : 49;
+                    // If all 3 are destroyed in a line, pick one by modding current row and decide whether to make it merely damaged, or whole.
+                    if (this._grid[row][cols[0]][2] === 51 && this._grid[row][cols[1]][2] === 54 && this._grid[row][cols[1]][2] === 57) {
+                        this._grid[row][cols[row % 3]][2] = (Math.random() < 0.25) ? (50 + (row % 3) * 3) : (49 + (row % 3) * 3);
+                    }
+                } else if (row !== bottomRow) { // Start
+                    this._grid[row][cols[0]][2] = 47;
+                    this._grid[row][cols[1]][2] = 47;
+                    this._grid[row][cols[2]][2] = 47;
+                } else { // End
+                    this._grid[row][cols[0]][2] = 48;
+                    this._grid[row][cols[1]][2] = 48;
+                    this._grid[row][cols[2]][2] = 48;
+                }
+            }
+        // Horizontal Bridge
+        } else {
+            const randomRow = Math.floor(Math.random() * (29 - 2 + 1)) + 2;
+            let colLeft;
+            let colRight;
+            for (let i = 0; i < 30; i++) {
+                if (this._grid[randomRow][i][1] === 20) {
+                    colLeft = i;
+                    break;
+                }
+            }
+            for (let j = colLeft; j < 30; j++) {
+                if (this._grid[randomRow][j][1] === 20) {
+                    colRight = j;
+                } else {
+                    break;
+                }
+            }
+            let rowBottom = randomRow;
+            let currRow = randomRow;
+            while (this._isInBounds(currRow - 1, colLeft)
+                && this._grid[currRow - 1][colLeft][1] === 20
+                && this._isInBounds(currRow - 1, colLeft - 1)
+                && this._grid[currRow - 1][colLeft - 1][1] !== 20
+                && this._isInBounds(currRow - 1, colRight + 1)
+                && this._grid[currRow - 1][colRight + 1][1] !== 20) {
+                rowBottom = currRow - 1;
+                currRow = rowBottom;
+            }
+            const rows = [rowBottom, rowBottom + 1, rowBottom + 2];
+            for (let col = colLeft; col <= colRight; col++) {
+                if (col !== colLeft && col !== colRight) { // Everything in the middle
+                    this._grid[rows[0]][col][2] = (Math.random() < 0.25) ? 39 : (Math.random() < 0.25) ? 40 : 38;
+                    this._grid[rows[1]][col][2] = (Math.random() < 0.25) ? 42 : (Math.random() < 0.25) ? 43 : 41;
+                    this._grid[rows[2]][col][2] = (Math.random() < 0.25) ? 45 : (Math.random() < 0.25) ? 46 : 44;
+                    // If all 3 are destroyed in a line, pick one by modding current col and decide whether to make it merely damaged, or whole.
+                    if (this._grid[rows[0]][col][2] === 40 && this._grid[rows[1]][col][2] === 43 && this._grid[rows[2]][col][2] === 46) {
+                        this._grid[rows[col % 3]][col][2] = (Math.random() < 0.25) ? (39 + (col % 3) * 3) : (38 + (col % 3) * 3);
+                    }
+                } else if (col === colLeft) { // Start
+                    this._grid[rows[0]][col][2] = 36;
+                    this._grid[rows[1]][col][2] = 36;
+                    this._grid[rows[2]][col][2] = 36;
+                } else { // End
+                    this._grid[rows[0]][col][2] = 37;
+                    this._grid[rows[1]][col][2] = 37;
+                    this._grid[rows[2]][col][2] = 37;
+                }
+            }
+
+            const rightPierRow = Math.floor(Math.random() * (29 - randomRow + 3)) + randomRow + 2;
+            const leftPierRow = Math.floor(Math.random() * (randomRow - 2));
+
+            // Build pier to the right of bridge
+            if (Math.random() < 0.6 && rightPierRow < 30 && rightPierRow > randomRow + 3) {
+                let firstWaterCol;
+                // Pier starts left and goes right
+                if (Math.random() < 0.5) {
+                    for (let col = 0; col < 30; col++) {
+                        if (this._grid[rightPierRow][col][1] === 20) {
+                            firstWaterCol = col;
+                            break;
+                        }
+                    }
+                    // Two or three tiles long?
+                    this._grid[rightPierRow][firstWaterCol][2] = 59;
+                    if (Math.random() < 0.5) {
+                        this._grid[rightPierRow][firstWaterCol + 1][2] = 59;
+                        this._grid[rightPierRow][firstWaterCol + 2][2] = 58;
+                    } else {
+                        this._grid[rightPierRow][firstWaterCol + 1][2] = 58;
+                    }
+                // Pier starts right and goes left
+                } else {
+                    for (let col = 29; col >= 0; col--) {
+                        if (this._grid[rightPierRow][col][1] === 20) {
+                            firstWaterCol = col;
+                            break;
+                        }
+                    }
+                    // Two or three tiles long?
+                    this._grid[rightPierRow][firstWaterCol][2] = 59;
+                    if (Math.random() < 0.5) {
+                        this._grid[rightPierRow][firstWaterCol - 1][2] = 59;
+                        this._grid[rightPierRow][firstWaterCol - 2][2] = 60;
+                    } else {
+                        this._grid[rightPierRow][firstWaterCol - 1][2] = 60;
+                    }
+                }
+            }
+            // Build pier to the left of bridge
+            if (Math.random() < 0.6 && leftPierRow > 0 && leftPierRow < randomRow - 3) {
+                let firstWaterCol;
+                // Pier starts left and goes right
+                if (Math.random() < 0.5) {
+                    for (let col = 0; col < 30; col++) {
+                        if (this._grid[leftPierRow][col][1] === 20) {
+                            firstWaterCol = col;
+                            break;
+                        }
+                    }
+                    // Two or three tiles long?
+                    this._grid[leftPierRow][firstWaterCol][2] = 59;
+                    if (Math.random() < 0.5) {
+                        this._grid[leftPierRow][firstWaterCol + 1][2] = 59;
+                        this._grid[leftPierRow][firstWaterCol + 2][2] = 58;
+                    } else {
+                        this._grid[leftPierRow][firstWaterCol + 1][2] = 58;
+                    }
+                // Pier starts right and goes left
+                } else {
+                    for (let col = 29; col >= 0; col--) {
+                        if (this._grid[leftPierRow][col][1] === 20) {
+                            firstWaterCol = col;
+                            break;
+                        }
+                    }
+                    // Two or three tiles long?
+                    this._grid[leftPierRow][firstWaterCol][2] = 59;
+                    if (Math.random() < 0.5) {
+                        this._grid[leftPierRow][firstWaterCol - 1][2] = 59;
+                        this._grid[leftPierRow][firstWaterCol - 2][2] = 60;
+                    } else {
+                        this._grid[leftPierRow][firstWaterCol - 1][2] = 60;
+                    }
+                }
+            }
+        }
     }
 
     /**
