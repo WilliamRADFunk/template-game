@@ -810,6 +810,77 @@ export class GridCtrl {
         // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
         // Must be at least 10 tile apart depending on direction.
         // Rivers must be 2 tiles thick at all points along its length.
+        const centerRow = Math.floor(Math.random() * 3) + 15;
+        const centerCol = Math.floor(Math.random() * 3) + 15;
+        const flowsHorizontally = Math.random() < 0.5;
+        const startRow = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
+        const startCol = startRow;
+
+        if (flowsHorizontally) {
+            let flowsUp = startRow < 15;
+            let lastRow = startRow;
+            if (flowsUp) {
+                for (let col = 0; col < 30; col += 2) {
+                    // Small chance to flow back down
+                    if (Math.random() < 0.1 && lastRow > 1) {
+                        lastRow--;
+                    // Remaining 50/50 to flow up or stay level.
+                    } else if (Math.random() < 0.5 && lastRow < 28) {
+                        lastRow++;
+                    }
+                    this._grid[lastRow][col][1] = 20;
+                    this._grid[lastRow + 1][col][1] = 20;
+                    this._isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = 20);
+                    this._isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = 20);
+                }
+            } else {
+                for (let col = 0; col < 30; col += 2) {
+                    // Small chance to flow back up
+                    if (Math.random() < 0.1 && lastRow < 28) {
+                        lastRow++;
+                    // Remaining 50/50 to flow down or stay level.
+                    } else if (Math.random() < 0.5 && lastRow > 1) {
+                        lastRow--;
+                    }
+                    this._grid[lastRow][col][1] = 20;
+                    this._grid[lastRow + 1][col][1] = 20;
+                    this._isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = 20);
+                    this._isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = 20);
+                }
+            }
+        } else {
+            let flowsRight = startCol < 15;
+            let lastCol = startCol;
+            if (flowsRight) {
+                for (let row = 0; row < 30; row += 2) {
+                    // Small chance to flow back left
+                    if (Math.random() < 0.1 && lastCol > 1) {
+                        lastCol--;
+                    // Remaining 50/50 to flow right or stay level.
+                    } else if (Math.random() < 0.5 && lastCol < 28) {
+                        lastCol++;
+                    }
+                    this._grid[row][lastCol][1] = 20;
+                    this._grid[row][lastCol + 1][1] = 20;
+                    this._isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = 20);
+                    this._isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = 20);
+                }
+            } else {
+                for (let row = 0; row < 30; row += 2) {
+                    // Small chance to flow back right
+                    if (Math.random() < 0.1 && lastCol < 28) {
+                        lastCol++;
+                    // Remaining 50/50 to flow left or stay level.
+                    } else if (Math.random() < 0.5 && lastCol > 1) {
+                        lastCol--;
+                    }
+                    this._grid[row][lastCol][1] = 20;
+                    this._grid[row][lastCol + 1][1] = 20;
+                    this._isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = 20);
+                    this._isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = 20);
+                }
+            }
+        }
     }
 
     /**
@@ -1996,7 +2067,7 @@ export class GridCtrl {
                 this._makeBeaches();
                 break;
             }
-            case WaterBiome.BEACH: {
+            case WaterBiome.CREEK: {
                 this._makeCreek();
                 break;
             }
