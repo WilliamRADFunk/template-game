@@ -748,9 +748,8 @@ export class GridCtrl {
      * Makes water tiles specific to an oceanside look and feel
      */
     private _makeBeaches(): void {
-        // TODO: Pick left, top, or right randomly to place the ocean.
-        const min = 5;
-        const max = 10;
+        const min = 8;
+        const max = 12;
         switch(Math.floor(Math.random() * 3)) {
             case 0: { // top
                 for (let col = 0; col < 30; col += 3) {
@@ -877,8 +876,40 @@ export class GridCtrl {
      * Makes water tiles specific to large, centrally-located lake.
      */
     private _makeLargeLake(): void {
-        // TODO: Pick rough center location, draw rough radius of 8-10 tiles, and randomize the edge.
-        // Once done, fill in interior spaces with full water.
+        const max = 11;
+        const min = 7;
+        const centerRow = Math.floor(Math.random() * 3) + 15;
+        const centerCol = Math.floor(Math.random() * 3) + 15;
+
+        for (let row = centerRow; row < 26; row += 3) {
+            const leftRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+            const rightRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+            for (let col = centerCol; col > centerCol - leftRadius; col--) {
+                this._grid[row][col][1] = 20;
+                this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
+                this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+            }
+            for (let col = centerCol; col < centerCol + rightRadius; col++) {
+                this._grid[row][col][1] = 20;
+                this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
+                this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+            }
+        }
+        for (let row = centerRow; row > 4; row -= 3) {
+            const leftRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+            const rightRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+            for (let col = centerCol; col > centerCol - leftRadius; col--) {
+                this._grid[row][col][1] = 20;
+                this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = 20);
+                this._isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = 20);
+            }
+            for (let col = centerCol; col < centerCol + rightRadius; col++) {
+                this._grid[row][col][1] = 20;
+                this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = 20);
+                this._isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = 20);
+            }
+        }
+
     }
 
     /**
