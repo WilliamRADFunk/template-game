@@ -749,6 +749,43 @@ export class GridCtrl {
      */
     private _makeBeaches(): void {
         // TODO: Pick left, top, or right randomly to place the ocean.
+        const min = 5;
+        const max = 10;
+        switch(Math.floor(Math.random() * 3)) {
+            case 0: { // top
+                for (let col = 0; col < 30; col += 3) {
+                    const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+                    for (let row = 29; row > 29 - fillAmount; row--) {
+                        this._grid[row][col][1] = 20;
+                        this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] = 20);
+                        this._isInBounds(row, col + 2) && (this._grid[row][col + 2][1] = 20);
+                    }
+                }
+                break;
+            }
+            case 1: { // left
+                for (let row = 0; row < 30; row += 3) {
+                    const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+                    for (let col = 0; col < fillAmount; col++) {
+                        this._grid[row][col][1] = 20;
+                        this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
+                        this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+                    }
+                }
+                break;
+            }
+            case 2: { // right
+                for (let row = 0; row < 30; row += 3) {
+                    const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+                    for (let col = 29; col > 29 - fillAmount; col--) {
+                        this._grid[row][col][1] = 20;
+                        this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
+                        this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+                    }
+                }
+                break;
+            }
+        }
     }
 
     /**
