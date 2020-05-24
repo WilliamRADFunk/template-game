@@ -6,144 +6,270 @@ import {
     Object3D,
     PlaneGeometry,
     Scene,
-    Texture, 
+    Texture,
     TextureLoader,
     SpriteMaterial,
     Sprite,
-    Vector2} from "three";
+    Vector2,
+    AdditiveBlending} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
 
-// Lookup table for bridge tiles when assigning edge graphics.
-const bridgeLookupTable: { [key: string]: number } = {
-    '0000': 2,
-    '1000': 3,
-    '1100': 4,
-    '0100': 5,
-    '0110': 6,
-    '0010': 7,
-    '0011': 8,
-    '0001': 9,
-    '1001': 10,
-    '1101': 11,
-    '1110': 12,
-    '0111': 13,
-    '1011': 14,
-    '1010': 15,
-    '0101': 16,
-    'sparse': 17,
-    'mixed': 18,
-    '1111': 19
-};
+interface GridDictionary {
+    [key: number]: {
+        blocker?: boolean;
+        devDescription: string;
+        gameDescription: string;
+        hasVariation?: boolean;
+        spritePosition: [number, number];
+        xPosMod?: number;
+        xScaleMod?: number;
+        zPosMod?: number;
+        zScaleMod?: number;
+    }
+}
+
+const groundGrassBase = 2;
+const groundGrassEnd = 999;
+const waterBase = 1000;
+const waterEnd = 1999;
+const bridgeBase = 2000;
+const bridgeEnd = 2999;
 
 // Lookup table for grass tiles when assigning edge graphics.
 const grassLookupTable: { [key: string]: number } = {
-    '0000': 2,
-    '1000': 3,
-    '1100': 4,
-    '0100': 5,
-    '0110': 6,
-    '0010': 7,
-    '0011': 8,
-    '0001': 9,
-    '1001': 10,
-    '1101': 11,
-    '1110': 12,
-    '0111': 13,
-    '1011': 14,
-    '1010': 15,
-    '0101': 16,
-    'sparse': 17,
-    'mixed': 18,
-    '1111': 19
+    '0000': groundGrassBase,
+    '1000': groundGrassBase + 2,
+    '1100': groundGrassBase + 3,
+    '0100': groundGrassBase + 4,
+    '0110': groundGrassBase + 5,
+    '0010': groundGrassBase + 6,
+    '0011': groundGrassBase + 7,
+    '0001': groundGrassBase + 8,
+    '1001': groundGrassBase + 9,
+    '1101': groundGrassBase + 10,
+    '1110': groundGrassBase + 11,
+    '0111': groundGrassBase + 12,
+    '1011': groundGrassBase + 13,
+    '1010': groundGrassBase + 14,
+    '0101': groundGrassBase + 15,
+    'sparse': groundGrassBase + 16,
+    'mixed': groundGrassBase + 18,
+    '1111': groundGrassBase + 20
 };
 
 // Lookup table for water tiles when assigning edge graphics.
 const waterLookupTable: { [key: string]: number } = {
-    '0000-0000': 20,
-    '1000-0000': 21,
-    '1000-1000': 21,
-    '1000-0001': 21,
-    '1000-1001': 21,
-    '1100-0000': 22,
-    '1100-1000': 22,
-    '1100-0100': 22,
-    '1100-0001': 22,
-    '1100-1001': 22,
-    '1100-0101': 22,
-    '1100-1101': 22,
-    '1100-1100': 22,
-    '1000-0101': 22,
-    '0100-0000': 23,
-    '0100-1000': 23,
-    '0100-0100': 23,
-    '0100-1100': 23,
-    '0110-0000': 24,
-    '0110-0100': 24,
-    '0110-1000': 24,
-    '0110-0010': 24,
-    '0110-1100': 24,
-    '0110-0110': 24,
-    '0110-1010': 24,
-    '0110-1110': 24,
-    '0010-0000': 25,
-    '0010-0100': 25,
-    '0010-0010': 25,
-    '0010-0110': 25,
-    '0011-0000': 26,
-    '0011-0010': 26,
-    '0011-0100': 26,
-    '0011-0001': 26,
-    '0011-0110': 26,
-    '0011-0011': 26,
-    '0011-0101': 26,
-    '0011-0111': 26,
-    '0010-0001': 26,
-    '0001-0000': 27,
-    '0001-0010': 27,
-    '0001-0001': 27,
-    '0001-0011': 27,
-    '1001-0000': 28,
-    '1001-0001': 28,
-    '1001-1000': 28,
-    '1001-0010': 28,
-    '1001-1010': 28,
-    '1001-0011': 28,
-    '1001-1001': 28,
-    '1001-1011': 28,
-    '0000-0001': 29,
-    '1000-1010': 29,
-    '0000-1000': 30,
-    '0000-0100': 31,
-    '0000-0010': 32,
-    '0010-1010': 32,
-    '0000-0101': 33,
-    '0000-1010': 34,
-    '1111-1111': 35,
-    '1111-0111': 35,
-    '1111-1011': 35,
-    '1111-1101': 35,
-    '1111-1110': 35,
-    '1111-1100': 35,
-    '1111-0110': 35,
-    '1111-0011': 35,
-    '1111-1001': 35,
-    '1111-1000': 35,
-    '1111-0100': 35,
-    '1111-0010': 35,
-    '1111-0001': 35,
-    '1111-0000': 35,
-    '1111-1010': 35,
-    '1111-0101': 35
+    '0000-0000': waterBase,
+    '1000-0000': waterBase + 1,
+    '1000-1000': waterBase + 1,
+    '1000-0001': waterBase + 1,
+    '1000-1001': waterBase + 1,
+    '1100-0000': waterBase + 2,
+    '1100-1000': waterBase + 2,
+    '1100-0100': waterBase + 2,
+    '1100-0001': waterBase + 2,
+    '1100-1001': waterBase + 2,
+    '1100-0101': waterBase + 2,
+    '1100-1101': waterBase + 2,
+    '1100-1100': waterBase + 2,
+    '0100-0000': waterBase + 3,
+    '0100-1000': waterBase + 3,
+    '0100-0100': waterBase + 3,
+    '0100-1100': waterBase + 3,
+    '0110-0000': waterBase + 4,
+    '0110-0100': waterBase + 4,
+    '0110-1000': waterBase + 4,
+    '0110-0010': waterBase + 4,
+    '0110-1100': waterBase + 4,
+    '0110-0110': waterBase + 4,
+    '0110-1010': waterBase + 4,
+    '0110-1110': waterBase + 4,
+    '0010-0000': waterBase + 5,
+    '0010-0100': waterBase + 5,
+    '0010-0010': waterBase + 5,
+    '0010-0110': waterBase + 5,
+    '0011-0000': waterBase + 6,
+    '0011-0010': waterBase + 6,
+    '0011-0100': waterBase + 6,
+    '0011-0001': waterBase + 6,
+    '0011-0110': waterBase + 6,
+    '0011-0011': waterBase + 6,
+    '0011-0101': waterBase + 6,
+    '0011-0111': waterBase + 6,
+    '0001-0000': waterBase + 7,
+    '0001-0010': waterBase + 7,
+    '0001-0001': waterBase + 7,
+    '0001-0011': waterBase + 7,
+    '1001-0000': waterBase + 8,
+    '1001-0001': waterBase + 8,
+    '1001-1000': waterBase + 8,
+    '1001-0010': waterBase + 8,
+    '1001-1010': waterBase + 8,
+    '1001-0011': waterBase + 8,
+    '1001-1001': waterBase + 8,
+    '1001-1011': waterBase + 8,
+    '0000-0001': waterBase + 9,
+    '0000-1000': waterBase + 10,
+    '0000-0100': waterBase + 11,
+    '0000-0010': waterBase + 12,
+    '0000-0101': waterBase + 13,
+    '0000-1010': waterBase + 14,
+    '1111-1111': waterBase + 15,
+    '1111-0111': waterBase + 15,
+    '1111-1011': waterBase + 15,
+    '1111-1101': waterBase + 15,
+    '1111-1110': waterBase + 15,
+    '1111-1100': waterBase + 15,
+    '1111-0110': waterBase + 15,
+    '1111-0011': waterBase + 15,
+    '1111-1001': waterBase + 15,
+    '1111-1000': waterBase + 15,
+    '1111-0100': waterBase + 15,
+    '1111-0010': waterBase + 15,
+    '1111-0001': waterBase + 15,
+    '1111-0000': waterBase + 15,
+    '1111-1010': waterBase + 15,
+    '1111-0101': waterBase + 15,
+    '0001-0100': waterBase + 16,
+    '0001-0111': waterBase + 16,
+    '0001-0101': waterBase + 16,
+    '0001-0110': waterBase + 16,
+    '0100-0010': waterBase + 17,
+    '0100-1110': waterBase + 17,
+    '0100-1010': waterBase + 17,
+    '0100-0110': waterBase + 17,
+    '0001-1000': waterBase + 18,
+    '0001-1011': waterBase + 18,
+    '0001-1001': waterBase + 18,
+    '0001-1010': waterBase + 18,
+    '0100-0001': waterBase + 19,
+    '0100-1101': waterBase + 19,
+    '0100-0101': waterBase + 19,
+    '0100-1001': waterBase + 19,
+    '0010-0001': waterBase + 20,
+    '0010-0111': waterBase + 20,
+    '0010-0011': waterBase + 20,
+    '0010-0101': waterBase + 20,
+    '0010-1000': waterBase + 21,
+    '0010-1110': waterBase + 21,
+    '0010-1010': waterBase + 21,
+    '0010-1100': waterBase + 21,
+    '1000-0010': waterBase + 22,
+    '1000-1011': waterBase + 22,
+    '1000-0011': waterBase + 22,
+    '1000-1010': waterBase + 22,
+    '1000-0100': waterBase + 23,
+    '1000-1101': waterBase + 23,
+    '1000-0101': waterBase + 23,
+    '1000-1100': waterBase + 23
 };
 
-interface MaterialMap {
-    [key: string]: {
-        [key: string]: {
-            [key: string]: {
-                [key: string]: MeshPhongMaterial;
-            }
-        }
-    }
+const fiftyFifty = () => Math.random() < 0.5;
+const rad90DegLeft = -1.5708;
+
+const maxCols = 29;
+const maxRows = 29;
+const minCols = 0;
+const minRows = 0;
+const middleCol = Math.ceil((maxCols - minCols) / 2);
+const middleRow = Math.ceil((maxRows - minRows) / 2);
+const layer1YPos = 17;
+const layer2YPos = 15;
+
+const getXPos = function(col: number): number {
+    return -5.8 + (col/2.5);
+};
+const getZPos = function(row: number): number {
+    return 5.8 - (row/2.5);
+};
+
+const spriteMapCols = 16;
+const spriteMapRows = 16;
+const gridDictionary: GridDictionary = {
+    // Ground & Grass
+    2: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [1, 1] },
+    3: { devDescription: 'Green Grass (whole tile) - Version 2', gameDescription: 'Lush green grass', spritePosition: [3, 3] },
+    4: { devDescription: 'Green Grass (Dirt at top)', gameDescription: 'Lush green grass with dirt framing its northern edge', spritePosition: [1, 2] },
+    5: { devDescription: 'Green Grass (Dirt at top & right)', gameDescription: 'Lush green grass with dirt framing its northern and eastern edges', spritePosition: [0, 2] },
+    6: { devDescription: 'Green Grass (Dirt at right)', gameDescription: 'Lush green grass with dirt framing its eastern edge', spritePosition: [0, 1] },
+    7: { devDescription: 'Green Grass (Dirt at right & bottom)', gameDescription: 'Lush green grass with dirt framing its southern and eastern edges', spritePosition: [0, 0] },
+    8: { devDescription: 'Green Grass (Dirt at bottom)', gameDescription: 'Lush green grass with dirt framing its southern edge', spritePosition: [1, 0] },
+    9: { devDescription: 'Green Grass (Dirt at bottom & left)', gameDescription: 'Lush green grass with dirt framing its southern and western edges', spritePosition: [2, 0] },
+    10: { devDescription: 'Green Grass (Dirt at left)', gameDescription: 'Lush green grass with dirt framing its western edge', spritePosition: [2, 1] },
+    11: { devDescription: 'Green Grass (Dirt at left & top)', gameDescription: 'Lush green grass with dirt framing its northern and western edges', spritePosition: [2, 2] },
+    12: { devDescription: 'Green Grass (Dirt at left & top & right)', gameDescription: 'Lush green grass with dirt framing its northern, eastern and western edges', spritePosition: [3, 2] },
+    13: { devDescription: 'Green Grass (Dirt at top & right & bottom)', gameDescription: 'Lush green grass with dirt framing its northern, southern and western edges', spritePosition: [0, 3] },
+    14: { devDescription: 'Green Grass (Dirt at right & bottom & left)', gameDescription: 'Lush green grass with dirt framing its southern, eastern and western edges', spritePosition: [3, 0] },
+    15: { devDescription: 'Green Grass (Dirt at bottom & left & top)', gameDescription: 'Lush green grass with dirt framing its northern, southern and eastern edges', spritePosition: [2, 3] },
+    16: { devDescription: 'Green Grass (Dirt at top & bottom)', gameDescription: 'Lush green grass with dirt framing its northern and southern edges', spritePosition: [1, 3] },
+    17: { devDescription: 'Green Grass (Dirt at left & right)', gameDescription: 'Lush green grass with dirt framing its eastern and western edges', spritePosition: [3, 1] },
+    18: { devDescription: 'Green Grass (Dirt at sides only) - Version 1', gameDescription: 'Sparse green grass with dirt framing all of its edges', spritePosition: [4, 2] },
+    19: { devDescription: 'Green Grass (Dirt at sides only) - Version 2', gameDescription: 'Sparse green grass with dirt framing all of its edges', spritePosition: [5, 2] },
+    20: { devDescription: 'Green Grass (Dirt at corners only) - Version 1', gameDescription: 'Green grass mixed with patches of dirt', spritePosition: [4, 1], hasVariation: true },
+    21: { devDescription: 'Green Grass (Dirt at corners only) - Version 2', gameDescription: 'Green grass mixed with patches of dirt', spritePosition: [5, 1] },
+    22: { devDescription: 'Green Grass (Dirt all around)', gameDescription: 'Lush green grass with dirt framing all of its edges', spritePosition: [4, 3] },
+    23: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [0, 4] },
+    24: { devDescription: 'Brown Dirt (whole tile) - Version 2', gameDescription: 'Ordinary dirt', spritePosition: [0, 5] },
+
+    // Water
+    1000: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [1, 5] },
+    1001: { devDescription: 'Blue Water (Dirt at top)', gameDescription: 'Blue water with dirt framing its northern edge', spritePosition: [1, 6] },
+    1002: { devDescription: 'Blue Water (Dirt at top & right)', gameDescription: 'Blue water with dirt framing its northern and eastern edges', spritePosition: [0, 6] },
+    1003: { devDescription: 'Blue Water (Dirt at right)', gameDescription: 'Blue water with dirt framing its eastern edge', spritePosition: [0, 5] },
+    1004: { devDescription: 'Blue Water (Dirt at right & bottom)', gameDescription: 'Blue water with dirt framing its southern and eastern edges', spritePosition: [0, 4] },
+    1005: { devDescription: 'Blue Water (Dirt at bottom)', gameDescription: 'Blue water with dirt framing its southern edge', spritePosition: [1, 4] },
+    1006: { devDescription: 'Blue Water (Dirt at bottom & left)', gameDescription: 'Blue water with dirt framing its southern and western edges', spritePosition: [2, 4] },
+    1007: { devDescription: 'Blue Water (Dirt at left)', gameDescription: 'Blue water with dirt framing its western edge', spritePosition: [2, 5] },
+    1008: { devDescription: 'Blue Water (Dirt at left & top)', gameDescription: 'Blue water with dirt framing its northern and western edges', spritePosition: [2, 6] },
+    1009: { devDescription: 'Blue Water (Dirt at upper-left)', gameDescription: 'Blue water with dirt at its northwestern corner', spritePosition: [3, 4] },
+    1010: { devDescription: 'Blue Water (Dirt at upper-right)', gameDescription: 'Blue water with dirt at its northeastern corner', spritePosition: [4, 4] },
+    1011: { devDescription: 'Blue Water (Dirt at lower-left)', gameDescription: 'Blue water with dirt at its southwestern corner', spritePosition: [3, 5] },
+    1012: { devDescription: 'Blue Water (Dirt at lower-right)', gameDescription: 'Blue water with dirt at its southeastern corner', spritePosition: [4, 5] },
+    1013: { devDescription: 'Blue Water (Dirt at upper-left & lower-right)', gameDescription: 'Blue water with dirt at its northwestern & southeastern corners', spritePosition: [4, 6] },
+    1014: { devDescription: 'Blue Water (Dirt at upper-right & lower-left)', gameDescription: 'Blue water with dirt at its northeastern & southwestern corners', spritePosition: [3, 6] },
+    1015: { devDescription: 'Blue Water (Dirt at top & bottom, left & right)', gameDescription: 'Blue water with dirt framing all of its edges', spritePosition: [0, 7] },
+    1016: { devDescription: 'Blue Water (Dirt at left & lower-right)', gameDescription: 'Blue water with dirt at its western edge and southeastern', spritePosition: [1, 7] },
+    1017: { devDescription: 'Blue Water (Dirt at right & lower-left)', gameDescription: 'Blue water with dirt at its eastern edge and southwestern', spritePosition: [2, 7] },
+    1018: { devDescription: 'Blue Water (Dirt at left & upper-right)', gameDescription: 'Blue water with dirt at its western edge and northeastern', spritePosition: [3, 7] },
+    1019: { devDescription: 'Blue Water (Dirt at right & upper-left)', gameDescription: 'Blue water with dirt at its eastern edge and northwestern', spritePosition: [4, 7] },
+    1020: { devDescription: 'Blue Water (Dirt at bottom & upper-left)', gameDescription: 'Blue water with dirt at its southern edge and northwestern', spritePosition: [0, 8] },
+    1021: { devDescription: 'Blue Water (Dirt at bottom & upper-right)', gameDescription: 'Blue water with dirt at its southern edge and northeastern', spritePosition: [1, 8] },
+    1022: { devDescription: 'Blue Water (Dirt at top & lower-left)', gameDescription: 'Blue water with dirt at its northern edge and southwestern', spritePosition: [2, 8] },
+    1023: { devDescription: 'Blue Water (Dirt at top & lower-right)', gameDescription: 'Blue water with dirt at its northern edge and southeastern', spritePosition: [3, 8] },
+    1024: { devDescription: 'Brown Boulder in Blue Water - Version 1', gameDescription: 'A massive brown boulder breaches the surface of the deep blue waters', spritePosition: [5, 4], blocker: true },
+    1025: { devDescription: 'Brown Boulder in Blue Water - Version 2', gameDescription: 'A massive brown boulder breaches the surface of the deep blue waters', spritePosition: [5, 5], blocker: true },
+    1026: { devDescription: 'Brown Boulder in Blue Water - Version 3', gameDescription: 'A massive brown boulder breaches the surface of the deep blue waters', spritePosition: [5, 6], blocker: true },
+    1027: { devDescription: 'Grey Boulder in Blue Water - Version 1', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [5, 7], blocker: true },
+    1028: { devDescription: 'Grey Boulder in Blue Water - Version 2', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [5, 8], blocker: true },
+    1029: { devDescription: 'Grey Boulder in Blue Water - Version 3', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [4, 8], blocker: true },
+    1030: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [5, 3], blocker: true },
+
+    // Bridges & Piers
+    2000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
+    2001: { devDescription: 'Bridge End Horizontal (Wood)', gameDescription: 'Wooden ramp rising from east to west onto a bridge', spritePosition: [0, 10], xPosMod: 0.01, xScaleMod: 0.1 },
+    2002: { devDescription: 'Bridge Bottom Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 9] },
+    2003: { devDescription: 'Bridge Bottom Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 9] },
+    2004: { devDescription: 'Bridge Bottom Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 9], blocker: true },
+    2005: { devDescription: 'Bridge Middle Intact Horizontal (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [1, 10] },
+    2006: { devDescription: 'Bridge Middle Damaged Horizontal (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 10] },
+    2007: { devDescription: 'Bridge Middle Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [3, 10], blocker: true },
+    2008: { devDescription: 'Bridge Top Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 11] },
+    2009: { devDescription: 'Bridge Top Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 11] },
+    2010: { devDescription: 'Bridge Top Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 11], blocker: true },
+    2011: { devDescription: 'Bridge Start Vertical (Wood)', gameDescription: 'Wooden ramp rising from south to north onto a bridge', spritePosition: [0, 9], zPosMod: -0.01, zScaleMod: 0.1 },
+    2012: { devDescription: 'Bridge End Vertical (Wood)', gameDescription: 'Wooden ramp rising from north to south onto a bridge', spritePosition: [0, 11], zPosMod: 0.02, zScaleMod: 0.1 },
+    2013: { devDescription: 'Bridge Right Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 12] },
+    2014: { devDescription: 'Bridge Right Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [1, 13] },
+    2015: { devDescription: 'Bridge Right Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [1, 14], blocker: true },
+    2016: { devDescription: 'Bridge Middle Intact Vertical (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [2, 12] },
+    2017: { devDescription: 'Bridge Middle Damaged Vertical (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 13] },
+    2018: { devDescription: 'Bridge Middle Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [2, 14], blocker: true },
+    2019: { devDescription: 'Bridge Left Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [3, 12] },
+    2020: { devDescription: 'Bridge Left Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [3, 13] },
+    2021: { devDescription: 'Bridge Left Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 14], blocker: true },
+    2022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
+    2023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
+    2024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
 }
 
 export class GridCtrl {
@@ -168,134 +294,13 @@ export class GridCtrl {
      * Light:           Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
      * Type:            [row][col][elevation] % 100 gives "type" of tile
      * Directionality:  Math.floor([row][col][elevation] / 100) gives directionality of tile (ie. 0 centered, 1 top-facing, 2 right-facing, etc.) allows for higher numbers and greater flexibility.
-     *
-     * 2: Green Grass (whole tile)
-     * 3: Green Grass (Dirt/Gravel/Sand at top)
-     * 4: Green Grass (Dirt/Gravel/Sand at top & right)
-     * 5: Green Grass (Dirt/Gravel/Sand at right)
-     * 6: Green Grass (Dirt/Gravel/Sand at right & bottom)
-     * 7: Green Grass (Dirt/Gravel/Sand at bottom)
-     * 8: Green Grass (Dirt/Gravel/Sand at bottom & left)
-     * 9: Green Grass (Dirt/Gravel/Sand at left)
-     * 10: Green Grass (Dirt/Gravel/Sand at left & top)
-     * 11: Green Grass (Dirt/Gravel/Sand at left & top & right)
-     * 12: Green Grass (Dirt/Gravel/Sand at top & right & bottom)
-     * 13: Green Grass (Dirt/Gravel/Sand at right & bottom & left)
-     * 14: Green Grass (Dirt/Gravel/Sand at bottom & left & top)
-     * 15: Green Grass (Dirt/Gravel/Sand at top & bottom)
-     * 16: Green Grass (Dirt/Gravel/Sand at left & right)
-     * 17: Green Grass (Dirt/Gravel/Sand at sides only)
-     * 18: Green Grass (Dirt/Gravel/Sand at corners only)
-     * 19: Green Grass (Dirt/Gravel/Sand all around)
-     * 20: Blue Water (whole tile)
-     * 21: Blue Water (Dirt/Gravel/Sand at top)
-     * 22: Blue Water (Dirt/Gravel/Sand at top & right)
-     * 23: Blue Water (Dirt/Gravel/Sand at right)
-     * 24: Blue Water (Dirt/Gravel/Sand at right & bottom)
-     * 25: Blue Water (Dirt/Gravel/Sand at bottom)
-     * 26: Blue Water (Dirt/Gravel/Sand at bottom & left)
-     * 27: Blue Water (Dirt/Gravel/Sand at left)
-     * 28: Blue Water (Dirt/Gravel/Sand at left & top)
-     * 29: Blue Water (Dirt/Gravel/Sand at upper-left)
-     * 30: Blue Water (Dirt/Gravel/Sand at upper-right)
-     * 31: Blue Water (Dirt/Gravel/Sand at lower-left)
-     * 32: Blue Water (Dirt/Gravel/Sand at lower-right)
-     * 33: Blue Water (Dirt/Gravel/Sand at upper-left lower-right)
-     * 34: Blue Water (Dirt/Gravel/Sand at upper-right lower-left)
-     * 35: Blue Water (Dirt/Gravel/Sand at top & bottom, left & right)
-     * 36: Bridge Start Horizontal (Wood/Concrete/Steel)
-     * 37: Bridge End Horizontal (Wood/Concrete/Steel)
-     * 38: Bridge Bottom Intact Horizontal (Wood/Concrete/Steel)
-     * 39: Bridge Bottom Damaged Horizontal (Wood/Concrete/Steel)
-     * 40: Bridge Bottom Destroyed Horizontal (Wood/Concrete/Steel)
-     * 41: Bridge Middle Intact Horizontal (Wood/Concrete/Steel)
-     * 42: Bridge Middle Damaged Horizontal (Wood/Concrete/Steel)
-     * 43: Bridge Middle Destroyed Horizontal (Wood/Concrete/Steel)
-     * 44: Bridge Top Intact Horizontal (Wood/Concrete/Steel)
-     * 45: Bridge Top Damaged Horizontal (Wood/Concrete/Steel)
-     * 46: Bridge Top Destroyed Horizontal (Wood/Concrete/Steel)
-     * 47: Bridge Start Vertical (Wood/Concrete/Steel)
-     * 48: Bridge End Vertical (Wood/Concrete/Steel)
-     * 49: Bridge Right Intact Vertical (Wood/Concrete/Steel)
-     * 50: Bridge Right Damaged Vertical (Wood/Concrete/Steel)
-     * 51: Bridge Right Destroyed Vertical (Wood/Concrete/Steel)
-     * 52: Bridge Middle Intact Vertical (Wood/Concrete/Steel)
-     * 53: Bridge Middle Damaged Vertical (Wood/Concrete/Steel)
-     * 54: Bridge Middle Destroyed Vertical (Wood/Concrete/Steel)
-     * 55: Bridge Left Intact Vertical (Wood/Concrete/Steel)
-     * 56: Bridge Left Damaged Vertical (Wood/Concrete/Steel)
-     * 57: Bridge Left Destroyed Vertical (Wood/Concrete/Steel)
-     * 58: Pier (Ends on right)
-     * 59: Pier (Open both sides)
-     * 60: Pier (Ends on left)
-     * 100: Brown Dirt (whole tile) version 1
-     * 101: Brown Dirt (whole tile) version 2
-     * 102: Grey Gravel (whole tile) version 1
-     * 103: Grey Gravel (whole tile) version 2
-     * 104: Beige Sand (whole tile) version 1
-     * 105: Beige Sand (whole tile) version 2
      */
     private _grid: number[][][] = [];
 
     /**
-     * All of the materials contained in this scene.
+     * Dictionary of materials already made for use in building out the game's tile map.
      */
-    private _materials: MaterialMap = {
-        bridge: {
-            wood: {
-                damaged: {},
-                destroyed: {},
-                intact: {}
-            }
-        },
-        dirt: {
-            brown: {
-                complete: {}
-            }
-        },
-        gravel: {
-            grey: {
-                complete: {}
-            }
-        },
-        grass: {
-            green: {
-                complete: {},
-                dirt: {},
-                gravel: {},
-                water: {}
-            }
-        },
-        pier: {
-            wood: {
-                end: {},
-                middle: {}
-            }
-        },
-        rock: {
-            brown: {
-                dirt: {},
-                gravel: {},
-                water: {}
-            },
-            grey: {
-                dirt: {},
-                gravel: {},
-                water: {}
-            }
-        },
-        sand: {
-            beige: {
-                complete: {}
-            }
-        },
-        water: {
-            blue: {
-                complete: {},
-                dirt: {}
-            }
-        }
-    };
+    private _materialsMap: { [key: number]: SpriteMaterial } = {};
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -329,27 +334,30 @@ export class GridCtrl {
 
         this._makeStructures();
 
-        this._createGroundMeshes(megaMesh);
+        this._dropBouldersInWater();
 
-        this._createTraverseLevelMeshes(megaMesh);
+        // this._createGroundMeshes(megaMesh);
 
-        // Sets obstruction over deep water.
-        this._dropBouldersInWater(megaMesh);
+        // this._createTraverseLevelMeshes(megaMesh);
 
-        this._scene.add(megaMesh);
+        // this._scene.add(megaMesh);
 
-        // var spriteMaterial = new SpriteMaterial({
-        //     map: this._textures.spriteMap,
-        //     side: DoubleSide,
+        const spriteMaterial = new SpriteMaterial({
+            map: this._textures.spriteMapAncientRuins,
+            side: DoubleSide,
 
-        // });
-        // spriteMaterial.map.offset = new Vector2((1 / 4) * 3, 1 / 4);
-        // spriteMaterial.map.repeat = new Vector2(1 / 4, 1 / 4);
-        // var sprite = new Sprite( spriteMaterial );
-        // sprite.position.set(0, 10, 0);
-        // sprite.rotation.set(-1.5708, 0, 0);
-        // sprite.scale.set(1 / 4, 1 / 4, 1 / 4);
-        // this._scene.add( sprite );
+        });
+        spriteMaterial.map.offset = new Vector2(
+            (1/spriteMapCols) * (spriteMapCols - 1), (0 / spriteMapRows));
+        spriteMaterial.map.repeat = new Vector2(1/spriteMapCols, 1/spriteMapRows);
+        spriteMaterial.blending = AdditiveBlending;
+        spriteMaterial.depthTest = false;
+
+        const sprite = new Sprite( spriteMaterial );
+        sprite.position.set(0, 10, 0);
+        // sprite.rotation.set(rad90DegLeft, 0, 0);
+        sprite.scale.set(0.4, 0.4, 1);
+        this._scene.add( sprite );
     }
 
     /**
@@ -371,7 +379,7 @@ export class GridCtrl {
      */
     private _checkWaterSpread(row: number, col: number): number {
         // If non-zero, then it's a water tile, thus increasing water spread another 10%
-        return (this._isInBounds(row, col) && this._grid[row][col][1] === 20) ? this._ancientRuinsSpec.waterSpreadability : 0;
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === waterBase) ? this._ancientRuinsSpec.waterSpreadability : 0;
     }
 
     /**
@@ -379,182 +387,23 @@ export class GridCtrl {
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
      */
     private _createGroundMeshes(megaMesh: Object3D): void {
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                let block;
-                switch(this._grid[row][col][1]) {
-                    case 2: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2 );
-                        break;
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1]) {
+                    console.log('@@@', this._grid[row][col][1], gridDictionary[this._grid[row][col][1]].devDescription, this._materialsMap[this._grid[row][col][1]]);
+                    let material: SpriteMaterial = this._materialsMap[this._grid[row][col][1]];
+
+                    // If material type has a second variation, randomize between the two.
+                    if (gridDictionary[this._grid[row][col][1]].hasVariation && fiftyFifty()) {
+                        material = this._materialsMap[this._grid[row][col][1] + 1];
                     }
-                    case 3: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter );
-                        break;
-                    }
-                    case 4: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft );
-                        break;
-                    }
-                    case 5: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft );
-                        break;
-                    }
-                    case 6: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft );
-                        break;
-                    }
-                    case 7: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter );
-                        break;
-                    }
-                    case 8: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight );
-                        break;
-                    }
-                    case 9: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight );
-                        break;
-                    }
-                    case 10: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight );
-                        break;
-                    }
-                    case 11: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftRight );
-                        break;
-                    }
-                    case 12: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomRight );
-                        break;
-                    }
-                    case 13: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftRight );
-                        break;
-                    }
-                    case 14: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomLeft );
-                        break;
-                    }
-                    case 15: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottom );
-                        break;
-                    }
-                    case 16: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].leftRight );
-                        break;
-                    }
-                    case 17: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].sparse );
-                        break;
-                    }
-                    case 18: {
-                        if (Math.random() < 0.25) {
-                            block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].mixed );
-                        } else {
-                            block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2 );
-                        }
-                        break;
-                    }
-                    case 19: {
-                        block = new Mesh( this._geometry, this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter );
-                        break;
-                    }
-                    case 20: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1 );
-                        break;
-                    }
-                    case 21: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter );
-                        break;
-                    }
-                    case 22: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft );
-                        break;
-                    }
-                    case 23: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft );
-                        break;
-                    }
-                    case 24: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft );
-                        break;
-                    }
-                    case 25: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter );
-                        break;
-                    }
-                    case 26: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight );
-                        break;
-                    }
-                    case 27: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight );
-                        break;
-                    }
-                    case 28: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight );
-                        break;
-                    }
-                    case 29: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRightTip );
-                        break;
-                    }
-                    case 30: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftTip );
-                        break;
-                    }
-                    case 31: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftTip );
-                        break;
-                    }
-                    case 32: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRightTip );
-                        break;
-                    }
-                    case 33: {
-                        console.log('33');
-                        break;
-                    }
-                    case 34: {
-                        console.log('34');
-                        break;
-                    }
-                    case 35: {
-                        block = new Mesh( this._geometry, this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter );
-                        break;
-                    }
-                    case 100: {
-                        block = new Mesh( this._geometry, this._materials.dirt.brown.complete.centerCenter1 );
-                        break;
-                    }
-                    case 101: {
-                        block = new Mesh( this._geometry, this._materials.dirt.brown.complete.centerCenter2 );
-                        break;
-                    }
-                    case 102: {
-                        block = new Mesh( this._geometry, this._materials.gravel.grey.complete.centerCenter1 );
-                        break;
-                    }
-                    case 103: {
-                        block = new Mesh( this._geometry, this._materials.gravel.grey.complete.centerCenter2 );
-                        break;
-                    }
-                    case 104: {
-                        block = new Mesh( this._geometry, this._materials.sand.beige.complete.centerCenter1 );
-                        break;
-                    }
-                    case 105: {
-                        block = new Mesh( this._geometry, this._materials.sand.beige.complete.centerCenter2 );
-                        break;
-                    }
-                    default: {
-                        console.log('_createGroundMeshes', this._grid[row][col][1]);
-                    }
-                }
-                if (block) {
-                    block.position.set(-5.8 + (col/2.5), 17, 5.8 - row/2.5)
-                    block.rotation.set(-1.5708, 0, 0);
-                    megaMesh.add(block);
+
+                    const sprite = new Sprite( material );
+                    // sprite.scale.set(1 / spriteMapCols, 1 / spriteMapRows, 1 / spriteMapRows);
+                    // sprite.position.set(getXPos(col), layer1YPos, getZPos(row))
+                    sprite.rotation.set(rad90DegLeft, 0, 0);
+                    // megaMesh.add(sprite);
+                    this._scene.add(sprite);
                 }
             }
         }
@@ -565,132 +414,27 @@ export class GridCtrl {
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
      */
     private _createTraverseLevelMeshes(megaMesh: Object3D): void {
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                let block: Mesh;
-                let posX = -5.8 + (col/2.5);
-                let posZ = 5.8 - row/2.5;
-                let scaleX = 1;
-                let scaleZ = 1;
-                switch(this._grid[row][col][2]) {
-                    case 36: {
-                        posX -= 0.01;
-                        scaleX += 0.1;
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.startHorizontal1 );
-                        break;
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][2]) {
+                    const posX = getXPos(col) + (gridDictionary[this._grid[row][col][2]].xPosMod || 0);
+                    const posZ = getZPos(row) + (gridDictionary[this._grid[row][col][2]].zPosMod || 0);
+                    const scaleX = (1 / spriteMapCols) + (gridDictionary[this._grid[row][col][2]].xScaleMod || 0);
+                    const scaleZ = (1 / spriteMapRows) + (gridDictionary[this._grid[row][col][2]].zScaleMod || 0);
+
+                    let material: SpriteMaterial = this._materialsMap[this._grid[row][col][2]];
+
+                    // If material type has a second variation, randomize between the two.
+                    if (gridDictionary[this._grid[row][col][2]].hasVariation && fiftyFifty()) {
+                        material = this._materialsMap[this._grid[row][col][2] + 1];
                     }
-                    case 37: {
-                        posX += 0.01;
-                        scaleX += 0.1;
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.endHorizontal1 );
-                        break;
-                    }
-                    case 38: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.bottomMiddleHorizontal1 );
-                        break;
-                    }
-                    case 39: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.bottomMiddleHorizontal1 );
-                        break;
-                    }
-                    case 40: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.bottomMiddleHorizontal1 );
-                        break;
-                    }
-                    case 41: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.middleMiddleHorizontal1 );
-                        break;
-                    }
-                    case 42: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.middleMiddleHorizontal1 );
-                        break;
-                    }
-                    case 43: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.middleMiddleHorizontal1 );
-                        break;
-                    }
-                    case 44: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.topMiddleHorizontal1 );
-                        break;
-                    }
-                    case 45: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.topMiddleHorizontal1 );
-                        break;
-                    }
-                    case 46: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.topMiddleHorizontal1 );
-                        break;
-                    }
-                    case 47: {
-                        posZ -= 0.01;
-                        scaleZ += 0.1;
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.startVertical1 );
-                        break;
-                    }
-                    case 48: {
-                        posZ += 0.02;
-                        scaleZ += 0.1;
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.endVertical1 );
-                        break;
-                    }
-                    case 49: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.rightMiddleVertical1 );
-                        break;
-                    }
-                    case 50: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.rightMiddleVertical1 );
-                        break;
-                    }
-                    case 51: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.rightMiddleVertical1 );
-                        break;
-                    }
-                    case 52: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.middleMiddleVertical1 );
-                        break;
-                    }
-                    case 53: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.middleMiddleVertical1 );
-                        break;
-                    }
-                    case 54: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.middleMiddleVertical1 );
-                        break;
-                    }
-                    case 55: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.intact.leftMiddleVertical1 );
-                        break;
-                    }
-                    case 56: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.damaged.leftMiddleVertical1 );
-                        break;
-                    }
-                    case 57: {
-                        block = new Mesh( this._geometry, this._materials.bridge.wood.destroyed.leftMiddleVertical1 );
-                        break;
-                    }
-                    case 58: {
-                        block = new Mesh( this._geometry, this._materials.pier.wood.end.left );
-                        break;
-                    }
-                    case 59: {
-                        block = new Mesh( this._geometry, this._materials.pier.wood.middle.complete );
-                        break;
-                    }
-                    case 60: {
-                        block = new Mesh( this._geometry, this._materials.pier.wood.end.right );
-                        break;
-                    }
-                    default: {
-                        console.log('_createTraverseLevelMeshes', this._grid[row][col][2]);
-                    }
-                }
-                if (block) {
-                    block.position.set(posX, 15, posZ)
-                    block.rotation.set(-1.5708, 0, 0);
-                    block.scale.set(scaleX, scaleZ, scaleZ);
-                    block.updateMatrix();
-                    megaMesh.add(block);
+
+                    const sprite = new Sprite( material );
+                    sprite.scale.set(scaleX, 1, scaleZ);
+                    sprite.position.set(posX, layer2YPos, posZ)
+                    sprite.rotation.set(rad90DegLeft, 0, 0);
+                    sprite.updateMatrix();
+                    megaMesh.add(sprite);
                 }
             }
         }
@@ -698,30 +442,15 @@ export class GridCtrl {
 
     /**
      * Randomly drops boulders in the deep waters, and sets them to obstructed.
-     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      */
-    private _dropBouldersInWater(megaMesh: Object3D): void {
-        const waterBoulderMats: MeshPhongMaterial[] = [
-            this._materials.rock.brown.water.variation1,
-            this._materials.rock.brown.water.variation2,
-            this._materials.rock.brown.water.variation3,
-            this._materials.rock.grey.water.variation1,
-            this._materials.rock.grey.water.variation2,
-            this._materials.rock.grey.water.variation3
-        ];
-
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] === 20 && !this._grid[row][col][2]) {
-                    this._grid[row][col][2] = 1; // Water is too deep to cross.
-                    let block;
+    private _dropBouldersInWater(): void {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1] === waterBase && !this._grid[row][col][2]) {
+                    this._grid[row][col][2] = waterBase + 30; // Water is too deep to cross.
                     if (Math.random() < 0.06) {
-                        block = new Mesh( this._geometry, waterBoulderMats[Math.floor(Math.random() * 5)]);
-                    }
-                    if (block) {
-                        block.position.set(-5.8 + (col/2.5), 15, 5.8 - row/2.5)
-                        block.rotation.set(-1.5708, 0, 0);
-                        megaMesh.add(block);
+                        // Adds one of 6 boulder in water variations.
+                        this._grid[row][col][2] = waterBase + 24 + Math.floor(Math.random() * 5);
                     }
                 }
             }
@@ -736,9 +465,9 @@ export class GridCtrl {
      */
     private _isInBounds(row: number, col: number): boolean {
         // Check out of bounds.
-        if (row < 0 || row > 29) {
+        if (row < minRows || row > maxRows) {
             return false;
-        } else if (col < 0 || col > 29) {
+        } else if (col < minCols || col > maxCols) {
             return false;
         }
         return true;
@@ -752,34 +481,34 @@ export class GridCtrl {
         const max = 12;
         switch(Math.floor(Math.random() * 3)) {
             case 0: { // top
-                for (let col = 0; col < 30; col += 3) {
+                for (let col = minCols; col < maxCols + 1; col += 3) {
                     const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
-                    for (let row = 29; row > 29 - fillAmount; row--) {
-                        this._grid[row][col][1] = 20;
-                        this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] = 20);
-                        this._isInBounds(row, col + 2) && (this._grid[row][col + 2][1] = 20);
+                    for (let row = maxRows; row > maxRows - fillAmount; row--) {
+                        this._grid[row][col][1] = waterBase;
+                        this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] = waterBase);
+                        this._isInBounds(row, col + 2) && (this._grid[row][col + 2][1] = waterBase);
                     }
                 }
                 break;
             }
             case 1: { // left
-                for (let row = 0; row < 30; row += 3) {
+                for (let row = minRows; row < maxRows + 1; row += 3) {
                     const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
-                    for (let col = 0; col < fillAmount; col++) {
-                        this._grid[row][col][1] = 20;
-                        this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
-                        this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+                    for (let col = minCols; col < fillAmount; col++) {
+                        this._grid[row][col][1] = waterBase;
+                        this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = waterBase);
+                        this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = waterBase);
                     }
                 }
                 break;
             }
             case 2: { // right
-                for (let row = 0; row < 30; row += 3) {
+                for (let row = minRows; row < maxRows + 1; row += 3) {
                     const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
-                    for (let col = 29; col > 29 - fillAmount; col--) {
-                        this._grid[row][col][1] = 20;
-                        this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
-                        this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+                    for (let col = maxCols; col > maxCols - fillAmount; col--) {
+                        this._grid[row][col][1] = waterBase;
+                        this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = waterBase);
+                        this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = waterBase);
                     }
                 }
                 break;
@@ -810,74 +539,72 @@ export class GridCtrl {
         // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
         // Must be at least 10 tile apart depending on direction.
         // Rivers must be 2 tiles thick at all points along its length.
-        const centerRow = Math.floor(Math.random() * 3) + 15;
-        const centerCol = Math.floor(Math.random() * 3) + 15;
-        const flowsHorizontally = Math.random() < 0.5;
-        const startRow = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
+        const flowsHorizontally = fiftyFifty();
+        const startRow = Math.floor(Math.random() * ((maxRows - 9) - (minRows + 10) + 1)) + (minRows + 10);
         const startCol = startRow;
 
         if (flowsHorizontally) {
-            let flowsUp = startRow < 15;
+            const flowsUp = startRow < middleRow;
             let lastRow = startRow;
             if (flowsUp) {
-                for (let col = 0; col < 30; col += 2) {
+                for (let col = minCols; col < maxCols + 1; col += 2) {
                     // Small chance to flow back down
-                    if (Math.random() < 0.1 && lastRow > 1) {
+                    if (Math.random() < 0.1 && lastRow > minRows + 1) {
                         lastRow--;
                     // Remaining 50/50 to flow up or stay level.
-                    } else if (Math.random() < 0.5 && lastRow < 28) {
+                    } else if (fiftyFifty() && lastRow < maxRows - 1) {
                         lastRow++;
                     }
-                    this._grid[lastRow][col][1] = 20;
-                    this._grid[lastRow + 1][col][1] = 20;
-                    this._isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = 20);
-                    this._isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = 20);
+                    this._grid[lastRow][col][1] = waterBase;
+                    this._grid[lastRow + 1][col][1] = waterBase;
+                    this._isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = waterBase);
+                    this._isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = waterBase);
                 }
             } else {
-                for (let col = 0; col < 30; col += 2) {
+                for (let col = minCols; col < maxCols + 1; col += 2) {
                     // Small chance to flow back up
-                    if (Math.random() < 0.1 && lastRow < 28) {
+                    if (Math.random() < 0.1 && lastRow < maxRows - 1) {
                         lastRow++;
                     // Remaining 50/50 to flow down or stay level.
-                    } else if (Math.random() < 0.5 && lastRow > 1) {
+                    } else if (fiftyFifty() && lastRow > minRows + 1) {
                         lastRow--;
                     }
-                    this._grid[lastRow][col][1] = 20;
-                    this._grid[lastRow + 1][col][1] = 20;
-                    this._isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = 20);
-                    this._isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = 20);
+                    this._grid[lastRow][col][1] = waterBase;
+                    this._grid[lastRow + 1][col][1] = waterBase;
+                    this._isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = waterBase);
+                    this._isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = waterBase);
                 }
             }
         } else {
-            let flowsRight = startCol < 15;
+            const flowsRight = startCol < middleCol;
             let lastCol = startCol;
             if (flowsRight) {
-                for (let row = 0; row < 30; row += 2) {
+                for (let row = minRows; row < maxRows + 1; row += 2) {
                     // Small chance to flow back left
-                    if (Math.random() < 0.1 && lastCol > 1) {
+                    if (Math.random() < 0.1 && lastCol > minCols + 1) {
                         lastCol--;
                     // Remaining 50/50 to flow right or stay level.
-                    } else if (Math.random() < 0.5 && lastCol < 28) {
+                    } else if (fiftyFifty() && lastCol < maxCols - 1) {
                         lastCol++;
                     }
-                    this._grid[row][lastCol][1] = 20;
-                    this._grid[row][lastCol + 1][1] = 20;
-                    this._isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = 20);
-                    this._isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = 20);
+                    this._grid[row][lastCol][1] = waterBase;
+                    this._grid[row][lastCol + 1][1] = waterBase;
+                    this._isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = waterBase);
+                    this._isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = waterBase);
                 }
             } else {
-                for (let row = 0; row < 30; row += 2) {
+                for (let row = minRows; row < maxRows + 1; row += 2) {
                     // Small chance to flow back right
-                    if (Math.random() < 0.1 && lastCol < 28) {
+                    if (Math.random() < 0.1 && lastCol < maxCols - 1) {
                         lastCol++;
                     // Remaining 50/50 to flow left or stay level.
-                    } else if (Math.random() < 0.5 && lastCol > 1) {
+                    } else if (fiftyFifty() && lastCol > minCols + 1) {
                         lastCol--;
                     }
-                    this._grid[row][lastCol][1] = 20;
-                    this._grid[row][lastCol + 1][1] = 20;
-                    this._isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = 20);
-                    this._isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = 20);
+                    this._grid[row][lastCol][1] = waterBase;
+                    this._grid[row][lastCol + 1][1] = waterBase;
+                    this._isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = waterBase);
+                    this._isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = waterBase);
                 }
             }
         }
@@ -889,14 +616,14 @@ export class GridCtrl {
     private _makeGrass(): void {
         // If no plants on planet, don't spawn grass.
         if (!this._ancientRuinsSpec.hasPlants) {
-            for (let row = 0; row < 30; row++) {
+            for (let row = minRows; row < maxRows + 1; row++) {
                 this._grid[row] = [];
-                for (let col = 0; col < 30; col++) {
+                for (let col = minCols; col < maxCols + 1; col++) {
                     this._grid[row][col] = [];
-                    if (Math.floor(Math.random() * 10) % 2 === 0) {
-                        this._grid[row][col][1] = 100;
+                    if (fiftyFifty()) {
+                        this._grid[row][col][1] = groundGrassBase + 21;
                     } else {
-                        this._grid[row][col][1] = 101;
+                        this._grid[row][col][1] = groundGrassBase + 22;
                     }
                     this._grid[row][col][0] = 0;
                     this._grid[row][col][2] = 0;
@@ -908,14 +635,14 @@ export class GridCtrl {
         }
 
         // Seed the grass
-        for (let row = 0; row < 30; row++) {
+        for (let row = minRows; row < maxRows + 1; row++) {
             this._grid[row] = [];
-            for (let col = 0; col < 30; col++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
                 this._grid[row][col] = [];
                 if (Math.random() < this._ancientRuinsSpec.grassPercentage) {
                     this._grid[row][col][1] = 1;
                 } else {
-                    this._grid[row][col][1] = 100;
+                    this._grid[row][col][1] = groundGrassBase + 21;
                 }
                 this._grid[row][col][0] = 0;
                 this._grid[row][col][2] = 0;
@@ -925,8 +652,8 @@ export class GridCtrl {
         }
 
         // Organically let the grass spread
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._grid[row][col][1] !== 1) {
                     const hasGrassPercentage = 0.01
                         + this._checkGrassSpread(row + 1, col - 1)
@@ -937,7 +664,7 @@ export class GridCtrl {
                         + this._checkGrassSpread(row + 1, col + 1)
                         + this._checkGrassSpread(row, col + 1)
                         + this._checkGrassSpread(row - 1, col + 1)
-                    this._grid[row][col][1] = (Math.random() < hasGrassPercentage) ? 1 : 100;
+                    this._grid[row][col][1] = (Math.random() < hasGrassPercentage) ? 1 : groundGrassBase + 21;
                 }
             }
         }
@@ -949,35 +676,35 @@ export class GridCtrl {
     private _makeLargeLake(): void {
         const max = 11;
         const min = 7;
-        const centerRow = Math.floor(Math.random() * 3) + 15;
-        const centerCol = Math.floor(Math.random() * 3) + 15;
+        const centerRow = Math.floor(Math.random() * 3) + middleRow;
+        const centerCol = Math.floor(Math.random() * 3) + middleCol;
 
-        for (let row = centerRow; row < 26; row += 3) {
+        for (let row = centerRow; row < maxRows - 3; row += 3) {
             const leftRadius = Math.floor(Math.random() * (max - min + 1)) + min;
             const rightRadius = Math.floor(Math.random() * (max - min + 1)) + min;
             for (let col = centerCol; col > centerCol - leftRadius; col--) {
-                this._grid[row][col][1] = 20;
-                this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
-                this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+                this._grid[row][col][1] = waterBase;
+                this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = waterBase);
+                this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = waterBase);
             }
             for (let col = centerCol; col < centerCol + rightRadius; col++) {
-                this._grid[row][col][1] = 20;
-                this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = 20);
-                this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = 20);
+                this._grid[row][col][1] = waterBase;
+                this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = waterBase);
+                this._isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = waterBase);
             }
         }
-        for (let row = centerRow; row > 4; row -= 3) {
+        for (let row = centerRow; row > minRows + 4; row -= 3) {
             const leftRadius = Math.floor(Math.random() * (max - min + 1)) + min;
             const rightRadius = Math.floor(Math.random() * (max - min + 1)) + min;
             for (let col = centerCol; col > centerCol - leftRadius; col--) {
-                this._grid[row][col][1] = 20;
-                this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = 20);
-                this._isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = 20);
+                this._grid[row][col][1] = waterBase;
+                this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = waterBase);
+                this._isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = waterBase);
             }
             for (let col = centerCol; col < centerCol + rightRadius; col++) {
-                this._grid[row][col][1] = 20;
-                this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = 20);
-                this._isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = 20);
+                this._grid[row][col][1] = waterBase;
+                this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = waterBase);
+                this._isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = waterBase);
             }
         }
 
@@ -995,605 +722,20 @@ export class GridCtrl {
      * Makes all the tile materials for the game map.
      */
     private _makeMaterials(): void {
-        // Pier Materials
-        this._materials.pier.wood.end.left = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.pierWoodEndLeft1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
+        Object.keys(gridDictionary).forEach(key => {
+            const spriteMaterial: SpriteMaterial = new SpriteMaterial({
+                map: this._textures.spriteMapAncientRuins,
+                side: DoubleSide
+            });
+            spriteMaterial.map.offset = new Vector2(
+                (1 / spriteMapCols) * gridDictionary[Number(key)].spritePosition[0],
+                (1 / spriteMapRows) * gridDictionary[Number(key)].spritePosition[1]);
+            spriteMaterial.map.repeat = new Vector2(
+                (1 / spriteMapCols),
+                (1 / spriteMapRows));
+
+            this._materialsMap[Number(key)] = spriteMaterial;
         });
-        this._materials.pier.wood.end.left.map.minFilter = LinearFilter;
-
-        this._materials.pier.wood.end.right = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.pierWoodEndRight1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.pier.wood.end.right.map.minFilter = LinearFilter;
-
-        this._materials.pier.wood.middle.complete = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.pierWoodMiddleComplete1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.pier.wood.middle.complete.map.minFilter = LinearFilter;
-
-        // Bridge Materials
-        this._materials.bridge.wood.damaged.bottomMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDamagedBottomMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.damaged.bottomMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.damaged.middleMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDamagedMiddleMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.damaged.middleMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.damaged.topMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDamagedTopMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.damaged.topMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.damaged.leftMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDamagedLeftMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.damaged.leftMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.damaged.middleMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDamagedMiddleMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.damaged.middleMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.damaged.rightMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDamagedRightMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.damaged.rightMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.destroyed.bottomMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDestroyedBottomMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.destroyed.bottomMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.destroyed.middleMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDestroyedMiddleMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.destroyed.middleMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.destroyed.topMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDestroyedTopMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.destroyed.topMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.destroyed.leftMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDestroyedLeftMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.destroyed.leftMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.destroyed.middleMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDestroyedMiddleMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.destroyed.middleMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.destroyed.rightMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodDestroyedRightMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.destroyed.rightMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.bottomMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactBottomMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.bottomMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.middleMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactMiddleMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.middleMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.topMiddleHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactTopMiddleHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.topMiddleHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.endHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactEndHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.endHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.startHorizontal1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactStartHorizontal1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.startHorizontal1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.leftMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactLeftMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.leftMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.middleMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactMiddleMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.middleMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.rightMiddleVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactRightMiddleVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.rightMiddleVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.endVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactEndVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.endVertical1.map.minFilter = LinearFilter;
-
-        this._materials.bridge.wood.intact.startVertical1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.bridgeWoodIntactStartVertical1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.bridge.wood.intact.startVertical1.map.minFilter = LinearFilter;
-
-        // Rock Materials
-        this._materials.rock.brown.water.variation1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterBrown1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.rock.brown.water.variation1.map.minFilter = LinearFilter;
-
-        this._materials.rock.brown.water.variation2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterBrown2,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.rock.brown.water.variation2.map.minFilter = LinearFilter;
-
-        this._materials.rock.brown.water.variation3 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterBrown3,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.rock.brown.water.variation3.map.minFilter = LinearFilter;
-
-        this._materials.rock.grey.water.variation1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterGrey1,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.rock.grey.water.variation1.map.minFilter = LinearFilter;
-
-        this._materials.rock.grey.water.variation2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterGrey2,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.rock.grey.water.variation2.map.minFilter = LinearFilter;
-
-        this._materials.rock.grey.water.variation3 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.rockWaterGrey3,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: true
-        });
-        this._materials.rock.grey.water.variation3.map.minFilter = LinearFilter;
-
-        // Dirt Materials
-        this._materials.dirt.brown.complete.centerCenter1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.dirtCenterCenter01,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.dirt.brown.complete.centerCenter1.map.minFilter = LinearFilter;
-
-        this._materials.dirt.brown.complete.centerCenter2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures.dirtCenterCenter02,
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.dirt.brown.complete.centerCenter2.map.minFilter = LinearFilter;
-
-        // Water Materials
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterCenterDirt1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterComplete01`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor].complete.complete1.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomCenter${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomLeftTip${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftTip.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRightTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterBottomRightTip${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRightTip.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterCenterRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopCenter${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopLeftTip${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftTip.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
-
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRightTip = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.waterColor}WaterTopRightTip${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.water[this._ancientRuinsSpec.waterColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRightTip.map.minFilter = LinearFilter;
-
-        // Grass materials
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterCenter01`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerCenter.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete1 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassComplete01`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete1.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2 = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassComplete02`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor].complete.complete2.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomCenter${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomCenter.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomLeftRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomLeftRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassBottomRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].bottomRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassCenterRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].centerRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].leftRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassLeftRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].leftRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].mixed = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassMixed${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].mixed.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].sparse = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassSparse${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].sparse.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottom = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottom${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottom.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottomLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopBottomRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topBottomRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopCenter${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topCenter.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopLeft${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeft.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopLeftRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topLeftRight.map.minFilter = LinearFilter;
-
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight = new MeshPhongMaterial({
-            color: '#FFFFFF',
-            map: this._textures[`${this._ancientRuinsSpec.grassColor}GrassTopRight${this._ancientRuinsSpec.groundMaterial}1`],
-            shininess: 0,
-            side: DoubleSide,
-            transparent: false
-        });
-        this._materials.grass[this._ancientRuinsSpec.grassColor][this._ancientRuinsSpec.groundMaterial.toLowerCase()].topRight.map.minFilter = LinearFilter;
     }
 
     /**
@@ -1615,42 +757,46 @@ export class GridCtrl {
      * Makes water tiles specific to a long map-spanning river.
      */
     private _makeRiver(): void {
-        const flowsHorizontally = Math.random() < 0.5;
-        const startRow = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
+        const flowsHorizontally = fiftyFifty();
+        const startRow = Math.floor(Math.random() * ((maxRows - 9) - (minRows + 10) + 1)) + (minRows + 10);
         const startCol = startRow;
+        const maxPathShift = 2;
+        const minPathShift = 0;
+        const maxThickness = 4;
+        const minThickness = 2;
 
         if (flowsHorizontally) {
             let prevRow = startRow;
-            for (let col = 0; col < 30; col += 3) {
-                const upOrDown = startRow < 15;
-                const amount = Math.floor(Math.random() * (2 - 0 + 1));
+            for (let col = minCols; col < maxRows + 1; col += 3) {
+                const upOrDown = startRow < middleRow;
+                const amount = Math.floor(Math.random() * (maxPathShift - minPathShift + 1)) + minPathShift;
                 prevRow = upOrDown ? prevRow + amount : prevRow - amount;
 
-                const thickness = Math.floor(Math.random() * (4 - 2 + 1)) + 2;
+                const thickness = Math.floor(Math.random() * (maxThickness - minThickness + 1)) + minThickness;
                 for (let t = 0; t <= thickness; t++) {
-                    this._isInBounds(prevRow + t, col) && (this._grid[prevRow + t][col][1] = 20);
-                    this._isInBounds(prevRow + t, col + 1) && (this._grid[prevRow + t][col + 1][1] = 20);
-                    this._isInBounds(prevRow + t, col + 2) && (this._grid[prevRow + t][col + 2][1] = 20);
-                    this._isInBounds(prevRow - t, col) && (this._grid[prevRow - t][col][1] = 20);
-                    this._isInBounds(prevRow - t, col + 1) && (this._grid[prevRow - t][col + 1][1] = 20);
-                    this._isInBounds(prevRow - t, col + 2) && (this._grid[prevRow - t][col + 2][1] = 20);
+                    this._isInBounds(prevRow + t, col) && (this._grid[prevRow + t][col][1] = waterBase);
+                    this._isInBounds(prevRow + t, col + 1) && (this._grid[prevRow + t][col + 1][1] = waterBase);
+                    this._isInBounds(prevRow + t, col + 2) && (this._grid[prevRow + t][col + 2][1] = waterBase);
+                    this._isInBounds(prevRow - t, col) && (this._grid[prevRow - t][col][1] = waterBase);
+                    this._isInBounds(prevRow - t, col + 1) && (this._grid[prevRow - t][col + 1][1] = waterBase);
+                    this._isInBounds(prevRow - t, col + 2) && (this._grid[prevRow - t][col + 2][1] = waterBase);
                 }
             }
         } else {
             let prevCol = startCol;
-            for (let row = 0; row < 30; row += 3) {
-                const leftOrRight = startCol > 15;
-                const amount = Math.floor(Math.random() * (2 - 0 + 1));
+            for (let row = minRows; row < maxRows + 1; row += 3) {
+                const leftOrRight = startCol > middleCol;
+                const amount = Math.floor(Math.random() * (maxPathShift - minPathShift + 1)) + minPathShift;
                 prevCol = leftOrRight ? prevCol - amount : prevCol + amount;
 
-                const thickness = Math.floor(Math.random() * (4 - 2 + 1)) + 2;
+                const thickness = Math.floor(Math.random() * (maxThickness - minThickness + 1)) + minThickness;
                 for (let t = 0; t <= thickness; t++) {
-                    this._isInBounds(row, prevCol + t) && (this._grid[row][prevCol + t][1] = 20);
-                    this._isInBounds(row + 1, prevCol + t) && (this._grid[row + 1][prevCol + t][1] = 20);
-                    this._isInBounds(row + 2, prevCol + t) && (this._grid[row + 2][prevCol + t][1] = 20);
-                    this._isInBounds(row, prevCol - t) && (this._grid[row][prevCol - t][1] = 20);
-                    this._isInBounds(row + 1, prevCol - t) && (this._grid[row + 1][prevCol - t][1] = 20);
-                    this._isInBounds(row + 2, prevCol - t) && (this._grid[row + 2][prevCol - t][1] = 20);
+                    this._isInBounds(row, prevCol + t) && (this._grid[row][prevCol + t][1] = waterBase);
+                    this._isInBounds(row + 1, prevCol + t) && (this._grid[row + 1][prevCol + t][1] = waterBase);
+                    this._isInBounds(row + 2, prevCol + t) && (this._grid[row + 2][prevCol + t][1] = waterBase);
+                    this._isInBounds(row, prevCol - t) && (this._grid[row][prevCol - t][1] = waterBase);
+                    this._isInBounds(row + 1, prevCol - t) && (this._grid[row + 1][prevCol - t][1] = waterBase);
+                    this._isInBounds(row + 2, prevCol - t) && (this._grid[row + 2][prevCol - t][1] = waterBase);
                 }
             }
         }
@@ -1661,54 +807,54 @@ export class GridCtrl {
             let bottomRow;
             let topRow;
             while(true) {
-                randomCol = Math.floor(Math.random() * (27 - 2 + 1)) + 2;
-                for (let i = 0; i < 30; i++) {
-                    if (this._grid[i][randomCol][1] === 20) {
+                randomCol = Math.floor(Math.random() * ((maxCols - 2) - (minCols + 2) + 1)) + (minCols + 2);
+                for (let i = minRows; i < maxRows + 1; i++) {
+                    if (this._grid[i][randomCol][1] === waterBase) {
                         bottomRow = i;
                         break;
                     }
                 }
-                for (let j = bottomRow; j < 30; j++) {
-                    if (this._grid[j][randomCol][1] === 20) {
+                for (let j = bottomRow; j < maxRows + 1; j++) {
+                    if (this._grid[j][randomCol][1] === waterBase) {
                         topRow = j;
                     } else {
                         break;
                     }
                 }
                 // Ensures the randomly selected point along the river has land on both sides.
-                if (bottomRow !== 0 && topRow !== 29) {
+                if (bottomRow !== minRows && topRow !== maxRows) {
                     break;
                 }
             }
             let leftCol = randomCol;
             let currCol = randomCol;
             while (this._isInBounds(bottomRow, currCol - 1)
-                && this._grid[bottomRow][currCol - 1][1] === 20
+                && this._grid[bottomRow][currCol - 1][1] === waterBase
                 && this._isInBounds(bottomRow - 1, currCol - 1)
-                && this._grid[bottomRow - 1][currCol - 1][1] !== 20
+                && this._grid[bottomRow - 1][currCol - 1][1] !== waterBase
                 && this._isInBounds(topRow + 1, currCol - 1)
-                && this._grid[topRow + 1][currCol - 1][1] !== 20) {
+                && this._grid[topRow + 1][currCol - 1][1] !== waterBase) {
                 leftCol = currCol - 1;
                 currCol = leftCol;
             }
             const cols = [leftCol, leftCol + 1, leftCol + 2];
             for (let row = bottomRow; row <= topRow; row++) {
                 if (row !== bottomRow && row !== topRow) { // Everything in the middle
-                    this._grid[row][cols[0]][2] = (Math.random() < 0.25) ? 56 : (Math.random() < 0.25) ? 57 : 55;
-                    this._grid[row][cols[1]][2] = (Math.random() < 0.25) ? 53 : (Math.random() < 0.25) ? 54 : 52;
-                    this._grid[row][cols[2]][2] = (Math.random() < 0.25) ? 50 : (Math.random() < 0.25) ? 51 : 49;
+                    this._grid[row][cols[0]][2] = (Math.random() < 0.25) ? (bridgeBase + 20) : (Math.random() < 0.25) ? (bridgeBase + 21) : (bridgeBase + 19);
+                    this._grid[row][cols[1]][2] = (Math.random() < 0.25) ? (bridgeBase + 17) : (Math.random() < 0.25) ? (bridgeBase + 18) : (bridgeBase + 16);
+                    this._grid[row][cols[2]][2] = (Math.random() < 0.25) ? (bridgeBase + 14) : (Math.random() < 0.25) ? (bridgeBase + 15) : (bridgeBase + 13);
                     // If all 3 are destroyed in a line, pick one by modding current row and decide whether to make it merely damaged, or whole.
-                    if (this._grid[row][cols[0]][2] === 51 && this._grid[row][cols[1]][2] === 54 && this._grid[row][cols[1]][2] === 57) {
-                        this._grid[row][cols[row % 3]][2] = (Math.random() < 0.25) ? (50 + (row % 3) * 3) : (49 + (row % 3) * 3);
+                    if (this._grid[row][cols[0]][2] === (bridgeBase + 15) && this._grid[row][cols[1]][2] === (bridgeBase + 18) && this._grid[row][cols[1]][2] === (bridgeBase + 21)) {
+                        this._grid[row][cols[row % 3]][2] = (Math.random() < 0.25) ? ((bridgeBase + 14) + (row % 3) * 3) : ((bridgeBase + 13) + (row % 3) * 3);
                     }
                 } else if (row !== bottomRow) { // Start
-                    this._grid[row][cols[0]][2] = 47;
-                    this._grid[row][cols[1]][2] = 47;
-                    this._grid[row][cols[2]][2] = 47;
+                    this._grid[row][cols[0]][2] = bridgeBase + 11;
+                    this._grid[row][cols[1]][2] = bridgeBase + 11;
+                    this._grid[row][cols[2]][2] = bridgeBase + 11;
                 } else { // End
-                    this._grid[row][cols[0]][2] = 48;
-                    this._grid[row][cols[1]][2] = 48;
-                    this._grid[row][cols[2]][2] = 48;
+                    this._grid[row][cols[0]][2] = bridgeBase + 12;
+                    this._grid[row][cols[1]][2] = bridgeBase + 12;
+                    this._grid[row][cols[2]][2] = bridgeBase + 12;
                 }
             }
         // Horizontal Bridge
@@ -1717,131 +863,131 @@ export class GridCtrl {
             let colLeft;
             let colRight;
             while(true) {
-                randomRow = Math.floor(Math.random() * (27 - 2 + 1)) + 2;
-                for (let i = 0; i < 30; i++) {
-                    if (this._grid[randomRow][i][1] === 20) {
+                randomRow = Math.floor(Math.random() * ((maxRows - 2) - (minRows + 2) + 1)) + (minRows + 2);
+                for (let i = 0; i < maxCols + 1; i++) {
+                    if (this._grid[randomRow][i][1] === waterBase) {
                         colLeft = i;
                         break;
                     }
                 }
-                for (let j = colLeft; j < 30; j++) {
-                    if (this._grid[randomRow][j][1] === 20) {
+                for (let j = colLeft; j < maxCols + 1; j++) {
+                    if (this._grid[randomRow][j][1] === waterBase) {
                         colRight = j;
                     } else {
                         break;
                     }
                 }
                 // Ensures the randomly selected point along the river has land on both sides.
-                if (colLeft !== 0 && colRight !== 29) {
+                if (colLeft !== 0 && colRight !== maxCols) {
                     break;
                 }
             }
             let rowBottom = randomRow;
             let currRow = randomRow;
             while (this._isInBounds(currRow - 1, colLeft)
-                && this._grid[currRow - 1][colLeft][1] === 20
+                && this._grid[currRow - 1][colLeft][1] === waterBase
                 && this._isInBounds(currRow - 1, colLeft - 1)
-                && this._grid[currRow - 1][colLeft - 1][1] !== 20
+                && this._grid[currRow - 1][colLeft - 1][1] !== waterBase
                 && this._isInBounds(currRow - 1, colRight + 1)
-                && this._grid[currRow - 1][colRight + 1][1] !== 20) {
+                && this._grid[currRow - 1][colRight + 1][1] !== waterBase) {
                 rowBottom = currRow - 1;
                 currRow = rowBottom;
             }
             const rows = [rowBottom, rowBottom + 1, rowBottom + 2];
             for (let col = colLeft; col <= colRight; col++) {
                 if (col !== colLeft && col !== colRight) { // Everything in the middle
-                    this._grid[rows[0]][col][2] = (Math.random() < 0.25) ? 39 : (Math.random() < 0.25) ? 40 : 38;
-                    this._grid[rows[1]][col][2] = (Math.random() < 0.25) ? 42 : (Math.random() < 0.25) ? 43 : 41;
-                    this._grid[rows[2]][col][2] = (Math.random() < 0.25) ? 45 : (Math.random() < 0.25) ? 46 : 44;
+                    this._grid[rows[0]][col][2] = (Math.random() < 0.25) ? (bridgeBase + 3) : (Math.random() < 0.25) ? (bridgeBase + 4) : (bridgeBase + 2);
+                    this._grid[rows[1]][col][2] = (Math.random() < 0.25) ? (bridgeBase + 6) : (Math.random() < 0.25) ? (bridgeBase + 7) : (bridgeBase + 5);
+                    this._grid[rows[2]][col][2] = (Math.random() < 0.25) ? (bridgeBase + 9) : (Math.random() < 0.25) ? (bridgeBase + 10) : (bridgeBase + 8);
                     // If all 3 are destroyed in a line, pick one by modding current col and decide whether to make it merely damaged, or whole.
-                    if (this._grid[rows[0]][col][2] === 40 && this._grid[rows[1]][col][2] === 43 && this._grid[rows[2]][col][2] === 46) {
-                        this._grid[rows[col % 3]][col][2] = (Math.random() < 0.25) ? (39 + (col % 3) * 3) : (38 + (col % 3) * 3);
+                    if (this._grid[rows[0]][col][2] === (bridgeBase + 4) && this._grid[rows[1]][col][2] === (bridgeBase + 7) && this._grid[rows[2]][col][2] === (bridgeBase + 10)) {
+                        this._grid[rows[col % 3]][col][2] = (Math.random() < 0.25) ? ((bridgeBase + 3) + (col % 3) * 3) : ((bridgeBase + 2) + (col % 3) * 3);
                     }
                 } else if (col === colLeft) { // Start
-                    this._grid[rows[0]][col][2] = 36;
-                    this._grid[rows[1]][col][2] = 36;
-                    this._grid[rows[2]][col][2] = 36;
+                    this._grid[rows[0]][col][2] = bridgeBase;
+                    this._grid[rows[1]][col][2] = bridgeBase;
+                    this._grid[rows[2]][col][2] = bridgeBase;
                 } else { // End
-                    this._grid[rows[0]][col][2] = 37;
-                    this._grid[rows[1]][col][2] = 37;
-                    this._grid[rows[2]][col][2] = 37;
+                    this._grid[rows[0]][col][2] = bridgeBase + 1;
+                    this._grid[rows[1]][col][2] = bridgeBase + 1;
+                    this._grid[rows[2]][col][2] = bridgeBase + 1;
                 }
             }
 
-            const rightPierRow = Math.floor(Math.random() * (29 - randomRow + 3)) + randomRow + 2;
+            const rightPierRow = Math.floor(Math.random() * (maxRows - randomRow + 3)) + randomRow + 2;
             const leftPierRow = Math.floor(Math.random() * (randomRow - 2));
 
             // Build pier to the right of bridge
-            if (Math.random() < 0.6 && rightPierRow < 30 && rightPierRow > randomRow + 3) {
+            if (Math.random() < 0.6 && rightPierRow < maxRows + 1 && rightPierRow > randomRow + 3) {
                 let firstWaterCol;
                 // Pier starts left and goes right
-                if (Math.random() < 0.5) {
-                    for (let col = 0; col < 30; col++) {
-                        if (this._grid[rightPierRow][col][1] === 20) {
+                if (fiftyFifty()) {
+                    for (let col = minCols; col < maxCols + 1; col++) {
+                        if (this._grid[rightPierRow][col][1] === waterBase) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[rightPierRow][firstWaterCol][2] = 59;
-                    if (Math.random() < 0.5) {
-                        this._grid[rightPierRow][firstWaterCol + 1][2] = 59;
-                        this._grid[rightPierRow][firstWaterCol + 2][2] = 58;
+                    this._grid[rightPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    if (fiftyFifty()) {
+                        this._grid[rightPierRow][firstWaterCol + 1][2] = bridgeBase + 23;
+                        this._grid[rightPierRow][firstWaterCol + 2][2] = bridgeBase + 22;
                     } else {
-                        this._grid[rightPierRow][firstWaterCol + 1][2] = 58;
+                        this._grid[rightPierRow][firstWaterCol + 1][2] = bridgeBase + 22;
                     }
                 // Pier starts right and goes left
                 } else {
-                    for (let col = 29; col >= 0; col--) {
-                        if (this._grid[rightPierRow][col][1] === 20) {
+                    for (let col = maxCols; col >= minCols; col--) {
+                        if (this._grid[rightPierRow][col][1] === waterBase) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[rightPierRow][firstWaterCol][2] = 59;
-                    if (Math.random() < 0.5) {
-                        this._grid[rightPierRow][firstWaterCol - 1][2] = 59;
-                        this._grid[rightPierRow][firstWaterCol - 2][2] = 60;
+                    this._grid[rightPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    if (fiftyFifty()) {
+                        this._grid[rightPierRow][firstWaterCol - 1][2] = bridgeBase + 23;
+                        this._grid[rightPierRow][firstWaterCol - 2][2] = bridgeBase + 24;
                     } else {
-                        this._grid[rightPierRow][firstWaterCol - 1][2] = 60;
+                        this._grid[rightPierRow][firstWaterCol - 1][2] = bridgeBase + 24;
                     }
                 }
             }
             // Build pier to the left of bridge
-            if (Math.random() < 0.6 && leftPierRow > 0 && leftPierRow < randomRow - 3) {
+            if (Math.random() < 0.6 && leftPierRow > minRows && leftPierRow < randomRow - 3) {
                 let firstWaterCol;
                 // Pier starts left and goes right
-                if (Math.random() < 0.5) {
-                    for (let col = 0; col < 30; col++) {
-                        if (this._grid[leftPierRow][col][1] === 20) {
+                if (fiftyFifty()) {
+                    for (let col = minCols; col < maxCols + 1; col++) {
+                        if (this._grid[leftPierRow][col][1] === waterBase) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[leftPierRow][firstWaterCol][2] = 59;
-                    if (Math.random() < 0.5) {
-                        this._grid[leftPierRow][firstWaterCol + 1][2] = 59;
-                        this._grid[leftPierRow][firstWaterCol + 2][2] = 58;
+                    this._grid[leftPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    if (fiftyFifty()) {
+                        this._grid[leftPierRow][firstWaterCol + 1][2] = bridgeBase + 23;
+                        this._grid[leftPierRow][firstWaterCol + 2][2] = bridgeBase + 22;
                     } else {
-                        this._grid[leftPierRow][firstWaterCol + 1][2] = 58;
+                        this._grid[leftPierRow][firstWaterCol + 1][2] = bridgeBase + 22;
                     }
                 // Pier starts right and goes left
                 } else {
-                    for (let col = 29; col >= 0; col--) {
-                        if (this._grid[leftPierRow][col][1] === 20) {
+                    for (let col = maxCols; col >= minCols; col--) {
+                        if (this._grid[leftPierRow][col][1] === waterBase) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[leftPierRow][firstWaterCol][2] = 59;
-                    if (Math.random() < 0.5) {
-                        this._grid[leftPierRow][firstWaterCol - 1][2] = 59;
-                        this._grid[leftPierRow][firstWaterCol - 2][2] = 60;
+                    this._grid[leftPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    if (fiftyFifty()) {
+                        this._grid[leftPierRow][firstWaterCol - 1][2] = bridgeBase + 23;
+                        this._grid[leftPierRow][firstWaterCol - 2][2] = bridgeBase + 24;
                     } else {
-                        this._grid[leftPierRow][firstWaterCol - 1][2] = 60;
+                        this._grid[leftPierRow][firstWaterCol - 1][2] = bridgeBase + 24;
                     }
                 }
             }
@@ -1853,18 +999,18 @@ export class GridCtrl {
      */
     private _makeSmallLakes(): void {
         // Seed the water
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
                 if (Math.random() < this._ancientRuinsSpec.waterPercentage) {
-                    this._grid[row][col][1] = 20;
+                    this._grid[row][col][1] = waterBase;
                 }
             }
         }
 
         // Organically let the water spread
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] !== 20) {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1] !== waterBase) {
                     const hasWaterPercentage = 0.01
                         + this._checkWaterSpread(row + 1, col - 1)
                         + this._checkWaterSpread(row, col - 1)
@@ -1875,49 +1021,49 @@ export class GridCtrl {
                         + this._checkWaterSpread(row, col + 1)
                         + this._checkWaterSpread(row - 1, col + 1)
                     if (Math.random() < hasWaterPercentage) {
-                        this._grid[row][col][1] = 20;
+                        this._grid[row][col][1] = waterBase;
                     }
                 }
             }
         }
 
         // Check minimum water reqs.
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] === 20) {
-                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === 20) || !this._isInBounds(row + 1, col);
-                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === 20) || !this._isInBounds(row - 1, col);
-                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === 20) || !this._isInBounds(row, col - 1);
-                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === 20) || !this._isInBounds(row, col + 1);
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1] === waterBase) {
+                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === waterBase) || !this._isInBounds(row + 1, col);
+                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === waterBase) || !this._isInBounds(row - 1, col);
+                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === waterBase) || !this._isInBounds(row, col - 1);
+                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === waterBase) || !this._isInBounds(row, col + 1);
 
-                    const upperLeftCorner = (this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === 20) || !this._isInBounds(row + 1, col - 1)
-                    const upperRightCorner = (this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === 20) || !this._isInBounds(row + 1, col + 1);
-                    const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === 20) || !this._isInBounds(row - 1, col - 1)
-                    const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === 20) || !this._isInBounds(row - 1, col + 1);
+                    const upperLeftCorner = (this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === waterBase) || !this._isInBounds(row + 1, col - 1)
+                    const upperRightCorner = (this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === waterBase) || !this._isInBounds(row + 1, col + 1);
+                    const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === waterBase) || !this._isInBounds(row - 1, col - 1)
+                    const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === waterBase) || !this._isInBounds(row - 1, col + 1);
 
                     if ([above, below, left, right].every(x => !x)) {
                         continue;
                     }
                     if (!above && !below) {
                         if (lowerLeftCorner || lowerRightCorner) {
-                            this._grid[row - 1][col][1] = 20;
-                            this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = 20);
-                            this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = 20);
+                            this._grid[row - 1][col][1] = waterBase;
+                            this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = waterBase);
+                            this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = waterBase);
                         } else {
-                            this._grid[row + 1][col][1] = 20;
-                            this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = 20);
-                            this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = 20);
+                            this._grid[row + 1][col][1] = waterBase;
+                            this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = waterBase);
+                            this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = waterBase);
                         }
                     }
                     if (!left && !right) {
                         if (lowerLeftCorner || upperLeftCorner) {
-                            this._grid[row][col - 1][1] = 20;
-                            this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = 20);
-                            this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = 20);
+                            this._grid[row][col - 1][1] = waterBase;
+                            this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = waterBase);
+                            this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = waterBase);
                         } else {
-                            this._grid[row][col + 1][1] = 20;
-                            this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = 20);
-                            this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = 20);
+                            this._grid[row][col + 1][1] = waterBase;
+                            this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = waterBase);
+                            this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = waterBase);
                         }
                     }
                 }
@@ -1925,63 +1071,63 @@ export class GridCtrl {
         }
 
         // Remove waters with only 1 tile thickness
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] === 20) {
-                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === 20) || !this._isInBounds(row + 1, col);
-                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === 20) || !this._isInBounds(row - 1, col);
-                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === 20) || !this._isInBounds(row, col - 1);
-                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === 20) || !this._isInBounds(row, col + 1);
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1] === waterBase) {
+                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === waterBase) || !this._isInBounds(row + 1, col);
+                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === waterBase) || !this._isInBounds(row - 1, col);
+                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === waterBase) || !this._isInBounds(row, col - 1);
+                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === waterBase) || !this._isInBounds(row, col + 1);
 
                     if ([above, below, left, right].every(x => !x)) {
                         continue;
                     }
                     if (!above && !below) {
-                        this._grid[row][col][1] = 100;
+                        this._grid[row][col][1] = groundGrassBase + 21;
                         continue;
                     } else if (!left && !right) {
-                        this._grid[row][col][1] = 100;
+                        this._grid[row][col][1] = groundGrassBase + 21;
                         continue;
                     }
 
-                    const upperLeftCorner = (this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === 20) || !this._isInBounds(row + 1, col - 1)
-                    const upperRightCorner = (this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === 20) || !this._isInBounds(row + 1, col + 1);
-                    const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === 20) || !this._isInBounds(row - 1, col - 1)
-                    const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === 20) || !this._isInBounds(row - 1, col + 1);
+                    const upperLeftCorner = (this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === waterBase) || !this._isInBounds(row + 1, col - 1)
+                    const upperRightCorner = (this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === waterBase) || !this._isInBounds(row + 1, col + 1);
+                    const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === waterBase) || !this._isInBounds(row - 1, col - 1)
+                    const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === waterBase) || !this._isInBounds(row - 1, col + 1);
 
                     if (above && right && !upperRightCorner) {
-                        this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = 20);
+                        this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = waterBase);
                     }
                     if (below && right && !lowerRightCorner) {
-                        this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = 20);
+                        this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = waterBase);
                     }
                     if (below && left && !lowerLeftCorner) {
-                        this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = 20);
+                        this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = waterBase);
                     }
                     if (above && left && !upperLeftCorner) {
-                        this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = 20);
+                        this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = waterBase);
                     }
                 }
             }
         }
 
         // Eliminate rare occasions where fill in block connect a former stand alone pond into a 1 thickness stream.
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] === 20) {
-                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === 20) || !this._isInBounds(row + 1, col);
-                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === 20) || !this._isInBounds(row - 1, col);
-                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === 20) || !this._isInBounds(row, col - 1);
-                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === 20) || !this._isInBounds(row, col + 1);
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1] === waterBase) {
+                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === waterBase) || !this._isInBounds(row + 1, col);
+                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === waterBase) || !this._isInBounds(row - 1, col);
+                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === waterBase) || !this._isInBounds(row, col - 1);
+                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === waterBase) || !this._isInBounds(row, col + 1);
 
                     if (!above && !below && ((left && !right) || (!left && right))) {
-                        this._grid[row][col][1] = 101;
+                        this._grid[row][col][1] = groundGrassBase + 22;
                     }
                     if (!left && !right && ((above && !below) || (!above && below))) {
-                        this._grid[row][col][1] = 101;
+                        this._grid[row][col][1] = groundGrassBase + 22;
                     }
-                    if ([above, below, left, right].every(x => !x) && Math.random() < 0.5) {
-                        this._grid[row][col][1] = 101;
+                    if ([above, below, left, right].every(x => !x) && fiftyFifty()) {
+                        this._grid[row][col][1] = groundGrassBase + 22;
                     }
                 }
             }
@@ -2087,14 +1233,14 @@ export class GridCtrl {
      * @param col col coordinate in the terrain grid
      */
     private _modifyGrassForEdges(row: number, col: number): void {
-        const top = this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] > 19 ? 1 : 0;
-        const topRight = this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] > 19 ? 1 : 0;
-        const right = this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] > 19 ? 1 : 0;
-        const bottomRight = this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] > 19 ? 1 : 0;
-        const bottom = this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] > 19 ? 1 : 0;
-        const bottomLeft = this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] > 19 ? 1 : 0;
-        const left = this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] > 19 ? 1 : 0;
-        const topLeft = this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] > 19 ? 1 : 0;
+        const top = this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] > groundGrassEnd ? 1 : 0;
+        const topRight = this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] > groundGrassEnd ? 1 : 0;
+        const right = this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] > groundGrassEnd ? 1 : 0;
+        const bottomRight = this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] > groundGrassEnd ? 1 : 0;
+        const bottom = this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] > groundGrassEnd ? 1 : 0;
+        const bottomLeft = this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] > groundGrassEnd ? 1 : 0;
+        const left = this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] > groundGrassEnd ? 1 : 0;
+        const topLeft = this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] > groundGrassEnd ? 1 : 0;
 
         // 1 === non-grass tile found
         // 0 === grass tile found
@@ -2105,15 +1251,15 @@ export class GridCtrl {
         } else if (key === '0000' && [topRight, bottomRight, bottomLeft, topLeft].some(x => !!x)) {
             key = 'mixed';
         }
-        this._grid[row][col][1] = grassLookupTable[key] || 2;
+        this._grid[row][col][1] = grassLookupTable[key] || groundGrassBase;
     }
 
     /**
      * Cycles through the grass tiles and triggers call to have specific edge graphic chosen to have smooth edges.
      */
     private _modifyGrassesForEdges(): void {
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._grid[row][col][1] === 1) {
                     this._modifyGrassForEdges(row, col);
                 }
@@ -2125,9 +1271,9 @@ export class GridCtrl {
      * Cycles through the water tiles and triggers call to have specific edge graphic chosen to have smooth edges.
      */
     private _modifyWatersForEdges(): void {
-        for (let row = 0; row < 30; row++) {
-            for (let col = 0; col < 30; col++) {
-                if (this._grid[row][col][1] === 20) {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][1] === waterBase) {
                     this._modifyWaterForEdge(row, col);
                 }
             }
@@ -2140,20 +1286,20 @@ export class GridCtrl {
      * @param col col coordinate in the terrain grid
      */
     private _modifyWaterForEdge(row: number, col: number): void {
-        const top = this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] < 20 || this._grid[row + 1][col][1] > 99) ? 1 : 0;
-        const topRight = this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] < 20 || this._grid[row + 1][col + 1][1] > 99) ? 1 : 0;
-        const right = this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] < 20 || this._grid[row][col + 1][1] > 99) ? 1 : 0;
-        const bottomRight = this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] < 20 || this._grid[row - 1][col + 1][1] > 99) ? 1 : 0;
-        const bottom = this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] < 20 || this._grid[row - 1][col][1] > 99) ? 1 : 0;
-        const bottomLeft = this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] < 20 || this._grid[row - 1][col - 1][1] > 99) ? 1 : 0;
-        const left = this._isInBounds(row, col - 1) && (this._grid[row][col - 1][1] < 20 || this._grid[row][col - 1][1] > 99) ? 1 : 0;
-        const topLeft = this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] < 20 || this._grid[row + 1][col - 1][1] > 99) ? 1 : 0;
+        const top = this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] < waterBase || this._grid[row + 1][col][1] > waterEnd) ? 1 : 0;
+        const topRight = this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] < waterBase || this._grid[row + 1][col + 1][1] > waterEnd) ? 1 : 0;
+        const right = this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] < waterBase || this._grid[row][col + 1][1] > waterEnd) ? 1 : 0;
+        const bottomRight = this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] < waterBase || this._grid[row - 1][col + 1][1] > waterEnd) ? 1 : 0;
+        const bottom = this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] < waterBase || this._grid[row - 1][col][1] > waterEnd) ? 1 : 0;
+        const bottomLeft = this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] < waterBase || this._grid[row - 1][col - 1][1] > waterEnd) ? 1 : 0;
+        const left = this._isInBounds(row, col - 1) && (this._grid[row][col - 1][1] < waterBase || this._grid[row][col - 1][1] > waterEnd) ? 1 : 0;
+        const topLeft = this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] < waterBase || this._grid[row + 1][col - 1][1] > waterEnd) ? 1 : 0;
 
         // 1 === non-water tile found
         // 0 === water tile found
 
-        let key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
-        this._grid[row][col][1] = waterLookupTable[key] || 20;
+        const key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
+        this._grid[row][col][1] = waterLookupTable[key] || waterBase;
     }
 
     /**

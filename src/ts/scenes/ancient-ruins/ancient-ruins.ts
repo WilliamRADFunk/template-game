@@ -1,7 +1,4 @@
 import {
-    DoubleSide,
-    LinearFilter,
-    Mesh,
     MeshPhongMaterial,
     PlaneGeometry,
     Scene,
