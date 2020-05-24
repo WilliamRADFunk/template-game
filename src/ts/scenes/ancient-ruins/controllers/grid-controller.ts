@@ -7,7 +7,9 @@ import {
     Scene,
     Texture,
     Vector2,
-    SubtractiveBlending} from "three";
+    SubtractiveBlending,
+    NearestFilter,
+    RepeatWrapping} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
 
 interface GridDictionary {
@@ -708,8 +710,13 @@ export class GridCtrl {
                     (1 / spriteMapRows) * offCoords[1]);
 
                 material.map.repeat = new Vector2(
-                    (1 / spriteMapCols) - (1 / 1024),
-                    (1 / spriteMapRows) - (1 / 1024));
+                    (1 / spriteMapCols),
+                    (1 / spriteMapRows));
+
+                material.map.magFilter = NearestFilter;
+                material.map.minFilter = NearestFilter;
+                material.map.wrapS = RepeatWrapping;
+                material.map.wrapT = RepeatWrapping;
 
                 material.depthTest = false;
                 material.map.needsUpdate = true;
