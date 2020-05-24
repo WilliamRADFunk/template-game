@@ -1,15 +1,11 @@
 import {
     DoubleSide,
-    LinearFilter,
     Mesh,
     MeshPhongMaterial,
     Object3D,
     PlaneGeometry,
     Scene,
     Texture,
-    TextureLoader,
-    SpriteMaterial,
-    Sprite,
     Vector2,
     AdditiveBlending} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
@@ -29,7 +25,7 @@ interface GridDictionary {
 }
 
 const groundGrassBase = 2;
-const groundGrassEnd = 999;
+const groundGrassEnd = groundGrassBase + 20;
 const waterBase = 1000;
 const waterEnd = 1999;
 const bridgeBase = 2000;
@@ -190,17 +186,17 @@ const gridDictionary: GridDictionary = {
     2: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [1, 1] },
     3: { devDescription: 'Green Grass (whole tile) - Version 2', gameDescription: 'Lush green grass', spritePosition: [3, 3] },
     4: { devDescription: 'Green Grass (Dirt at top)', gameDescription: 'Lush green grass with dirt framing its northern edge', spritePosition: [1, 2] },
-    5: { devDescription: 'Green Grass (Dirt at top & right)', gameDescription: 'Lush green grass with dirt framing its northern and eastern edges', spritePosition: [0, 2] },
-    6: { devDescription: 'Green Grass (Dirt at right)', gameDescription: 'Lush green grass with dirt framing its eastern edge', spritePosition: [0, 1] },
-    7: { devDescription: 'Green Grass (Dirt at right & bottom)', gameDescription: 'Lush green grass with dirt framing its southern and eastern edges', spritePosition: [0, 0] },
+    5: { devDescription: 'Green Grass (Dirt at top & right)', gameDescription: 'Lush green grass with dirt framing its northern and eastern edges', spritePosition: [2, 2] },
+    6: { devDescription: 'Green Grass (Dirt at right)', gameDescription: 'Lush green grass with dirt framing its eastern edge', spritePosition: [2, 1] },
+    7: { devDescription: 'Green Grass (Dirt at right & bottom)', gameDescription: 'Lush green grass with dirt framing its southern and eastern edges', spritePosition: [2, 0] },
     8: { devDescription: 'Green Grass (Dirt at bottom)', gameDescription: 'Lush green grass with dirt framing its southern edge', spritePosition: [1, 0] },
-    9: { devDescription: 'Green Grass (Dirt at bottom & left)', gameDescription: 'Lush green grass with dirt framing its southern and western edges', spritePosition: [2, 0] },
-    10: { devDescription: 'Green Grass (Dirt at left)', gameDescription: 'Lush green grass with dirt framing its western edge', spritePosition: [2, 1] },
-    11: { devDescription: 'Green Grass (Dirt at left & top)', gameDescription: 'Lush green grass with dirt framing its northern and western edges', spritePosition: [2, 2] },
+    9: { devDescription: 'Green Grass (Dirt at bottom & left)', gameDescription: 'Lush green grass with dirt framing its southern and western edges', spritePosition: [0, 0] },
+    10: { devDescription: 'Green Grass (Dirt at left)', gameDescription: 'Lush green grass with dirt framing its western edge', spritePosition: [0, 1] },
+    11: { devDescription: 'Green Grass (Dirt at left & top)', gameDescription: 'Lush green grass with dirt framing its northern and western edges', spritePosition: [0, 2] },
     12: { devDescription: 'Green Grass (Dirt at left & top & right)', gameDescription: 'Lush green grass with dirt framing its northern, eastern and western edges', spritePosition: [3, 2] },
-    13: { devDescription: 'Green Grass (Dirt at top & right & bottom)', gameDescription: 'Lush green grass with dirt framing its northern, southern and western edges', spritePosition: [0, 3] },
+    13: { devDescription: 'Green Grass (Dirt at top & right & bottom)', gameDescription: 'Lush green grass with dirt framing its northern, southern and western edges', spritePosition: [2, 3] },
     14: { devDescription: 'Green Grass (Dirt at right & bottom & left)', gameDescription: 'Lush green grass with dirt framing its southern, eastern and western edges', spritePosition: [3, 0] },
-    15: { devDescription: 'Green Grass (Dirt at bottom & left & top)', gameDescription: 'Lush green grass with dirt framing its northern, southern and eastern edges', spritePosition: [2, 3] },
+    15: { devDescription: 'Green Grass (Dirt at bottom & left & top)', gameDescription: 'Lush green grass with dirt framing its northern, southern and eastern edges', spritePosition: [0, 3] },
     16: { devDescription: 'Green Grass (Dirt at top & bottom)', gameDescription: 'Lush green grass with dirt framing its northern and southern edges', spritePosition: [1, 3] },
     17: { devDescription: 'Green Grass (Dirt at left & right)', gameDescription: 'Lush green grass with dirt framing its eastern and western edges', spritePosition: [3, 1] },
     18: { devDescription: 'Green Grass (Dirt at sides only) - Version 1', gameDescription: 'Sparse green grass with dirt framing all of its edges', spritePosition: [4, 2] },
@@ -208,19 +204,19 @@ const gridDictionary: GridDictionary = {
     20: { devDescription: 'Green Grass (Dirt at corners only) - Version 1', gameDescription: 'Green grass mixed with patches of dirt', spritePosition: [4, 1], hasVariation: true },
     21: { devDescription: 'Green Grass (Dirt at corners only) - Version 2', gameDescription: 'Green grass mixed with patches of dirt', spritePosition: [5, 1] },
     22: { devDescription: 'Green Grass (Dirt all around)', gameDescription: 'Lush green grass with dirt framing all of its edges', spritePosition: [4, 3] },
-    23: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [0, 4] },
-    24: { devDescription: 'Brown Dirt (whole tile) - Version 2', gameDescription: 'Ordinary dirt', spritePosition: [0, 5] },
+    23: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [4, 0] },
+    24: { devDescription: 'Brown Dirt (whole tile) - Version 2', gameDescription: 'Ordinary dirt', spritePosition: [5, 0] },
 
     // Water
     1000: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [1, 5] },
     1001: { devDescription: 'Blue Water (Dirt at top)', gameDescription: 'Blue water with dirt framing its northern edge', spritePosition: [1, 6] },
-    1002: { devDescription: 'Blue Water (Dirt at top & right)', gameDescription: 'Blue water with dirt framing its northern and eastern edges', spritePosition: [0, 6] },
-    1003: { devDescription: 'Blue Water (Dirt at right)', gameDescription: 'Blue water with dirt framing its eastern edge', spritePosition: [0, 5] },
-    1004: { devDescription: 'Blue Water (Dirt at right & bottom)', gameDescription: 'Blue water with dirt framing its southern and eastern edges', spritePosition: [0, 4] },
+    1002: { devDescription: 'Blue Water (Dirt at top & right)', gameDescription: 'Blue water with dirt framing its northern and eastern edges', spritePosition: [2, 6] },
+    1003: { devDescription: 'Blue Water (Dirt at right)', gameDescription: 'Blue water with dirt framing its eastern edge', spritePosition: [2, 5] },
+    1004: { devDescription: 'Blue Water (Dirt at right & bottom)', gameDescription: 'Blue water with dirt framing its southern and eastern edges', spritePosition: [2, 4] },
     1005: { devDescription: 'Blue Water (Dirt at bottom)', gameDescription: 'Blue water with dirt framing its southern edge', spritePosition: [1, 4] },
-    1006: { devDescription: 'Blue Water (Dirt at bottom & left)', gameDescription: 'Blue water with dirt framing its southern and western edges', spritePosition: [2, 4] },
-    1007: { devDescription: 'Blue Water (Dirt at left)', gameDescription: 'Blue water with dirt framing its western edge', spritePosition: [2, 5] },
-    1008: { devDescription: 'Blue Water (Dirt at left & top)', gameDescription: 'Blue water with dirt framing its northern and western edges', spritePosition: [2, 6] },
+    1006: { devDescription: 'Blue Water (Dirt at bottom & left)', gameDescription: 'Blue water with dirt framing its southern and western edges', spritePosition: [0, 4] },
+    1007: { devDescription: 'Blue Water (Dirt at left)', gameDescription: 'Blue water with dirt framing its western edge', spritePosition: [0, 5] },
+    1008: { devDescription: 'Blue Water (Dirt at left & top)', gameDescription: 'Blue water with dirt framing its northern and western edges', spritePosition: [0, 6] },
     1009: { devDescription: 'Blue Water (Dirt at upper-left)', gameDescription: 'Blue water with dirt at its northwestern corner', spritePosition: [3, 4] },
     1010: { devDescription: 'Blue Water (Dirt at upper-right)', gameDescription: 'Blue water with dirt at its northeastern corner', spritePosition: [4, 4] },
     1011: { devDescription: 'Blue Water (Dirt at lower-left)', gameDescription: 'Blue water with dirt at its southwestern corner', spritePosition: [3, 5] },
@@ -258,18 +254,18 @@ const gridDictionary: GridDictionary = {
     2010: { devDescription: 'Bridge Top Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 11], blocker: true },
     2011: { devDescription: 'Bridge Start Vertical (Wood)', gameDescription: 'Wooden ramp rising from south to north onto a bridge', spritePosition: [0, 9], zPosMod: -0.01, zScaleMod: 0.1 },
     2012: { devDescription: 'Bridge End Vertical (Wood)', gameDescription: 'Wooden ramp rising from north to south onto a bridge', spritePosition: [0, 11], zPosMod: 0.02, zScaleMod: 0.1 },
-    2013: { devDescription: 'Bridge Right Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 12] },
-    2014: { devDescription: 'Bridge Right Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [1, 13] },
-    2015: { devDescription: 'Bridge Right Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [1, 14], blocker: true },
+    2013: { devDescription: 'Bridge Right Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [3, 12] },
+    2014: { devDescription: 'Bridge Right Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [3, 13] },
+    2015: { devDescription: 'Bridge Right Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 14], blocker: true },
     2016: { devDescription: 'Bridge Middle Intact Vertical (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [2, 12] },
     2017: { devDescription: 'Bridge Middle Damaged Vertical (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 13] },
     2018: { devDescription: 'Bridge Middle Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [2, 14], blocker: true },
-    2019: { devDescription: 'Bridge Left Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [3, 12] },
-    2020: { devDescription: 'Bridge Left Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [3, 13] },
-    2021: { devDescription: 'Bridge Left Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 14], blocker: true },
-    2022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
+    2019: { devDescription: 'Bridge Left Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 12] },
+    2020: { devDescription: 'Bridge Left Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [1, 13] },
+    2021: { devDescription: 'Bridge Left Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [1, 14], blocker: true },
+    2022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
     2023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
-    2024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
+    2024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
 }
 
 export class GridCtrl {
@@ -300,7 +296,7 @@ export class GridCtrl {
     /**
      * Dictionary of materials already made for use in building out the game's tile map.
      */
-    private _materialsMap: { [key: number]: SpriteMaterial } = {};
+    private _materialsMap: { [key: number]: MeshPhongMaterial } = {};
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -336,28 +332,11 @@ export class GridCtrl {
 
         this._dropBouldersInWater();
 
-        // this._createGroundMeshes(megaMesh);
+        this._createGroundMeshes(megaMesh);
 
-        // this._createTraverseLevelMeshes(megaMesh);
+        this._createTraverseLevelMeshes(megaMesh);
 
-        // this._scene.add(megaMesh);
-
-        const spriteMaterial = new SpriteMaterial({
-            map: this._textures.spriteMapAncientRuins,
-            side: DoubleSide,
-
-        });
-        spriteMaterial.map.offset = new Vector2(
-            (1/spriteMapCols) * (spriteMapCols - 1), (0 / spriteMapRows));
-        spriteMaterial.map.repeat = new Vector2(1/spriteMapCols, 1/spriteMapRows);
-        spriteMaterial.blending = AdditiveBlending;
-        spriteMaterial.depthTest = false;
-
-        const sprite = new Sprite( spriteMaterial );
-        sprite.position.set(0, 10, 0);
-        // sprite.rotation.set(rad90DegLeft, 0, 0);
-        sprite.scale.set(0.4, 0.4, 1);
-        this._scene.add( sprite );
+        this._scene.add(megaMesh);
     }
 
     /**
@@ -390,20 +369,19 @@ export class GridCtrl {
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._grid[row][col][1]) {
-                    console.log('@@@', this._grid[row][col][1], gridDictionary[this._grid[row][col][1]].devDescription, this._materialsMap[this._grid[row][col][1]]);
-                    let material: SpriteMaterial = this._materialsMap[this._grid[row][col][1]];
+                    let material: MeshPhongMaterial = this._materialsMap[this._grid[row][col][1]];
+
+                    // console.log(row, col, this._grid[row][col][1], gridDictionary[this._grid[row][col][1]].devDescription, gridDictionary[this._grid[row][col][1]].spritePosition, material);
 
                     // If material type has a second variation, randomize between the two.
                     if (gridDictionary[this._grid[row][col][1]].hasVariation && fiftyFifty()) {
                         material = this._materialsMap[this._grid[row][col][1] + 1];
                     }
 
-                    const sprite = new Sprite( material );
-                    // sprite.scale.set(1 / spriteMapCols, 1 / spriteMapRows, 1 / spriteMapRows);
-                    // sprite.position.set(getXPos(col), layer1YPos, getZPos(row))
-                    sprite.rotation.set(rad90DegLeft, 0, 0);
-                    // megaMesh.add(sprite);
-                    this._scene.add(sprite);
+                    const tile = new Mesh( this._geometry, material );
+                    tile.position.set(getXPos(col), layer1YPos, getZPos(row))
+                    tile.rotation.set(rad90DegLeft, 0, 0);
+                    megaMesh.add(tile);
                 }
             }
         }
@@ -419,22 +397,22 @@ export class GridCtrl {
                 if (this._grid[row][col][2]) {
                     const posX = getXPos(col) + (gridDictionary[this._grid[row][col][2]].xPosMod || 0);
                     const posZ = getZPos(row) + (gridDictionary[this._grid[row][col][2]].zPosMod || 0);
-                    const scaleX = (1 / spriteMapCols) + (gridDictionary[this._grid[row][col][2]].xScaleMod || 0);
-                    const scaleZ = (1 / spriteMapRows) + (gridDictionary[this._grid[row][col][2]].zScaleMod || 0);
+                    const scaleX = 1 + (gridDictionary[this._grid[row][col][2]].xScaleMod || 0);
+                    const scaleZ = 1 + (gridDictionary[this._grid[row][col][2]].zScaleMod || 0);
 
-                    let material: SpriteMaterial = this._materialsMap[this._grid[row][col][2]];
+                    let material: MeshPhongMaterial = this._materialsMap[this._grid[row][col][2]];
 
                     // If material type has a second variation, randomize between the two.
                     if (gridDictionary[this._grid[row][col][2]].hasVariation && fiftyFifty()) {
                         material = this._materialsMap[this._grid[row][col][2] + 1];
                     }
 
-                    const sprite = new Sprite( material );
-                    sprite.scale.set(scaleX, 1, scaleZ);
-                    sprite.position.set(posX, layer2YPos, posZ)
-                    sprite.rotation.set(rad90DegLeft, 0, 0);
-                    sprite.updateMatrix();
-                    megaMesh.add(sprite);
+                    const tile = new Mesh( this._geometry, material );
+                    tile.scale.set(scaleX, 1, scaleZ);
+                    tile.position.set(posX, layer2YPos, posZ)
+                    tile.rotation.set(rad90DegLeft, 0, 0);
+                    tile.updateMatrix();
+                    megaMesh.add(tile);
                 }
             }
         }
@@ -723,18 +701,24 @@ export class GridCtrl {
      */
     private _makeMaterials(): void {
         Object.keys(gridDictionary).forEach(key => {
-            const spriteMaterial: SpriteMaterial = new SpriteMaterial({
-                map: this._textures.spriteMapAncientRuins,
-                side: DoubleSide
+            const material: MeshPhongMaterial = new MeshPhongMaterial({
+                map: this._textures.spriteMapAncientRuins.clone(),
+                side: DoubleSide,
+                transparent: true
             });
-            spriteMaterial.map.offset = new Vector2(
+
+            material.map.offset = new Vector2(
                 (1 / spriteMapCols) * gridDictionary[Number(key)].spritePosition[0],
                 (1 / spriteMapRows) * gridDictionary[Number(key)].spritePosition[1]);
-            spriteMaterial.map.repeat = new Vector2(
-                (1 / spriteMapCols),
-                (1 / spriteMapRows));
 
-            this._materialsMap[Number(key)] = spriteMaterial;
+            material.map.repeat = new Vector2(
+                (1 / spriteMapCols) - 0.001,
+                (1 / spriteMapRows) - 0.0005);
+            material.blending = AdditiveBlending;
+            material.depthTest = false;
+            material.map.needsUpdate = true;
+
+            this._materialsMap[Number(key)] = material;
         });
     }
 
