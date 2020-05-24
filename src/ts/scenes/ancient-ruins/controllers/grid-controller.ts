@@ -1,13 +1,13 @@
 import {
-    DoubleSide,
+    FrontSide,
     Mesh,
-    MeshPhongMaterial,
+    MeshBasicMaterial,
     Object3D,
     PlaneGeometry,
     Scene,
     Texture,
     Vector2,
-    AdditiveBlending} from "three";
+    SubtractiveBlending} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
 
 interface GridDictionary {
@@ -169,8 +169,8 @@ const minCols = 0;
 const minRows = 0;
 const middleCol = Math.ceil((maxCols - minCols) / 2);
 const middleRow = Math.ceil((maxRows - minRows) / 2);
-const layer1YPos = 17;
-const layer2YPos = 15;
+const layer1YPos = 0;
+const layer2YPos = -2;
 
 const getXPos = function(col: number): number {
     return -5.8 + (col/2.5);
@@ -183,7 +183,7 @@ const spriteMapCols = 16;
 const spriteMapRows = 16;
 const gridDictionary: GridDictionary = {
     // Ground & Grass
-    2: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [1, 1] },
+    2: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [1, 1], hasVariation: true },
     3: { devDescription: 'Green Grass (whole tile) - Version 2', gameDescription: 'Lush green grass', spritePosition: [3, 3] },
     4: { devDescription: 'Green Grass (Dirt at top)', gameDescription: 'Lush green grass with dirt framing its northern edge', spritePosition: [1, 2] },
     5: { devDescription: 'Green Grass (Dirt at top & right)', gameDescription: 'Lush green grass with dirt framing its northern and eastern edges', spritePosition: [2, 2] },
@@ -204,7 +204,7 @@ const gridDictionary: GridDictionary = {
     20: { devDescription: 'Green Grass (Dirt at corners only) - Version 1', gameDescription: 'Green grass mixed with patches of dirt', spritePosition: [4, 1], hasVariation: true },
     21: { devDescription: 'Green Grass (Dirt at corners only) - Version 2', gameDescription: 'Green grass mixed with patches of dirt', spritePosition: [5, 1] },
     22: { devDescription: 'Green Grass (Dirt all around)', gameDescription: 'Lush green grass with dirt framing all of its edges', spritePosition: [4, 3] },
-    23: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [4, 0] },
+    23: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [4, 0], hasVariation: true },
     24: { devDescription: 'Brown Dirt (whole tile) - Version 2', gameDescription: 'Ordinary dirt', spritePosition: [5, 0] },
 
     // Water
@@ -219,8 +219,8 @@ const gridDictionary: GridDictionary = {
     1008: { devDescription: 'Blue Water (Dirt at left & top)', gameDescription: 'Blue water with dirt framing its northern and western edges', spritePosition: [0, 6] },
     1009: { devDescription: 'Blue Water (Dirt at upper-left)', gameDescription: 'Blue water with dirt at its northwestern corner', spritePosition: [3, 4] },
     1010: { devDescription: 'Blue Water (Dirt at upper-right)', gameDescription: 'Blue water with dirt at its northeastern corner', spritePosition: [4, 4] },
-    1011: { devDescription: 'Blue Water (Dirt at lower-left)', gameDescription: 'Blue water with dirt at its southwestern corner', spritePosition: [3, 5] },
-    1012: { devDescription: 'Blue Water (Dirt at lower-right)', gameDescription: 'Blue water with dirt at its southeastern corner', spritePosition: [4, 5] },
+    1011: { devDescription: 'Blue Water (Dirt at lower-left)', gameDescription: 'Blue water with dirt at its southwestern corner', spritePosition: [4, 5] },
+    1012: { devDescription: 'Blue Water (Dirt at lower-right)', gameDescription: 'Blue water with dirt at its southeastern corner', spritePosition: [3, 5] },
     1013: { devDescription: 'Blue Water (Dirt at upper-left & lower-right)', gameDescription: 'Blue water with dirt at its northwestern & southeastern corners', spritePosition: [4, 6] },
     1014: { devDescription: 'Blue Water (Dirt at upper-right & lower-left)', gameDescription: 'Blue water with dirt at its northeastern & southwestern corners', spritePosition: [3, 6] },
     1015: { devDescription: 'Blue Water (Dirt at top & bottom, left & right)', gameDescription: 'Blue water with dirt framing all of its edges', spritePosition: [0, 7] },
@@ -238,7 +238,7 @@ const gridDictionary: GridDictionary = {
     1027: { devDescription: 'Grey Boulder in Blue Water - Version 1', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [5, 7], blocker: true },
     1028: { devDescription: 'Grey Boulder in Blue Water - Version 2', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [5, 8], blocker: true },
     1029: { devDescription: 'Grey Boulder in Blue Water - Version 3', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [4, 8], blocker: true },
-    1030: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [5, 3], blocker: true },
+    1030: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [-1, -1], blocker: true },
 
     // Bridges & Piers
     2000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
@@ -252,8 +252,8 @@ const gridDictionary: GridDictionary = {
     2008: { devDescription: 'Bridge Top Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 11] },
     2009: { devDescription: 'Bridge Top Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 11] },
     2010: { devDescription: 'Bridge Top Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 11], blocker: true },
-    2011: { devDescription: 'Bridge Start Vertical (Wood)', gameDescription: 'Wooden ramp rising from south to north onto a bridge', spritePosition: [0, 9], zPosMod: -0.01, zScaleMod: 0.1 },
-    2012: { devDescription: 'Bridge End Vertical (Wood)', gameDescription: 'Wooden ramp rising from north to south onto a bridge', spritePosition: [0, 11], zPosMod: 0.02, zScaleMod: 0.1 },
+    2011: { devDescription: 'Bridge Start Vertical (Wood)', gameDescription: 'Wooden ramp rising from north to south onto a bridge', spritePosition: [0, 11], zPosMod: 0.01, zScaleMod: 0.1 },
+    2012: { devDescription: 'Bridge End Vertical (Wood)', gameDescription: 'Wooden ramp rising from south to north onto a bridge', spritePosition: [0, 9], zPosMod: -0.01, zScaleMod: 0.1 },
     2013: { devDescription: 'Bridge Right Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [3, 12] },
     2014: { devDescription: 'Bridge Right Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [3, 13] },
     2015: { devDescription: 'Bridge Right Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 14], blocker: true },
@@ -277,7 +277,7 @@ export class GridCtrl {
     /**
      * Tile geometry that makes up the ground tiles.
      */
-    private _geometry: PlaneGeometry = new PlaneGeometry( 0.4, 0.4, 10, 10 );
+    private _geometry: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
 
     /**
      * The grid array with values of all tiles on game map.
@@ -288,15 +288,14 @@ export class GridCtrl {
      * [elevation] 3    Overhead tile such as low ceiling of building. Can move "under" and must turn semi-transparent.
      * [elevation] 4    High overhead tile like tree canopy or high ceiling. Can move "under" and must turn semi-trnsparent.
      * Light:           Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
-     * Type:            [row][col][elevation] % 100 gives "type" of tile
-     * Directionality:  Math.floor([row][col][elevation] / 100) gives directionality of tile (ie. 0 centered, 1 top-facing, 2 right-facing, etc.) allows for higher numbers and greater flexibility.
+     * Type:            [row][col][elevation] gives "type" of tile
      */
     private _grid: number[][][] = [];
 
     /**
      * Dictionary of materials already made for use in building out the game's tile map.
      */
-    private _materialsMap: { [key: number]: MeshPhongMaterial } = {};
+    private _materialsMap: { [key: number]: MeshBasicMaterial } = {};
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -369,7 +368,7 @@ export class GridCtrl {
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._grid[row][col][1]) {
-                    let material: MeshPhongMaterial = this._materialsMap[this._grid[row][col][1]];
+                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][1]];
 
                     // console.log(row, col, this._grid[row][col][1], gridDictionary[this._grid[row][col][1]].devDescription, gridDictionary[this._grid[row][col][1]].spritePosition, material);
 
@@ -394,13 +393,13 @@ export class GridCtrl {
     private _createTraverseLevelMeshes(megaMesh: Object3D): void {
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
-                if (this._grid[row][col][2]) {
+                if (this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
                     const posX = getXPos(col) + (gridDictionary[this._grid[row][col][2]].xPosMod || 0);
                     const posZ = getZPos(row) + (gridDictionary[this._grid[row][col][2]].zPosMod || 0);
                     const scaleX = 1 + (gridDictionary[this._grid[row][col][2]].xScaleMod || 0);
                     const scaleZ = 1 + (gridDictionary[this._grid[row][col][2]].zScaleMod || 0);
 
-                    let material: MeshPhongMaterial = this._materialsMap[this._grid[row][col][2]];
+                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][2]];
 
                     // If material type has a second variation, randomize between the two.
                     if (gridDictionary[this._grid[row][col][2]].hasVariation && fiftyFifty()) {
@@ -514,9 +513,6 @@ export class GridCtrl {
      * Makes water tiles specific to a narrow creek.
      */
     private _makeCreek(): void {
-        // TODO: Pick a row and col at one end of map randomly, and another row and col at opposite end.
-        // Must be at least 10 tile apart depending on direction.
-        // Rivers must be 2 tiles thick at all points along its length.
         const flowsHorizontally = fiftyFifty();
         const startRow = Math.floor(Math.random() * ((maxRows - 9) - (minRows + 10) + 1)) + (minRows + 10);
         const startCol = startRow;
@@ -598,11 +594,7 @@ export class GridCtrl {
                 this._grid[row] = [];
                 for (let col = minCols; col < maxCols + 1; col++) {
                     this._grid[row][col] = [];
-                    if (fiftyFifty()) {
-                        this._grid[row][col][1] = groundGrassBase + 21;
-                    } else {
-                        this._grid[row][col][1] = groundGrassBase + 22;
-                    }
+                    this._grid[row][col][1] = groundGrassBase + 21;
                     this._grid[row][col][0] = 0;
                     this._grid[row][col][2] = 0;
                     this._grid[row][col][3] = 0;
@@ -701,24 +693,29 @@ export class GridCtrl {
      */
     private _makeMaterials(): void {
         Object.keys(gridDictionary).forEach(key => {
-            const material: MeshPhongMaterial = new MeshPhongMaterial({
-                map: this._textures.spriteMapAncientRuins.clone(),
-                side: DoubleSide,
-                transparent: true
-            });
+            const offCoords = gridDictionary[Number(key)].spritePosition;
 
-            material.map.offset = new Vector2(
-                (1 / spriteMapCols) * gridDictionary[Number(key)].spritePosition[0],
-                (1 / spriteMapRows) * gridDictionary[Number(key)].spritePosition[1]);
+            if (offCoords[0] >= 0 && offCoords[1] >= 0) {
+                const material: MeshBasicMaterial = new MeshBasicMaterial({
+                    color: 0xFFFFFF,
+                    map: this._textures.spriteMapAncientRuins.clone(),
+                    side: FrontSide,
+                    transparent: true
+                });
 
-            material.map.repeat = new Vector2(
-                (1 / spriteMapCols) - 0.001,
-                (1 / spriteMapRows) - 0.0005);
-            material.blending = AdditiveBlending;
-            material.depthTest = false;
-            material.map.needsUpdate = true;
+                material.map.offset = new Vector2(
+                    (1 / spriteMapCols) * offCoords[0],
+                    (1 / spriteMapRows) * offCoords[1]);
 
-            this._materialsMap[Number(key)] = material;
+                material.map.repeat = new Vector2(
+                    (1 / spriteMapCols) - (1 / 1024),
+                    (1 / spriteMapRows) - (1 / 1024));
+
+                material.depthTest = false;
+                material.map.needsUpdate = true;
+
+                this._materialsMap[Number(key)] = material;
+            }
         });
     }
 
@@ -1105,13 +1102,13 @@ export class GridCtrl {
                     const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === waterBase) || !this._isInBounds(row, col + 1);
 
                     if (!above && !below && ((left && !right) || (!left && right))) {
-                        this._grid[row][col][1] = groundGrassBase + 22;
+                        this._grid[row][col][1] = groundGrassBase + 21;
                     }
                     if (!left && !right && ((above && !below) || (!above && below))) {
-                        this._grid[row][col][1] = groundGrassBase + 22;
+                        this._grid[row][col][1] = groundGrassBase + 21;
                     }
                     if ([above, below, left, right].every(x => !x) && fiftyFifty()) {
-                        this._grid[row][col][1] = groundGrassBase + 22;
+                        this._grid[row][col][1] = groundGrassBase + 21;
                     }
                 }
             }
@@ -1232,7 +1229,7 @@ export class GridCtrl {
         let key = `${top}${right}${bottom}${left}`;
         if (key === '1111' && [topRight, bottomRight, bottomLeft, topLeft].some(x => !x)) {
             key = 'sparse';
-        } else if (key === '0000' && [topRight, bottomRight, bottomLeft, topLeft].some(x => !!x)) {
+        } else if (key === '0000' && [topRight, bottomRight, bottomLeft, topLeft].some(x => !!x) && Math.random() < 0.3) {
             key = 'mixed';
         }
         this._grid[row][col][1] = grassLookupTable[key] || groundGrassBase;
