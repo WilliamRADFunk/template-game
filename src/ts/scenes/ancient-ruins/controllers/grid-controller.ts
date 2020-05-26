@@ -7,7 +7,6 @@ import {
     Scene,
     Texture,
     Vector2,
-    SubtractiveBlending,
     NearestFilter,
     RepeatWrapping} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
@@ -26,7 +25,7 @@ interface GridDictionary {
     }
 }
 
-const groundGrassBase = 2;
+const groundGrassBase = 102;
 const groundGrassEnd = groundGrassBase + 20;
 const waterBase = 1000;
 const waterEnd = 1999;
@@ -209,6 +208,30 @@ const gridDictionary: GridDictionary = {
     23: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [4, 0], hasVariation: true },
     24: { devDescription: 'Brown Dirt (whole tile) - Version 2', gameDescription: 'Ordinary dirt', spritePosition: [5, 0] },
 
+    102: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [7, 1], hasVariation: true },
+    103: { devDescription: 'Green Grass (whole tile) - Version 2', gameDescription: 'Lush green grass', spritePosition: [9, 3] },
+    104: { devDescription: 'Green Grass (Sand at top)', gameDescription: 'Lush green grass with sand framing its northern edge', spritePosition: [7, 2] },
+    105: { devDescription: 'Green Grass (Sand at top & right)', gameDescription: 'Lush green grass with sand framing its northern and eastern edges', spritePosition: [8, 2] },
+    106: { devDescription: 'Green Grass (Sand at right)', gameDescription: 'Lush green grass with sand framing its eastern edge', spritePosition: [8, 1] },
+    107: { devDescription: 'Green Grass (Sand at right & bottom)', gameDescription: 'Lush green grass with sand framing its southern and eastern edges', spritePosition: [8, 0] },
+    108: { devDescription: 'Green Grass (Sand at bottom)', gameDescription: 'Lush green grass with sand framing its southern edge', spritePosition: [7, 0] },
+    109: { devDescription: 'Green Grass (Sand at bottom & left)', gameDescription: 'Lush green grass with sand framing its southern and western edges', spritePosition: [6, 0] },
+    110: { devDescription: 'Green Grass (Sand at left)', gameDescription: 'Lush green grass with sand framing its western edge', spritePosition: [6, 1] },
+    111: { devDescription: 'Green Grass (Sand at left & top)', gameDescription: 'Lush green grass with sand framing its northern and western edges', spritePosition: [6, 2] },
+    112: { devDescription: 'Green Grass (Sand at left & top & right)', gameDescription: 'Lush green grass with sand framing its northern, eastern and western edges', spritePosition: [9, 2] },
+    113: { devDescription: 'Green Grass (Sand at top & right & bottom)', gameDescription: 'Lush green grass with sand framing its northern, southern and western edges', spritePosition: [8, 3] },
+    114: { devDescription: 'Green Grass (Sand at right & bottom & left)', gameDescription: 'Lush green grass with sand framing its southern, eastern and western edges', spritePosition: [9, 0] },
+    115: { devDescription: 'Green Grass (Sand at bottom & left & top)', gameDescription: 'Lush green grass with sand framing its northern, southern and eastern edges', spritePosition: [6, 3] },
+    116: { devDescription: 'Green Grass (Sand at top & bottom)', gameDescription: 'Lush green grass with sand framing its northern and southern edges', spritePosition: [7, 3] },
+    117: { devDescription: 'Green Grass (Sand at left & right)', gameDescription: 'Lush green grass with sand framing its eastern and western edges', spritePosition: [9, 1] },
+    118: { devDescription: 'Green Grass (Sand at sides only) - Version 1', gameDescription: 'Sparse green grass with sand framing all of its edges', spritePosition: [10, 2] },
+    119: { devDescription: 'Green Grass (Sand at sides only) - Version 2', gameDescription: 'Sparse green grass with sand framing all of its edges', spritePosition: [11, 2] },
+    120: { devDescription: 'Green Grass (Sand at corners only) - Version 1', gameDescription: 'Green grass mixed with patches of sand', spritePosition: [10, 1], hasVariation: true },
+    121: { devDescription: 'Green Grass (Sand at corners only) - Version 2', gameDescription: 'Green grass mixed with patches of sand', spritePosition: [11, 1] },
+    122: { devDescription: 'Green Grass (Sand all around)', gameDescription: 'Lush green grass with sand framing all of its edges', spritePosition: [10, 3] },
+    123: { devDescription: 'White Sand (whole tile) - Version 1', gameDescription: 'Ordinary sand', spritePosition: [10, 0], hasVariation: true },
+    124: { devDescription: 'White Sand (whole tile) - Version 2', gameDescription: 'Ordinary sand', spritePosition: [11, 0] },
+
     // Water
     1000: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [1, 5] },
     1001: { devDescription: 'Blue Water (Dirt at top)', gameDescription: 'Blue water with dirt framing its northern edge', spritePosition: [1, 6] },
@@ -265,9 +288,9 @@ const gridDictionary: GridDictionary = {
     2019: { devDescription: 'Bridge Left Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 12] },
     2020: { devDescription: 'Bridge Left Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [1, 13] },
     2021: { devDescription: 'Bridge Left Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [1, 14], blocker: true },
-    2022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
+    2022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
     2023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
-    2024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
+    2024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
 }
 
 export class GridCtrl {
