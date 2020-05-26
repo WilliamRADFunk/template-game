@@ -27,7 +27,7 @@ interface GridDictionary {
 
 const groundGrassBase = 102;
 const groundGrassEnd = groundGrassBase + 20;
-const waterBase = 1000;
+const waterBase = 1100;
 const waterEnd = 1999;
 const bridgeBase = 2000;
 const bridgeEnd = 2999;
@@ -264,6 +264,38 @@ const gridDictionary: GridDictionary = {
     1028: { devDescription: 'Grey Boulder in Blue Water - Version 2', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [5, 8], blocker: true },
     1029: { devDescription: 'Grey Boulder in Blue Water - Version 3', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [4, 8], blocker: true },
     1030: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [-1, -1], blocker: true },
+
+    1100: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [7, 5] },
+    1101: { devDescription: 'Blue Water (Sand at top)', gameDescription: 'Blue water with sand framing its northern edge', spritePosition: [7, 6] },
+    1102: { devDescription: 'Blue Water (Sand at top & right)', gameDescription: 'Blue water with sand framing its northern and eastern edges', spritePosition: [8, 6] },
+    1103: { devDescription: 'Blue Water (Sand at right)', gameDescription: 'Blue water with sand framing its eastern edge', spritePosition: [8, 5] },
+    1104: { devDescription: 'Blue Water (Sand at right & bottom)', gameDescription: 'Blue water with sand framing its southern and eastern edges', spritePosition: [8, 4] },
+    1105: { devDescription: 'Blue Water (Sand at bottom)', gameDescription: 'Blue water with sand framing its southern edge', spritePosition: [7, 4] },
+    1106: { devDescription: 'Blue Water (Sand at bottom & left)', gameDescription: 'Blue water with sand framing its southern and western edges', spritePosition: [6, 4] },
+    1107: { devDescription: 'Blue Water (Sand at left)', gameDescription: 'Blue water with sand framing its western edge', spritePosition: [6, 5] },
+    1108: { devDescription: 'Blue Water (Sand at left & top)', gameDescription: 'Blue water with sand framing its northern and western edges', spritePosition: [6, 6] },
+    1109: { devDescription: 'Blue Water (Sand at upper-left)', gameDescription: 'Blue water with sand at its northwestern corner', spritePosition: [9, 4] },
+    1110: { devDescription: 'Blue Water (Sand at upper-right)', gameDescription: 'Blue water with sand at its northeastern corner', spritePosition: [10, 4] },
+    1111: { devDescription: 'Blue Water (Sand at lower-left)', gameDescription: 'Blue water with sand at its southwestern corner', spritePosition: [10, 5] },
+    1112: { devDescription: 'Blue Water (Sand at lower-right)', gameDescription: 'Blue water with sand at its southeastern corner', spritePosition: [9, 5] },
+    1113: { devDescription: 'Blue Water (Sand at upper-left & lower-right)', gameDescription: 'Blue water with sand at its northwestern & southeastern corners', spritePosition: [10, 6] },
+    1114: { devDescription: 'Blue Water (Sand at upper-right & lower-left)', gameDescription: 'Blue water with sand at its northeastern & southwestern corners', spritePosition: [9, 6] },
+    1115: { devDescription: 'Blue Water (Sand at top & bottom, left & right)', gameDescription: 'Blue water with sand framing all of its edges', spritePosition: [6, 7] },
+    1116: { devDescription: 'Blue Water (Sand at left & lower-right)', gameDescription: 'Blue water with sand at its western edge and southeastern', spritePosition: [7, 7] },
+    1117: { devDescription: 'Blue Water (Sand at right & lower-left)', gameDescription: 'Blue water with sand at its eastern edge and southwestern', spritePosition: [8, 7] },
+    1118: { devDescription: 'Blue Water (Sand at left & upper-right)', gameDescription: 'Blue water with sand at its western edge and northeastern', spritePosition: [9, 7] },
+    1119: { devDescription: 'Blue Water (Sand at right & upper-left)', gameDescription: 'Blue water with sand at its eastern edge and northwestern', spritePosition: [10, 7] },
+    1120: { devDescription: 'Blue Water (Sand at bottom & upper-left)', gameDescription: 'Blue water with sand at its southern edge and northwestern', spritePosition: [6, 8] },
+    1121: { devDescription: 'Blue Water (Sand at bottom & upper-right)', gameDescription: 'Blue water with sand at its southern edge and northeastern', spritePosition: [7, 8] },
+    1122: { devDescription: 'Blue Water (Sand at top & lower-left)', gameDescription: 'Blue water with sand at its northern edge and southwestern', spritePosition: [8, 8] },
+    1123: { devDescription: 'Blue Water (Sand at top & lower-right)', gameDescription: 'Blue water with sand at its northern edge and southeastern', spritePosition: [9, 8] },
+    1124: { devDescription: 'Beige Boulder in Blue Water - Version 1', gameDescription: 'A massive beige boulder breaches the surface of the deep blue waters', spritePosition: [11, 4], blocker: true },
+    1125: { devDescription: 'Beige Boulder in Blue Water - Version 2', gameDescription: 'A massive beige boulder breaches the surface of the deep blue waters', spritePosition: [11, 5], blocker: true },
+    1126: { devDescription: 'Beige Boulder in Blue Water - Version 3', gameDescription: 'A massive beige boulder breaches the surface of the deep blue waters', spritePosition: [11, 6], blocker: true },
+    1127: { devDescription: 'Grey Boulder in Blue Water - Version 1', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [11, 7], blocker: true },
+    1128: { devDescription: 'Grey Boulder in Blue Water - Version 2', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [11, 8], blocker: true },
+    1129: { devDescription: 'Grey Boulder in Blue Water - Version 3', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [10, 8], blocker: true },
+    1130: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [-1, -1], blocker: true },
 
     // Bridges & Piers
     2000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
@@ -940,12 +972,12 @@ export class GridCtrl {
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[rightPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    this._isInBounds(rightPierRow, firstWaterCol) && (this._grid[rightPierRow][firstWaterCol][2] = bridgeBase + 23);
                     if (fiftyFifty()) {
-                        this._grid[rightPierRow][firstWaterCol + 1][2] = bridgeBase + 23;
-                        this._grid[rightPierRow][firstWaterCol + 2][2] = bridgeBase + 22;
+                        this._isInBounds(rightPierRow, firstWaterCol + 1) && (this._grid[rightPierRow][firstWaterCol + 1][2] = bridgeBase + 23);
+                        this._isInBounds(rightPierRow, firstWaterCol + 2) && (this._grid[rightPierRow][firstWaterCol + 2][2] = bridgeBase + 22);
                     } else {
-                        this._grid[rightPierRow][firstWaterCol + 1][2] = bridgeBase + 22;
+                        this._isInBounds(rightPierRow, firstWaterCol + 1) && (this._grid[rightPierRow][firstWaterCol + 1][2] = bridgeBase + 22);
                     }
                 // Pier starts right and goes left
                 } else {
@@ -956,12 +988,12 @@ export class GridCtrl {
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[rightPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    this._isInBounds(rightPierRow, firstWaterCol) && (this._grid[rightPierRow][firstWaterCol][2] = bridgeBase + 23);
                     if (fiftyFifty()) {
-                        this._grid[rightPierRow][firstWaterCol - 1][2] = bridgeBase + 23;
-                        this._grid[rightPierRow][firstWaterCol - 2][2] = bridgeBase + 24;
+                        this._isInBounds(rightPierRow, firstWaterCol - 1) && (this._grid[rightPierRow][firstWaterCol - 1][2] = bridgeBase + 23);
+                        this._isInBounds(rightPierRow, firstWaterCol - 2) && (this._grid[rightPierRow][firstWaterCol - 2][2] = bridgeBase + 24);
                     } else {
-                        this._grid[rightPierRow][firstWaterCol - 1][2] = bridgeBase + 24;
+                        this._isInBounds(rightPierRow, firstWaterCol - 1) && (this._grid[rightPierRow][firstWaterCol - 1][2] = bridgeBase + 24);
                     }
                 }
             }
@@ -977,12 +1009,12 @@ export class GridCtrl {
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[leftPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    this._isInBounds(leftPierRow, firstWaterCol) && (this._grid[leftPierRow][firstWaterCol][2] = bridgeBase + 23);
                     if (fiftyFifty()) {
-                        this._grid[leftPierRow][firstWaterCol + 1][2] = bridgeBase + 23;
-                        this._grid[leftPierRow][firstWaterCol + 2][2] = bridgeBase + 22;
+                        this._isInBounds(leftPierRow, firstWaterCol + 1) && (this._grid[leftPierRow][firstWaterCol + 1][2] = bridgeBase + 23);
+                        this._isInBounds(leftPierRow, firstWaterCol + 2) && (this._grid[leftPierRow][firstWaterCol + 2][2] = bridgeBase + 22);
                     } else {
-                        this._grid[leftPierRow][firstWaterCol + 1][2] = bridgeBase + 22;
+                        this._isInBounds(leftPierRow, firstWaterCol + 1) && (this._grid[leftPierRow][firstWaterCol + 1][2] = bridgeBase + 22);
                     }
                 // Pier starts right and goes left
                 } else {
@@ -993,12 +1025,12 @@ export class GridCtrl {
                         }
                     }
                     // Two or three tiles long?
-                    this._grid[leftPierRow][firstWaterCol][2] = bridgeBase + 23;
+                    this._isInBounds(leftPierRow, firstWaterCol) && (this._grid[leftPierRow][firstWaterCol][2] = bridgeBase + 23);
                     if (fiftyFifty()) {
-                        this._grid[leftPierRow][firstWaterCol - 1][2] = bridgeBase + 23;
-                        this._grid[leftPierRow][firstWaterCol - 2][2] = bridgeBase + 24;
+                        this._isInBounds(leftPierRow, firstWaterCol - 1) && (this._grid[leftPierRow][firstWaterCol - 1][2] = bridgeBase + 23);
+                        this._isInBounds(leftPierRow, firstWaterCol - 2) && (this._grid[leftPierRow][firstWaterCol - 2][2] = bridgeBase + 24);
                     } else {
-                        this._grid[leftPierRow][firstWaterCol - 1][2] = bridgeBase + 24;
+                        this._isInBounds(leftPierRow, firstWaterCol - 1) && (this._grid[leftPierRow][firstWaterCol - 1][2] = bridgeBase + 24);
                     }
                 }
             }
