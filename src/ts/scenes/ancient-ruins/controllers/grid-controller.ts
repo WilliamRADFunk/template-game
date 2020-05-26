@@ -25,9 +25,9 @@ interface GridDictionary {
     }
 }
 
-const groundGrassBase = 102;
+const groundGrassBase = 202;
 const groundGrassEnd = groundGrassBase + 20;
-const waterBase = 1100;
+const waterBase = 1200;
 const waterEnd = 1999;
 const bridgeBase = 2000;
 const bridgeEnd = 2999;
@@ -180,8 +180,8 @@ const getZPos = function(row: number): number {
     return 5.8 - (row/2.5);
 };
 
-const spriteMapCols = 16;
-const spriteMapRows = 16;
+const spriteMapCols = 32;
+const spriteMapRows = 32;
 const gridDictionary: GridDictionary = {
     // Ground & Grass
     2: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [1, 1], hasVariation: true },
@@ -231,6 +231,30 @@ const gridDictionary: GridDictionary = {
     122: { devDescription: 'Green Grass (Sand all around)', gameDescription: 'Lush green grass with sand framing all of its edges', spritePosition: [10, 3] },
     123: { devDescription: 'White Sand (whole tile) - Version 1', gameDescription: 'Ordinary sand', spritePosition: [10, 0], hasVariation: true },
     124: { devDescription: 'White Sand (whole tile) - Version 2', gameDescription: 'Ordinary sand', spritePosition: [11, 0] },
+
+    202: { devDescription: 'Green Grass (whole tile) - Version 1', gameDescription: 'Lush green grass', spritePosition: [13, 1], hasVariation: true },
+    203: { devDescription: 'Green Grass (whole tile) - Version 2', gameDescription: 'Lush green grass', spritePosition: [15, 3] },
+    204: { devDescription: 'Green Grass (Gravel at top)', gameDescription: 'Lush green grass with gravel framing its northern edge', spritePosition: [13, 2] },
+    205: { devDescription: 'Green Grass (Gravel at top & right)', gameDescription: 'Lush green grass with gravel framing its northern and eastern edges', spritePosition: [14, 2] },
+    206: { devDescription: 'Green Grass (Gravel at right)', gameDescription: 'Lush green grass with gravel framing its eastern edge', spritePosition: [14, 1] },
+    207: { devDescription: 'Green Grass (Gravel at right & bottom)', gameDescription: 'Lush green grass with gravel framing its southern and eastern edges', spritePosition: [14, 0] },
+    208: { devDescription: 'Green Grass (Gravel at bottom)', gameDescription: 'Lush green grass with gravel framing its southern edge', spritePosition: [13, 0] },
+    209: { devDescription: 'Green Grass (Gravel at bottom & left)', gameDescription: 'Lush green grass with gravel framing its southern and western edges', spritePosition: [12, 0] },
+    210: { devDescription: 'Green Grass (Gravel at left)', gameDescription: 'Lush green grass with gravel framing its western edge', spritePosition: [12, 1] },
+    211: { devDescription: 'Green Grass (Gravel at left & top)', gameDescription: 'Lush green grass with gravel framing its northern and western edges', spritePosition: [12, 2] },
+    212: { devDescription: 'Green Grass (Gravel at left & top & right)', gameDescription: 'Lush green grass with gravel framing its northern, eastern and western edges', spritePosition: [15, 2] },
+    213: { devDescription: 'Green Grass (Gravel at top & right & bottom)', gameDescription: 'Lush green grass with gravel framing its northern, southern and western edges', spritePosition: [14, 3] },
+    214: { devDescription: 'Green Grass (Gravel at right & bottom & left)', gameDescription: 'Lush green grass with gravel framing its southern, eastern and western edges', spritePosition: [15, 0] },
+    215: { devDescription: 'Green Grass (Gravel at bottom & left & top)', gameDescription: 'Lush green grass with gravel framing its northern, southern and eastern edges', spritePosition: [12, 3] },
+    216: { devDescription: 'Green Grass (Gravel at top & bottom)', gameDescription: 'Lush green grass with gravel framing its northern and southern edges', spritePosition: [13, 3] },
+    217: { devDescription: 'Green Grass (Gravel at left & right)', gameDescription: 'Lush green grass with gravel framing its eastern and western edges', spritePosition: [15, 1] },
+    218: { devDescription: 'Green Grass (Gravel at sides only) - Version 1', gameDescription: 'Sparse green grass with gravel framing all of its edges', spritePosition: [16, 2] },
+    219: { devDescription: 'Green Grass (Gravel at sides only) - Version 2', gameDescription: 'Sparse green grass with gravel framing all of its edges', spritePosition: [17, 2] },
+    220: { devDescription: 'Green Grass (Gravel at corners only) - Version 1', gameDescription: 'Green grass mixed with patches of gravel', spritePosition: [16, 1], hasVariation: true },
+    221: { devDescription: 'Green Grass (Gravel at corners only) - Version 2', gameDescription: 'Green grass mixed with patches of gravel', spritePosition: [17, 1] },
+    222: { devDescription: 'Green Grass (Gravel all around)', gameDescription: 'Lush green grass with gravel framing all of its edges', spritePosition: [16, 3] },
+    223: { devDescription: 'White Gravel (whole tile) - Version 1', gameDescription: 'Ordinary gravel', spritePosition: [16, 0], hasVariation: true },
+    224: { devDescription: 'White Gravel (whole tile) - Version 2', gameDescription: 'Ordinary gravel', spritePosition: [17, 0] },
 
     // Water
     1000: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [1, 5] },
@@ -296,6 +320,38 @@ const gridDictionary: GridDictionary = {
     1128: { devDescription: 'Grey Boulder in Blue Water - Version 2', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [11, 8], blocker: true },
     1129: { devDescription: 'Grey Boulder in Blue Water - Version 3', gameDescription: 'A massive grey boulder breaches the surface of the deep blue waters', spritePosition: [10, 8], blocker: true },
     1130: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [-1, -1], blocker: true },
+
+    1200: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [13, 5] },
+    1201: { devDescription: 'Blue Water (Gravel at top)', gameDescription: 'Blue water with gravel framing its northern edge', spritePosition: [13, 6] },
+    1202: { devDescription: 'Blue Water (Gravel at top & right)', gameDescription: 'Blue water with gravel framing its northern and eastern edges', spritePosition: [14, 6] },
+    1203: { devDescription: 'Blue Water (Gravel at right)', gameDescription: 'Blue water with gravel framing its eastern edge', spritePosition: [14, 5] },
+    1204: { devDescription: 'Blue Water (Gravel at right & bottom)', gameDescription: 'Blue water with gravel framing its southern and eastern edges', spritePosition: [14, 4] },
+    1205: { devDescription: 'Blue Water (Gravel at bottom)', gameDescription: 'Blue water with gravel framing its southern edge', spritePosition: [13, 4] },
+    1206: { devDescription: 'Blue Water (Gravel at bottom & left)', gameDescription: 'Blue water with gravel framing its southern and western edges', spritePosition: [12, 4] },
+    1207: { devDescription: 'Blue Water (Gravel at left)', gameDescription: 'Blue water with gravel framing its western edge', spritePosition: [12, 5] },
+    1208: { devDescription: 'Blue Water (Gravel at left & top)', gameDescription: 'Blue water with gravel framing its northern and western edges', spritePosition: [12, 6] },
+    1209: { devDescription: 'Blue Water (Gravel at upper-left)', gameDescription: 'Blue water with gravel at its northwestern corner', spritePosition: [15, 4] },
+    1210: { devDescription: 'Blue Water (Gravel at upper-right)', gameDescription: 'Blue water with gravel at its northeastern corner', spritePosition: [16, 4] },
+    1211: { devDescription: 'Blue Water (Gravel at lower-left)', gameDescription: 'Blue water with gravel at its southwestern corner', spritePosition: [16, 5] },
+    1212: { devDescription: 'Blue Water (Gravel at lower-right)', gameDescription: 'Blue water with gravel at its southeastern corner', spritePosition: [15, 5] },
+    1213: { devDescription: 'Blue Water (Gravel at upper-left & lower-right)', gameDescription: 'Blue water with gravel at its northwestern & southeastern corners', spritePosition: [16, 6] },
+    1214: { devDescription: 'Blue Water (Gravel at upper-right & lower-left)', gameDescription: 'Blue water with gravel at its northeastern & southwestern corners', spritePosition: [15, 6] },
+    1215: { devDescription: 'Blue Water (Gravel at top & bottom, left & right)', gameDescription: 'Blue water with gravel framing all of its edges', spritePosition: [12, 7] },
+    1216: { devDescription: 'Blue Water (Gravel at left & lower-right)', gameDescription: 'Blue water with gravel at its western edge and southeastern', spritePosition: [13, 7] },
+    1217: { devDescription: 'Blue Water (Gravel at right & lower-left)', gameDescription: 'Blue water with gravel at its eastern edge and southwestern', spritePosition: [14, 7] },
+    1218: { devDescription: 'Blue Water (Gravel at left & upper-right)', gameDescription: 'Blue water with gravel at its western edge and northeastern', spritePosition: [15, 7] },
+    1219: { devDescription: 'Blue Water (Gravel at right & upper-left)', gameDescription: 'Blue water with gravel at its eastern edge and northwestern', spritePosition: [16, 7] },
+    1220: { devDescription: 'Blue Water (Gravel at bottom & upper-left)', gameDescription: 'Blue water with gravel at its southern edge and northwestern', spritePosition: [12, 8] },
+    1221: { devDescription: 'Blue Water (Gravel at bottom & upper-right)', gameDescription: 'Blue water with gravel at its southern edge and northeastern', spritePosition: [13, 8] },
+    1222: { devDescription: 'Blue Water (Gravel at top & lower-left)', gameDescription: 'Blue water with gravel at its northern edge and southwestern', spritePosition: [14, 8] },
+    1223: { devDescription: 'Blue Water (Gravel at top & lower-right)', gameDescription: 'Blue water with gravel at its northern edge and southeastern', spritePosition: [15, 8] },
+    1224: { devDescription: 'Red Boulder in Blue Water - Version 1', gameDescription: 'A massive red boulder breaches the surface of the deep blue waters', spritePosition: [17, 4], blocker: true },
+    1225: { devDescription: 'Red Boulder in Blue Water - Version 2', gameDescription: 'A massive red boulder breaches the surface of the deep blue waters', spritePosition: [17, 5], blocker: true },
+    1226: { devDescription: 'Red Boulder in Blue Water - Version 3', gameDescription: 'A massive red boulder breaches the surface of the deep blue waters', spritePosition: [17, 6], blocker: true },
+    1227: { devDescription: 'Burgundy Boulder in Blue Water - Version 1', gameDescription: 'A massive burgundy boulder breaches the surface of the deep blue waters', spritePosition: [17, 7], blocker: true },
+    1228: { devDescription: 'Burgundy Boulder in Blue Water - Version 2', gameDescription: 'A massive burgundy boulder breaches the surface of the deep blue waters', spritePosition: [17, 8], blocker: true },
+    1229: { devDescription: 'Burgundy Boulder in Blue Water - Version 3', gameDescription: 'A massive burgundy boulder breaches the surface of the deep blue waters', spritePosition: [16, 8], blocker: true },
+    1230: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Blue water too deep to traverse on foot', spritePosition: [-1, -1], blocker: true },
 
     // Bridges & Piers
     2000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
