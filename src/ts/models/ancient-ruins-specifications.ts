@@ -1,48 +1,48 @@
 export enum GroundMaterial {
-    'DIRT' = 'Dirt',
-    'GRAVEL' = 'Gravel',
-    'SAND' = 'Sand'
+    'Dirt' = 1,
+    'Gravel' = 2,
+    'Sand' = 3
 }
 
-export enum GrassColor {
-    'BROWN' = 'brown',
-    'GREEN' = 'green',
-    'PURPLE' = 'purple'
+export enum PlantColor {
+    'Brown' = 1,
+    'Green' = 2,
+    'Purple' = 3,
+    'None' = 4
 }
 
 export enum RuinsBiome {
-    'CEMETERY' = 0,
-    'MONASTERY' = 1,
-    'VILLAGE' = 2,
-    'TOWN' = 3,
-    'CITY' = 4,
-    'MILITARY_BASE' = 5,
-    'LIBRARY' = 6
+    'Monastery' = 1,
+    'Village' = 2,
+    'Town' = 3,
+    'City' = 4,
+    'MilitaryBase' = 5,
+    'Library' = 6,
+    'Cemetery' = 7
 }
 
 export enum WaterBiome {
-    'SMALL_LAKES' = 0,
-    'LARGE_LAKE' = 1,
-    'BEACH' = 2,
-    'RIVER' = 3,
-    'CREEK' = 4
+    'LargeLake' = 1,
+    'Beach' = 2,
+    'River' = 3,
+    'Creek' = 4,
+    'SmallLakes' = 5
 }
 
 export enum WaterColor {
-    'BLUE' = 'blue',
-    'GREEN' = 'green',
-    'PURPLE' = 'purple'
+    'Blue' = 1,
+    'Green' = 2,
+    'Purple' = 3,
+    'None' = 4
 }
 
 export interface AncientRuinsSpecifications {
     biomeRuins: RuinsBiome,
     biomeWater: WaterBiome,
     groundMaterial: GroundMaterial,
-    grassColor: GrassColor,
-    grassPercentage: number,
-    grassSpreadability: number,
-    hasPlants: boolean,
-    hasWater: boolean,
+    plantColor: PlantColor,
+    plantPercentage: number,
+    plantSpreadability: number,
     waterColor: WaterColor,
     waterPercentage: number,
     waterSpreadability: number

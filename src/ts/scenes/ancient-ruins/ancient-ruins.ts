@@ -9,7 +9,7 @@ import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
 import { GridCtrl } from "./controllers/grid-controller";
-import { AncientRuinsSpecifications, GroundMaterial, GrassColor, WaterColor, WaterBiome, RuinsBiome } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, GroundMaterial, PlantColor, WaterColor, WaterBiome, RuinsBiome } from "../../models/ancient-ruins-specifications";
 
 /**
  * @class
@@ -19,19 +19,7 @@ export class AncientRuins {
     /**
      * Specification of what the planet and ruins below should look like.
      */
-    private _ancientRuinsSpec: AncientRuinsSpecifications = {
-        biomeRuins: RuinsBiome.CEMETERY,
-        biomeWater: WaterBiome.RIVER,
-        groundMaterial: GroundMaterial.DIRT,
-        grassColor: GrassColor.GREEN,
-        grassPercentage: 0.3,
-        grassSpreadability: 0.15,
-        hasPlants: true,
-        hasWater: true,
-        waterColor: WaterColor.BLUE,
-        waterPercentage: 0.025,
-        waterSpreadability: 0.1
-    };
+    private _ancientRuinsSpec: AncientRuinsSpecifications;
 
     /**
      * Reference to the main Control Panel.
@@ -75,10 +63,12 @@ export class AncientRuins {
      */
     constructor(
         scene: SceneType,
-        textures: { [key: string]: Texture }) {
+        textures: { [key: string]: Texture },
+        ancientRuinsSpec: AncientRuinsSpecifications) {
 
         this._scene = scene.scene;
         this._textures = textures;
+        this._ancientRuinsSpec = ancientRuinsSpec;
 
         // Text, Button, and Event Listeners
         this._onInitialize(scene);

@@ -44,6 +44,7 @@ import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-b
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
+import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor } from "../../models/ancient-ruins-specifications";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -55,6 +56,24 @@ const buttonScale: number = 2;
  * Keeps track of all things menu related accessible only to dev.
  */
 export class DevMenu {
+    /**
+    * Specification of what the planet and ruins below should look like.
+    */
+    private _ancientRuinsSpec: AncientRuinsSpecifications = {
+        biomeRuins: RuinsBiome.Cemetery,
+        biomeWater: WaterBiome.River,
+        groundMaterial: GroundMaterial.Dirt,
+        plantColor: PlantColor.Green,
+        plantPercentage: 0.3,
+        plantSpreadability: 0.15,
+        waterColor: WaterColor.Blue,
+        waterPercentage: 0.025,
+        waterSpreadability: 0.1
+    };
+
+    /**
+    * Specification of what the planet below should look like.
+    */
     private _landAndMinePlanetSpec: PlanetSpecifications = {
         gravity: 0.0001,
         hasWater: true,
@@ -67,6 +86,10 @@ export class DevMenu {
         skyBase: SkyTypes.Blue,
         wind: 0
     };
+    
+    /**
+    * Specification of what the landercan and can't do.
+    */
     private _landAndMineLanderSpec: LanderSpecifications = {
         drillLength: 5,
         fuelBurn: 0.05,
@@ -74,6 +97,7 @@ export class DevMenu {
         oxygenBurn: 0.02,
         verticalCrashMargin: 0.01
     };
+
     /**
      * List of profiles on page 1.
      */
@@ -334,7 +358,7 @@ export class DevMenu {
             true,
             buttonScale * 0.5);
 
-        const groupLeftStart = 0.015;
+        let groupLeftStart = 0.015;
         //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
         this._page1textElements.freestyleHThresholdText = new FreestyleText(
@@ -941,7 +965,7 @@ export class DevMenu {
         this._page2buttons.launchPlanetRaidSceneButton.hide();
 
         this._page2textElements.rightTopDialogueText2 = new RightTopDialogueText(
-            `This is the launching point for Ancient Ruins scene. Click load button to launch it.`,
+            `This is the launching point for Ancient Ruins scene.`,
             { left, height, top: null, width },
             COLORS.neutral,
             border,
@@ -950,7 +974,17 @@ export class DevMenu {
 
         onClick = () => {
             this._page2buttons.launchAncientRuinsSceneButton.disable();
-            callbacks.activateAncientRuinsScene();
+            callbacks.activateAncientRuinsScene({
+                biomeRuins: RuinsBiome.Cemetery,
+                biomeWater: WaterBiome.River,
+                groundMaterial: GroundMaterial.Dirt,
+                plantColor: this._ancientRuinsSpec.plantColor,
+                plantPercentage: 0.3,
+                plantSpreadability: 0.15,
+                waterColor: this._ancientRuinsSpec.waterColor,
+                waterPercentage: 0.025,
+                waterSpreadability: 0.1
+            });
         };
 
         this._page2buttons.launchAncientRuinsSceneButton = new LoadButton(
@@ -959,6 +993,67 @@ export class DevMenu {
             onClick,
             true);
         this._page2buttons.launchAncientRuinsSceneButton.hide();
+
+        groupLeftStart = 0.5;
+    //#region AncientRuinsScene
+        //#region AncientRuinsScene Row 0
+        row0Left = groupLeftStart;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.plantColor + 1;
+            if (nextNum > Object.keys(PlantColor).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.plantColor = nextNum;
+            this._page2textElements.freestylePlantColorDisplayText.update(PlantColor[this._ancientRuinsSpec.plantColor]);
+        };
+
+        this._page2buttons.changePlantColorButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-leaf',
+            0.5);
+        this._page2buttons.changePlantColorButton.hide();
+
+        row0Left += 0.035;
+        this._page2textElements.freestylePlantColorDisplayText = new FreestyleText(
+            PlantColor[this._ancientRuinsSpec.plantColor],
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        this._page2textElements.freestylePlantColorDisplayText.hide();
+
+        row0Left += 0.1;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.waterColor + 1;
+            if (nextNum > Object.keys(WaterColor).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.waterColor = nextNum;
+            this._page2textElements.freestyleWaterColorDisplayText.update(WaterColor[this._ancientRuinsSpec.waterColor]);
+        };
+
+        this._page2buttons.changeWaterColorButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-tint',
+            0.5);
+        this._page2buttons.changeWaterColorButton.hide();
+
+        row0Left += 0.035;
+        this._page2textElements.freestyleWaterColorDisplayText = new FreestyleText(
+            WaterColor[this._ancientRuinsSpec.waterColor],
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        this._page2textElements.freestyleWaterColorDisplayText.hide();
+        //#endregion
+    //#endregion
 
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
             'Previous Page',

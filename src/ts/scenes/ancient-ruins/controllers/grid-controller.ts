@@ -9,7 +9,7 @@ import {
     Vector2,
     NearestFilter,
     RepeatWrapping} from "three";
-import { AncientRuinsSpecifications, WaterBiome, RuinsBiome } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor } from "../../../models/ancient-ruins-specifications";
 
 interface GridDictionary {
     [key: number]: {
@@ -459,7 +459,7 @@ export class GridCtrl {
      */
     private _checkGrassSpread(row: number, col: number): number {
         // If non-zero, then it's a grass tile, thus increasing grass spread another 15%
-        return (this._isInBounds(row, col) && this._grid[row][col][1] === 1) ? this._ancientRuinsSpec.grassSpreadability : 0;
+        return (this._isInBounds(row, col) && this._grid[row][col][1] === 1) ? this._ancientRuinsSpec.plantSpreadability : 0;
     }
 
     /**
@@ -702,7 +702,7 @@ export class GridCtrl {
      */
     private _makeGrass(): void {
         // If no plants on planet, don't spawn grass.
-        if (!this._ancientRuinsSpec.hasPlants) {
+        if (this._ancientRuinsSpec.plantColor !== PlantColor.None) {
             for (let row = minRows; row < maxRows + 1; row++) {
                 this._grid[row] = [];
                 for (let col = minCols; col < maxCols + 1; col++) {
@@ -722,7 +722,7 @@ export class GridCtrl {
             this._grid[row] = [];
             for (let col = minCols; col < maxCols + 1; col++) {
                 this._grid[row][col] = [];
-                if (Math.random() < this._ancientRuinsSpec.grassPercentage) {
+                if (Math.random() < this._ancientRuinsSpec.plantPercentage) {
                     this._grid[row][col][1] = 1;
                 } else {
                     this._grid[row][col][1] = groundGrassBase + 21;
@@ -1240,31 +1240,31 @@ export class GridCtrl {
      */
     private _makeStructures(): void {
         switch(this._ancientRuinsSpec.biomeRuins) {
-            case RuinsBiome.CEMETERY: {
+            case RuinsBiome.Cemetery: {
                 this._makeCemetery();
                 break;
             }
-            case RuinsBiome.MONASTERY: {
+            case RuinsBiome.Monastery: {
                 this._makeMonastery();
                 break;
             }
-            case RuinsBiome.VILLAGE: {
+            case RuinsBiome.Village: {
                 this._makeVillage();
                 break;
             }
-            case RuinsBiome.TOWN: {
+            case RuinsBiome.Town: {
                 this._makeTown();
                 break;
             }
-            case RuinsBiome.CITY: {
+            case RuinsBiome.City: {
                 this._makeCity();
                 break;
             }
-            case RuinsBiome.MILITARY_BASE: {
+            case RuinsBiome.MilitaryBase: {
                 this._makeMilitaryBase();
                 break;
             }
-            case RuinsBiome.LIBRARY: {
+            case RuinsBiome.Library: {
                 this._makeLibrary();
                 break;
             }
@@ -1295,28 +1295,28 @@ export class GridCtrl {
      */
     private _makeWater(): void {
         // If no water on planet, don't spawn water.
-        if (!this._ancientRuinsSpec.hasWater) {
+        if (this._ancientRuinsSpec.waterColor !== WaterColor.None) {
             return;
         }
 
         switch(this._ancientRuinsSpec.biomeWater) {
-            case WaterBiome.SMALL_LAKES: {
+            case WaterBiome.SmallLakes: {
                 this._makeSmallLakes();
                 break;
             }
-            case WaterBiome.LARGE_LAKE: {
+            case WaterBiome.LargeLake: {
                 this._makeLargeLake();
                 break;
             }
-            case WaterBiome.BEACH: {
+            case WaterBiome.Beach: {
                 this._makeBeaches();
                 break;
             }
-            case WaterBiome.CREEK: {
+            case WaterBiome.Creek: {
                 this._makeCreek();
                 break;
             }
-            case WaterBiome.RIVER: {
+            case WaterBiome.River: {
                 this._makeRiver();
                 break;
             }

@@ -31,6 +31,7 @@ import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandTypes, SkyTypes 
 import { LanderSpecifications } from './models/lander-specifications';
 import * as stats from 'stats.js';
 import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
+import { AncientRuinsSpecifications } from './models/ancient-ruins-specifications';
 const statsPanel = new stats();
 
 const TEXTURES: { [key: string]: [string, Texture] } = {
@@ -525,12 +526,12 @@ const loadDevMenu = () => {
     onWindowResize();
     window.addEventListener( 'resize', onWindowResize, false);
     // Click event listeners that activates certain menu options.
-    const activateAncientRuinsScene = () => {
+    const activateAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
         scenes.devMenu.active = false;
         window.removeEventListener( 'resize', onWindowResize, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            loadAncientRuinsScene();
+            loadAncientRuinsScene(ancientRuinsSpec);
         }, 50);
     };
     const activateIntroScene = () => {
@@ -960,7 +961,7 @@ const loadIntroScene = () => {
 /**
  * Game's intro scene. Only starts when all assets are finished loading.
  */
-const loadAncientRuinsScene = () => {
+const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
     scenes.ancientRuins.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
@@ -1020,7 +1021,8 @@ const loadAncientRuinsScene = () => {
         scenes.ancientRuins,
         {
             spriteMapAncientRuins: TEXTURES.spriteMapAncientRuins[1]
-        });
+        },
+        ancientRuinsSpec);
     scenes.ancientRuins.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
