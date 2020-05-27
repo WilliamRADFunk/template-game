@@ -1,4 +1,4 @@
-import { AncientRuinsSpecifications, GroundMaterial, WaterColor } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor } from "../../../models/ancient-ruins-specifications";
 
 export interface GridDictionaryValue {
     blocker?: boolean;
@@ -218,61 +218,46 @@ const gridDictionary: GridDictionary = {
 export class TileCtrl {
     private _bridgeBase: number;
     private _bridgeEnd: number;
-    private _groundGrassBase: number;
+    private _groundPlantBase: number;
     private _groundGrassEnd: number;
-    // Lookup table for grass tiles when assigning edge graphics.
-    private _groundGrassLookupTable: { [key: string]: number };
+    // Lookup table for grass/plant tiles when assigning edge graphics.
+    private _groundPlantLookupTable: { [key: string]: number };
     private _waterBase: number;
     private _waterEnd: number;
     // Lookup table for water tiles when assigning edge graphics.
     private _waterLookupTable: { [key: string]: number };    
 
     constructor(ancientRuinsSpec: AncientRuinsSpecifications) {
-        if (ancientRuinsSpec.groundMaterial === GroundMaterial.Dirt) {
-            this._groundGrassBase = 2;
-            if (ancientRuinsSpec.waterColor === WaterColor.Blue) {
-                this._waterBase = 1000;
-            }
-        } else if (ancientRuinsSpec.groundMaterial === GroundMaterial.Sand) {
-            this._groundGrassBase = 102;
-            if (ancientRuinsSpec.waterColor === WaterColor.Blue) {
-                this._waterBase = 1100;
-            }
-        } else if (ancientRuinsSpec.groundMaterial === GroundMaterial.Gravel) {
-            this._groundGrassBase = 202;
-            if (ancientRuinsSpec.waterColor === WaterColor.Blue) {
-                this._waterBase = 1200;
-            }
-        }
+        const mod = this._setGroundStart(ancientRuinsSpec.groundMaterial);
+        this._setPlantStart(ancientRuinsSpec.plantColor, this._groundPlantBase);
+        this._setWaterStart(ancientRuinsSpec.waterColor, mod);
         
-        this._groundGrassEnd = this._groundGrassBase + 20;
+        this._groundGrassEnd = this._groundPlantBase + 20;
         this._waterEnd = this._waterBase + 99;
         this._bridgeBase = 2000;
         this._bridgeEnd = 2999;
 
-        // Lookup table for grass tiles when assigning edge graphics.
-        this._groundGrassLookupTable = {
-            '0000': this._groundGrassBase,
-            '1000': this._groundGrassBase + 2,
-            '1100': this._groundGrassBase + 3,
-            '0100': this._groundGrassBase + 4,
-            '0110': this._groundGrassBase + 5,
-            '0010': this._groundGrassBase + 6,
-            '0011': this._groundGrassBase + 7,
-            '0001': this._groundGrassBase + 8,
-            '1001': this._groundGrassBase + 9,
-            '1101': this._groundGrassBase + 10,
-            '1110': this._groundGrassBase + 11,
-            '0111': this._groundGrassBase + 12,
-            '1011': this._groundGrassBase + 13,
-            '1010': this._groundGrassBase + 14,
-            '0101': this._groundGrassBase + 15,
-            'sparse': this._groundGrassBase + 16,
-            'mixed': this._groundGrassBase + 18,
-            '1111': this._groundGrassBase + 20
+        this._groundPlantLookupTable = {
+            '0000': this._groundPlantBase,
+            '1000': this._groundPlantBase + 2,
+            '1100': this._groundPlantBase + 3,
+            '0100': this._groundPlantBase + 4,
+            '0110': this._groundPlantBase + 5,
+            '0010': this._groundPlantBase + 6,
+            '0011': this._groundPlantBase + 7,
+            '0001': this._groundPlantBase + 8,
+            '1001': this._groundPlantBase + 9,
+            '1101': this._groundPlantBase + 10,
+            '1110': this._groundPlantBase + 11,
+            '0111': this._groundPlantBase + 12,
+            '1011': this._groundPlantBase + 13,
+            '1010': this._groundPlantBase + 14,
+            '0101': this._groundPlantBase + 15,
+            'sparse': this._groundPlantBase + 16,
+            'mixed': this._groundPlantBase + 18,
+            '1111': this._groundPlantBase + 20
         };
 
-        // Lookup table for water tiles when assigning edge graphics.
         this._waterLookupTable = {
             '0000-0000': this._waterBase,
             '1000-0000': this._waterBase + 1,
@@ -380,6 +365,63 @@ export class TileCtrl {
         };
     }
 
+    private _setPlantStart(color: PlantColor, groundMod: number): void {
+        switch(color) {
+            case PlantColor.Green: {
+                this._groundPlantBase = groundMod;
+                return;
+            }
+            case PlantColor.Brown: {
+                this._groundPlantBase = 300 + groundMod;
+                return;
+            }
+            case PlantColor.Purple: {
+                this._groundPlantBase = 600 + groundMod;
+                return;
+            }
+            default: {
+                this._groundPlantBase = groundMod;
+            }
+        }
+    }
+
+    private _setGroundStart(mat: GroundMaterial): number {
+        switch(mat) {
+            case GroundMaterial.Dirt: {
+                this._groundPlantBase = 2;
+                return 0;
+            }
+            case GroundMaterial.Sand: {
+                this._groundPlantBase = 102;
+                return 100;
+            }
+            case GroundMaterial.Gravel: {
+                this._groundPlantBase = 202;
+                return 200;
+            }
+        }
+    }
+
+    private _setWaterStart(color: WaterColor, waterMod: number): void {
+        switch(color) {
+            case WaterColor.Blue: {
+                this._waterBase = 1000 + waterMod;
+                return;
+            }
+            case WaterColor.Green: {
+                this._waterBase = 1300 + waterMod;
+                return;
+            }
+            case WaterColor.Purple: {
+                this._waterBase = 1600 + waterMod;
+                return;
+            }
+            default: {
+                this._waterBase = 1000 + waterMod;
+            }
+        }
+    } 
+
     public getBridgeBaseValue(): number {
         return this._bridgeBase;
     }
@@ -413,7 +455,7 @@ export class TileCtrl {
     }
 
     public getGroundBaseValue(): number {
-        return this._groundGrassBase;
+        return this._groundPlantBase;
     }
 
     public getGroundEndValue(): number {
@@ -421,7 +463,7 @@ export class TileCtrl {
     }
 
     public getGroundTileValue(key: string): number {
-        return this._groundGrassLookupTable[key] || this._groundGrassBase;
+        return this._groundPlantLookupTable[key] || this._groundPlantBase;
     }
 
     public getWaterBaseValue(): number {
