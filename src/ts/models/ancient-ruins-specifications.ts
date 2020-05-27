@@ -16,17 +16,17 @@ export enum RuinsBiome {
     'Village' = 2,
     'Town' = 3,
     'City' = 4,
-    'MilitaryBase' = 5,
+    'Military_Base' = 5,
     'Library' = 6,
     'Cemetery' = 7
 }
 
 export enum WaterBiome {
-    'LargeLake' = 1,
+    'Large_Lake' = 1,
     'Beach' = 2,
     'River' = 3,
     'Creek' = 4,
-    'SmallLakes' = 5
+    'Small_Lakes' = 5
 }
 
 export enum WaterColor {

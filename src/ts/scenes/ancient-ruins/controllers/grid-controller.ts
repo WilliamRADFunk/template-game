@@ -9,7 +9,7 @@ import {
     Vector2,
     NearestFilter,
     RepeatWrapping} from "three";
-import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial } from "../../../models/ancient-ruins-specifications";
 
 interface GridDictionary {
     [key: number]: {
@@ -25,141 +25,18 @@ interface GridDictionary {
     }
 }
 
-const groundGrassBase = 202;
-const groundGrassEnd = groundGrassBase + 20;
-const waterBase = 1200;
-const waterEnd = 1999;
-const bridgeBase = 2000;
-const bridgeEnd = 2999;
+let groundGrassBase: number;
+let groundGrassEnd: number;
+let waterBase: number;
+let waterEnd: number;
+let bridgeBase: number;
+let bridgeEnd: number;
 
 // Lookup table for grass tiles when assigning edge graphics.
-const grassLookupTable: { [key: string]: number } = {
-    '0000': groundGrassBase,
-    '1000': groundGrassBase + 2,
-    '1100': groundGrassBase + 3,
-    '0100': groundGrassBase + 4,
-    '0110': groundGrassBase + 5,
-    '0010': groundGrassBase + 6,
-    '0011': groundGrassBase + 7,
-    '0001': groundGrassBase + 8,
-    '1001': groundGrassBase + 9,
-    '1101': groundGrassBase + 10,
-    '1110': groundGrassBase + 11,
-    '0111': groundGrassBase + 12,
-    '1011': groundGrassBase + 13,
-    '1010': groundGrassBase + 14,
-    '0101': groundGrassBase + 15,
-    'sparse': groundGrassBase + 16,
-    'mixed': groundGrassBase + 18,
-    '1111': groundGrassBase + 20
-};
+let grassLookupTable: { [key: string]: number };
 
 // Lookup table for water tiles when assigning edge graphics.
-const waterLookupTable: { [key: string]: number } = {
-    '0000-0000': waterBase,
-    '1000-0000': waterBase + 1,
-    '1000-1000': waterBase + 1,
-    '1000-0001': waterBase + 1,
-    '1000-1001': waterBase + 1,
-    '1100-0000': waterBase + 2,
-    '1100-1000': waterBase + 2,
-    '1100-0100': waterBase + 2,
-    '1100-0001': waterBase + 2,
-    '1100-1001': waterBase + 2,
-    '1100-0101': waterBase + 2,
-    '1100-1101': waterBase + 2,
-    '1100-1100': waterBase + 2,
-    '0100-0000': waterBase + 3,
-    '0100-1000': waterBase + 3,
-    '0100-0100': waterBase + 3,
-    '0100-1100': waterBase + 3,
-    '0110-0000': waterBase + 4,
-    '0110-0100': waterBase + 4,
-    '0110-1000': waterBase + 4,
-    '0110-0010': waterBase + 4,
-    '0110-1100': waterBase + 4,
-    '0110-0110': waterBase + 4,
-    '0110-1010': waterBase + 4,
-    '0110-1110': waterBase + 4,
-    '0010-0000': waterBase + 5,
-    '0010-0100': waterBase + 5,
-    '0010-0010': waterBase + 5,
-    '0010-0110': waterBase + 5,
-    '0011-0000': waterBase + 6,
-    '0011-0010': waterBase + 6,
-    '0011-0100': waterBase + 6,
-    '0011-0001': waterBase + 6,
-    '0011-0110': waterBase + 6,
-    '0011-0011': waterBase + 6,
-    '0011-0101': waterBase + 6,
-    '0011-0111': waterBase + 6,
-    '0001-0000': waterBase + 7,
-    '0001-0010': waterBase + 7,
-    '0001-0001': waterBase + 7,
-    '0001-0011': waterBase + 7,
-    '1001-0000': waterBase + 8,
-    '1001-0001': waterBase + 8,
-    '1001-1000': waterBase + 8,
-    '1001-0010': waterBase + 8,
-    '1001-1010': waterBase + 8,
-    '1001-0011': waterBase + 8,
-    '1001-1001': waterBase + 8,
-    '1001-1011': waterBase + 8,
-    '0000-0001': waterBase + 9,
-    '0000-1000': waterBase + 10,
-    '0000-0100': waterBase + 11,
-    '0000-0010': waterBase + 12,
-    '0000-0101': waterBase + 13,
-    '0000-1010': waterBase + 14,
-    '1111-1111': waterBase + 15,
-    '1111-0111': waterBase + 15,
-    '1111-1011': waterBase + 15,
-    '1111-1101': waterBase + 15,
-    '1111-1110': waterBase + 15,
-    '1111-1100': waterBase + 15,
-    '1111-0110': waterBase + 15,
-    '1111-0011': waterBase + 15,
-    '1111-1001': waterBase + 15,
-    '1111-1000': waterBase + 15,
-    '1111-0100': waterBase + 15,
-    '1111-0010': waterBase + 15,
-    '1111-0001': waterBase + 15,
-    '1111-0000': waterBase + 15,
-    '1111-1010': waterBase + 15,
-    '1111-0101': waterBase + 15,
-    '0001-0100': waterBase + 16,
-    '0001-0111': waterBase + 16,
-    '0001-0101': waterBase + 16,
-    '0001-0110': waterBase + 16,
-    '0100-0010': waterBase + 17,
-    '0100-1110': waterBase + 17,
-    '0100-1010': waterBase + 17,
-    '0100-0110': waterBase + 17,
-    '0001-1000': waterBase + 18,
-    '0001-1011': waterBase + 18,
-    '0001-1001': waterBase + 18,
-    '0001-1010': waterBase + 18,
-    '0100-0001': waterBase + 19,
-    '0100-1101': waterBase + 19,
-    '0100-0101': waterBase + 19,
-    '0100-1001': waterBase + 19,
-    '0010-0001': waterBase + 20,
-    '0010-0111': waterBase + 20,
-    '0010-0011': waterBase + 20,
-    '0010-0101': waterBase + 20,
-    '0010-1000': waterBase + 21,
-    '0010-1110': waterBase + 21,
-    '0010-1010': waterBase + 21,
-    '0010-1100': waterBase + 21,
-    '1000-0010': waterBase + 22,
-    '1000-1011': waterBase + 22,
-    '1000-0011': waterBase + 22,
-    '1000-1010': waterBase + 22,
-    '1000-0100': waterBase + 23,
-    '1000-1101': waterBase + 23,
-    '1000-0101': waterBase + 23,
-    '1000-1100': waterBase + 23
-};
+let waterLookupTable: { [key: string]: number };
 
 const fiftyFifty = () => Math.random() < 0.5;
 const rad90DegLeft = -1.5708;
@@ -420,10 +297,162 @@ export class GridCtrl {
      */
     private _textures: { [key: string]: Texture } = {};
 
-    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: any) {
+    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications) {
         this._scene = scene;
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
+        
+        if (ancientRuinsSpec.groundMaterial === GroundMaterial.Dirt) {
+            groundGrassBase = 2;
+            if (ancientRuinsSpec.waterColor === WaterColor.Blue) {
+                waterBase = 1000;
+            }
+        } else if (ancientRuinsSpec.groundMaterial === GroundMaterial.Sand) {
+            groundGrassBase = 102;
+            if (ancientRuinsSpec.waterColor === WaterColor.Blue) {
+                waterBase = 1100;
+            }
+        } else if (ancientRuinsSpec.groundMaterial === GroundMaterial.Gravel) {
+            groundGrassBase = 202;
+            if (ancientRuinsSpec.waterColor === WaterColor.Blue) {
+                waterBase = 1200;
+            }
+        }
+
+        
+        groundGrassEnd = groundGrassBase + 20;
+        waterEnd = waterBase + 99;
+        bridgeBase = 2000;
+        bridgeEnd = 2999;
+
+        // Lookup table for grass tiles when assigning edge graphics.
+        grassLookupTable = {
+            '0000': groundGrassBase,
+            '1000': groundGrassBase + 2,
+            '1100': groundGrassBase + 3,
+            '0100': groundGrassBase + 4,
+            '0110': groundGrassBase + 5,
+            '0010': groundGrassBase + 6,
+            '0011': groundGrassBase + 7,
+            '0001': groundGrassBase + 8,
+            '1001': groundGrassBase + 9,
+            '1101': groundGrassBase + 10,
+            '1110': groundGrassBase + 11,
+            '0111': groundGrassBase + 12,
+            '1011': groundGrassBase + 13,
+            '1010': groundGrassBase + 14,
+            '0101': groundGrassBase + 15,
+            'sparse': groundGrassBase + 16,
+            'mixed': groundGrassBase + 18,
+            '1111': groundGrassBase + 20
+        };
+
+        // Lookup table for water tiles when assigning edge graphics.
+        waterLookupTable = {
+            '0000-0000': waterBase,
+            '1000-0000': waterBase + 1,
+            '1000-1000': waterBase + 1,
+            '1000-0001': waterBase + 1,
+            '1000-1001': waterBase + 1,
+            '1100-0000': waterBase + 2,
+            '1100-1000': waterBase + 2,
+            '1100-0100': waterBase + 2,
+            '1100-0001': waterBase + 2,
+            '1100-1001': waterBase + 2,
+            '1100-0101': waterBase + 2,
+            '1100-1101': waterBase + 2,
+            '1100-1100': waterBase + 2,
+            '0100-0000': waterBase + 3,
+            '0100-1000': waterBase + 3,
+            '0100-0100': waterBase + 3,
+            '0100-1100': waterBase + 3,
+            '0110-0000': waterBase + 4,
+            '0110-0100': waterBase + 4,
+            '0110-1000': waterBase + 4,
+            '0110-0010': waterBase + 4,
+            '0110-1100': waterBase + 4,
+            '0110-0110': waterBase + 4,
+            '0110-1010': waterBase + 4,
+            '0110-1110': waterBase + 4,
+            '0010-0000': waterBase + 5,
+            '0010-0100': waterBase + 5,
+            '0010-0010': waterBase + 5,
+            '0010-0110': waterBase + 5,
+            '0011-0000': waterBase + 6,
+            '0011-0010': waterBase + 6,
+            '0011-0100': waterBase + 6,
+            '0011-0001': waterBase + 6,
+            '0011-0110': waterBase + 6,
+            '0011-0011': waterBase + 6,
+            '0011-0101': waterBase + 6,
+            '0011-0111': waterBase + 6,
+            '0001-0000': waterBase + 7,
+            '0001-0010': waterBase + 7,
+            '0001-0001': waterBase + 7,
+            '0001-0011': waterBase + 7,
+            '1001-0000': waterBase + 8,
+            '1001-0001': waterBase + 8,
+            '1001-1000': waterBase + 8,
+            '1001-0010': waterBase + 8,
+            '1001-1010': waterBase + 8,
+            '1001-0011': waterBase + 8,
+            '1001-1001': waterBase + 8,
+            '1001-1011': waterBase + 8,
+            '0000-0001': waterBase + 9,
+            '0000-1000': waterBase + 10,
+            '0000-0100': waterBase + 11,
+            '0000-0010': waterBase + 12,
+            '0000-0101': waterBase + 13,
+            '0000-1010': waterBase + 14,
+            '1111-1111': waterBase + 15,
+            '1111-0111': waterBase + 15,
+            '1111-1011': waterBase + 15,
+            '1111-1101': waterBase + 15,
+            '1111-1110': waterBase + 15,
+            '1111-1100': waterBase + 15,
+            '1111-0110': waterBase + 15,
+            '1111-0011': waterBase + 15,
+            '1111-1001': waterBase + 15,
+            '1111-1000': waterBase + 15,
+            '1111-0100': waterBase + 15,
+            '1111-0010': waterBase + 15,
+            '1111-0001': waterBase + 15,
+            '1111-0000': waterBase + 15,
+            '1111-1010': waterBase + 15,
+            '1111-0101': waterBase + 15,
+            '0001-0100': waterBase + 16,
+            '0001-0111': waterBase + 16,
+            '0001-0101': waterBase + 16,
+            '0001-0110': waterBase + 16,
+            '0100-0010': waterBase + 17,
+            '0100-1110': waterBase + 17,
+            '0100-1010': waterBase + 17,
+            '0100-0110': waterBase + 17,
+            '0001-1000': waterBase + 18,
+            '0001-1011': waterBase + 18,
+            '0001-1001': waterBase + 18,
+            '0001-1010': waterBase + 18,
+            '0100-0001': waterBase + 19,
+            '0100-1101': waterBase + 19,
+            '0100-0101': waterBase + 19,
+            '0100-1001': waterBase + 19,
+            '0010-0001': waterBase + 20,
+            '0010-0111': waterBase + 20,
+            '0010-0011': waterBase + 20,
+            '0010-0101': waterBase + 20,
+            '0010-1000': waterBase + 21,
+            '0010-1110': waterBase + 21,
+            '0010-1010': waterBase + 21,
+            '0010-1100': waterBase + 21,
+            '1000-0010': waterBase + 22,
+            '1000-1011': waterBase + 22,
+            '1000-0011': waterBase + 22,
+            '1000-1010': waterBase + 22,
+            '1000-0100': waterBase + 23,
+            '1000-1101': waterBase + 23,
+            '1000-0101': waterBase + 23,
+            '1000-1100': waterBase + 23
+        };
 
         // All meshes added here first to be added as single mesh to the scene.
         const megaMesh = new Object3D();
@@ -702,7 +731,7 @@ export class GridCtrl {
      */
     private _makeGrass(): void {
         // If no plants on planet, don't spawn grass.
-        if (this._ancientRuinsSpec.plantColor !== PlantColor.None) {
+        if (this._ancientRuinsSpec.plantColor === PlantColor.None) {
             for (let row = minRows; row < maxRows + 1; row++) {
                 this._grid[row] = [];
                 for (let col = minCols; col < maxCols + 1; col++) {
@@ -1260,7 +1289,7 @@ export class GridCtrl {
                 this._makeCity();
                 break;
             }
-            case RuinsBiome.MilitaryBase: {
+            case RuinsBiome.Military_Base: {
                 this._makeMilitaryBase();
                 break;
             }
@@ -1295,16 +1324,16 @@ export class GridCtrl {
      */
     private _makeWater(): void {
         // If no water on planet, don't spawn water.
-        if (this._ancientRuinsSpec.waterColor !== WaterColor.None) {
+        if (this._ancientRuinsSpec.waterColor === WaterColor.None) {
             return;
         }
 
         switch(this._ancientRuinsSpec.biomeWater) {
-            case WaterBiome.SmallLakes: {
+            case WaterBiome.Small_Lakes: {
                 this._makeSmallLakes();
                 break;
             }
-            case WaterBiome.LargeLake: {
+            case WaterBiome.Large_Lake: {
                 this._makeLargeLake();
                 break;
             }

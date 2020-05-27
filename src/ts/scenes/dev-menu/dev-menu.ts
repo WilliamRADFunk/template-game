@@ -976,14 +976,14 @@ export class DevMenu {
             this._page2buttons.launchAncientRuinsSceneButton.disable();
             callbacks.activateAncientRuinsScene({
                 biomeRuins: RuinsBiome.Cemetery,
-                biomeWater: WaterBiome.River,
-                groundMaterial: GroundMaterial.Dirt,
+                biomeWater: this._ancientRuinsSpec.biomeWater,
+                groundMaterial: this._ancientRuinsSpec.groundMaterial,
                 plantColor: this._ancientRuinsSpec.plantColor,
-                plantPercentage: 0.3,
-                plantSpreadability: 0.15,
+                plantPercentage: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.3 : 0,
+                plantSpreadability: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.15 : 0,
                 waterColor: this._ancientRuinsSpec.waterColor,
-                waterPercentage: 0.025,
-                waterSpreadability: 0.1
+                waterPercentage: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.025 : 0,
+                waterSpreadability: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.1 : 0
             });
         };
 
@@ -1052,6 +1052,64 @@ export class DevMenu {
             'none',
             TextType.STATIC);
         this._page2textElements.freestyleWaterColorDisplayText.hide();
+        //#endregion
+        //#region AncientRuinsScene Row 1
+        row1Left = groupLeftStart;
+        
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.groundMaterial + 1;
+            if (nextNum > Object.keys(GroundMaterial).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.groundMaterial = nextNum;
+            this._page2textElements.freestyleGroundMaterialDisplayText.update(GroundMaterial[this._ancientRuinsSpec.groundMaterial]);
+        };
+
+        this._page2buttons.changeGroundMaterialButton = new FreestyleSquareButton(
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-first-order',
+            0.5);
+        this._page2buttons.changeGroundMaterialButton.hide();
+
+        row1Left += 0.035;
+        this._page2textElements.freestyleGroundMaterialDisplayText = new FreestyleText(
+            GroundMaterial[this._ancientRuinsSpec.groundMaterial],
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        this._page2textElements.freestyleGroundMaterialDisplayText.hide();
+
+        row1Left += 0.1;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.biomeWater + 1;
+            if (nextNum > Object.keys(WaterBiome).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.biomeWater = nextNum;
+            this._page2textElements.freestyleWaterBiomeDisplayText.update(WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '));
+        };
+
+        this._page2buttons.changeWaterBiomeButton = new FreestyleSquareButton(
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-stumbleupon',
+            0.5);
+        this._page2buttons.changeWaterBiomeButton.hide();
+
+        row1Left += 0.035;
+        this._page2textElements.freestyleWaterBiomeDisplayText = new FreestyleText(
+            WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '),
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        this._page2textElements.freestyleWaterBiomeDisplayText.hide();
         //#endregion
     //#endregion
 
