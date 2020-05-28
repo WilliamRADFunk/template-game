@@ -90,6 +90,78 @@ const gridDictionary: GridDictionary = {
     223: { devDescription: 'White Gravel (whole tile) - Version 1', gameDescription: 'Ordinary gravel', spritePosition: [16, 0], hasVariation: true },
     224: { devDescription: 'White Gravel (whole tile) - Version 2', gameDescription: 'Ordinary gravel', spritePosition: [17, 0] },
 
+    302: { devDescription: 'Yellow Grass (whole tile) - Version 1', gameDescription: 'Lush yellow grass', spritePosition: [19, 1], hasVariation: true },
+    303: { devDescription: 'Yellow Grass (whole tile) - Version 2', gameDescription: 'Lush yellow grass', spritePosition: [21, 3] },
+    304: { devDescription: 'Yellow Grass (Dirt at top)', gameDescription: 'Lush yellow grass with dirt framing its northern edge', spritePosition: [19, 2] },
+    305: { devDescription: 'Yellow Grass (Dirt at top & right)', gameDescription: 'Lush yellow grass with dirt framing its northern and eastern edges', spritePosition: [20, 2] },
+    306: { devDescription: 'Yellow Grass (Dirt at right)', gameDescription: 'Lush yellow grass with dirt framing its eastern edge', spritePosition: [20, 1] },
+    307: { devDescription: 'Yellow Grass (Dirt at right & bottom)', gameDescription: 'Lush yellow grass with dirt framing its southern and eastern edges', spritePosition: [20, 0] },
+    308: { devDescription: 'Yellow Grass (Dirt at bottom)', gameDescription: 'Lush yellow grass with dirt framing its southern edge', spritePosition: [19, 0] },
+    309: { devDescription: 'Yellow Grass (Dirt at bottom & left)', gameDescription: 'Lush yellow grass with dirt framing its southern and western edges', spritePosition: [18, 0] },
+    310: { devDescription: 'Yellow Grass (Dirt at left)', gameDescription: 'Lush yellow grass with dirt framing its western edge', spritePosition: [18, 1] },
+    311: { devDescription: 'Yellow Grass (Dirt at left & top)', gameDescription: 'Lush yellow grass with dirt framing its northern and western edges', spritePosition: [18, 2] },
+    312: { devDescription: 'Yellow Grass (Dirt at left & top & right)', gameDescription: 'Lush yellow grass with dirt framing its northern, eastern and western edges', spritePosition: [21, 2] },
+    313: { devDescription: 'Yellow Grass (Dirt at top & right & bottom)', gameDescription: 'Lush yellow grass with dirt framing its northern, southern and western edges', spritePosition: [20, 3] },
+    314: { devDescription: 'Yellow Grass (Dirt at right & bottom & left)', gameDescription: 'Lush yellow grass with dirt framing its southern, eastern and western edges', spritePosition: [21, 0] },
+    315: { devDescription: 'Yellow Grass (Dirt at bottom & left & top)', gameDescription: 'Lush yellow grass with dirt framing its northern, southern and eastern edges', spritePosition: [18, 3] },
+    316: { devDescription: 'Yellow Grass (Dirt at top & bottom)', gameDescription: 'Lush yellow grass with dirt framing its northern and southern edges', spritePosition: [19, 3] },
+    317: { devDescription: 'Yellow Grass (Dirt at left & right)', gameDescription: 'Lush yellow grass with dirt framing its eastern and western edges', spritePosition: [21, 1] },
+    318: { devDescription: 'Yellow Grass (Dirt at sides only) - Version 1', gameDescription: 'Sparse yellow grass with dirt framing all of its edges', spritePosition: [22, 2] },
+    319: { devDescription: 'Yellow Grass (Dirt at sides only) - Version 2', gameDescription: 'Sparse yellow grass with dirt framing all of its edges', spritePosition: [23, 2] },
+    320: { devDescription: 'Yellow Grass (Dirt at corners only) - Version 1', gameDescription: 'Yellow grass mixed with patches of dirt', spritePosition: [22, 1], hasVariation: true },
+    321: { devDescription: 'Yellow Grass (Dirt at corners only) - Version 2', gameDescription: 'Yellow grass mixed with patches of dirt', spritePosition: [23, 1] },
+    322: { devDescription: 'Yellow Grass (Dirt all around)', gameDescription: 'Lush yellow grass with dirt framing all of its edges', spritePosition: [22, 3] },
+    323: { devDescription: 'Brown Dirt (whole tile) - Version 1', gameDescription: 'Ordinary dirt', spritePosition: [22, 0], hasVariation: true },
+    324: { devDescription: 'Brown Dirt (whole tile) - Version 2', gameDescription: 'Ordinary dirt', spritePosition: [23, 0] },
+
+    402: { devDescription: 'Yellow Grass (whole tile) - Version 1', gameDescription: 'Lush yellow grass', spritePosition: [25, 1], hasVariation: true },
+    403: { devDescription: 'Yellow Grass (whole tile) - Version 2', gameDescription: 'Lush yellow grass', spritePosition: [27, 3] },
+    404: { devDescription: 'Yellow Grass (Sand at top)', gameDescription: 'Lush yellow grass with sand framing its northern edge', spritePosition: [25, 2] },
+    405: { devDescription: 'Yellow Grass (Sand at top & right)', gameDescription: 'Lush yellow grass with sand framing its northern and eastern edges', spritePosition: [26, 2] },
+    406: { devDescription: 'Yellow Grass (Sand at right)', gameDescription: 'Lush yellow grass with sand framing its eastern edge', spritePosition: [26, 1] },
+    407: { devDescription: 'Yellow Grass (Sand at right & bottom)', gameDescription: 'Lush yellow grass with sand framing its southern and eastern edges', spritePosition: [26, 0] },
+    408: { devDescription: 'Yellow Grass (Sand at bottom)', gameDescription: 'Lush yellow grass with sand framing its southern edge', spritePosition: [25, 0] },
+    409: { devDescription: 'Yellow Grass (Sand at bottom & left)', gameDescription: 'Lush yellow grass with sand framing its southern and western edges', spritePosition: [24, 0] },
+    410: { devDescription: 'Yellow Grass (Sand at left)', gameDescription: 'Lush yellow grass with sand framing its western edge', spritePosition: [24, 1] },
+    411: { devDescription: 'Yellow Grass (Sand at left & top)', gameDescription: 'Lush yellow grass with sand framing its northern and western edges', spritePosition: [24, 2] },
+    412: { devDescription: 'Yellow Grass (Sand at left & top & right)', gameDescription: 'Lush yellow grass with sand framing its northern, eastern and western edges', spritePosition: [27, 2] },
+    413: { devDescription: 'Yellow Grass (Sand at top & right & bottom)', gameDescription: 'Lush yellow grass with sand framing its northern, southern and western edges', spritePosition: [26, 3] },
+    414: { devDescription: 'Yellow Grass (Sand at right & bottom & left)', gameDescription: 'Lush yellow grass with sand framing its southern, eastern and western edges', spritePosition: [27, 0] },
+    415: { devDescription: 'Yellow Grass (Sand at bottom & left & top)', gameDescription: 'Lush yellow grass with sand framing its northern, southern and eastern edges', spritePosition: [24, 3] },
+    416: { devDescription: 'Yellow Grass (Sand at top & bottom)', gameDescription: 'Lush yellow grass with sand framing its northern and southern edges', spritePosition: [25, 3] },
+    417: { devDescription: 'Yellow Grass (Sand at left & right)', gameDescription: 'Lush yellow grass with sand framing its eastern and western edges', spritePosition: [27, 1] },
+    418: { devDescription: 'Yellow Grass (Sand at sides only) - Version 1', gameDescription: 'Sparse yellow grass with sand framing all of its edges', spritePosition: [28, 2] },
+    419: { devDescription: 'Yellow Grass (Sand at sides only) - Version 2', gameDescription: 'Sparse yellow grass with sand framing all of its edges', spritePosition: [29, 2] },
+    420: { devDescription: 'Yellow Grass (Sand at corners only) - Version 1', gameDescription: 'Yellow grass mixed with patches of sand', spritePosition: [28, 1], hasVariation: true },
+    421: { devDescription: 'Yellow Grass (Sand at corners only) - Version 2', gameDescription: 'Yellow grass mixed with patches of sand', spritePosition: [29, 1] },
+    422: { devDescription: 'Yellow Grass (Sand all around)', gameDescription: 'Lush yellow grass with sand framing all of its edges', spritePosition: [28, 3] },
+    423: { devDescription: 'White Sand (whole tile) - Version 1', gameDescription: 'Ordinary sand', spritePosition: [28, 0], hasVariation: true },
+    424: { devDescription: 'White Sand (whole tile) - Version 2', gameDescription: 'Ordinary sand', spritePosition: [29, 0] },
+
+    502: { devDescription: 'Yellow Grass (whole tile) - Version 1', gameDescription: 'Lush yellow grass', spritePosition: [1, 17], hasVariation: true },
+    503: { devDescription: 'Yellow Grass (whole tile) - Version 2', gameDescription: 'Lush yellow grass', spritePosition: [3, 19] },
+    504: { devDescription: 'Yellow Grass (Gravel at top)', gameDescription: 'Lush yellow grass with gravel framing its northern edge', spritePosition: [1, 18] },
+    505: { devDescription: 'Yellow Grass (Gravel at top & right)', gameDescription: 'Lush yellow grass with gravel framing its northern and eastern edges', spritePosition: [2, 18] },
+    506: { devDescription: 'Yellow Grass (Gravel at right)', gameDescription: 'Lush yellow grass with gravel framing its eastern edge', spritePosition: [2, 17] },
+    507: { devDescription: 'Yellow Grass (Gravel at right & bottom)', gameDescription: 'Lush yellow grass with gravel framing its southern and eastern edges', spritePosition: [2, 16] },
+    508: { devDescription: 'Yellow Grass (Gravel at bottom)', gameDescription: 'Lush yellow grass with gravel framing its southern edge', spritePosition: [1, 16] },
+    509: { devDescription: 'Yellow Grass (Gravel at bottom & left)', gameDescription: 'Lush yellow grass with gravel framing its southern and western edges', spritePosition: [0, 16] },
+    510: { devDescription: 'Yellow Grass (Gravel at left)', gameDescription: 'Lush yellow grass with gravel framing its western edge', spritePosition: [0, 17] },
+    511: { devDescription: 'Yellow Grass (Gravel at left & top)', gameDescription: 'Lush yellow grass with gravel framing its northern and western edges', spritePosition: [0, 18] },
+    512: { devDescription: 'Yellow Grass (Gravel at left & top & right)', gameDescription: 'Lush yellow grass with gravel framing its northern, eastern and western edges', spritePosition: [3, 18] },
+    513: { devDescription: 'Yellow Grass (Gravel at top & right & bottom)', gameDescription: 'Lush yellow grass with gravel framing its northern, southern and western edges', spritePosition: [2, 19] },
+    514: { devDescription: 'Yellow Grass (Gravel at right & bottom & left)', gameDescription: 'Lush yellow grass with gravel framing its southern, eastern and western edges', spritePosition: [3, 16] },
+    515: { devDescription: 'Yellow Grass (Gravel at bottom & left & top)', gameDescription: 'Lush yellow grass with gravel framing its northern, southern and eastern edges', spritePosition: [0, 19] },
+    516: { devDescription: 'Yellow Grass (Gravel at top & bottom)', gameDescription: 'Lush yellow grass with gravel framing its northern and southern edges', spritePosition: [1, 19] },
+    517: { devDescription: 'Yellow Grass (Gravel at left & right)', gameDescription: 'Lush yellow grass with gravel framing its eastern and western edges', spritePosition: [3, 17] },
+    518: { devDescription: 'Yellow Grass (Gravel at sides only) - Version 1', gameDescription: 'Sparse yellow grass with gravel framing all of its edges', spritePosition: [4, 18] },
+    519: { devDescription: 'Yellow Grass (Gravel at sides only) - Version 2', gameDescription: 'Sparse yellow grass with gravel framing all of its edges', spritePosition: [5, 18] },
+    520: { devDescription: 'Yellow Grass (Gravel at corners only) - Version 1', gameDescription: 'Yellow grass mixed with patches of gravel', spritePosition: [4, 17], hasVariation: true },
+    521: { devDescription: 'Yellow Grass (Gravel at corners only) - Version 2', gameDescription: 'Yellow grass mixed with patches of gravel', spritePosition: [5, 17] },
+    522: { devDescription: 'Yellow Grass (Gravel all around)', gameDescription: 'Lush yellow grass with gravel framing all of its edges', spritePosition: [4, 19] },
+    523: { devDescription: 'White Gravel (whole tile) - Version 1', gameDescription: 'Ordinary gravel', spritePosition: [4, 16], hasVariation: true },
+    524: { devDescription: 'White Gravel (whole tile) - Version 2', gameDescription: 'Ordinary gravel', spritePosition: [5, 16] },
+
     // Water
     1000: { devDescription: 'Blue Water (whole tile)', gameDescription: 'Blue water', spritePosition: [1, 5] },
     1001: { devDescription: 'Blue Water (Dirt at top)', gameDescription: 'Blue water with dirt framing its northern edge', spritePosition: [1, 6] },
@@ -225,13 +297,13 @@ export class TileCtrl {
     private _waterBase: number;
     private _waterEnd: number;
     // Lookup table for water tiles when assigning edge graphics.
-    private _waterLookupTable: { [key: string]: number };    
+    private _waterLookupTable: { [key: string]: number };
 
     constructor(ancientRuinsSpec: AncientRuinsSpecifications) {
         const mod = this._setGroundStart(ancientRuinsSpec.groundMaterial);
         this._setPlantStart(ancientRuinsSpec.plantColor, this._groundPlantBase);
         this._setWaterStart(ancientRuinsSpec.waterColor, mod);
-        
+
         this._groundGrassEnd = this._groundPlantBase + 20;
         this._waterEnd = this._waterBase + 99;
         this._bridgeBase = 2000;
@@ -371,7 +443,7 @@ export class TileCtrl {
                 this._groundPlantBase = groundMod;
                 return;
             }
-            case PlantColor.Brown: {
+            case PlantColor.Yellow: {
                 this._groundPlantBase = 300 + groundMod;
                 return;
             }
@@ -420,7 +492,7 @@ export class TileCtrl {
                 this._waterBase = 1000 + waterMod;
             }
         }
-    } 
+    }
 
     public getBridgeBaseValue(): number {
         return this._bridgeBase;

@@ -86,7 +86,7 @@ export class DevMenu {
         skyBase: SkyTypes.Blue,
         wind: 0
     };
-    
+
     /**
     * Specification of what the landercan and can't do.
     */
@@ -1055,7 +1055,7 @@ export class DevMenu {
         //#endregion
         //#region AncientRuinsScene Row 1
         row1Left = groupLeftStart;
-        
+
         onClick = () => {
             let nextNum = this._ancientRuinsSpec.groundMaterial + 1;
             if (nextNum > Object.keys(GroundMaterial).length / 2) {
@@ -1238,7 +1238,7 @@ export class DevMenu {
 
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
-        
+
 
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.175 * width), height, top: 0.785 * height, width });
         groupLeftStart = 0.015;

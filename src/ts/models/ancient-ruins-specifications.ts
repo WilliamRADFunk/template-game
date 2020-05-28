@@ -5,8 +5,8 @@ export enum GroundMaterial {
 }
 
 export enum PlantColor {
-    'Brown' = 1,
-    'Green' = 2,
+    'Green' = 1,
+    'Yellow' = 2,
     'Purple' = 3,
     'None' = 4
 }
