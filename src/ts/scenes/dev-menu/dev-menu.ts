@@ -1233,12 +1233,30 @@ export class DevMenu {
 
         // Update various buttons and freestyle texts.
         this._buttons.launchAncientRuinsSceneButton.resize({ left: left + (0.54 * width), height, top: 0.20 * height, width });
-        let groupLeftStart = 0.015;
-
+        let groupLeftStart = 0.5;
+//#region AncientRuinsScene Row 0
+        let row0Left = groupLeftStart;
+        this._page2buttons.changePlantColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        row0Left += 0.035;
+        this._page2textElements.freestylePlantColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        row0Left += 0.1;
+        this._page2buttons.changeWaterColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        row0Left += 0.035;
+        this._page2textElements.freestyleWaterColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+//#endregion
+//#region AncientRuinsScene Row 1
+        let row1Left = groupLeftStart;
+        this._page2buttons.changeGroundMaterialButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        row1Left += 0.035;
+        this._page2textElements.freestyleGroundMaterialDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        row1Left += 0.1;
+        this._page2buttons.changeWaterBiomeButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        row1Left += 0.035;
+        this._page2textElements.freestyleWaterBiomeDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+//#endregion
 
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
-
 
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.175 * width), height, top: 0.785 * height, width });
         groupLeftStart = 0.015;
@@ -1264,7 +1282,7 @@ export class DevMenu {
         this._buttons.verticalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 0
-        let row0Left = groupLeftStart;
+        row0Left = groupLeftStart;
         this._textElements.freestyleOxygenBurnText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
         row0Left += 0.12;
         this._buttons.oxygenBurnMinusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
@@ -1283,7 +1301,7 @@ export class DevMenu {
         this._buttons.fuelBurnPlusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 1
-        let row1Left = groupLeftStart;
+        row1Left = groupLeftStart;
         this._textElements.freestylePeakElevationText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
         row1Left += 0.14;
         this._buttons.peakElevationMinusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
