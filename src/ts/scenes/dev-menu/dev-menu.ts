@@ -44,7 +44,7 @@ import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-b
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
-import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor } from "../../models/ancient-ruins-specifications";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -63,9 +63,12 @@ export class DevMenu {
         biomeRuins: RuinsBiome.Cemetery,
         biomeWater: WaterBiome.River,
         groundMaterial: GroundMaterial.Dirt,
+        hasClouds: true,
         plantColor: PlantColor.Green,
         plantPercentage: 0.3,
         plantSpreadability: 0.15,
+        treeLeafColor: TreeLeafColor.None,
+        treeTrunkColor: TreeTrunkColor.None,
         waterColor: WaterColor.Blue,
         waterPercentage: 0.025,
         waterSpreadability: 0.1
@@ -120,7 +123,7 @@ export class DevMenu {
     /**
      * List of buttons on page 2.
      */
-    private _page2buttons: { [key: string]: ButtonBase } = {};
+    private _page2buttons: { [key: string]: ButtonBase | ToggleBase } = {};
     /**
      * List of buttons on page 3.
      */
@@ -978,6 +981,7 @@ export class DevMenu {
                 biomeRuins: RuinsBiome.Cemetery,
                 biomeWater: this._ancientRuinsSpec.biomeWater,
                 groundMaterial: this._ancientRuinsSpec.groundMaterial,
+                hasClouds: (this._buttons.hasCloudsButton as ToggleBase).getState(),
                 plantColor: this._ancientRuinsSpec.plantColor,
                 plantPercentage: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.3 : 0,
                 plantSpreadability: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.15 : 0,
@@ -1110,6 +1114,59 @@ export class DevMenu {
             'none',
             TextType.STATIC);
         this._page2textElements.freestyleWaterBiomeDisplayText.hide();
+        //#endregion
+        //#region AncientRuinsScene Row 2
+        row2Left = groupLeftStart;
+
+        this._page2buttons.hasCloudsButton = new SmallToggleButton(
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            'fa-cloud',
+            true,
+            1);
+        this._page2buttons.hasCloudsButton.hide();
+
+        row2Left += 0.035;
+        this._page2buttons.hasSomethingButton = new SmallToggleButton(
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            'fa-question',
+            true);
+        this._page2buttons.hasSomethingButton.hide();
+
+        row2Left += 0.035;
+        onClick = () => {
+            let nextLeafNum = this._ancientRuinsSpec.treeLeafColor + 1;
+            let nextTrunkNum = this._ancientRuinsSpec.treeTrunkColor;
+            if (nextLeafNum > Object.keys(TreeLeafColor).length / 2) {
+                nextLeafNum = 1;
+                nextTrunkNum += 1;
+                if (nextTrunkNum > Object.keys(TreeTrunkColor).length / 2) {
+                    nextTrunkNum = 1;
+                }
+            }
+            this._ancientRuinsSpec.treeLeafColor = nextLeafNum;
+            this._ancientRuinsSpec.treeTrunkColor = nextTrunkNum;
+            this._page2textElements.freestyleTreeColorDisplayText.update(`${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`);
+        };
+
+        this._page2buttons.changeTreeColorButton = new FreestyleSquareButton(
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-tree',
+            0.5);
+        this._page2buttons.changeTreeColorButton.hide();
+
+        row2Left += 0.035;
+        this._page2textElements.freestyleTreeColorDisplayText = new FreestyleText(
+            `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        this._page2textElements.freestyleTreeColorDisplayText.hide();
         //#endregion
     //#endregion
 
@@ -1254,6 +1311,16 @@ export class DevMenu {
         row1Left += 0.035;
         this._page2textElements.freestyleWaterBiomeDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
 //#endregion
+//#region AncientRuinsScene Row 2
+        let row2Left = groupLeftStart;
+        this._page2buttons.hasCloudsButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        row2Left += 0.035;
+        this._page2buttons.hasSomethingButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        row2Left += 0.035;
+        this._page2buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        row2Left += 0.035;
+        this._page2textElements.freestyleTreeColorDisplayText.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+//#endregion
 
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
         this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
@@ -1320,7 +1387,7 @@ export class DevMenu {
         this._buttons.drillLengthPlusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
 //#endregion
 //#region LaunchLandAndMine Row 2
-        let row2Left = groupLeftStart;
+        row2Left = groupLeftStart;
         this._textElements.freestyleSkyColorText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
         row2Left += 0.095;
         this._buttons.changeSkyTypeButton.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });

@@ -11,6 +11,20 @@ export enum PlantColor {
     'None' = 4
 }
 
+export enum TreeLeafColor {
+    'Green' = 1,
+    'Yellow' = 2,
+    'Purple' = 3,
+    'None' = 4
+}
+
+export enum TreeTrunkColor {
+    'Green' = 1,
+    'Yellow' = 2,
+    'Purple' = 3,
+    'None' = 4
+}
+
 export enum RuinsBiome {
     'Monastery' = 1,
     'Village' = 2,
@@ -37,13 +51,16 @@ export enum WaterColor {
 }
 
 export interface AncientRuinsSpecifications {
-    biomeRuins: RuinsBiome,
-    biomeWater: WaterBiome,
-    groundMaterial: GroundMaterial,
-    plantColor: PlantColor,
-    plantPercentage: number,
-    plantSpreadability: number,
-    waterColor: WaterColor,
-    waterPercentage: number,
-    waterSpreadability: number
+    biomeRuins: RuinsBiome;
+    biomeWater: WaterBiome;
+    groundMaterial: GroundMaterial;
+    hasClouds: boolean;
+    plantColor: PlantColor;
+    plantPercentage: number;
+    plantSpreadability: number;
+    treeLeafColor: TreeLeafColor;
+    treeTrunkColor: TreeTrunkColor;
+    waterColor: WaterColor;
+    waterPercentage: number;
+    waterSpreadability: number;
 }
