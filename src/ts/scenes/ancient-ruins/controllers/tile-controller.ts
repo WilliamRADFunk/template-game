@@ -1,4 +1,4 @@
-import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor, TreeTrunkColor } from "../../../models/ancient-ruins-specifications";
 
 export interface GridDictionaryValue {
     blocker?: boolean;
@@ -523,32 +523,54 @@ const gridDictionary: GridDictionary = {
     1829: { devDescription: 'Turquoise Boulder in Purple Water - Version 3', gameDescription: 'A massive turquoise boulder breaches the surface of the deep purple waters', spritePosition: [4, 24], blocker: true },
     1830: { devDescription: 'Invisible barrier marking water too deep to cross', gameDescription: 'Purple water too deep to traverse on foot', spritePosition: [-1, -1], blocker: true },
 
+    // Trees Trunks
+    2000: { devDescription: 'Grey Tree Trunk (Small) - Version 1', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [5, 3] },
+    2001: { devDescription: 'Grey Tree Trunk (Small) - Version 2', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [11, 3] },
+    2002: { devDescription: 'Grey Tree Trunk (Small) - Version 3', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [17, 3] },
+    2003: { devDescription: 'Grey Tree Trunk (Small) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [23, 3] },
+    2004: { devDescription: 'Grey Tree Trunk (Upper-Right Quadrant) - Version 1', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 1] },
+    2005: { devDescription: 'Grey Tree Trunk (Lower-Right Quadrant) - Version 1', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 0] },
+    2006: { devDescription: 'Grey Tree Trunk (Lower-Left Quadrant) - Version 1', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 0] },
+    2007: { devDescription: 'Grey Tree Trunk (Upper-Left Quadrant) - Version 1', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 1] },
+    2008: { devDescription: 'Grey Tree Trunk (Upper-Right Quadrant) - Version 2', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 3] },
+    2009: { devDescription: 'Grey Tree Trunk (Lower-Right Quadrant) - Version 2', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 2] },
+    2010: { devDescription: 'Grey Tree Trunk (Lower-Left Quadrant) - Version 2', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 2] },
+    2011: { devDescription: 'Grey Tree Trunk (Upper-Left Quadrant) - Version 2', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 3] },
+    2012: { devDescription: 'Grey Tree Trunk (Upper-Right Quadrant) - Version 3', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 5] },
+    2013: { devDescription: 'Grey Tree Trunk (Lower-Right Quadrant) - Version 3', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 4] },
+    2014: { devDescription: 'Grey Tree Trunk (Lower-Left Quadrant) - Version 3', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 4] },
+    2015: { devDescription: 'Grey Tree Trunk (Upper-Left Quadrant) - Version 3', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 5] },
+    2016: { devDescription: 'Grey Tree Trunk (Upper-Right Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 7] },
+    2017: { devDescription: 'Grey Tree Trunk (Lower-Right Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [31, 6] },
+    2018: { devDescription: 'Grey Tree Trunk (Lower-Left Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 6] },
+    2019: { devDescription: 'Grey Tree Trunk (Upper-Left Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 7] },
+
     // Bridges & Piers
-    2000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
-    2001: { devDescription: 'Bridge End Horizontal (Wood)', gameDescription: 'Wooden ramp rising from east to west onto a bridge', spritePosition: [0, 10], xPosMod: 0.01, xScaleMod: 0.1 },
-    2002: { devDescription: 'Bridge Bottom Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 9] },
-    2003: { devDescription: 'Bridge Bottom Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 9] },
-    2004: { devDescription: 'Bridge Bottom Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 9], blocker: true },
-    2005: { devDescription: 'Bridge Middle Intact Horizontal (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [1, 10] },
-    2006: { devDescription: 'Bridge Middle Damaged Horizontal (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 10] },
-    2007: { devDescription: 'Bridge Middle Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [3, 10], blocker: true },
-    2008: { devDescription: 'Bridge Top Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 11] },
-    2009: { devDescription: 'Bridge Top Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 11] },
-    2010: { devDescription: 'Bridge Top Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 11], blocker: true },
-    2011: { devDescription: 'Bridge Start Vertical (Wood)', gameDescription: 'Wooden ramp rising from north to south onto a bridge', spritePosition: [0, 11], zPosMod: -0.02, zScaleMod: 0.12 },
-    2012: { devDescription: 'Bridge End Vertical (Wood)', gameDescription: 'Wooden ramp rising from south to north onto a bridge', spritePosition: [0, 9], zPosMod: 0.02, zScaleMod: 0.12 },
-    2013: { devDescription: 'Bridge Right Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [3, 12] },
-    2014: { devDescription: 'Bridge Right Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [3, 13] },
-    2015: { devDescription: 'Bridge Right Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 14], blocker: true },
-    2016: { devDescription: 'Bridge Middle Intact Vertical (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [2, 12] },
-    2017: { devDescription: 'Bridge Middle Damaged Vertical (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 13] },
-    2018: { devDescription: 'Bridge Middle Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [2, 14], blocker: true },
-    2019: { devDescription: 'Bridge Left Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 12] },
-    2020: { devDescription: 'Bridge Left Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [1, 13] },
-    2021: { devDescription: 'Bridge Left Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [1, 14], blocker: true },
-    2022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
-    2023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
-    2024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
+    3000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
+    3001: { devDescription: 'Bridge End Horizontal (Wood)', gameDescription: 'Wooden ramp rising from east to west onto a bridge', spritePosition: [0, 10], xPosMod: 0.01, xScaleMod: 0.1 },
+    3002: { devDescription: 'Bridge Bottom Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 9] },
+    3003: { devDescription: 'Bridge Bottom Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 9] },
+    3004: { devDescription: 'Bridge Bottom Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 9], blocker: true },
+    3005: { devDescription: 'Bridge Middle Intact Horizontal (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [1, 10] },
+    3006: { devDescription: 'Bridge Middle Damaged Horizontal (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 10] },
+    3007: { devDescription: 'Bridge Middle Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [3, 10], blocker: true },
+    3008: { devDescription: 'Bridge Top Intact Horizontal (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 11] },
+    3009: { devDescription: 'Bridge Top Damaged Horizontal (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [2, 11] },
+    3010: { devDescription: 'Bridge Top Destroyed Horizontal (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 11], blocker: true },
+    3011: { devDescription: 'Bridge Start Vertical (Wood)', gameDescription: 'Wooden ramp rising from north to south onto a bridge', spritePosition: [0, 11], zPosMod: -0.02, zScaleMod: 0.12 },
+    3012: { devDescription: 'Bridge End Vertical (Wood)', gameDescription: 'Wooden ramp rising from south to north onto a bridge', spritePosition: [0, 9], zPosMod: 0.02, zScaleMod: 0.12 },
+    3013: { devDescription: 'Bridge Right Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [3, 12] },
+    3014: { devDescription: 'Bridge Right Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [3, 13] },
+    3015: { devDescription: 'Bridge Right Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [3, 14], blocker: true },
+    3016: { devDescription: 'Bridge Middle Intact Vertical (Wood)', gameDescription: 'An intact section of a wooden bridge', spritePosition: [2, 12] },
+    3017: { devDescription: 'Bridge Middle Damaged Vertical (Wood)', gameDescription: 'A damaged section of a wooden bridge', spritePosition: [2, 13] },
+    3018: { devDescription: 'Bridge Middle Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable section of a wooden bridge', spritePosition: [2, 14], blocker: true },
+    3019: { devDescription: 'Bridge Left Intact Vertical (Wood)', gameDescription: 'An intact edge of a wooden bridge', spritePosition: [1, 12] },
+    3020: { devDescription: 'Bridge Left Damaged Vertical (Wood)', gameDescription: 'A damaged edge of a wooden bridge', spritePosition: [1, 13] },
+    3021: { devDescription: 'Bridge Left Destroyed Vertical (Wood)', gameDescription: 'The destroyed, impassable edge of a wooden bridge', spritePosition: [1, 14], blocker: true },
+    3022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
+    3023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
+    3024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
 }
 
 export class TileCtrl {
@@ -558,6 +580,9 @@ export class TileCtrl {
     private _groundGrassEnd: number;
     // Lookup table for grass/plant tiles when assigning edge graphics.
     private _groundPlantLookupTable: { [key: string]: number };
+    private _treeTrunkBase: number;
+    private _treeTrunkEnd: number;
+    private _treeTrunkLookupTable: { [key: string]: number };
     private _waterBase: number;
     private _waterEnd: number;
     // Lookup table for water tiles when assigning edge graphics.
@@ -567,11 +592,13 @@ export class TileCtrl {
         const mod = this._setGroundStart(ancientRuinsSpec.groundMaterial);
         this._setPlantStart(ancientRuinsSpec.plantColor, this._groundPlantBase);
         this._setWaterStart(ancientRuinsSpec.waterColor, mod);
+        this._setTreeTrunkStart(ancientRuinsSpec.treeTrunkColor);
 
         this._groundGrassEnd = this._groundPlantBase + 20;
         this._waterEnd = this._waterBase + 99;
-        this._bridgeBase = 2000;
-        this._bridgeEnd = 2999;
+        this._treeTrunkEnd = this._treeTrunkBase + 19;
+        this._bridgeBase = 3000;
+        this._bridgeEnd = 3999;
 
         this._groundPlantLookupTable = {
             '0000': this._groundPlantBase,
@@ -592,6 +619,13 @@ export class TileCtrl {
             'sparse': this._groundPlantBase + 16,
             'mixed': this._groundPlantBase + 18,
             '1111': this._groundPlantBase + 20
+        };
+
+        this._treeTrunkLookupTable = {
+            '1000': this._treeTrunkBase + 4,
+            '0100': this._treeTrunkBase + 5,
+            '0010': this._treeTrunkBase + 6,
+            '0001': this._treeTrunkBase + 7
         };
 
         this._waterLookupTable = {
@@ -738,6 +772,38 @@ export class TileCtrl {
         }
     }
 
+    private _setTreeTrunkStart(color: TreeTrunkColor): void {
+        switch(color) {
+            case TreeTrunkColor.Grey: {
+                this._treeTrunkBase = 2000;
+                break;
+            }
+            case TreeTrunkColor.Yellow: {
+                this._treeTrunkBase = 2020;
+                break;
+            }
+            case TreeTrunkColor.Purple: {
+                this._treeTrunkBase = 2040;
+                break;
+            }
+            case TreeTrunkColor.Red: {
+                this._treeTrunkBase = 2060;
+                break;
+            }
+            case TreeTrunkColor.Blue: {
+                this._treeTrunkBase = 2080;
+                break;
+            }
+            case TreeTrunkColor.Brown: {
+                this._treeTrunkBase = 2100;
+                break;
+            }
+            default: {
+                this._treeTrunkBase = 2000;
+            }
+        }
+    }
+
     private _setWaterStart(color: WaterColor, waterMod: number): void {
         switch(color) {
             case WaterColor.Blue: {
@@ -800,6 +866,18 @@ export class TileCtrl {
 
     public getGroundTileValue(key: string): number {
         return this._groundPlantLookupTable[key] || this._groundPlantBase;
+    }
+
+    public getTreeTrunkBaseValue(): number {
+        return this._treeTrunkBase;
+    }
+
+    public getTreeTrunkEndValue(): number {
+        return this._groundGrassEnd;
+    }
+
+    public getTreeTrunkTileValue(key: string): number {
+        return this._treeTrunkLookupTable[key] || this._treeTrunkBase;
     }
 
     public getWaterBaseValue(): number {

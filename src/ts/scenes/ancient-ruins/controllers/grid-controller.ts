@@ -9,7 +9,7 @@ import {
     Vector2,
     NearestFilter,
     RepeatWrapping} from "three";
-import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial, TreeTrunkColor } from "../../../models/ancient-ruins-specifications";
 import { TileCtrl } from "./tile-controller";
 
 const fiftyFifty = () => Math.random() < 0.5;
@@ -103,6 +103,8 @@ export class GridCtrl {
         this._makeStructures();
 
         this._dropBouldersInWater();
+
+        this._makeTreeTrunks();
 
         this._createGroundMeshes(megaMesh);
 
@@ -938,6 +940,24 @@ export class GridCtrl {
     private _makeTown(): void {
         // TODO: Starting roughly at the center, randomly choose between scattered, circular, square, or row format
         // Add 6-10 small structures, and a rough road. Randomly decide whether to put small funeral plot.
+    }
+
+    /**
+     * Makes tree trunks.
+     */
+    private _makeTreeTrunks(): void {
+        if (this._ancientRuinsSpec.treeTrunkColor === TreeTrunkColor.None) {
+            console.log('Bail');
+            return;
+        }
+
+        for (let row = minRows; row < maxRows - 1; row++) {
+            for (let col = minCols; col < maxCols - 1; col++) {
+                if (Math.random() < this._ancientRuinsSpec.treePercentage && this._grid[row][col][1] < this._tileCtrl.getWaterBaseValue()) {
+                    this._grid[row][col][2] = this._tileCtrl.getTreeTrunkBaseValue();
+                }
+            }
+        }
     }
 
     /**

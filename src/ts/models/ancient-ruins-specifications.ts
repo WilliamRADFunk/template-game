@@ -19,10 +19,13 @@ export enum TreeLeafColor {
 }
 
 export enum TreeTrunkColor {
-    'Green' = 1,
+    'Grey' = 1,
     'Yellow' = 2,
     'Purple' = 3,
-    'None' = 4
+    'Red' = 4,
+    'Blue' = 5,
+    'Brown' = 6,
+    'None' = 7
 }
 
 export enum RuinsBiome {
@@ -59,6 +62,7 @@ export interface AncientRuinsSpecifications {
     plantPercentage: number;
     plantSpreadability: number;
     treeLeafColor: TreeLeafColor;
+    treePercentage: number;
     treeTrunkColor: TreeTrunkColor;
     waterColor: WaterColor;
     waterPercentage: number;
