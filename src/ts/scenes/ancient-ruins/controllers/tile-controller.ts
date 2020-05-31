@@ -545,7 +545,7 @@ const gridDictionary: GridDictionary = {
     2018: { devDescription: 'Grey Tree Trunk (Lower-Left Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 6] },
     2019: { devDescription: 'Grey Tree Trunk (Upper-Left Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 7] },
 
-    // Trees Trunks
+    // Trees Leaves
     2200: { devDescription: 'Green Tree Leaves (center)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [1, 26] },
     2201: { devDescription: 'Green Tree Leaves (top)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [1, 27] },
     2202: { devDescription: 'Green Tree Leaves (top-right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [2, 27] },
@@ -589,6 +589,7 @@ const gridDictionary: GridDictionary = {
 }
 
 export class TileCtrl {
+    private _ancientRuinsSpec: AncientRuinsSpecifications;
     private _bridgeBase: number;
     private _bridgeEnd: number;
     private _groundPlantBase: number;
@@ -607,6 +608,7 @@ export class TileCtrl {
     private _waterLookupTable: { [key: string]: number };
 
     constructor(ancientRuinsSpec: AncientRuinsSpecifications) {
+        this._ancientRuinsSpec = ancientRuinsSpec;
         const mod = this._setGroundStart(ancientRuinsSpec.groundMaterial);
         this._setPlantStart(ancientRuinsSpec.plantColor, this._groundPlantBase);
         this._setWaterStart(ancientRuinsSpec.waterColor, mod);
@@ -643,6 +645,7 @@ export class TileCtrl {
 
         this._treeLeafLookupTable = {
             '0000-0000': this._treeLeafBase,
+            '1000-0000': this._treeLeafBase + 1,
             '1000-1001': this._treeLeafBase + 1,
             '1000-0001': this._treeLeafBase + 1,
             '1000-1000': this._treeLeafBase + 1,
@@ -670,6 +673,7 @@ export class TileCtrl {
             '0110-0100': this._treeLeafBase + 4,
             '0110-0010': this._treeLeafBase + 4,
             '0110-0000': this._treeLeafBase + 4,
+            '0010-1000': this._treeLeafBase + 4,
             '0010-0110': this._treeLeafBase + 5,
             '0010-0010': this._treeLeafBase + 5,
             '0010-0100': this._treeLeafBase + 5,
@@ -698,6 +702,7 @@ export class TileCtrl {
             '1001-0010': this._treeLeafBase + 8,
             '1001-0001': this._treeLeafBase + 8,
             '1001-0000': this._treeLeafBase + 8,
+            '0001-1000': this._treeLeafBase + 8,
             '0000-1000': this._treeLeafBase + 9,
             '0000-0100': this._treeLeafBase + 10,
             '0000-0010': this._treeLeafBase + 11,
@@ -977,15 +982,15 @@ export class TileCtrl {
     }
 
     public getTreeLeafBaseValue(): number {
-        return this._treeLeafBase;
+        return this._ancientRuinsSpec.treeLeafColor !== TreeLeafColor.None ? this._treeLeafBase : 0;
     }
 
     public getTreeLeafEndValue(): number {
-        return this._treeLeafEnd;
+        return this._ancientRuinsSpec.treeLeafColor !== TreeLeafColor.None ? this._treeLeafEnd : 0;
     }
 
     public getTreeLeafTileValue(key: string): number {
-        return this._treeLeafLookupTable[key] || this._treeLeafBase;
+        return this._ancientRuinsSpec.treeLeafColor !== TreeLeafColor.None ? (this._treeLeafLookupTable[key] || this._treeLeafBase) : 0;
     }
 
     public getTreeTrunkBaseValue(): number {

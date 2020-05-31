@@ -9,7 +9,7 @@ import {
     Vector2,
     NearestFilter,
     RepeatWrapping} from "three";
-import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial, TreeTrunkColor } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial, TreeTrunkColor, TreeLeafColor } from "../../../models/ancient-ruins-specifications";
 import { TileCtrl } from "./tile-controller";
 
 const fiftyFifty = () => Math.random() < 0.5;
@@ -95,10 +95,8 @@ export class GridCtrl {
 
         this._makeWater();
 
-        // Shapes water to smooth its edges against dirt and grass tiles.
         this._modifyWatersForEdges();
 
-        // Shapes grass to smooth its edges against dirt and water tiles.
         this._modifyGrassesForEdges();
 
         this._makeStructures();
@@ -107,7 +105,7 @@ export class GridCtrl {
 
         this._makeTreeTrunks();
 
-        this._createGroundMeshes(megaMesh);
+        this._createGroundLevelMeshes(megaMesh);
 
         this._createTraverseLevelMeshes(megaMesh);
 
@@ -142,7 +140,7 @@ export class GridCtrl {
      * Uses the tile grid to make meshes that match tile values.
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
      */
-    private _createGroundMeshes(megaMesh: Object3D): void {
+    private _createGroundLevelMeshes(megaMesh: Object3D): void {
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._grid[row][col][1]) {
@@ -217,7 +215,7 @@ export class GridCtrl {
                     tile.scale.set(scaleX, scaleZ, scaleZ);
                     tile.position.set(posX, layer3YPos, posZ)
                     tile.rotation.set(rad90DegLeft, 0, 0);
-                    (tile.material as MeshBasicMaterial).opacity = 0.6;
+                    (tile.material as MeshBasicMaterial).opacity = 1;
                     tile.updateMatrix();
                     megaMesh.add(tile);
                 }
@@ -981,10 +979,12 @@ export class GridCtrl {
      * Makes tree trunks.
      */
     private _makeTreeTrunks(): void {
+        // No tree trunk, no tree leaves
         if (this._ancientRuinsSpec.treeTrunkColor === TreeTrunkColor.None) {
             return;
         }
 
+        // Chooses between small or large tree trunks and covers the square over and around tree trunks with leaf canopy.
         for (let row = minRows; row < maxRows; row++) {
             for (let col = minCols; col < maxCols; col++) {
                 if (Math.random() < this._ancientRuinsSpec.treePercentage
@@ -1028,7 +1028,7 @@ export class GridCtrl {
                             this._grid[row][col + 1][3] = this._tileCtrl.getTreeLeafBaseValue();
                         }
 
-                        const leaves = [
+                        this._ancientRuinsSpec.treeLeafColor !== TreeLeafColor.None && [
                             [row + 2, col],
                             [row + 2, col + 1],
                             [row + 2, col + 2],
@@ -1041,15 +1041,14 @@ export class GridCtrl {
                             [row, col - 1],
                             [row + 1, col - 1],
                             [row + 2, col - 1],
-                        ];
-                        leaves
+                        ]
                             .filter(tile => this._isInBounds(tile[0], tile[1]))
                             .filter(tile => this._grid[tile[0]][tile[1]][3] !== this._tileCtrl.getTreeLeafBaseValue())
                             .forEach(tile => {
                                 this._grid[tile[0]][tile[1]][3] = -100;
                             });
                     } else {
-                        [
+                        this._ancientRuinsSpec.treeLeafColor !== TreeLeafColor.None && [
                             [row + 1, col],
                             [row + 1, col + 1],
                             [row, col + 1],
@@ -1069,34 +1068,39 @@ export class GridCtrl {
             }
         }
 
-        // for (let row = minRows; row < maxRows; row++) {
-        //     for (let col = minCols; col < maxCols; col++) {
-        //         if (this._grid[row][col][3] === -100) {
-        //             this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
-        //             const potentialLeaves = [
-        //                 [[row - 1, col], [row, col - 1], [row - 1, col - 1]],
-        //                 [[row + 1, col], [row, col - 1], [row + 1, col - 1]],
-        //                 [[row, col - 1], [row + 1, col - 1], [row + 1, col]],
-        //                 [[row, col + 1], [row + 1, col + 1], [row + 1, col]],
-        //                 [[row - 1, col], [row, col + 1], [row - 1, col + 1]],
-        //                 [[row + 1, col], [row, col + 1], [row + 1, col + 1]],
-        //                 [[row, col - 1], [row - 1, col - 1], [row - 1, col]],
-        //                 [[row, col + 1], [row - 1, col + 1], [row - 1, col]]
-        //             ];
-        //             potentialLeaves
-        //                 .filter(option => this._isInBounds(option[0][0], option[0][1]))
-        //                 .filter(option => this._isInBounds(option[1][0], option[1][1]))
-        //                 .filter(option => this._isInBounds(option[2][0], option[2][1]))
-        //                 .filter(option => this._grid[option[0][0]][option[0][1]][3] === this._tileCtrl.getTreeLeafBaseValue() || this._grid[option[0][0]][option[0][1]][3] === -100)
-        //                 .filter(() => Math.random() < 0.25)
-        //                 .forEach(option => {
-        //                     this._grid[option[0][0]][option[0][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
-        //                     this._grid[option[1][0]][option[1][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
-        //                     this._grid[option[2][0]][option[2][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
-        //                 });
-        //         }
-        //     }
-        // }
+        if (this._ancientRuinsSpec.treeLeafColor === TreeLeafColor.None) {
+            return;
+        }
+
+        // Spreads canopy out in a variable shape.
+        for (let row = minRows; row < maxRows; row++) {
+            for (let col = minCols; col < maxCols; col++) {
+                if (this._grid[row][col][3] === -100) {
+                    this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
+                    const potentialLeaves = [
+                        [[row - 1, col], [row, col - 1], [row - 1, col - 1]],
+                        [[row + 1, col], [row, col - 1], [row + 1, col - 1]],
+                        [[row, col - 1], [row + 1, col - 1], [row + 1, col]],
+                        [[row, col + 1], [row + 1, col + 1], [row + 1, col]],
+                        [[row - 1, col], [row, col + 1], [row - 1, col + 1]],
+                        [[row + 1, col], [row, col + 1], [row + 1, col + 1]],
+                        [[row, col - 1], [row - 1, col - 1], [row - 1, col]],
+                        [[row, col + 1], [row - 1, col + 1], [row - 1, col]]
+                    ];
+                    potentialLeaves
+                        .filter(option => this._isInBounds(option[0][0], option[0][1]))
+                        .filter(option => this._isInBounds(option[1][0], option[1][1]))
+                        .filter(option => this._isInBounds(option[2][0], option[2][1]))
+                        .filter(option => this._grid[option[0][0]][option[0][1]][3] === this._tileCtrl.getTreeLeafBaseValue() || this._grid[option[0][0]][option[0][1]][3] === -100)
+                        .filter(() => Math.random() < 0.25)
+                        .forEach(option => {
+                            this._grid[option[0][0]][option[0][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
+                            this._grid[option[1][0]][option[1][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
+                            this._grid[option[2][0]][option[2][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
+                        });
+                }
+            }
+        }
 
         this._modifyLeavesForEdges();
     }
@@ -1191,7 +1195,7 @@ export class GridCtrl {
     private _modifyLeavesForEdges(): void {
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
-                if (this._grid[row][col][3] === -100) {
+                if (this._grid[row][col][3] === -100 || this._grid[row][col][3] === this._tileCtrl.getTreeLeafBaseValue()) {
                     this._modifyLeavesForEdge(row, col);
                 }
             }
@@ -1213,10 +1217,14 @@ export class GridCtrl {
         const left = this._isInBounds(row, col - 1) && this._grid[row][col - 1][3] !== -100 && (this._grid[row][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
         const topLeft = this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][3] !== -100 && (this._grid[row + 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
 
-        // 1 === non-water tile found
-        // 0 === water tile found
+        // 1 === non-leaf tile found
+        // 0 === leaf tile found
 
         const key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
+        // TODO: remove when confident leaf canopy is done properly.
+        if (this._tileCtrl.getTreeLeafTileValue(key) === this._tileCtrl.getTreeLeafBaseValue() && key !== '0000-0000') {
+            console.log('key', key, this._tileCtrl.getTreeLeafTileValue(key), row, col);
+        }
         this._grid[row][col][3] = this._tileCtrl.getTreeLeafTileValue(key);
     }
 

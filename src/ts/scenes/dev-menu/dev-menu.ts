@@ -986,7 +986,9 @@ export class DevMenu {
                 plantColor: this._ancientRuinsSpec.plantColor,
                 plantPercentage: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.3 : 0,
                 plantSpreadability: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.15 : 0,
+                treeLeafColor: this._ancientRuinsSpec.treeLeafColor,
                 treePercentage: this._ancientRuinsSpec.treePercentage,
+                treeTrunkColor: this._ancientRuinsSpec.treeTrunkColor,
                 waterColor: this._ancientRuinsSpec.waterColor,
                 waterPercentage: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.025 : 0,
                 waterSpreadability: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.1 : 0

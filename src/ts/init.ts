@@ -450,9 +450,7 @@ const loadAssets = () => {
                 (loadingBar as any).ldBar.set((assetsLoadedCount / TOTAL_ASSET_COUNT_TO_LOAD) * 100);
                 checkAssetsLoaded();
             },
-            (xhr: { loaded: number; total: number;}) => {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-            },
+            (xhr: { loaded: number; total: number;}) => { },
             (error: string) => console.log(`Failed to load (${soundLoader.path.split('/').pop()}) sound file`, error)
         );
     });
