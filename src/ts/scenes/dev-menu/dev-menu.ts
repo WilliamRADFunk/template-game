@@ -67,9 +67,9 @@ export class DevMenu {
         plantColor: PlantColor.Green,
         plantPercentage: 0.3,
         plantSpreadability: 0.15,
-        treeLeafColor: TreeLeafColor.None,
+        treeLeafColor: TreeLeafColor.Green,
         treePercentage: 0.02,
-        treeTrunkColor: TreeTrunkColor.None,
+        treeTrunkColor: TreeTrunkColor.Grey,
         waterColor: WaterColor.Blue,
         waterPercentage: 0.025,
         waterSpreadability: 0.1

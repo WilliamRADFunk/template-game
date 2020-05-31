@@ -12,10 +12,14 @@ export enum PlantColor {
 }
 
 export enum TreeLeafColor {
-    'Green' = 1,
+    'Grey' = 1,
     'Yellow' = 2,
     'Purple' = 3,
-    'None' = 4
+    'Red' = 4,
+    'Blue' = 5,
+    'Brown' = 6,
+    'Green' = 7,
+    'None' = 8
 }
 
 export enum TreeTrunkColor {

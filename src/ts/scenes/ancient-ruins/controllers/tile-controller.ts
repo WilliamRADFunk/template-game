@@ -1,4 +1,4 @@
-import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor, TreeTrunkColor } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor, TreeTrunkColor, TreeLeafColor } from "../../../models/ancient-ruins-specifications";
 
 export interface GridDictionaryValue {
     blocker?: boolean;
@@ -545,6 +545,17 @@ const gridDictionary: GridDictionary = {
     2018: { devDescription: 'Grey Tree Trunk (Lower-Left Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 6] },
     2019: { devDescription: 'Grey Tree Trunk (Upper-Left Quadrant) - Version 4', gameDescription: 'Part of a massive tree trunk with thick grey bark', spritePosition: [30, 7] },
 
+    // Trees Trunks
+    2200: { devDescription: 'Green Tree Leaves (center)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [1, 26] },
+    2201: { devDescription: 'Green Tree Leaves (top)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [1, 27] },
+    2202: { devDescription: 'Green Tree Leaves (top-right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [2, 27] },
+    2203: { devDescription: 'Green Tree Leaves (right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [2, 26] },
+    2204: { devDescription: 'Green Tree Leaves (bottom-right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [2, 25] },
+    2205: { devDescription: 'Green Tree Leaves (bottom)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [1, 25] },
+    2206: { devDescription: 'Green Tree Leaves (bottom-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [0, 25] },
+    2207: { devDescription: 'Green Tree Leaves (left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [0, 26] },
+    2208: { devDescription: 'Green Tree Leaves (top-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [0, 27] },
+
     // Bridges & Piers
     3000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
     3001: { devDescription: 'Bridge End Horizontal (Wood)', gameDescription: 'Wooden ramp rising from east to west onto a bridge', spritePosition: [0, 10], xPosMod: 0.01, xScaleMod: 0.1 },
@@ -580,6 +591,9 @@ export class TileCtrl {
     private _groundGrassEnd: number;
     // Lookup table for grass/plant tiles when assigning edge graphics.
     private _groundPlantLookupTable: { [key: string]: number };
+    private _treeLeafBase: number;
+    private _treeLeafEnd: number;
+    private _treeLeafLookupTable: { [key: string]: number };
     private _treeTrunkBase: number;
     private _treeTrunkEnd: number;
     private _treeTrunkLookupTable: { [key: string]: number };
@@ -592,10 +606,12 @@ export class TileCtrl {
         const mod = this._setGroundStart(ancientRuinsSpec.groundMaterial);
         this._setPlantStart(ancientRuinsSpec.plantColor, this._groundPlantBase);
         this._setWaterStart(ancientRuinsSpec.waterColor, mod);
+        this._setTreeLeafStart(ancientRuinsSpec.treeLeafColor);
         this._setTreeTrunkStart(ancientRuinsSpec.treeTrunkColor);
 
         this._groundGrassEnd = this._groundPlantBase + 20;
         this._waterEnd = this._waterBase + 99;
+        this._treeLeafEnd = this._treeLeafBase + 19;
         this._treeTrunkEnd = this._treeTrunkBase + 19;
         this._bridgeBase = 3000;
         this._bridgeEnd = 3999;
@@ -772,6 +788,38 @@ export class TileCtrl {
         }
     }
 
+    private _setTreeLeafStart(color: TreeLeafColor): void {
+        switch(color) {
+            case TreeLeafColor.Grey: {
+                this._treeLeafBase = 2200;
+                break;
+            }
+            case TreeLeafColor.Yellow: {
+                this._treeLeafBase = 2220;
+                break;
+            }
+            case TreeLeafColor.Purple: {
+                this._treeLeafBase = 2240;
+                break;
+            }
+            case TreeLeafColor.Red: {
+                this._treeLeafBase = 2260;
+                break;
+            }
+            case TreeLeafColor.Blue: {
+                this._treeLeafBase = 2280;
+                break;
+            }
+            case TreeLeafColor.Brown: {
+                this._treeLeafBase = 2300;
+                break;
+            }
+            default: {
+                this._treeLeafBase = 2200;
+            }
+        }
+    }
+
     private _setTreeTrunkStart(color: TreeTrunkColor): void {
         switch(color) {
             case TreeTrunkColor.Grey: {
@@ -868,12 +916,24 @@ export class TileCtrl {
         return this._groundPlantLookupTable[key] || this._groundPlantBase;
     }
 
+    public getTreeLeafBaseValue(): number {
+        return this._treeLeafBase;
+    }
+
+    public getTreeLeafEndValue(): number {
+        return this._treeLeafEnd;
+    }
+
+    public getTreeLeafTileValue(key: string): number {
+        return this._treeLeafLookupTable[key] || this._treeLeafBase;
+    }
+
     public getTreeTrunkBaseValue(): number {
         return this._treeTrunkBase;
     }
 
     public getTreeTrunkEndValue(): number {
-        return this._groundGrassEnd;
+        return this._treeTrunkEnd;
     }
 
     public getTreeTrunkTileValue(key: string): number {

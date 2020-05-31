@@ -21,8 +21,9 @@ const minCols = 0;
 const minRows = 0;
 const middleCol = Math.ceil((maxCols - minCols) / 2);
 const middleRow = Math.ceil((maxRows - minRows) / 2);
-const layer1YPos = 0;
-const layer2YPos = -2;
+const layer1YPos = 15;
+const layer2YPos = 13;
+const layer3YPos = 11;
 
 const getXPos = function(col: number): number {
     return -5.8 + (col/2.5);
@@ -110,6 +111,8 @@ export class GridCtrl {
 
         this._createTraverseLevelMeshes(megaMesh);
 
+        this._createOverheadLevelMeshes(megaMesh);
+
         this._scene.add(megaMesh);
     }
 
@@ -182,6 +185,37 @@ export class GridCtrl {
                     const tile = new Mesh( this._geometry, material );
                     tile.scale.set(scaleX, scaleZ, scaleZ);
                     tile.position.set(posX, layer2YPos, posZ)
+                    tile.rotation.set(rad90DegLeft, 0, 0);
+                    tile.updateMatrix();
+                    megaMesh.add(tile);
+                }
+            }
+        }
+    }
+
+    /**
+     * Uses the tile grid to make meshes that match tile values.
+     * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     */
+    private _createOverheadLevelMeshes(megaMesh: Object3D): void {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][3] && this._materialsMap[this._grid[row][col][3]]) {
+                    const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3]);
+                    const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3], true);
+                    const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3]);
+                    const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3], true);
+
+                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]];
+
+                    // If material type has a second variation, randomize between the two.
+                    if (this._tileCtrl.getGridDicVariation(this._grid[row][col][3]) && fiftyFifty()) {
+                        material = this._materialsMap[this._grid[row][col][3]];
+                    }
+
+                    const tile = new Mesh( this._geometry, material );
+                    tile.scale.set(scaleX, scaleZ, scaleZ);
+                    tile.position.set(posX, layer3YPos, posZ)
                     tile.rotation.set(rad90DegLeft, 0, 0);
                     tile.updateMatrix();
                     megaMesh.add(tile);
@@ -947,15 +981,59 @@ export class GridCtrl {
      */
     private _makeTreeTrunks(): void {
         if (this._ancientRuinsSpec.treeTrunkColor === TreeTrunkColor.None) {
-            console.log('Bail');
             return;
         }
 
-        for (let row = minRows; row < maxRows - 1; row++) {
-            for (let col = minCols; col < maxCols - 1; col++) {
+        for (let row = minRows; row < maxRows; row++) {
+            for (let col = minCols; col < maxCols; col++) {
                 if (Math.random() < this._ancientRuinsSpec.treePercentage && this._grid[row][col][1] < this._tileCtrl.getWaterBaseValue()) {
-                    this._grid[row][col][2] = this._tileCtrl.getTreeTrunkBaseValue();
+                    const rolledDemDice = Math.floor(Math.random() * 100);
+                    let version;
+                    if (rolledDemDice < 25) {
+                        version = 0;
+                    } else if (rolledDemDice < 50) {
+                        version = 1;
+                    } else if (rolledDemDice < 75) {
+                        version = 2;
+                    } else {
+                        version = 3;
+                    }
+                    this._grid[row][col][2] = this._tileCtrl.getTreeTrunkBaseValue() + version;
+                    this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
+
+                    if (fiftyFifty()) {
+                        const above = this._isInBounds(row + 1, col);
+                        const aboveRight = this._isInBounds(row + 1, col);
+                        const right = this._isInBounds(row + 1, col + 1);
+
+                        if ((above && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue())
+                            || (aboveRight && this._grid[row + 1][col + 1][1] > this._tileCtrl.getGroundEndValue())
+                            || (right && this._grid[row][col + 1][1] > this._tileCtrl.getGroundEndValue())) {
+                            continue;
+                        }
+
+                        const versionBase = this._tileCtrl.getTreeTrunkBaseValue() + 4 + (version * 4);
+                        this._grid[row][col][2] = versionBase + 2;
+                        if (above) {
+                            this._grid[row + 1][col][2] = versionBase + 3;
+                            this._grid[row + 1][col][3] = this._tileCtrl.getTreeLeafBaseValue();
+                        }
+                        if (aboveRight) {
+                            this._grid[row + 1][col + 1][2] = versionBase;
+                            this._grid[row + 1][col + 1][3] = this._tileCtrl.getTreeLeafBaseValue();
+                        }
+                        if (right) {
+                            this._grid[row][col + 1][2] = versionBase + 1;
+                            this._grid[row][col + 1][3] = this._tileCtrl.getTreeLeafBaseValue();
+                        }
+                    }
                 }
+            }
+        }
+
+        for (let row = minRows; row < maxRows; row++) {
+            for (let col = minCols; col < maxCols; col++) {
+
             }
         }
     }
