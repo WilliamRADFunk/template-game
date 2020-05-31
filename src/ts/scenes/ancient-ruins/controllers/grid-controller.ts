@@ -217,6 +217,7 @@ export class GridCtrl {
                     tile.scale.set(scaleX, scaleZ, scaleZ);
                     tile.position.set(posX, layer3YPos, posZ)
                     tile.rotation.set(rad90DegLeft, 0, 0);
+                    (tile.material as MeshBasicMaterial).opacity = 0.6;
                     tile.updateMatrix();
                     megaMesh.add(tile);
                 }
@@ -986,7 +987,9 @@ export class GridCtrl {
 
         for (let row = minRows; row < maxRows; row++) {
             for (let col = minCols; col < maxCols; col++) {
-                if (Math.random() < this._ancientRuinsSpec.treePercentage && this._grid[row][col][1] < this._tileCtrl.getWaterBaseValue()) {
+                if (Math.random() < this._ancientRuinsSpec.treePercentage
+                    && this._grid[row][col][1] < this._tileCtrl.getWaterBaseValue()
+                    && (this._grid[row][col][2] < this._tileCtrl.getTreeTrunkBaseValue() || this._grid[row][col][2] > this._tileCtrl.getTreeTrunkEndValue())) {
                     const rolledDemDice = Math.floor(Math.random() * 100);
                     let version;
                     if (rolledDemDice < 25) {
@@ -1001,16 +1004,14 @@ export class GridCtrl {
                     this._grid[row][col][2] = this._tileCtrl.getTreeTrunkBaseValue() + version;
                     this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
 
-                    if (fiftyFifty()) {
-                        const above = this._isInBounds(row + 1, col);
-                        const aboveRight = this._isInBounds(row + 1, col);
-                        const right = this._isInBounds(row + 1, col + 1);
+                    const above = this._isInBounds(row + 1, col);
+                    const aboveRight = this._isInBounds(row + 1, col);
+                    const right = this._isInBounds(row + 1, col + 1);
 
-                        if ((above && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue())
-                            || (aboveRight && this._grid[row + 1][col + 1][1] > this._tileCtrl.getGroundEndValue())
-                            || (right && this._grid[row][col + 1][1] > this._tileCtrl.getGroundEndValue())) {
-                            continue;
-                        }
+                    if (fiftyFifty()
+                        && !((above && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue())
+                        || (aboveRight && this._grid[row + 1][col + 1][1] > this._tileCtrl.getGroundEndValue())
+                        || (right && this._grid[row][col + 1][1] > this._tileCtrl.getGroundEndValue()))) {
 
                         const versionBase = this._tileCtrl.getTreeTrunkBaseValue() + 4 + (version * 4);
                         this._grid[row][col][2] = versionBase + 2;
@@ -1026,16 +1027,78 @@ export class GridCtrl {
                             this._grid[row][col + 1][2] = versionBase + 1;
                             this._grid[row][col + 1][3] = this._tileCtrl.getTreeLeafBaseValue();
                         }
+
+                        const leaves = [
+                            [row + 2, col],
+                            [row + 2, col + 1],
+                            [row + 2, col + 2],
+                            [row + 1, col + 2],
+                            [row, col + 2],
+                            [row - 1, col + 2],
+                            [row - 1, col + 1],
+                            [row - 1, col],
+                            [row - 1, col - 1],
+                            [row, col - 1],
+                            [row + 1, col - 1],
+                            [row + 2, col - 1],
+                        ];
+                        leaves
+                            .filter(tile => this._isInBounds(tile[0], tile[1]))
+                            .filter(tile => this._grid[tile[0]][tile[1]][3] !== this._tileCtrl.getTreeLeafBaseValue())
+                            .forEach(tile => {
+                                this._grid[tile[0]][tile[1]][3] = -100;
+                            });
+                    } else {
+                        [
+                            [row + 1, col],
+                            [row + 1, col + 1],
+                            [row, col + 1],
+                            [row - 1, col + 1],
+                            [row - 1, col],
+                            [row - 1, col - 1],
+                            [row, col - 1],
+                            [row + 1, col - 1]
+                        ]
+                            .filter(tile => this._isInBounds(tile[0], tile[1]))
+                            .filter(tile => this._grid[tile[0]][tile[1]][3] !== this._tileCtrl.getTreeLeafBaseValue())
+                            .forEach(tile => {
+                                this._grid[tile[0]][tile[1]][3] = -100;
+                            });
                     }
                 }
             }
         }
 
-        for (let row = minRows; row < maxRows; row++) {
-            for (let col = minCols; col < maxCols; col++) {
+        // for (let row = minRows; row < maxRows; row++) {
+        //     for (let col = minCols; col < maxCols; col++) {
+        //         if (this._grid[row][col][3] === -100) {
+        //             this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
+        //             const potentialLeaves = [
+        //                 [[row - 1, col], [row, col - 1], [row - 1, col - 1]],
+        //                 [[row + 1, col], [row, col - 1], [row + 1, col - 1]],
+        //                 [[row, col - 1], [row + 1, col - 1], [row + 1, col]],
+        //                 [[row, col + 1], [row + 1, col + 1], [row + 1, col]],
+        //                 [[row - 1, col], [row, col + 1], [row - 1, col + 1]],
+        //                 [[row + 1, col], [row, col + 1], [row + 1, col + 1]],
+        //                 [[row, col - 1], [row - 1, col - 1], [row - 1, col]],
+        //                 [[row, col + 1], [row - 1, col + 1], [row - 1, col]]
+        //             ];
+        //             potentialLeaves
+        //                 .filter(option => this._isInBounds(option[0][0], option[0][1]))
+        //                 .filter(option => this._isInBounds(option[1][0], option[1][1]))
+        //                 .filter(option => this._isInBounds(option[2][0], option[2][1]))
+        //                 .filter(option => this._grid[option[0][0]][option[0][1]][3] === this._tileCtrl.getTreeLeafBaseValue() || this._grid[option[0][0]][option[0][1]][3] === -100)
+        //                 .filter(() => Math.random() < 0.25)
+        //                 .forEach(option => {
+        //                     this._grid[option[0][0]][option[0][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
+        //                     this._grid[option[1][0]][option[1][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
+        //                     this._grid[option[2][0]][option[2][1]][3] = this._tileCtrl.getTreeLeafBaseValue();
+        //                 });
+        //         }
+        //     }
+        // }
 
-            }
-        }
+        this._modifyLeavesForEdges();
     }
 
     /**
@@ -1120,6 +1183,41 @@ export class GridCtrl {
                 }
             }
         }
+    }
+
+    /**
+     * Cycles through the water tiles and triggers call to have specific edge graphic chosen to have smooth edges.
+     */
+    private _modifyLeavesForEdges(): void {
+        for (let row = minRows; row < maxRows + 1; row++) {
+            for (let col = minCols; col < maxCols + 1; col++) {
+                if (this._grid[row][col][3] === -100) {
+                    this._modifyLeavesForEdge(row, col);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks a given tile's surrounds for leaves and updates value to match neighboring empty tiles.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     */
+    private _modifyLeavesForEdge(row: number, col: number): void {
+        const top = this._isInBounds(row + 1, col) && this._grid[row + 1][col][3] !== -100 && (this._grid[row + 1][col][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const topRight = this._isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][3] !== -100 && (this._grid[row + 1][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const right = this._isInBounds(row, col + 1) && this._grid[row][col + 1][3] !== -100 && (this._grid[row][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const bottomRight = this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][3] !== -100 && (this._grid[row - 1][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const bottom = this._isInBounds(row - 1, col) && this._grid[row - 1][col][3] !== -100 && (this._grid[row - 1][col][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const bottomLeft = this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][3] !== -100 && (this._grid[row - 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const left = this._isInBounds(row, col - 1) && this._grid[row][col - 1][3] !== -100 && (this._grid[row][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const topLeft = this._isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][3] !== -100 && (this._grid[row + 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+
+        // 1 === non-water tile found
+        // 0 === water tile found
+
+        const key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
+        this._grid[row][col][3] = this._tileCtrl.getTreeLeafTileValue(key);
     }
 
     /**
