@@ -699,6 +699,7 @@ export class TileCtrl {
             '1100-0100': this._treeLeafBase + 2,
             '1100-0001': this._treeLeafBase + 2,
             '1100-0000': this._treeLeafBase + 2,
+            '1000-0100': this._treeLeafBase + 2,
             '0100-1100': this._treeLeafBase + 3,
             '0100-1000': this._treeLeafBase + 3,
             '0100-0100': this._treeLeafBase + 3,
@@ -728,6 +729,7 @@ export class TileCtrl {
             '0011-0001': this._treeLeafBase + 6,
             '0011-0010': this._treeLeafBase + 6,
             '0011-0000': this._treeLeafBase + 6,
+            '0010-0001': this._treeLeafBase + 6,
             '0001-0011': this._treeLeafBase + 7,
             '0001-0001': this._treeLeafBase + 7,
             '0001-0010': this._treeLeafBase + 7,
@@ -987,6 +989,10 @@ export class TileCtrl {
 
     public getBridgeTileValue(key: number): number {
         return this._bridgeBase + key;
+    }
+
+    public getGridDicDescription(key: number): string {
+        return (gridDictionary[key] && gridDictionary[key].gameDescription) || '';
     }
 
     public getGridDicKeys(): number[] {
