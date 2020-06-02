@@ -815,6 +815,7 @@ export class TileCtrl {
             '0011-0010': this._treeLeafBase + 6,
             '0011-0000': this._treeLeafBase + 6,
             '0010-0001': this._treeLeafBase + 6,
+            '0001-0100': this._treeLeafBase + 6,
             '0001-0011': this._treeLeafBase + 7,
             '0001-0001': this._treeLeafBase + 7,
             '0001-0010': this._treeLeafBase + 7,
