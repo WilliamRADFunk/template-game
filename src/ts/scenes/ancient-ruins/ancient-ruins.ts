@@ -91,7 +91,15 @@ export class AncientRuins {
             event.preventDefault();
             // Three JS object intersections.
             getIntersections(event, container, sceneType).forEach(el => {
-
+                const tileName = el && el.object && el.object.name;
+                const tileSplit = tileName.split('-');
+                if (tileSplit.length === 3) {
+                    const tileGround = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 1);
+                    const tileTraverse = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 2);
+                    const tileOverhead = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 3);
+                    console.log(tileGround, tileTraverse, tileOverhead);
+                }
+                
             });
         };
         document.onmousemove = event => {

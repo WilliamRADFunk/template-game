@@ -1,5 +1,5 @@
 import {
-    FrontSide,
+    DoubleSide,
     Mesh,
     MeshBasicMaterial,
     Object3D,
@@ -154,7 +154,8 @@ export class GridCtrl {
                     const tile = new Mesh( this._geometry, material );
                     tile.position.set(getXPos(col), layer1YPos, getZPos(row))
                     tile.rotation.set(rad90DegLeft, 0, 0);
-                    megaMesh.add(tile);
+                    tile.name = `tile-${row}-${col}`;
+                    this._scene.add(tile);
                 }
             }
         }
@@ -505,7 +506,7 @@ export class GridCtrl {
                 const material: MeshBasicMaterial = new MeshBasicMaterial({
                     color: 0xFFFFFF,
                     map: this._textures.spriteMapAncientRuins.clone(),
-                    side: FrontSide,
+                    side: DoubleSide,
                     transparent: true
                 });
 
@@ -1275,5 +1276,16 @@ export class GridCtrl {
      */
     public endCycle(): void {
 
+    }
+
+    /**
+     * Fetches the description of the tile belonging to the given coords.
+     * @param row coordinate of the tile
+     * @param col coordinate of the tile
+     * @param elev coordinate of the tile
+     * @returns description of the tile
+     */
+    public getTileValue(row: number, col: number, elev: number): string {
+        return this._tileCtrl.getGridDicDescription(this._grid[row][col][elev])
     }
 }
