@@ -599,6 +599,20 @@ const gridDictionary: GridDictionary = {
     2210: { devDescription: 'Green Tree Leaves (empty bottom-right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [3, 26] },
     2211: { devDescription: 'Green Tree Leaves (empty bottom-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [4, 26] },
     2212: { devDescription: 'Green Tree Leaves (empty top-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [4, 25] },
+    
+    2220: { devDescription: 'Red Tree Leaves (center)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [6, 26] },
+    2221: { devDescription: 'Red Tree Leaves (top)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [6, 27] },
+    2222: { devDescription: 'Red Tree Leaves (top-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [7, 27] },
+    2223: { devDescription: 'Red Tree Leaves (right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [7, 26] },
+    2224: { devDescription: 'Red Tree Leaves (bottom-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [7, 25] },
+    2225: { devDescription: 'Red Tree Leaves (bottom)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [6, 25] },
+    2226: { devDescription: 'Red Tree Leaves (bottom-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [5, 25] },
+    2227: { devDescription: 'Red Tree Leaves (left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [5, 26] },
+    2228: { devDescription: 'Red Tree Leaves (top-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [5, 27] },
+    2229: { devDescription: 'Red Tree Leaves (empty top-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [8, 25] },
+    2230: { devDescription: 'Red Tree Leaves (empty bottom-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [8, 26] },
+    2231: { devDescription: 'Red Tree Leaves (empty bottom-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [9, 26] },
+    2232: { devDescription: 'Red Tree Leaves (empty top-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [9, 25] },
 
     // Bridges & Piers
     3000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
@@ -749,6 +763,9 @@ export class TileCtrl {
             '0000-0100': this._treeLeafBase + 10,
             '0000-0010': this._treeLeafBase + 11,
             '0000-0001': this._treeLeafBase + 12,
+
+            // '0000-0101': this._treeLeafBase + 13, // Cut top-left and bottom-right corners
+            // '0000-1010': this._treeLeafBase + 14, // Cut top-right and bottom-left corners
         };
 
         this._waterLookupTable = {
@@ -897,28 +914,32 @@ export class TileCtrl {
 
     private _setTreeLeafStart(color: TreeLeafColor): void {
         switch(color) {
-            case TreeLeafColor.Grey: {
+            case TreeLeafColor.Green: {
                 this._treeLeafBase = 2200;
                 break;
             }
-            case TreeLeafColor.Yellow: {
+            case TreeLeafColor.Red: {
                 this._treeLeafBase = 2220;
                 break;
             }
-            case TreeLeafColor.Purple: {
+            case TreeLeafColor.Yellow: {
                 this._treeLeafBase = 2240;
                 break;
             }
-            case TreeLeafColor.Red: {
+            case TreeLeafColor.Grey: {
                 this._treeLeafBase = 2260;
                 break;
             }
-            case TreeLeafColor.Blue: {
+            case TreeLeafColor.Purple: {
                 this._treeLeafBase = 2280;
                 break;
             }
-            case TreeLeafColor.Brown: {
+            case TreeLeafColor.Blue: {
                 this._treeLeafBase = 2300;
+                break;
+            }
+            case TreeLeafColor.Brown: {
+                this._treeLeafBase = 2320;
                 break;
             }
             default: {

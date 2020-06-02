@@ -13,9 +13,9 @@ export enum PlantColor {
 
 export enum TreeLeafColor {
     'Grey' = 1,
-    'Yellow' = 2,
+    'Red' = 2,
     'Purple' = 3,
-    'Red' = 4,
+    'Yellow' = 4,
     'Blue' = 5,
     'Brown' = 6,
     'Green' = 7,
