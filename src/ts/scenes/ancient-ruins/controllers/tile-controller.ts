@@ -599,7 +599,8 @@ const gridDictionary: GridDictionary = {
     2210: { devDescription: 'Green Tree Leaves (empty bottom-right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [3, 26] },
     2211: { devDescription: 'Green Tree Leaves (empty bottom-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [4, 26] },
     2212: { devDescription: 'Green Tree Leaves (empty top-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [4, 25] },
-    
+    2213: { devDescription: 'Green Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [3, 28] },
+    2214: { devDescription: 'Green Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted green leaves sprouting from a tree\'s branches', spritePosition: [4, 28] },
     2220: { devDescription: 'Red Tree Leaves (center)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [6, 26] },
     2221: { devDescription: 'Red Tree Leaves (top)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [6, 27] },
     2222: { devDescription: 'Red Tree Leaves (top-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [7, 27] },
@@ -613,7 +614,8 @@ const gridDictionary: GridDictionary = {
     2230: { devDescription: 'Red Tree Leaves (empty bottom-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [8, 26] },
     2231: { devDescription: 'Red Tree Leaves (empty bottom-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [9, 26] },
     2232: { devDescription: 'Red Tree Leaves (empty top-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [9, 25] },
-    
+    2233: { devDescription: 'Red Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [8, 28] },
+    2234: { devDescription: 'Red Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted red leaves sprouting from a tree\'s branches', spritePosition: [9, 28] },
     2240: { devDescription: 'Yellow Tree Leaves (center)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [11, 26] },
     2241: { devDescription: 'Yellow Tree Leaves (top)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [11, 27] },
     2242: { devDescription: 'Yellow Tree Leaves (top-right)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [12, 27] },
@@ -627,7 +629,8 @@ const gridDictionary: GridDictionary = {
     2250: { devDescription: 'Yellow Tree Leaves (empty bottom-right)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [13, 26] },
     2251: { devDescription: 'Yellow Tree Leaves (empty bottom-left)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [14, 26] },
     2252: { devDescription: 'Yellow Tree Leaves (empty top-left)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [14, 25] },
-    
+    2253: { devDescription: 'Yellow Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [13, 28] },
+    2254: { devDescription: 'Yellow Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted yellow leaves sprouting from a tree\'s branches', spritePosition: [14, 28] },
     2260: { devDescription: 'Grey Tree Leaves (center)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [16, 26] },
     2261: { devDescription: 'Grey Tree Leaves (top)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [16, 27] },
     2262: { devDescription: 'Grey Tree Leaves (top-right)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [17, 27] },
@@ -641,7 +644,8 @@ const gridDictionary: GridDictionary = {
     2270: { devDescription: 'Grey Tree Leaves (empty bottom-right)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [18, 26] },
     2271: { devDescription: 'Grey Tree Leaves (empty bottom-left)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [19, 26] },
     2272: { devDescription: 'Grey Tree Leaves (empty top-left)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [19, 25] },
-    
+    2273: { devDescription: 'Grey Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [18, 28] },
+    2274: { devDescription: 'Grey Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted grey leaves sprouting from a tree\'s branches', spritePosition: [19, 28] },
     2280: { devDescription: 'Purple Tree Leaves (center)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [21, 26] },
     2281: { devDescription: 'Purple Tree Leaves (top)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [21, 27] },
     2282: { devDescription: 'Purple Tree Leaves (top-right)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [22, 27] },
@@ -655,7 +659,8 @@ const gridDictionary: GridDictionary = {
     2290: { devDescription: 'Purple Tree Leaves (empty bottom-right)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [23, 26] },
     2291: { devDescription: 'Purple Tree Leaves (empty bottom-left)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [24, 26] },
     2292: { devDescription: 'Purple Tree Leaves (empty top-left)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [24, 25] },
-    
+    2293: { devDescription: 'Purple Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [23, 28] },
+    2294: { devDescription: 'Purple Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted purple leaves sprouting from a tree\'s branches', spritePosition: [24, 28] },
     2300: { devDescription: 'Blue Tree Leaves (center)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [26, 26] },
     2301: { devDescription: 'Blue Tree Leaves (top)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [26, 27] },
     2302: { devDescription: 'Blue Tree Leaves (top-right)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [27, 27] },
@@ -669,7 +674,8 @@ const gridDictionary: GridDictionary = {
     2310: { devDescription: 'Blue Tree Leaves (empty bottom-right)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [28, 26] },
     2311: { devDescription: 'Blue Tree Leaves (empty bottom-left)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [29, 26] },
     2312: { devDescription: 'Blue Tree Leaves (empty top-left)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [29, 25] },
-    
+    2313: { devDescription: 'Blue Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [28, 28] },
+    2314: { devDescription: 'Blue Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted blue leaves sprouting from a tree\'s branches', spritePosition: [29, 28] },
     2320: { devDescription: 'Brown Tree Leaves (center)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [25, 23] },
     2321: { devDescription: 'Brown Tree Leaves (top)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [25, 24] },
     2322: { devDescription: 'Brown Tree Leaves (top-right)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [26, 24] },
@@ -683,6 +689,8 @@ const gridDictionary: GridDictionary = {
     2330: { devDescription: 'Brown Tree Leaves (empty bottom-right)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [27, 23] },
     2331: { devDescription: 'Brown Tree Leaves (empty bottom-left)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [28, 23] },
     2332: { devDescription: 'Brown Tree Leaves (empty top-left)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [28, 22] },
+    2333: { devDescription: 'Brown Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [27, 24] },
+    2334: { devDescription: 'Brown Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [28, 24] },
 
     // Bridges & Piers
     3000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
@@ -836,9 +844,8 @@ export class TileCtrl {
             '0000-0100': this._treeLeafBase + 10,
             '0000-0010': this._treeLeafBase + 11,
             '0000-0001': this._treeLeafBase + 12,
-
-            // '0000-0101': this._treeLeafBase + 13, // Cut top-left and bottom-right corners
-            // '0000-1010': this._treeLeafBase + 14, // Cut top-right and bottom-left corners
+            '0000-0101': this._treeLeafBase + 13,
+            '0000-1010': this._treeLeafBase + 14,
         };
 
         this._waterLookupTable = {
