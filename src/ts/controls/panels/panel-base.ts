@@ -16,9 +16,19 @@ export class PanelBase {
     private _innerbox: Mesh;
 
     /**
+     * Reference to the inner panel's material.
+     */
+    private _innermaterial: MeshBasicMaterial;
+
+    /**
      * Reference to the outer panel's mesh.
      */
     private _outerbox: Mesh;
+
+    /**
+     * Reference to the outer panel's material.
+     */
+    private _outermaterial: MeshBasicMaterial;
 
     /**
      * Reference to the scene, used to remove and reinstall text geometries.
@@ -46,7 +56,7 @@ export class PanelBase {
         z: number
     ) {
         this._scene = scene;
-        let textBoxMaterial = new MeshBasicMaterial({
+        this._innermaterial = new MeshBasicMaterial({
             color: 0xFFFFFF,
             opacity: 0.6,
             transparent: true,
@@ -54,21 +64,21 @@ export class PanelBase {
         });
 
         let textBoxGeometry = new PlaneGeometry( outerWidth, height, 10, 10 );
-        let barrier = new Mesh( textBoxGeometry, textBoxMaterial );
+        let barrier = new Mesh( textBoxGeometry, this._innermaterial );
         barrier.name = `${id} - Outter Box`;
         barrier.position.set(x, -1, z);
         barrier.rotation.set(1.5708, 0, 0);
         scene.add(barrier);
         this._innerbox = barrier;
 
-        textBoxMaterial = new MeshBasicMaterial({
+        this._outermaterial = new MeshBasicMaterial({
             color: 0x000000,
             opacity: 1,
             transparent: true,
             side: DoubleSide
         });
         textBoxGeometry = new PlaneGeometry( innerWidth, height - 0.2, 10, 10 );
-        barrier = new Mesh( textBoxGeometry, textBoxMaterial );
+        barrier = new Mesh( textBoxGeometry, this._outermaterial );
         barrier.name = `${id} - Inner Box`;
         barrier.position.set(x, -6, z);
         barrier.rotation.set(1.5708, 0, 0);
@@ -88,5 +98,15 @@ export class PanelBase {
     public show(): void {
         this._outerbox.visible = true;
         this._innerbox.visible = true;
+    }
+
+    public toggleOpacity(): void {
+        if (this._outermaterial.opacity < 1) {
+            this._innermaterial.opacity = 1;
+            this._outermaterial.opacity = 1;
+        } else {
+            this._innermaterial.opacity = 0.35;
+            this._outermaterial.opacity = 0.35;
+        }
     }
 }

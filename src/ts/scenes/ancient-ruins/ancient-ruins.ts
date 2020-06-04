@@ -10,6 +10,7 @@ import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
 import { GridCtrl } from "./controllers/grid-controller";
 import { AncientRuinsSpecifications, GroundMaterial, PlantColor, WaterColor, WaterBiome, RuinsBiome } from "../../models/ancient-ruins-specifications";
+import { PanelBase } from "../../controls/panels/panel-base";
 
 /**
  * @class
@@ -76,6 +77,9 @@ export class AncientRuins {
         window.addEventListener('resize', this._listenerRef, false);
 
         this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec);
+
+        const descPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
+        descPanel.toggleOpacity();
     }
 
     /**
