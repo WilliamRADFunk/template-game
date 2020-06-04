@@ -255,7 +255,7 @@ export class GridCtrl {
             return false;
         } else if (col < minCols || col > maxCols) {
             return false;
-        } else if (row === minRows && col > maxCols - 6) {
+        } else if (row === minRows && col > maxCols - 4) {
             return false;
         }
         return true;
