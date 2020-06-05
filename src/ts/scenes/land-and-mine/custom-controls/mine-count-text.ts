@@ -8,7 +8,7 @@ import { TextType } from "../../../controls/text/text-type";
  */
 export class MineCountText extends TextBase {
     /**
-     * Constructor for the freestyle text sub class
+     * Constructor for the Mine Count Text text sub class
      * @param sentence starting text content.
      * @param position height, width, left and top position of the button.
      * @param color color of the text.

@@ -610,13 +610,13 @@ export class GridCtrl {
             while(true) {
                 randomCol = Math.floor(Math.random() * ((maxCols - 2) - (minCols + 2) + 1)) + (minCols + 2);
                 for (let i = minRows; i < maxRows + 1; i++) {
-                    if (this._grid[i][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (this._isInBounds(i, randomCol) && this._grid[i][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
                         bottomRow = i;
                         break;
                     }
                 }
                 for (let j = bottomRow; j < maxRows + 1; j++) {
-                    if (this._grid[j][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (this._isInBounds(j, randomCol) && this._grid[j][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
                         topRow = j;
                     } else {
                         break;
@@ -666,13 +666,13 @@ export class GridCtrl {
             while(true) {
                 randomRow = Math.floor(Math.random() * ((maxRows - 2) - (minRows + 2) + 1)) + (minRows + 2);
                 for (let i = 0; i < maxCols + 1; i++) {
-                    if (this._grid[randomRow][i][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (this._isInBounds(randomRow, i) && this._grid[randomRow][i][1] === this._tileCtrl.getWaterBaseValue()) {
                         colLeft = i;
                         break;
                     }
                 }
                 for (let j = colLeft; j < maxCols + 1; j++) {
-                    if (this._grid[randomRow][j][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (this._isInBounds(randomRow, j) && this._grid[randomRow][j][1] === this._tileCtrl.getWaterBaseValue()) {
                         colRight = j;
                     } else {
                         break;
@@ -724,7 +724,7 @@ export class GridCtrl {
                 // Pier starts left and goes right
                 if (fiftyFifty()) {
                     for (let col = minCols; col < maxCols + 1; col++) {
-                        if (this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (this._isInBounds(rightPierRow, col) && this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
@@ -740,7 +740,7 @@ export class GridCtrl {
                 // Pier starts right and goes left
                 } else {
                     for (let col = maxCols; col >= minCols; col--) {
-                        if (this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (this._isInBounds(rightPierRow, col) && this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
@@ -761,7 +761,7 @@ export class GridCtrl {
                 // Pier starts left and goes right
                 if (fiftyFifty()) {
                     for (let col = minCols; col < maxCols + 1; col++) {
-                        if (this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (this._isInBounds(leftPierRow, col) && this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
@@ -777,7 +777,7 @@ export class GridCtrl {
                 // Pier starts right and goes left
                 } else {
                     for (let col = maxCols; col >= minCols; col--) {
-                        if (this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (this._isInBounds(leftPierRow, col) && this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }

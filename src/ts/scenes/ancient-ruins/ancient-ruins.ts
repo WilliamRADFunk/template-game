@@ -9,8 +9,11 @@ import { ControlPanel } from "../../controls/panels/control-panel";
 import { noOp } from "../../utils/no-op";
 import { getIntersections } from "../../utils/get-intersections";
 import { GridCtrl } from "./controllers/grid-controller";
-import { AncientRuinsSpecifications, GroundMaterial, PlantColor, WaterColor, WaterBiome, RuinsBiome } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications } from "../../models/ancient-ruins-specifications";
 import { PanelBase } from "../../controls/panels/panel-base";
+import { TileDescriptionText } from "./custom-controls/tile-description-text";
+import { COLORS } from "../../styles/colors";
+import { TextType } from "../../controls/text/text-type";
 
 /**
  * @class
@@ -26,6 +29,11 @@ export class AncientRuins {
      * Reference to the main Control Panel.
      */
     private _controlPanel: ControlPanel;
+
+    /**
+     * Text appearing in lower-right panel for tile descriptions.
+     */
+    private _descText: TileDescriptionText;
 
     /**
      * Tile geometry that makes up the ground tiles.
@@ -101,7 +109,32 @@ export class AncientRuins {
                     const tileGround = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 1);
                     const tileTraverse = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 2);
                     const tileOverhead = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 3);
-                    console.log(tileGround, tileTraverse, tileOverhead);
+                    const desc = `
+                        <table>
+                            ${tileOverhead ? `
+                                <tr>
+                                    <th>Above:&nbsp;</th>
+                                    <td style="padding-bottom: 3px;">${tileOverhead}</td>
+                                </tr>` :
+                                ''
+                            }
+                            ${tileTraverse ? `
+                                <tr>
+                                    <th>Level:&nbsp;</th>
+                                    <td style="padding-bottom: 3px;">${tileTraverse}</td>
+                                </tr>` :
+                                ''
+                            }
+                            ${tileGround ? `
+                                <tr>
+                                    <th>Below:&nbsp;</th>
+                                    <td>${tileGround}</td>
+                                </tr>` :
+                                ''
+                            }
+                        </table>
+                    `;
+                    this._descText.update(desc);
                 }
                 
             });
@@ -127,6 +160,11 @@ export class AncientRuins {
             { height, left: left, top: null, width },
             { exitHelp, exitSettings, help, pause, play, settings },
             true);
+
+        this._descText = new TileDescriptionText(
+            'Your team has successfully landed on the planet\'s surface as close to the ruins as they dare.',
+            { height, left: left, top: null, width },
+            null);
     }
 
     /**
@@ -140,6 +178,7 @@ export class AncientRuins {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         this._controlPanel.resize({ height, left: left, top: null, width });
+        this._descText.resize({ height, left: left, top: null, width });
     }
 
     /**
