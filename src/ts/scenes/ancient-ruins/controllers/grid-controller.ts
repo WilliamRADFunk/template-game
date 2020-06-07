@@ -11,6 +11,7 @@ import {
     RepeatWrapping} from "three";
 import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial, TreeTrunkColor, TreeLeafColor } from "../../../models/ancient-ruins-specifications";
 import { TileCtrl } from "./tile-controller";
+import { RandomWithBounds } from "../../../utils/random-with-bounds";
 
 const fiftyFifty = () => Math.random() < 0.5;
 const rad90DegLeft = -1.5708;
@@ -145,18 +146,32 @@ export class GridCtrl {
     }
 
     private _createClouds(): void {
+        if (!this._ancientRuinsSpec.hasClouds) {
+            return;
+        }
         for (let i = 0; i < 10; i++) {
             const material: MeshBasicMaterial = this._materialsMap[2500 + i];
-            material.opacity = 0.3;
             const geometry: PlaneGeometry = new PlaneGeometry( 1, 1, 10, 10 );
 
             const cloud = new Mesh( geometry, material );
-            cloud.position.set(-8, layerSkyYPos, (i * 0.5));
             cloud.rotation.set(rad90DegLeft, 0, 0);
             cloud.name = `cloud-${i}`;
             this._clouds.push(cloud);
             this._scene.add(cloud);
+
+            this._resetCloud(cloud);
         }
+    }
+
+    private _resetCloud(cloud: Mesh): void {
+        const randomSize = 1 + (Math.random() * 4);
+        const randomX = RandomWithBounds(-17, -14);
+        const randomZ = RandomWithBounds(-6, 6);
+        const randomOpacity = RandomWithBounds(2, 5) / 10;
+        
+        cloud.position.set(randomX, layerSkyYPos, randomZ);
+        cloud.scale.set(randomSize, 1, randomSize);
+        (cloud.material as MeshBasicMaterial).opacity = randomOpacity;
     }
 
     /**
@@ -293,7 +308,7 @@ export class GridCtrl {
         switch(Math.floor(Math.random() * 3)) {
             case 0: { // top
                 for (let col = minCols; col < maxCols + 1; col += 3) {
-                    const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+                    const fillAmount = RandomWithBounds(min, max);
                     for (let row = maxRows; row > maxRows - fillAmount; row--) {
                         this._isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
                         this._isInBounds(row, col + 1) && (this._grid[row][col + 1][1] = this._tileCtrl.getWaterBaseValue());
@@ -304,7 +319,7 @@ export class GridCtrl {
             }
             case 1: { // left
                 for (let row = minRows; row < maxRows + 1; row += 3) {
-                    const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+                    const fillAmount = RandomWithBounds(min, max);
                     for (let col = minCols; col < fillAmount; col++) {
                         this._isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
                         this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
@@ -315,7 +330,7 @@ export class GridCtrl {
             }
             case 2: { // right
                 for (let row = minRows; row < maxRows + 1; row += 3) {
-                    const fillAmount = Math.floor(Math.random() * (max - min + 1)) + min;
+                    const fillAmount = RandomWithBounds(min, max);
                     for (let col = maxCols; col > maxCols - fillAmount; col--) {
                         this._isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
                         this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
@@ -488,8 +503,8 @@ export class GridCtrl {
         const centerCol = Math.floor(Math.random() * 3) + middleCol;
 
         for (let row = centerRow; row < maxRows - 3; row += 3) {
-            const leftRadius = Math.floor(Math.random() * (max - min + 1)) + min;
-            const rightRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+            const leftRadius = RandomWithBounds(min, max);
+            const rightRadius = RandomWithBounds(min, max);
             for (let col = centerCol; col > centerCol - leftRadius; col--) {
                 this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
                 this._isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
@@ -502,8 +517,8 @@ export class GridCtrl {
             }
         }
         for (let row = centerRow; row > minRows + 4; row -= 3) {
-            const leftRadius = Math.floor(Math.random() * (max - min + 1)) + min;
-            const rightRadius = Math.floor(Math.random() * (max - min + 1)) + min;
+            const leftRadius = RandomWithBounds(min, max);
+            const rightRadius = RandomWithBounds(min, max);
             for (let col = centerCol; col > centerCol - leftRadius; col--) {
                 this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
                 this._isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue());
@@ -1313,7 +1328,11 @@ export class GridCtrl {
     public endCycle(): void {
         this._clouds.forEach(cloud => {
             const currPos = cloud.position;
-            cloud.position.set(currPos.x + 0.01, currPos.y, currPos.z);
+            if (currPos.x > 15) {
+                this._resetCloud(cloud);
+            } else {
+                cloud.position.set(currPos.x + 0.01, currPos.y, currPos.z);
+            }
         });
     }
 
