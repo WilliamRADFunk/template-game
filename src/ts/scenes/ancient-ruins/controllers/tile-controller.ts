@@ -2,6 +2,7 @@ import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor, Tre
 
 export interface GridDictionaryValue {
     blocker?: boolean;
+    customSize?: [number, number];
     devDescription: string;
     gameDescription: string;
     hasVariation?: boolean;
@@ -692,6 +693,17 @@ const gridDictionary: GridDictionary = {
     2333: { devDescription: 'Brown Tree Leaves (empty top-left & bottom-right)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [27, 24] },
     2334: { devDescription: 'Brown Tree Leaves (empty top-right & bottom-left)', gameDescription: 'Assorted brown leaves sprouting from a tree\'s branches', spritePosition: [28, 24] },
 
+    2500: { devDescription: 'Cloud - Version 1', gameDescription: 'Cloud', spritePosition: [12, 10], customSize: [16, 16] },
+    2501: { devDescription: 'Cloud - Version 2', gameDescription: 'Cloud', spritePosition: [12, 9], customSize: [16, 16] },
+    2502: { devDescription: 'Cloud - Version 3', gameDescription: 'Cloud', spritePosition: [12, 8], customSize: [16, 16] },
+    2503: { devDescription: 'Cloud - Version 4', gameDescription: 'Cloud', spritePosition: [13, 10], customSize: [16, 16] },
+    2504: { devDescription: 'Cloud - Version 5', gameDescription: 'Cloud', spritePosition: [13, 9], customSize: [16, 16] },
+    2505: { devDescription: 'Cloud - Version 6', gameDescription: 'Cloud', spritePosition: [13, 8], customSize: [16, 16] },
+    2506: { devDescription: 'Cloud - Version 7', gameDescription: 'Cloud', spritePosition: [14, 10], customSize: [16, 16] },
+    2507: { devDescription: 'Cloud - Version 8', gameDescription: 'Cloud', spritePosition: [14, 9], customSize: [16, 16] },
+    2508: { devDescription: 'Cloud - Version 9', gameDescription: 'Cloud', spritePosition: [14, 8], customSize: [16, 16] },
+    2509: { devDescription: 'Cloud - Version 10', gameDescription: 'Cloud', spritePosition: [14, 7], customSize: [16, 16] },
+
     // Bridges & Piers
     3000: { devDescription: 'Bridge Start Horizontal (Wood)', gameDescription: 'Wooden ramp rising from west to east onto a bridge', spritePosition: [0, 12], xPosMod: -0.01, xScaleMod: 0.1 },
     3001: { devDescription: 'Bridge End Horizontal (Wood)', gameDescription: 'Wooden ramp rising from east to west onto a bridge', spritePosition: [0, 10], xPosMod: 0.01, xScaleMod: 0.1 },
@@ -1091,6 +1103,10 @@ export class TileCtrl {
 
     public getBridgeTileValue(key: number): number {
         return this._bridgeBase + key;
+    }
+
+    public getGridDicCustomSize(key: number): [number, number] {
+        return gridDictionary[key].customSize || null;
     }
 
     public getGridDicDescription(key: number): string {

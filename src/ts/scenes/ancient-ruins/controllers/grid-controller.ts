@@ -24,6 +24,7 @@ const middleRow = Math.ceil((maxRows - minRows) / 2);
 const layer1YPos = 15;
 const layer2YPos = 13;
 const layer3YPos = 11;
+const layerSkyYPos = 6;
 
 const getXPos = function(col: number): number {
     return -5.8 + (col/2.5);
@@ -40,6 +41,11 @@ export class GridCtrl {
      * Specification of what the planet and ruins below should look like.
      */
     private _ancientRuinsSpec: AncientRuinsSpecifications;
+
+    /**
+     * Cloud meshes for passing overhead.
+     */
+    private _clouds: Mesh[] = [];
 
     /**
      * Tile geometry that makes up the ground tiles.
@@ -112,6 +118,8 @@ export class GridCtrl {
         this._createOverheadLevelMeshes(megaMesh);
 
         this._scene.add(megaMesh);
+
+        this._createClouds();
     }
 
     /**
@@ -134,6 +142,21 @@ export class GridCtrl {
     private _checkWaterSpread(row: number, col: number): number {
         // If non-zero, then it's a water tile, thus increasing water spread another 10%
         return (this._isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) ? this._ancientRuinsSpec.waterSpreadability : 0;
+    }
+
+    private _createClouds(): void {
+        for (let i = 0; i < 10; i++) {
+            const material: MeshBasicMaterial = this._materialsMap[2500 + i];
+            material.opacity = 0.3;
+            const geometry: PlaneGeometry = new PlaneGeometry( 1, 1, 10, 10 );
+
+            const cloud = new Mesh( geometry, material );
+            cloud.position.set(-8, layerSkyYPos, (i * 0.5));
+            cloud.rotation.set(rad90DegLeft, 0, 0);
+            cloud.name = `cloud-${i}`;
+            this._clouds.push(cloud);
+            this._scene.add(cloud);
+        }
     }
 
     /**
@@ -509,6 +532,7 @@ export class GridCtrl {
     private _makeMaterials(): void {
         this._tileCtrl.getGridDicKeys().forEach(key => {
             const offCoords = this._tileCtrl.getGridDicSpritePos(key);
+            const size = this._tileCtrl.getGridDicCustomSize(key) || [spriteMapCols, spriteMapRows];
 
             if (offCoords[0] >= 0 && offCoords[1] >= 0) {
                 const material: MeshBasicMaterial = new MeshBasicMaterial({
@@ -519,12 +543,12 @@ export class GridCtrl {
                 });
 
                 material.map.offset = new Vector2(
-                    (1 / spriteMapCols) * offCoords[0],
-                    (1 / spriteMapRows) * offCoords[1]);
+                    (1 / size[0]) * offCoords[0],
+                    (1 / size[1]) * offCoords[1]);
 
                 material.map.repeat = new Vector2(
-                    (1 / spriteMapCols),
-                    (1 / spriteMapRows));
+                    (1 / size[0]),
+                    (1 / size[1]));
 
                 material.map.magFilter = NearestFilter;
                 material.map.minFilter = NearestFilter;
@@ -1287,7 +1311,10 @@ export class GridCtrl {
      * At the end of each loop iteration, check for grid-specific animations.
      */
     public endCycle(): void {
-
+        this._clouds.forEach(cloud => {
+            const currPos = cloud.position;
+            cloud.position.set(currPos.x + 0.01, currPos.y, currPos.z);
+        });
     }
 
     /**
