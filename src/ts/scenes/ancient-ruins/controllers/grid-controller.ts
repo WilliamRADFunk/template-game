@@ -255,6 +255,20 @@ export class GridCtrl {
     }
 
     /**
+     * Handles the endCycle functionality of clouds.
+     */
+    private _cycleClouds(): void {
+        this._clouds.forEach(cloud => {
+            const currPos = cloud.position;
+            if (currPos.x > 12) {
+                this._resetCloud(cloud);
+            } else {
+                cloud.position.x += Number(cloud.name);
+            }
+        });
+    }
+
+    /**
      * Randomly drops boulders in the deep waters, and sets them to obstructed.
      */
     private _dropBouldersInWater(): void {
@@ -1320,8 +1334,7 @@ export class GridCtrl {
         cloud.position.set(randomX, layerSkyYPos, randomZ);
         cloud.scale.set(randomSize, randomSize, randomSize);
         (cloud.material as MeshBasicMaterial).opacity = randomOpacity;
-        cloud.name = `${(RandomWithBounds(1, 9) / 1000)}`;
-        console.log('speed', cloud.name);
+        cloud.name = `${(RandomWithBounds(2, 10) / 1000)}`;
     }
 
     /**
@@ -1335,14 +1348,7 @@ export class GridCtrl {
      * At the end of each loop iteration, check for grid-specific animations.
      */
     public endCycle(): void {
-        this._clouds.forEach(cloud => {
-            const currPos = cloud.position;
-            if (currPos.x > 12) {
-                this._resetCloud(cloud);
-            } else {
-                cloud.position.x += Number(cloud.name);
-            }
-        });
+        this._cycleClouds();
     }
 
     /**

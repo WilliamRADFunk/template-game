@@ -223,25 +223,195 @@ export class DevMenu {
             true,
             buttonScale);
     //#endregion
-    //#region LaunchIntroScene
+    //#region AncientRuinsScene
+        let groupLeftStart = 0.5;
         this._page1textElements.rightTopTitleText = new RightTopTitleText(
-            'Intro',
+            'Ancient Ruins',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
-            TextType.FADABLE);
+            TextType.STATIC);
 
         onClick = () => {
-            this._page1buttons.launchIntroSceneButton.disable();
-            callbacks.activateIntroScene();
+            this._page1buttons.launchAncientRuinsSceneButton.disable();
+            callbacks.activateAncientRuinsScene({
+                biomeRuins: RuinsBiome.Cemetery,
+                biomeWater: this._ancientRuinsSpec.biomeWater,
+                groundMaterial: this._ancientRuinsSpec.groundMaterial,
+                hasClouds: (this._buttons.hasCloudsButton as ToggleBase).getState(),
+                plantColor: this._ancientRuinsSpec.plantColor,
+                plantPercentage: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.3 : 0,
+                plantSpreadability: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.15 : 0,
+                treeLeafColor: this._ancientRuinsSpec.treeLeafColor,
+                treePercentage: this._ancientRuinsSpec.treePercentage,
+                treeTrunkColor: this._ancientRuinsSpec.treeTrunkColor,
+                waterColor: this._ancientRuinsSpec.waterColor,
+                waterPercentage: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.025 : 0,
+                waterSpreadability: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.1 : 0
+            });
         };
 
-        this._page1buttons.launchIntroSceneButton = new LoadButton(
-            { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width },
+        this._page1buttons.launchAncientRuinsSceneButton = new LoadButton(
+            { left: left + (0.54 * width), height, top: 0.20 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true);
+        //#region AncientRuinsScene Row 0
+        let row0Left = groupLeftStart;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.plantColor + 1;
+            if (nextNum > Object.keys(PlantColor).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.plantColor = nextNum;
+            this._page1textElements.freestylePlantColorDisplayText.update(PlantColor[this._ancientRuinsSpec.plantColor]);
+        };
+
+        this._page1buttons.changePlantColorButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
-            buttonScale);
+            'fa-leaf',
+            0.5);
+
+        row0Left += 0.035;
+        this._page1textElements.freestylePlantColorDisplayText = new FreestyleText(
+            PlantColor[this._ancientRuinsSpec.plantColor],
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row0Left += 0.1;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.waterColor + 1;
+            if (nextNum > Object.keys(WaterColor).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.waterColor = nextNum;
+            this._page1textElements.freestyleWaterColorDisplayText.update(WaterColor[this._ancientRuinsSpec.waterColor]);
+        };
+
+        this._page1buttons.changeWaterColorButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-tint',
+            0.5);
+
+        row0Left += 0.035;
+        this._page1textElements.freestyleWaterColorDisplayText = new FreestyleText(
+            WaterColor[this._ancientRuinsSpec.waterColor],
+            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        //#endregion
+        //#region AncientRuinsScene Row 1
+        let row1Left = groupLeftStart;
+
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.groundMaterial + 1;
+            if (nextNum > Object.keys(GroundMaterial).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.groundMaterial = nextNum;
+            this._page1textElements.freestyleGroundMaterialDisplayText.update(GroundMaterial[this._ancientRuinsSpec.groundMaterial]);
+        };
+
+        this._page1buttons.changeGroundMaterialButton = new FreestyleSquareButton(
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-first-order',
+            0.5);
+
+        row1Left += 0.035;
+        this._page1textElements.freestyleGroundMaterialDisplayText = new FreestyleText(
+            GroundMaterial[this._ancientRuinsSpec.groundMaterial],
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row1Left += 0.1;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.biomeWater + 1;
+            if (nextNum > Object.keys(WaterBiome).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.biomeWater = nextNum;
+            this._page1textElements.freestyleWaterBiomeDisplayText.update(WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '));
+        };
+
+        this._page1buttons.changeWaterBiomeButton = new FreestyleSquareButton(
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-stumbleupon',
+            0.5);
+
+        row1Left += 0.035;
+        this._page1textElements.freestyleWaterBiomeDisplayText = new FreestyleText(
+            WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '),
+            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        //#endregion
+        //#region AncientRuinsScene Row 2
+        let row2Left = groupLeftStart;
+
+        this._page1buttons.hasCloudsButton = new SmallToggleButton(
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            'fa-cloud',
+            true,
+            1);
+
+        row2Left += 0.035;
+        this._page1buttons.hasSomethingButton = new SmallToggleButton(
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            'fa-question',
+            true);
+
+        row2Left += 0.035;
+        onClick = () => {
+            let nextLeafNum = this._ancientRuinsSpec.treeLeafColor + 1;
+            let nextTrunkNum = this._ancientRuinsSpec.treeTrunkColor;
+            if (nextLeafNum > Object.keys(TreeLeafColor).length / 2) {
+                nextLeafNum = 1;
+                nextTrunkNum += 1;
+                if (nextTrunkNum > Object.keys(TreeTrunkColor).length / 2) {
+                    nextTrunkNum = 1;
+                }
+            }
+            this._ancientRuinsSpec.treeLeafColor = nextLeafNum;
+            this._ancientRuinsSpec.treeTrunkColor = nextTrunkNum;
+            this._page1textElements.freestyleTreeColorDisplayText.update(`${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`);
+        };
+
+        this._page1buttons.changeTreeColorButton = new FreestyleSquareButton(
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-tree',
+            0.5);
+
+        row2Left += 0.035;
+        this._page1textElements.freestyleTreeColorDisplayText = new FreestyleText(
+            `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
+            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        //#endregion
     //#endregion
     //#region LaunchShipLayout
         this._page1textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
@@ -303,20 +473,20 @@ export class DevMenu {
             true,
             buttonScale);
     //#endregion
-    //#region LaunchVertexMapScene
+    //#region LaunchIntroScene
         this._page1textElements.rightBottomMiddleTitleText = new RightBottomMiddleTitleText(
-            'Vertex Map',
+            'Intro',
             { left, height, top: null, width },
             COLORS.neutral,
             border,
             TextType.FADABLE);
 
         onClick = () => {
-            this._page1buttons.launchVertexMapSceneButton.disable();
-            callbacks.activateVertexMapScene();
+            this._page1buttons.launchIntroSceneButton.disable();
+            callbacks.activateIntroScene();
         };
 
-        this._page1buttons.launchVertexMapSceneButton = new LoadButton(
+        this._page1buttons.launchIntroSceneButton = new LoadButton(
             { left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width },
             BUTTON_COLORS,
             onClick,
@@ -362,7 +532,7 @@ export class DevMenu {
             true,
             buttonScale * 0.5);
 
-        let groupLeftStart = 0.015;
+        groupLeftStart = 0.015;
         //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
         this._page1textElements.freestyleHThresholdText = new FreestyleText(
@@ -465,7 +635,7 @@ export class DevMenu {
             0.5);
         //#endregion
         //#region LaunchLandAndMineScene Row 0
-        let row0Left = groupLeftStart;
+        row0Left = groupLeftStart;
         this._page1textElements.freestyleOxygenBurnText = new FreestyleText(
             'oxygen burn:',
             { left: left + (row0Left * width), height, top: 0.82 * height, width },
@@ -566,7 +736,7 @@ export class DevMenu {
             0.5);
         //#endregion
         //#region LaunchLandAndMineScene Row 1
-        let row1Left = groupLeftStart;
+        row1Left = groupLeftStart;
         this._page1textElements.freestylePeakElevationText = new FreestyleText(
             'peak elevation:',
             { left: left + (row1Left * width), height, top: 0.855 * height, width },
@@ -667,7 +837,7 @@ export class DevMenu {
             0.5);
         //#endregion
         //#region LaunchLandAndMineScene Row 2
-        let row2Left = groupLeftStart;
+        row2Left = groupLeftStart;
         this._page1textElements.freestyleSkyColorText = new FreestyleText(
             'Sky Color:',
             { left: left + (row2Left * width), height, top: 0.89 * height, width },
@@ -948,6 +1118,7 @@ export class DevMenu {
         this._page2profiles.rightTopMiddleProfile.hide();
         this._page2profiles.rightTopProfile.hide();
 
+    //#region PlanetRaidScene
         this._page2textElements.leftTopDialogueText2 = new LeftTopDialogueText(
             `This is the launching point for PLANET RAID scene. Click load button to launch it.`,
             { left, height, top: null, width },
@@ -967,9 +1138,10 @@ export class DevMenu {
             onClick,
             true);
         this._page2buttons.launchPlanetRaidSceneButton.hide();
-
+    //#endregion
+    //#region VertexMapScene
         this._page2textElements.rightTopDialogueText2 = new RightTopDialogueText(
-            `This is the launching point for Ancient Ruins scene.`,
+            `This is the launching point for the Vertex Map scene.`,
             { left, height, top: null, width },
             COLORS.neutral,
             border,
@@ -977,201 +1149,16 @@ export class DevMenu {
         this._page2textElements.rightTopDialogueText2.hide();
 
         onClick = () => {
-            this._page2buttons.launchAncientRuinsSceneButton.disable();
-            callbacks.activateAncientRuinsScene({
-                biomeRuins: RuinsBiome.Cemetery,
-                biomeWater: this._ancientRuinsSpec.biomeWater,
-                groundMaterial: this._ancientRuinsSpec.groundMaterial,
-                hasClouds: (this._buttons.hasCloudsButton as ToggleBase).getState(),
-                plantColor: this._ancientRuinsSpec.plantColor,
-                plantPercentage: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.3 : 0,
-                plantSpreadability: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.15 : 0,
-                treeLeafColor: this._ancientRuinsSpec.treeLeafColor,
-                treePercentage: this._ancientRuinsSpec.treePercentage,
-                treeTrunkColor: this._ancientRuinsSpec.treeTrunkColor,
-                waterColor: this._ancientRuinsSpec.waterColor,
-                waterPercentage: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.025 : 0,
-                waterSpreadability: this._ancientRuinsSpec.waterColor !== WaterColor.None ? 0.1 : 0
-            });
+            this._page2buttons.launchVertexMapSceneButton.disable();
+            callbacks.activateVertexMapScene();
         };
 
-        this._page2buttons.launchAncientRuinsSceneButton = new LoadButton(
+        this._page2buttons.launchVertexMapSceneButton = new LoadButton(
             { left: left + (0.54 * width), height, top: 0.20 * height, width },
             BUTTON_COLORS,
             onClick,
             true);
-        this._page2buttons.launchAncientRuinsSceneButton.hide();
-
-        groupLeftStart = 0.5;
-    //#region AncientRuinsScene
-        //#region AncientRuinsScene Row 0
-        row0Left = groupLeftStart;
-        onClick = () => {
-            let nextNum = this._ancientRuinsSpec.plantColor + 1;
-            if (nextNum > Object.keys(PlantColor).length / 2) {
-                nextNum = 1;
-            }
-            this._ancientRuinsSpec.plantColor = nextNum;
-            this._page2textElements.freestylePlantColorDisplayText.update(PlantColor[this._ancientRuinsSpec.plantColor]);
-        };
-
-        this._page2buttons.changePlantColorButton = new FreestyleSquareButton(
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
-            BUTTON_COLORS,
-            onClick,
-            true,
-            'fa-leaf',
-            0.5);
-        this._page2buttons.changePlantColorButton.hide();
-
-        row0Left += 0.035;
-        this._page2textElements.freestylePlantColorDisplayText = new FreestyleText(
-            PlantColor[this._ancientRuinsSpec.plantColor],
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
-            COLORS.default,
-            'none',
-            TextType.STATIC);
-        this._page2textElements.freestylePlantColorDisplayText.hide();
-
-        row0Left += 0.1;
-        onClick = () => {
-            let nextNum = this._ancientRuinsSpec.waterColor + 1;
-            if (nextNum > Object.keys(WaterColor).length / 2) {
-                nextNum = 1;
-            }
-            this._ancientRuinsSpec.waterColor = nextNum;
-            this._page2textElements.freestyleWaterColorDisplayText.update(WaterColor[this._ancientRuinsSpec.waterColor]);
-        };
-
-        this._page2buttons.changeWaterColorButton = new FreestyleSquareButton(
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
-            BUTTON_COLORS,
-            onClick,
-            true,
-            'fa-tint',
-            0.5);
-        this._page2buttons.changeWaterColorButton.hide();
-
-        row0Left += 0.035;
-        this._page2textElements.freestyleWaterColorDisplayText = new FreestyleText(
-            WaterColor[this._ancientRuinsSpec.waterColor],
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
-            COLORS.default,
-            'none',
-            TextType.STATIC);
-        this._page2textElements.freestyleWaterColorDisplayText.hide();
-        //#endregion
-        //#region AncientRuinsScene Row 1
-        row1Left = groupLeftStart;
-
-        onClick = () => {
-            let nextNum = this._ancientRuinsSpec.groundMaterial + 1;
-            if (nextNum > Object.keys(GroundMaterial).length / 2) {
-                nextNum = 1;
-            }
-            this._ancientRuinsSpec.groundMaterial = nextNum;
-            this._page2textElements.freestyleGroundMaterialDisplayText.update(GroundMaterial[this._ancientRuinsSpec.groundMaterial]);
-        };
-
-        this._page2buttons.changeGroundMaterialButton = new FreestyleSquareButton(
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
-            BUTTON_COLORS,
-            onClick,
-            true,
-            'fa-first-order',
-            0.5);
-        this._page2buttons.changeGroundMaterialButton.hide();
-
-        row1Left += 0.035;
-        this._page2textElements.freestyleGroundMaterialDisplayText = new FreestyleText(
-            GroundMaterial[this._ancientRuinsSpec.groundMaterial],
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
-            COLORS.default,
-            'none',
-            TextType.STATIC);
-        this._page2textElements.freestyleGroundMaterialDisplayText.hide();
-
-        row1Left += 0.1;
-        onClick = () => {
-            let nextNum = this._ancientRuinsSpec.biomeWater + 1;
-            if (nextNum > Object.keys(WaterBiome).length / 2) {
-                nextNum = 1;
-            }
-            this._ancientRuinsSpec.biomeWater = nextNum;
-            this._page2textElements.freestyleWaterBiomeDisplayText.update(WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '));
-        };
-
-        this._page2buttons.changeWaterBiomeButton = new FreestyleSquareButton(
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
-            BUTTON_COLORS,
-            onClick,
-            true,
-            'fa-stumbleupon',
-            0.5);
-        this._page2buttons.changeWaterBiomeButton.hide();
-
-        row1Left += 0.035;
-        this._page2textElements.freestyleWaterBiomeDisplayText = new FreestyleText(
-            WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '),
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
-            COLORS.default,
-            'none',
-            TextType.STATIC);
-        this._page2textElements.freestyleWaterBiomeDisplayText.hide();
-        //#endregion
-        //#region AncientRuinsScene Row 2
-        row2Left = groupLeftStart;
-
-        this._page2buttons.hasCloudsButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
-            BUTTON_COLORS,
-            'fa-cloud',
-            true,
-            1);
-        this._page2buttons.hasCloudsButton.hide();
-
-        row2Left += 0.035;
-        this._page2buttons.hasSomethingButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
-            BUTTON_COLORS,
-            'fa-question',
-            true);
-        this._page2buttons.hasSomethingButton.hide();
-
-        row2Left += 0.035;
-        onClick = () => {
-            let nextLeafNum = this._ancientRuinsSpec.treeLeafColor + 1;
-            let nextTrunkNum = this._ancientRuinsSpec.treeTrunkColor;
-            if (nextLeafNum > Object.keys(TreeLeafColor).length / 2) {
-                nextLeafNum = 1;
-                nextTrunkNum += 1;
-                if (nextTrunkNum > Object.keys(TreeTrunkColor).length / 2) {
-                    nextTrunkNum = 1;
-                }
-            }
-            this._ancientRuinsSpec.treeLeafColor = nextLeafNum;
-            this._ancientRuinsSpec.treeTrunkColor = nextTrunkNum;
-            this._page2textElements.freestyleTreeColorDisplayText.update(`${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`);
-        };
-
-        this._page2buttons.changeTreeColorButton = new FreestyleSquareButton(
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
-            BUTTON_COLORS,
-            onClick,
-            true,
-            'fa-tree',
-            0.5);
-        this._page2buttons.changeTreeColorButton.hide();
-
-        row2Left += 0.035;
-        this._page2textElements.freestyleTreeColorDisplayText = new FreestyleText(
-            `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
-            COLORS.default,
-            'none',
-            TextType.STATIC);
-        this._page2textElements.freestyleTreeColorDisplayText.hide();
-        //#endregion
+        this._page2buttons.launchVertexMapSceneButton.hide();
     //#endregion
 
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
@@ -1216,7 +1203,6 @@ export class DevMenu {
             true);
         this._page2buttons.nextPageButton2.hide();
 //#endregion
-
 //#region Page 3
         this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2, false);
         this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer, false);
@@ -1297,33 +1283,33 @@ export class DevMenu {
         let groupLeftStart = 0.5;
 //#region AncientRuinsScene Row 0
         let row0Left = groupLeftStart;
-        this._page2buttons.changePlantColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1buttons.changePlantColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
         row0Left += 0.035;
-        this._page2textElements.freestylePlantColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1textElements.freestylePlantColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
         row0Left += 0.1;
-        this._page2buttons.changeWaterColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1buttons.changeWaterColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
         row0Left += 0.035;
-        this._page2textElements.freestyleWaterColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1textElements.freestyleWaterColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
 //#endregion
 //#region AncientRuinsScene Row 1
         let row1Left = groupLeftStart;
-        this._page2buttons.changeGroundMaterialButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1buttons.changeGroundMaterialButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
         row1Left += 0.035;
-        this._page2textElements.freestyleGroundMaterialDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1textElements.freestyleGroundMaterialDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
         row1Left += 0.1;
-        this._page2buttons.changeWaterBiomeButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1buttons.changeWaterBiomeButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
         row1Left += 0.035;
-        this._page2textElements.freestyleWaterBiomeDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1textElements.freestyleWaterBiomeDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
 //#endregion
 //#region AncientRuinsScene Row 2
         let row2Left = groupLeftStart;
-        this._page2buttons.hasCloudsButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1buttons.hasCloudsButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
         row2Left += 0.035;
-        this._page2buttons.hasSomethingButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1buttons.hasSomethingButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
         row2Left += 0.035;
-        this._page2buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
         row2Left += 0.035;
-        this._page2textElements.freestyleTreeColorDisplayText.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1textElements.freestyleTreeColorDisplayText.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
 //#endregion
 
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
