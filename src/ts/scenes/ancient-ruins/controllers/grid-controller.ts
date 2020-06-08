@@ -168,9 +168,9 @@ export class GridCtrl {
         const randomX = RandomWithBounds(-17, -14);
         const randomZ = RandomWithBounds(-6, 6);
         const randomOpacity = RandomWithBounds(2, 5) / 10;
-        
+
         cloud.position.set(randomX, layerSkyYPos, randomZ);
-        cloud.scale.set(randomSize, 1, randomSize);
+        cloud.scale.set(randomSize, randomSize, randomSize);
         (cloud.material as MeshBasicMaterial).opacity = randomOpacity;
     }
 
