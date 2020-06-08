@@ -1313,14 +1313,15 @@ export class GridCtrl {
      */
     private _resetCloud(cloud: Mesh): void {
         const randomSize = 1 + (Math.random() * 4);
-        const randomX = RandomWithBounds(-17, -14);
+        const randomX = RandomWithBounds(-19, -12);
         const randomZ = RandomWithBounds(-6, 6);
         const randomOpacity = RandomWithBounds(2, 5) / 10;
 
         cloud.position.set(randomX, layerSkyYPos, randomZ);
         cloud.scale.set(randomSize, randomSize, randomSize);
         (cloud.material as MeshBasicMaterial).opacity = randomOpacity;
-        cloud.name = '0.001';
+        cloud.name = `${(RandomWithBounds(1, 9) / 1000)}`;
+        console.log('speed', cloud.name);
     }
 
     /**
@@ -1336,10 +1337,9 @@ export class GridCtrl {
     public endCycle(): void {
         this._clouds.forEach(cloud => {
             const currPos = cloud.position;
-            if (currPos.x > 15) {
+            if (currPos.x > 12) {
                 this._resetCloud(cloud);
             } else {
-                cloud.position.set(currPos.x + 0.01, currPos.y, currPos.z);
                 cloud.position.x += Number(cloud.name);
             }
         });
