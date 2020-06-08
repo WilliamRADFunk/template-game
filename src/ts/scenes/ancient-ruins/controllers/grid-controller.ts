@@ -145,6 +145,9 @@ export class GridCtrl {
         return (this._isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) ? this._ancientRuinsSpec.waterSpreadability : 0;
     }
 
+    /**
+     * Create a number of varied clouds to pass from left to right across the screen periodically.
+     */
     private _createClouds(): void {
         if (!this._ancientRuinsSpec.hasClouds) {
             return;
@@ -161,17 +164,6 @@ export class GridCtrl {
 
             this._resetCloud(cloud);
         }
-    }
-
-    private _resetCloud(cloud: Mesh): void {
-        const randomSize = 1 + (Math.random() * 4);
-        const randomX = RandomWithBounds(-17, -14);
-        const randomZ = RandomWithBounds(-6, 6);
-        const randomOpacity = RandomWithBounds(2, 5) / 10;
-
-        cloud.position.set(randomX, layerSkyYPos, randomZ);
-        cloud.scale.set(randomSize, randomSize, randomSize);
-        (cloud.material as MeshBasicMaterial).opacity = randomOpacity;
     }
 
     /**
@@ -1316,6 +1308,22 @@ export class GridCtrl {
     }
 
     /**
+     * Resets all the randomized cloud conditions: size, position, opacity, etc..
+     * @param cloud the cloud to be reset
+     */
+    private _resetCloud(cloud: Mesh): void {
+        const randomSize = 1 + (Math.random() * 4);
+        const randomX = RandomWithBounds(-17, -14);
+        const randomZ = RandomWithBounds(-6, 6);
+        const randomOpacity = RandomWithBounds(2, 5) / 10;
+
+        cloud.position.set(randomX, layerSkyYPos, randomZ);
+        cloud.scale.set(randomSize, randomSize, randomSize);
+        (cloud.material as MeshBasicMaterial).opacity = randomOpacity;
+        cloud.name = '0.001';
+    }
+
+    /**
      * Handles all cleanup responsibility for controller before it's destroyed.
      */
     public dispose(): void {
@@ -1332,6 +1340,7 @@ export class GridCtrl {
                 this._resetCloud(cloud);
             } else {
                 cloud.position.set(currPos.x + 0.01, currPos.y, currPos.z);
+                cloud.position.x += Number(cloud.name);
             }
         });
     }
