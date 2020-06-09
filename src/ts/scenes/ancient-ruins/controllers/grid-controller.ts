@@ -941,16 +941,20 @@ export class GridCtrl {
                     const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col - 1)
                     const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col + 1);
 
-                    if (above && right && !upperRightCorner) {
+                    // If the upper-right corner is missing with only one tile thickness to its left or below.
+                    if (above && right && (!left || !below) && !upperRightCorner) {
                         this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
-                    if (below && right && !lowerRightCorner) {
+                    // If the lower-right corner is missing with only one tile thickness to its left or above.
+                    if (below && right && (!left || !above) && !lowerRightCorner) {
                         this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
-                    if (below && left && !lowerLeftCorner) {
+                    // If the lower-left corner is missing with only one tile thickness to its right or above.
+                    if (below && left && (!right || !above) && !lowerLeftCorner) {
                         this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
-                    if (above && left && !upperLeftCorner) {
+                    // If the upper-left corner is missing with only one tile thickness to its right or below.
+                    if (above && left && (!right || !below) && !upperLeftCorner) {
                         this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
                 }
@@ -980,6 +984,8 @@ export class GridCtrl {
         }
 
         // TODO: Test for lakes too long or too wide and shave them down.
+        // Test for lakes too long or too wide and shave them down.
+
     }
 
     /**
