@@ -46,6 +46,7 @@ export class ButtonBase {
         this.element.style.position = 'absolute';
         this.element.style.textAlign = 'center';
         this.element.style.boxSizing = 'border-box';
+        this.element.style.padding = '0';
         this.element.style.border = '1px solid ' + colors.default.border;
         this.element.style.backgroundColor = colors.default.backgroundColor;
         this.element.style.color = colors.default.color;

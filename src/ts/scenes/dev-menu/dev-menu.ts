@@ -371,7 +371,8 @@ export class DevMenu {
             BUTTON_COLORS,
             'fa-cloud',
             true,
-            1);
+            1,
+            this._ancientRuinsSpec.hasClouds);
 
         row2Left += 0.035;
         this._page1buttons.hasSomethingButton = new SmallToggleButton(
@@ -1313,7 +1314,7 @@ export class DevMenu {
 //#endregion
 
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
-        this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.1 * height, width });
+        this._buttons.launchIntroSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width });
 
         this._buttons.launchLandAndMineSceneButton.resize({ left: left + (0.175 * width), height, top: 0.785 * height, width });
         groupLeftStart = 0.015;
@@ -1428,7 +1429,7 @@ export class DevMenu {
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
         this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });
         this._buttons.launchTravelSceneButton.resize({ left: left + (0.115 * width), height, top: 0.61 * height, width });
-        this._buttons.launchVertexMapSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.61 * height, width });
+        this._buttons.launchVertexMapSceneButton.resize({ left: left + (0.54 * width), height, top: 0.20 * height, width });
         this._buttons.nextPageButton.resize({ left: left + width - (0.29 * width), height, top: 0.845 * height, width });
         this._buttons.nextPageButton2.resize({ left: left + width - (0.29 * width), height, top: 0.845 * height, width });
         this._buttons.previousPageButton2.resize({ left: left + (0.21 * width), height, top: 0.845 * height, width });

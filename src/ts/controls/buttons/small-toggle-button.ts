@@ -22,8 +22,9 @@ export class SmallToggleButton extends ToggleBase {
      * @param onClick callback for onClick event.
      * @param visible whether or not to start the button in a visible state.
      * @param scale scale to apply to button dimensions.
+     * @param startToggled whether to have been already in pressed state when instantiated.
      */
-    constructor(position: HTMLElementPosition, colors: ButtonColors, icon: string, visible: boolean, scale?: number) {
+    constructor(position: HTMLElementPosition, colors: ButtonColors, icon: string, visible: boolean, scale?: number, startToggled?: boolean) {
         index++;
         super(`small-toggle-button-${index}`, colors, visible);
 
@@ -31,9 +32,16 @@ export class SmallToggleButton extends ToggleBase {
 
         this.element.classList.add('fa', icon);
         this.element.style.borderRadius = '10px';
+        this.element.style.padding = '0';
         document.body.appendChild(this.element);
 
         this.resize(position);
+
+        if (startToggled) {
+            this.onMouseDown();
+            this.onMouseUp();
+            this.onExit();
+        }
     }
 
     /**
