@@ -209,7 +209,7 @@ export class AncientRuins {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        const exitHelp = () => (prevState: AncientRuinsState) => {
+        const exitHelp = (prevState: AncientRuinsState) => {
             this._descText.show();
             // this._helpCtrl.hide();
             // this._gridCtrl.show();
