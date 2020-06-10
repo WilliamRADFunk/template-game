@@ -39,6 +39,7 @@ import { TextBase } from '../../controls/text/text-base';
 import { TextCtrl } from './controllers/text-controller';
 import { LootCtrl } from './controllers/loot-controller';
 import { MiningCtrl } from './controllers/mining-controller';
+import { SettingsCtrl } from '../../controls/controllers/settings-controllers';
 
 /*
  * Grid Values
@@ -275,6 +276,11 @@ export class LandAndMine {
     private _scene: Scene;
 
     /**
+     * Reference to this scene's settings controller.
+     */
+    private _settingsCtrl: SettingsCtrl;
+
+    /**
      * Tracks current game state mode.
      */
     private _state: LandAndMineState = LandAndMineState.newGame;
@@ -362,6 +368,10 @@ export class LandAndMine {
             this._textures,
             this._planetSpecifications,
             this._landerSpecifications,
+            border);
+        
+        this._settingsCtrl = new SettingsCtrl(
+            this._scene,
             border);
 
         this._txtCtrl = new TextCtrl(
@@ -990,11 +1000,12 @@ export class LandAndMine {
         };
 
         const exitSettings = (prevState: LandAndMineState) => {
+            this._settingsCtrl.hide();
+
             this._demoMeshes.visible = true;
             this._staticMeshes.visible = true;
             this._lander.mesh.visible = true;
             this._enableAllButtons();
-            // TODO: Hide settings ctrl
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
             this._showForExitAstronautMode();
@@ -1046,6 +1057,8 @@ export class LandAndMine {
         };
 
         const settings = () => {
+            this._settingsCtrl.show();
+
             this._demoMeshes.visible = false;
             this._staticMeshes.visible = false;
             this._lander.mesh.visible = false;
@@ -1179,6 +1192,7 @@ export class LandAndMine {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         this._controlPanel.resize({ height, left: left, top: null, width });
+        this._settingsCtrl.onWindowResize(height, left, null, width);
         this._txtCtrl.onWindowResize(height, left, null, width);
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
@@ -1267,6 +1281,7 @@ export class LandAndMine {
         this._helpCtrl.dispose();
         this._txtCtrl.dispose();
         this._controlPanel.dispose();
+        this._settingsCtrl.dispose();
         Object.keys(this._buttons)
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].dispose());
@@ -1292,13 +1307,11 @@ export class LandAndMine {
         // Game is in help mode. Play animations from help screen.
         if (this._state === LandAndMineState.tutorial) {
             this._helpCtrl.endCycle();
-
             return;
         }
         // Game is in settings mode. Activate settings screen.
         if (this._state === LandAndMineState.settings) {
-            // TODO: Settings endCycle if there is one.
-
+            this._settingsCtrl.endCycle();
             return;
         }
         // Game not yet started. Nothing should progress.

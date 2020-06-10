@@ -265,6 +265,13 @@ export class ControlPanel {
     }
 
     /**
+     * Allows the exit of settings through method other than button click in control panel.
+     */
+    public exitSettings(): void {
+        this._onExitSettingsClicked();
+    }
+
+    /**
      * Hides the button from visibility.
      */
     public hide() {
