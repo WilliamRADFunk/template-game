@@ -61,7 +61,7 @@ export class DevMenu {
     */
     private _ancientRuinsSpec: AncientRuinsSpecifications = {
         biomeRuins: RuinsBiome.Cemetery,
-        biomeWater: WaterBiome.River,
+        biomeWater: WaterBiome.Small_Lakes,
         groundMaterial: GroundMaterial.Dirt,
         hasClouds: true,
         plantColor: PlantColor.Green,

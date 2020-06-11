@@ -891,22 +891,22 @@ export class GridCtrl {
                         continue;
                     }
                     if (!above && !below) {
-                        if (lowerLeftCorner || lowerRightCorner) {
+                        if (lowerLeftCorner || lowerRightCorner) { // If an adjacent lower tile, fill in bottom
                             this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue();
                             this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                             this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                        } else {
+                        } else { // If an adjacent upper tile, fill in top
                             this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue();
                             this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                             this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                         }
                     }
-                    if (!left && !right) {
+                    if (!left && !right) { // If an adjacent left tile, fill in left
                         if (lowerLeftCorner || upperLeftCorner) {
                             this._grid[row][col - 1][1] = this._tileCtrl.getWaterBaseValue();
                             this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                             this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
-                        } else {
+                        } else { // If an adjacent right tile, fill in right
                             this._grid[row][col + 1][1] = this._tileCtrl.getWaterBaseValue();
                             this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                             this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
@@ -961,7 +961,10 @@ export class GridCtrl {
             }
         }
 
-        // Eliminate rare occasions where fill in block connect a former stand alone pond into a 1 thickness stream.
+        // TODO: Test for lakes too long or too wide and shave them down.
+        // Test for lakes too long or too wide and shave them down.
+
+        // Eliminate rare occasions where fill-in blocks connect to a former stand alone pond into a 1 thickness stream.
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
@@ -970,22 +973,21 @@ export class GridCtrl {
                     const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
                     const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
 
-                    if (!above && !below && ((left && !right) || (!left && right))) {
+                    // If single tile stream going from left to right, fill in with dirt.
+                    if (!above && !below && ((left && !right) || (!left && right) || (left && right))) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
-                    if (!left && !right && ((above && !below) || (!above && below))) {
+                     // If single tile stream going from top to bottom, fill in with dirt.
+                    if (!left && !right && ((above && !below) || (!above && below) || (above && below))) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
+                    // If a solo 1-tile puddle, 50% to fill in with dirt.
                     if ([above, below, left, right].every(x => !x) && fiftyFifty()) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
                 }
             }
         }
-
-        // TODO: Test for lakes too long or too wide and shave them down.
-        // Test for lakes too long or too wide and shave them down.
-
     }
 
     /**
