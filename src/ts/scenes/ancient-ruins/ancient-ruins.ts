@@ -63,6 +63,11 @@ export class AncientRuins {
     private _descText: TileDescriptionText;
 
     /**
+     * Reference to the main Control Panel.
+     */
+    private _descTextPanel: PanelBase;
+
+    /**
      * Tile geometry that makes up the ground tiles.
      */
     private _geometry: PlaneGeometry = new PlaneGeometry( 0.4, 0.4, 10, 10 );
@@ -128,8 +133,8 @@ export class AncientRuins {
 
         this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec);
 
-        const descPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
-        descPanel.toggleOpacity();
+        this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
+        this._descTextPanel.toggleOpacity();
     }
 
     /**
@@ -215,6 +220,7 @@ export class AncientRuins {
             // this._gridCtrl.show();
 
             this._enableAllButtons();
+            this._descTextPanel.show();
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
 
@@ -227,6 +233,7 @@ export class AncientRuins {
             // this._gridCtrl.show();
 
             this._enableAllButtons();
+            this._descTextPanel.show();
             this._stateStoredObjects.forEach(obj => obj && obj.show());
             this._stateStoredObjects.length = 0;
 
@@ -239,6 +246,7 @@ export class AncientRuins {
             // this._gridCtrl.hide();
 
             this._disableAllButtons();
+            this._descTextPanel.hide();
             const prevState = this._state;
             this._state = AncientRuinsState.tutorial;
             Object.values(this._buttons).filter(x => !!x).forEach(button => {
@@ -268,6 +276,7 @@ export class AncientRuins {
             // this._gridCtrl.hide();
 
             this._disableAllButtons();
+            this._descTextPanel.hide();
             const prevState = this._state;
             this._state = AncientRuinsState.settings;
             Object.values(this._buttons).filter(x => !!x).forEach(button => {

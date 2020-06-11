@@ -60,6 +60,7 @@ import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightBottomMiddleProfile } from "../../controls/profiles/right-bottom-middle-profile";
 import { RightBottomMiddleDialogueText } from "../../controls/text/dialogue/right-bottom-middle-dialogue-text";
 import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-button";
+import { SettingsPanel } from "../panels/settings-panel";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -158,22 +159,8 @@ export class SettingsCtrl {
         this._settingsMeshes.mainBackground = backingMesh;
 
         // Settings screen panels
-        this._settingsPanels.rightTopPanel = new RightTopPanel(this._scene);
-        this._settingsPanels.rightTopPanel.hide();
-        this._settingsPanels.leftTopPanel = new LeftTopPanel(this._scene);
-        this._settingsPanels.leftTopPanel.hide();
-        this._settingsPanels.rightTopMiddlePanel = new RightTopMiddlePanel(this._scene);
-        this._settingsPanels.rightTopMiddlePanel.hide();
-        this._settingsPanels.leftTopMiddlePanel = new LeftTopMiddlePanel(this._scene);
-        this._settingsPanels.leftTopMiddlePanel.hide();
-        this._settingsPanels.rightBottomMiddlePanel = new RightBottomMiddlePanel(this._scene);
-        this._settingsPanels.rightBottomMiddlePanel.hide();
-        this._settingsPanels.leftBottomMiddlePanel = new LeftBottomMiddlePanel(this._scene);
-        this._settingsPanels.leftBottomMiddlePanel.hide();
-        this._settingsPanels.leftBottomPanel = new LeftBottomPanel(this._scene);
-        this._settingsPanels.leftBottomPanel.hide();
-        this._settingsPanels.rightBottomPanel = new RightBottomPanel(this._scene);
-        this._settingsPanels.rightBottomPanel.hide();
+        this._settingsPanels.settingsPanel = new SettingsPanel(this._scene);
+        this._settingsPanels.settingsPanel.hide();
     }
 
     /**
