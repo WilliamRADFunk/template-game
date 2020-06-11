@@ -2,6 +2,13 @@ import { Audio, AudioListener } from 'three';
 
 import { Sound } from "./sound";
 
+interface SoundinatorSound {
+    audio: Audio;
+    misc?: any;
+    notPausable?: boolean;
+    sound: Sound;
+}
+
 /**
  * @class
  * The sound effects and music system.
@@ -25,7 +32,7 @@ class Soundinator {
     /**
      * Audio and Sound objects for each of the loaded sound effects.
      */
-    private _sounds: { [key: string]: { audio: Audio; sound: Sound; misc?: any } } = {};
+    private _sounds: { [key: string]: SoundinatorSound } = {};
 
     /**
      * Constructor for the Soundinator class
@@ -57,6 +64,7 @@ class Soundinator {
         this._sounds['backgroundMusicScifi01'].sound = new Sound(this._sounds['backgroundMusicScifi01'].audio, 0, 0.2, 0.1, true);
         this._sounds['baseLost'].sound = new Sound(this._sounds['baseLost'].audio, 2.2, 0.4);
         this._sounds['bidooo'].sound = new Sound(this._sounds['bidooo'].audio, 0, 0.4, 0.2);
+        this._sounds['bidooo'].notPausable = true;
         this._sounds['bipBipBipBing'].sound = new Sound(this._sounds['bipBipBipBing'].audio, 0, 0.5, 0.4);
         this._sounds['blap'].sound = new Sound(this._sounds['blap'].audio, 0, 1, 0.4);
         this._sounds['blip'].sound = new Sound(this._sounds['blip'].audio, 0, 1, 0.4);
@@ -110,7 +118,7 @@ class Soundinator {
     public pauseSound(): void {
         if (!this.isMute && !this.isPaused) {
             Object.keys(this._sounds).forEach(key => {
-                this._sounds[key].sound.pause();
+                !this._sounds[key].notPausable && this._sounds[key].sound.pause();
             });
             this.isPaused = true;
         }
@@ -146,10 +154,10 @@ class Soundinator {
     }
 
     /**
-     * Plays the bidooo sound.
+     * Plays the bidooo sound. (Button clicked ~ immune to pause sound)
      */
     public playBidooo(): void {
-        if (this.isMute || this.isPaused) { return; }
+        if (this.isMute) { return; }
         this._sounds.bidooo.sound.play();
     }
 
