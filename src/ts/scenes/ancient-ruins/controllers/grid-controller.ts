@@ -920,10 +920,10 @@ export class GridCtrl {
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
-                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
-                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
-                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
-                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+                    let above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    let below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    let left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    let right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
 
                     if ([above, below, left, right].every(x => !x)) {
                         continue;
@@ -941,46 +941,73 @@ export class GridCtrl {
                     const lowerLeftCorner = (this._isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col - 1)
                     const lowerRightCorner = (this._isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col + 1);
 
-                    // If the upper-right corner is missing with only one tile thickness to its left or below.
-                    if (above && right && (!left || !below) && !upperRightCorner) {
-                        this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                    }
-                    // If the lower-right corner is missing with only one tile thickness to its left or above.
-                    if (below && right && (!left || !above) && !lowerRightCorner) {
-                        this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                    }
                     // If the lower-left corner is missing with only one tile thickness to its right or above.
-                    if (below && left && (!right || !above) && !lowerLeftCorner) {
+                    if (below && left && (!right || !above)) {
                         this._isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
+
+                    above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+
+                    // If the lower-right corner is missing with only one tile thickness to its left or above.
+                    if (below && right && (!left || !above)) {
+                        this._isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    }
+
+                    above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+
                     // If the upper-left corner is missing with only one tile thickness to its right or below.
-                    if (above && left && (!right || !below) && !upperLeftCorner) {
+                    if (above && left && (!right || !below)) {
                         this._isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                    }
+
+                    above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+
+                    // If the upper-right corner is missing with only one tile thickness to its left or below.
+                    if (above && right && (!left || !below)) {
+                        this._isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
                 }
             }
         }
 
-        // TODO: Test for lakes too long or too wide and shave them down.
-        // Test for lakes too long or too wide and shave them down.
-
         // Eliminate rare occasions where fill-in blocks connect to a former stand alone pond into a 1 thickness stream.
         for (let row = minRows; row < maxRows + 1; row++) {
             for (let col = minCols; col < maxCols + 1; col++) {
                 if (this._isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
-                    const above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
-                    const below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
-                    const left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
-                    const right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+                    let above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    let below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    let left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    let right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
 
                     // If single tile stream going from left to right, fill in with dirt.
                     if (!above && !below && ((left && !right) || (!left && right) || (left && right))) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
+
+                    above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+
                      // If single tile stream going from top to bottom, fill in with dirt.
                     if (!left && !right && ((above && !below) || (!above && below) || (above && below))) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
+
+                    above = (this._isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row + 1, col);
+                    below = (this._isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row - 1, col);
+                    left = (this._isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col - 1);
+                    right = (this._isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this._isInBounds(row, col + 1);
+
                     // If a solo 1-tile puddle, 50% to fill in with dirt.
                     if ([above, below, left, right].every(x => !x) && fiftyFifty()) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
