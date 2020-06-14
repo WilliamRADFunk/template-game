@@ -1425,7 +1425,7 @@ export class DevMenu {
         row4Left += 0.035;
         this._textElements.freestyleOreQuantityText.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
         //#endregion
-    //#endregion 
+    //#endregion
         this._buttons.launchPlanetRaidSceneButton.resize({ left: left + (0.29 * width), height, top: 0.20 * height, width });
         this._buttons.launchRepairSceneButton.resize({ left: left + width - (buttonScale * 0.12 * width) - (0.14 * width), height, top: 0.375 * height, width });
         this._buttons.launchShipLayoutSceneButton.resize({ left: left + (0.115 * width), height, top: 0.375 * height, width });
