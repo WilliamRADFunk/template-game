@@ -18,6 +18,7 @@ import { SettingsCtrl } from "../../controls/controllers/settings-controllers";
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { ButtonBase } from "../../controls/buttons/button-base";
 import { TextBase } from "../../controls/text/text-base";
+import { TeamCtrl } from "./controllers/team-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -108,6 +109,11 @@ export class AncientRuins {
     private _stateStoredObjects: (ButtonBase | TextBase)[] = [];
 
     /**
+     * All of the team functionality contained in this scene.
+     */
+    private _teamCtrl: TeamCtrl;
+
+    /**
      * All of the textures contained in this scene.
      */
     private _textures: { [key: string]: Texture } = {};
@@ -125,6 +131,7 @@ export class AncientRuins {
         this._scene = scene.scene;
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
+        this._teamCtrl = new TeamCtrl(this._scene, ancientRuinsSpec);
 
         // Text, Button, and Event Listeners
         this._onInitialize(scene);
@@ -325,6 +332,7 @@ export class AncientRuins {
         document.oncontextmenu = () => {};
         this._controlPanel.dispose();
         this._gridCtrl.dispose();
+        this._teamCtrl.dispose();
         this._settingsCtrl.dispose();
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
@@ -349,6 +357,7 @@ export class AncientRuins {
             return;
         }
         this._gridCtrl.endCycle();
+        this._teamCtrl.endCycle();
         return null;
     }
 }

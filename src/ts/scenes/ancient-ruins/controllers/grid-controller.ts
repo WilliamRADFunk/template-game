@@ -9,7 +9,14 @@ import {
     Vector2,
     NearestFilter,
     RepeatWrapping} from "three";
-import { AncientRuinsSpecifications, WaterBiome, RuinsBiome, PlantColor, WaterColor, GroundMaterial, TreeTrunkColor, TreeLeafColor } from "../../../models/ancient-ruins-specifications";
+import {
+    AncientRuinsSpecifications,
+    PlantColor,
+    RuinsBiome,
+    TreeLeafColor,
+    TreeTrunkColor,
+    WaterBiome,
+    WaterColor } from "../../../models/ancient-ruins-specifications";
 import { TileCtrl } from "./tile-controller";
 import { RandomWithBounds } from "../../../utils/random-with-bounds";
 
@@ -82,7 +89,7 @@ export class GridCtrl {
     private _textures: { [key: string]: Texture } = {};
 
     /**
-     * All of the textures contained in this scene.
+     * All of the tile textures contained in this scene.
      */
     private _tileCtrl: TileCtrl;
 
