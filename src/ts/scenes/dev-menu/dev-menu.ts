@@ -44,7 +44,7 @@ import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-b
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
-import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor, TeamMember, TeamMemberDirection, TeamMemberStatus, TeamMemberAppearance } from "../../models/ancient-ruins-specifications";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -62,6 +62,68 @@ export class DevMenu {
     private _ancientRuinsSpec: AncientRuinsSpecifications = {
         biomeRuins: RuinsBiome.Cemetery,
         biomeWater: WaterBiome.Small_Lakes,
+        crew: [
+            {
+                animationTextures: null,
+                appearance: TeamMemberAppearance.Human_Dark_Black,
+                currDirection: TeamMemberDirection.Up,
+                currTextureIndex: 0,
+                health: 100,
+                name: 'Bingo Bango',
+                position: null,
+                rank: 2,
+                status: TeamMemberStatus.Healthy,
+                title: 'Security',
+            },
+            {
+                animationTextures: null,
+                appearance: TeamMemberAppearance.Human_Light_Bald,
+                currDirection: TeamMemberDirection.Up,
+                currTextureIndex: 0,
+                health: 100,
+                name: 'Clooge McCloogy',
+                position: null,
+                rank: 3,
+                status: TeamMemberStatus.Healthy,
+                title: 'Security',
+            },
+            {
+                animationTextures: null,
+                appearance: TeamMemberAppearance.Human_Light_Blond,
+                currDirection: TeamMemberDirection.Up,
+                currTextureIndex: 0,
+                health: 100,
+                name: 'Feelz Good',
+                position: null,
+                rank: 7,
+                status: TeamMemberStatus.Healthy,
+                title: 'Medical',
+            },
+            {
+                animationTextures: null,
+                appearance: TeamMemberAppearance.Human_Light_Red,
+                currDirection: TeamMemberDirection.Up,
+                currTextureIndex: 0,
+                health: 100,
+                name: 'Glock',
+                position: null,
+                rank: 5,
+                status: TeamMemberStatus.Healthy,
+                title: 'Science',
+            },
+            {
+                animationTextures: null,
+                appearance: TeamMemberAppearance.Human_Light_Black,
+                currDirection: TeamMemberDirection.Up,
+                currTextureIndex: 0,
+                health: 100,
+                name: 'James Kirkland',
+                position: null,
+                rank: 9,
+                status: TeamMemberStatus.Healthy,
+                title: 'Command',
+            }
+        ],
         groundMaterial: GroundMaterial.Dirt,
         hasClouds: true,
         plantColor: PlantColor.Green,

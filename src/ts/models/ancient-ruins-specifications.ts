@@ -1,3 +1,22 @@
+import { Texture } from "three";
+
+export interface GridDictionaryValue {
+    blocker?: boolean;
+    customSize?: [number, number];
+    devDescription: string;
+    gameDescription: string;
+    hasVariation?: boolean;
+    spritePosition: [number, number];
+    xPosMod?: number;
+    xScaleMod?: number;
+    zPosMod?: number;
+    zScaleMod?: number;
+}
+
+export interface GridDictionary {
+    [key: number]: GridDictionaryValue
+}
+
 export enum GroundMaterial {
     'Dirt' = 1,
     'Gravel' = 2,
@@ -42,6 +61,47 @@ export enum RuinsBiome {
     'Cemetery' = 7
 }
 
+export interface TeamMember {
+    animationTextures: [Texture, Texture, Texture];
+    appearance: TeamMemberAppearance;
+    currDirection: TeamMemberDirection;
+    currTextureIndex: number;
+    health: number;
+    name: string;
+    position: [number, number];
+    rank: number;
+    status: TeamMemberStatus;
+    title: string;
+}
+
+export const enum TeamMemberAppearance {
+    'Human_Light_Black' = 0,
+    'Human_Light_Bald' = 1,
+    'Human_Light_Brown' = 2,
+    'Human_Light_Red' = 3,
+    'Human_Light_Blond' = 4,
+    'Human_Dark_Black' = 5,
+}
+
+export const enum TeamMemberDirection {
+    'Down' = 0,
+    'Down-Left' = 1,
+    'Down-Right' = 2,
+    'Left' = 3,
+    'Right' = 4,
+    'Up' = 5,
+    'Up-Left' = 6,
+    'Up-Right' = 7
+}
+
+export const enum TeamMemberStatus {
+    'Healthy' = 0,
+    'Injured' = 1,
+    'Ill' = 2,
+    'Dead' = 3,
+    'Unconscious' = 4
+}
+
 export enum WaterBiome {
     'Large_Lake' = 1,
     'Beach' = 2,
@@ -60,6 +120,7 @@ export enum WaterColor {
 export interface AncientRuinsSpecifications {
     biomeRuins: RuinsBiome;
     biomeWater: WaterBiome;
+    crew: TeamMember[];
     groundMaterial: GroundMaterial;
     hasClouds: boolean;
     plantColor: PlantColor;

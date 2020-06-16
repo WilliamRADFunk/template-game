@@ -1,37 +1,13 @@
-import { Scene, Texture } from "three";
+import { PlaneGeometry, Scene, Texture } from "three";
 
-import { AncientRuinsSpecifications } from "../../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, TeamMember, GridDictionary } from "../../../models/ancient-ruins-specifications";
 
-export interface TeamMember {
-    animationTextures: [Texture, Texture, Texture];
-    currDirection: TeamMemberDirection;
-    currTextureIndex: number;
-    health: number;
-    name: string;
-    position: [number, number];
-    rank: string;
-    status: TeamMemberStatus;
-    title: string;
+const crewGraphicDictionary: GridDictionary = {
+    1: { devDescription: 'Red Shirt - Human - Light - Black Hair', gameDescription: '', spritePosition: [3, 3] },
 }
 
-const enum TeamMemberDirection {
-    'Down' = 0,
-    'Down-Left' = 1,
-    'Down-Right' = 2,
-    'Left' = 3,
-    'Right' = 4,
-    'Up' = 5,
-    'Up-Left' = 6,
-    'Up-Right' = 7
-}
-
-const enum TeamMemberStatus {
-    'Healthy' = 0,
-    'Injured' = 1,
-    'Ill' = 2,
-    'Dead' = 3,
-    'Unconscious' = 4
-}
+const spriteMapCols = 32;
+const spriteMapRows = 32;
 
 export class TeamCtrl {
     /**
@@ -43,6 +19,11 @@ export class TeamCtrl {
      * Currently selected team member index.
      */
     private currTeamMember: number = 4;
+
+    /**
+     * Team member geometry that makes up the ground tiles.
+     */
+    private _geometry: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
 
     /**
      * Medical Officer

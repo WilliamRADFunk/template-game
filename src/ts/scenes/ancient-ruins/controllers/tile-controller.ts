@@ -1,21 +1,11 @@
-import { AncientRuinsSpecifications, GroundMaterial, WaterColor, PlantColor, TreeTrunkColor, TreeLeafColor } from "../../../models/ancient-ruins-specifications";
-
-export interface GridDictionaryValue {
-    blocker?: boolean;
-    customSize?: [number, number];
-    devDescription: string;
-    gameDescription: string;
-    hasVariation?: boolean;
-    spritePosition: [number, number];
-    xPosMod?: number;
-    xScaleMod?: number;
-    zPosMod?: number;
-    zScaleMod?: number;
-}
-
-export interface GridDictionary {
-    [key: number]: GridDictionaryValue
-}
+import {
+    AncientRuinsSpecifications,
+    GroundMaterial,
+    WaterColor,
+    PlantColor,
+    TreeTrunkColor,
+    TreeLeafColor, 
+    GridDictionary} from "../../../models/ancient-ruins-specifications";
 
 const gridDictionary: GridDictionary = {
     // Ground & Grass
