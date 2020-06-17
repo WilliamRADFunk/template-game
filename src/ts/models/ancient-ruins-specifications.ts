@@ -1,4 +1,14 @@
-import { Texture } from "three";
+import { Mesh } from "three";
+
+export interface CrewDictionaryValue {
+    devDescription: string;
+    spritePositionX: [number, number, number];
+    spritePositionY: [number, number, number];
+}
+
+export interface CrewDictionary {
+    [key: number]: CrewDictionaryValue
+}
 
 export interface GridDictionaryValue {
     blocker?: boolean;
@@ -62,7 +72,7 @@ export enum RuinsBiome {
 }
 
 export interface TeamMember {
-    animationTextures: [Texture, Texture, Texture];
+    animationTextures: [Mesh, Mesh, Mesh];
     appearance: TeamMemberAppearance;
     currDirection: TeamMemberDirection;
     currTextureIndex: number;
