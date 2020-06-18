@@ -64,7 +64,7 @@ export class DevMenu {
         biomeWater: WaterBiome.Small_Lakes,
         crew: [
             {
-                animationTextures: null,
+                animationTextures: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Dark_Black,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -76,7 +76,7 @@ export class DevMenu {
                 title: 'Security',
             },
             {
-                animationTextures: null,
+                animationTextures: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Bald,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -88,7 +88,7 @@ export class DevMenu {
                 title: 'Security',
             },
             {
-                animationTextures: null,
+                animationTextures: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Blond,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -100,7 +100,7 @@ export class DevMenu {
                 title: 'Medical',
             },
             {
-                animationTextures: null,
+                animationTextures: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Red,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -112,7 +112,7 @@ export class DevMenu {
                 title: 'Science',
             },
             {
-                animationTextures: null,
+                animationTextures: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Black,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -299,6 +299,7 @@ export class DevMenu {
             callbacks.activateAncientRuinsScene({
                 biomeRuins: RuinsBiome.Cemetery,
                 biomeWater: this._ancientRuinsSpec.biomeWater,
+                crew: this._ancientRuinsSpec.crew,
                 groundMaterial: this._ancientRuinsSpec.groundMaterial,
                 hasClouds: (this._buttons.hasCloudsButton as ToggleBase).getState(),
                 plantColor: this._ancientRuinsSpec.plantColor,

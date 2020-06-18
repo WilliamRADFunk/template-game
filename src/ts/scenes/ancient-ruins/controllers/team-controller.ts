@@ -1,29 +1,46 @@
-import { PlaneGeometry, Scene, Texture, MeshBasicMaterial, NearestFilter, RepeatWrapping, DoubleSide, Vector2 } from "three";
+import {
+    DoubleSide,
+    Mesh,
+    MeshBasicMaterial,
+    NearestFilter,
+    PlaneGeometry,
+    RepeatWrapping,
+    Scene,
+    Texture,
+    Vector2 } from "three";
 
-import { AncientRuinsSpecifications, CrewDictionary, TeamMember, CrewDictionaryValue } from "../../../models/ancient-ruins-specifications";
+import {
+    AncientRuinsSpecifications,
+    CrewDictionary,
+    CrewDictionaryValue,
+    TeamMember } from "../../../models/ancient-ruins-specifications";
 
 const crewGraphicDictionary: CrewDictionary = {
-    1: { devDescription: 'Red Shirt - Human - Light - Black Hair', spritePositionX: [3, 4, 5], spritePositionY: [7, 7, 7] },
-    2: { devDescription: 'Red Shirt - Human - Light - Bald Hair', spritePositionX: [3, 4, 5], spritePositionY: [6, 6, 6] },
-    3: { devDescription: 'Red Shirt - Human - Light - Brown Hair', spritePositionX: [3, 4, 5], spritePositionY: [5, 5, 5] },
-    4: { devDescription: 'Red Shirt - Human - Light - Red Hair', spritePositionX: [3, 4, 5], spritePositionY: [4, 4, 4] },
-    5: { devDescription: 'Red Shirt - Human - Light - Blond Hair', spritePositionX: [3, 4, 5], spritePositionY: [3, 3, 3] },
-    6: { devDescription: 'Red Shirt - Human - Dark - Black Hair', spritePositionX: [3, 4, 5], spritePositionY: [2, 2, 2] },
+    0: { devDescription: 'Red Shirt - Human - Light - Black Hair', spritePositionX: [3, 4, 5], spritePositionY: [7, 7, 7] },
+    1: { devDescription: 'Red Shirt - Human - Light - Bald Hair', spritePositionX: [3, 4, 5], spritePositionY: [6, 6, 6] },
+    2: { devDescription: 'Red Shirt - Human - Light - Brown Hair', spritePositionX: [3, 4, 5], spritePositionY: [5, 5, 5] },
+    3: { devDescription: 'Red Shirt - Human - Light - Red Hair', spritePositionX: [3, 4, 5], spritePositionY: [4, 4, 4] },
+    4: { devDescription: 'Red Shirt - Human - Light - Blond Hair', spritePositionX: [3, 4, 5], spritePositionY: [3, 3, 3] },
+    5: { devDescription: 'Red Shirt - Human - Dark - Black Hair', spritePositionX: [3, 4, 5], spritePositionY: [2, 2, 2] },
 
-    7: { devDescription: 'Blue Shirt - Human - Light - Black Hair', spritePositionX: [0, 1, 2], spritePositionY: [7, 7, 7] },
-    8: { devDescription: 'Blue Shirt - Human - Light - Bald Hair', spritePositionX: [0, 1, 2], spritePositionY: [6, 6, 6] },
-    9: { devDescription: 'Blue Shirt - Human - Light - Brown Hair', spritePositionX: [0, 1, 2], spritePositionY: [5, 5, 5] },
-    10: { devDescription: 'Blue Shirt - Human - Light - Red Hair', spritePositionX: [0, 1, 2], spritePositionY: [4, 4, 4] },
-    11: { devDescription: 'Blue Shirt - Human - Light - Blond Hair', spritePositionX: [0, 1, 2], spritePositionY: [3, 3, 3] },
-    12: { devDescription: 'Blue Shirt - Human - Dark - Black Hair', spritePositionX: [0, 1, 2], spritePositionY: [2, 2, 2] },
+    6: { devDescription: 'Blue Shirt - Human - Light - Black Hair', spritePositionX: [0, 1, 2], spritePositionY: [7, 7, 7] },
+    7: { devDescription: 'Blue Shirt - Human - Light - Bald Hair', spritePositionX: [0, 1, 2], spritePositionY: [6, 6, 6] },
+    8: { devDescription: 'Blue Shirt - Human - Light - Brown Hair', spritePositionX: [0, 1, 2], spritePositionY: [5, 5, 5] },
+    9: { devDescription: 'Blue Shirt - Human - Light - Red Hair', spritePositionX: [0, 1, 2], spritePositionY: [4, 4, 4] },
+    10: { devDescription: 'Blue Shirt - Human - Light - Blond Hair', spritePositionX: [0, 1, 2], spritePositionY: [3, 3, 3] },
+    11: { devDescription: 'Blue Shirt - Human - Dark - Black Hair', spritePositionX: [0, 1, 2], spritePositionY: [2, 2, 2] },
 
-    13: { devDescription: 'Yellow Shirt - Human - Light - Black Hair', spritePositionX: [0, 1, 2], spritePositionY: [1, 1, 1] },
-    14: { devDescription: 'Yellow Shirt - Human - Light - Bald Hair', spritePositionX: [0, 1, 2], spritePositionY: [0, 0, 0] },
-    15: { devDescription: 'Yellow Shirt - Human - Light - Brown Hair', spritePositionX: [3, 4, 5], spritePositionY: [1, 1, 1] },
-    16: { devDescription: 'Yellow Shirt - Human - Light - Red Hair', spritePositionX: [3, 4, 5], spritePositionY: [0, 0, 0] },
-    17: { devDescription: 'Yellow Shirt - Human - Light - Blond Hair', spritePositionX: [6, 6, 6], spritePositionY: [7, 6, 5] },
-    18: { devDescription: 'Yellow Shirt - Human - Dark - Black Hair', spritePositionX: [6, 6, 6], spritePositionY: [4, 3, 2] },
+    12: { devDescription: 'Yellow Shirt - Human - Light - Black Hair', spritePositionX: [0, 1, 2], spritePositionY: [1, 1, 1] },
+    13: { devDescription: 'Yellow Shirt - Human - Light - Bald Hair', spritePositionX: [0, 1, 2], spritePositionY: [0, 0, 0] },
+    14: { devDescription: 'Yellow Shirt - Human - Light - Brown Hair', spritePositionX: [3, 4, 5], spritePositionY: [1, 1, 1] },
+    15: { devDescription: 'Yellow Shirt - Human - Light - Red Hair', spritePositionX: [3, 4, 5], spritePositionY: [0, 0, 0] },
+    16: { devDescription: 'Yellow Shirt - Human - Light - Blond Hair', spritePositionX: [6, 6, 6], spritePositionY: [7, 6, 5] },
+    17: { devDescription: 'Yellow Shirt - Human - Dark - Black Hair', spritePositionX: [6, 6, 6], spritePositionY: [4, 3, 2] },
 }
+
+const layerYPos = 13;
+
+const rad90DegLeft = -1.5708;
 
 const spriteMapCols = 8;
 const spriteMapRows = 8;
@@ -94,46 +111,69 @@ export class TeamCtrl {
         this._scene = scene;
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
+
+        this._makeMembers();
     }
 
     /**
-     * Makes all the tile materials for the game map.
+     * Makes a team member material for the game map.
      */
-    private _makeMaterials(): void {
-        Object.entries(crewGraphicDictionary)
-            .filter((entry: [string, CrewDictionaryValue]) => entry[0])
-            .forEach((entry: [string, CrewDictionaryValue]) => {
-                const offCoordsX = entry[1].spritePositionX;
-                const offCoordsY = entry[1].spritePositionY;
-                const size = this._tileCtrl.getGridDicCustomSize(key) || [spriteMapCols, spriteMapRows];
+    private _makeMaterial(offCoordsX: number, offCoordsY: number, size: number[]): MeshBasicMaterial {
+        const material: MeshBasicMaterial = new MeshBasicMaterial({
+            color: 0xFFFFFF,
+            map: this._textures.spriteMapAncientRuinsCrew.clone(),
+            side: DoubleSide,
+            transparent: true
+        });
 
-                if (offCoords[0] >= 0 && offCoords[1] >= 0) {
-                    const material: MeshBasicMaterial = new MeshBasicMaterial({
-                        color: 0xFFFFFF,
-                        map: this._textures.spriteMapAncientRuins.clone(),
-                        side: DoubleSide,
-                        transparent: true
-                    });
+        material.map.offset = new Vector2(
+            (1 / size[0]) * offCoordsX,
+            (1 / size[1]) * offCoordsY);
 
-                    material.map.offset = new Vector2(
-                        (1 / size[0]) * offCoords[0],
-                        (1 / size[1]) * offCoords[1]);
+        material.map.repeat = new Vector2(
+            (1 / size[0]),
+            (1 / size[1]));
 
-                    material.map.repeat = new Vector2(
-                        (1 / size[0]),
-                        (1 / size[1]));
+        material.map.magFilter = NearestFilter;
+        material.map.minFilter = NearestFilter;
+        material.map.wrapS = RepeatWrapping;
+        material.map.wrapT = RepeatWrapping;
 
-                    material.map.magFilter = NearestFilter;
-                    material.map.minFilter = NearestFilter;
-                    material.map.wrapS = RepeatWrapping;
-                    material.map.wrapT = RepeatWrapping;
+        material.depthTest = false;
+        material.map.needsUpdate = true;
 
-                    material.depthTest = false;
-                    material.map.needsUpdate = true;
+        return material;
+    }
 
-                    this._materialsMap[key] = material;
-                }
-            });
+    /**
+     * Makes all the team member meshes for the game map.
+     */
+    private _makeMembers(): void {
+        this._redShirt1 = this._ancientRuinsSpec.crew[0];
+        this._redShirt2 = this._ancientRuinsSpec.crew[1];
+        this._medicalOfficer = this._ancientRuinsSpec.crew[2];
+        this._scienceOfficer = this._ancientRuinsSpec.crew[3];
+        this._teamLeader = this._ancientRuinsSpec.crew[4];
+
+        const redShirt1CrewDictionaryValue: CrewDictionaryValue = Object
+            .entries(crewGraphicDictionary)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) < 6)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) === this._redShirt1.appearance)
+            .map(entry => entry[1])[0];
+        
+        [0, 1, 2].forEach((val: number) => {
+            const offCoordsX = redShirt1CrewDictionaryValue.spritePositionX[val];
+            const offCoordsY = redShirt1CrewDictionaryValue.spritePositionY[val];
+            const size = [spriteMapCols, spriteMapRows];
+            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
+
+            this._redShirt1.animationTextures[val] = new Mesh( this._geometry, material );
+            this._redShirt1.animationTextures[val].position.set(1, layerYPos, 1)
+            this._redShirt1.animationTextures[val].rotation.set(rad90DegLeft, 0, 0);
+            this._redShirt1.animationTextures[val].name = `red-shirt-1-${val}`;
+            this._redShirt1.animationTextures[val].visible = val ? false : true;
+            this._scene.add(this._redShirt1.animationTextures[val]);
+        });
     }
 
     /**

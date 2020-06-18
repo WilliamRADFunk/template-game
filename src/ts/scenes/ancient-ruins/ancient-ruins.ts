@@ -127,6 +127,7 @@ export class AncientRuins {
         this._scene = scene.scene;
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
+
         this._teamCtrl = new TeamCtrl(this._scene, this._textures, ancientRuinsSpec);
 
         // Text, Button, and Event Listeners

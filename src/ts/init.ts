@@ -70,7 +70,8 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     mouseLeft: ['assets/images/mouse-left.png', null],
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
     ship: ['assets/images/ship.png', null],
-    spriteMapAncientRuins: ['assets/images/sprite-map-ancient-ruins.png', null]
+    spriteMapAncientRuins: ['assets/images/sprite-map-ancient-ruins.png', null],
+    spriteMapAncientRuinsCrew: ['assets/images/sprite-map-ancient-ruins-astronauts.png', null]
 };
 
 /**
@@ -1018,7 +1019,8 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
     const ancientRuins = new AncientRuins(
         scenes.ancientRuins,
         {
-            spriteMapAncientRuins: TEXTURES.spriteMapAncientRuins[1]
+            spriteMapAncientRuins: TEXTURES.spriteMapAncientRuins[1],
+            spriteMapAncientRuinsCrew: TEXTURES.spriteMapAncientRuinsCrew[1],
         },
         ancientRuinsSpec);
     scenes.ancientRuins.raycaster = raycaster;
