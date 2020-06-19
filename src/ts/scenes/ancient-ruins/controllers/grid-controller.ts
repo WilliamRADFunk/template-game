@@ -34,10 +34,10 @@ const layer2YPos = 13;
 const layer3YPos = 11;
 const layerSkyYPos = 6;
 
-const getXPos = function(col: number): number {
+export const getXPos = function(col: number): number {
     return -5.8 + (col/2.5);
 };
-const getZPos = function(row: number): number {
+export const getZPos = function(row: number): number {
     return 5.8 - (row/2.5);
 };
 
@@ -1391,6 +1391,22 @@ export class GridCtrl {
      */
     public endCycle(): void {
         this._cycleClouds();
+    }
+
+    /**
+     * Returns the maximum number of columns used in grid.
+     * @returns maximum number of columns in grid.
+     */
+    public getMaxCols(): number {
+        return maxCols;
+    }
+
+    /**
+     * Returns the maximum number of columns used in grid.
+     * @returns maximum number of columns in grid.
+     */
+    public getMaxRows(): number {
+        return maxRows;
     }
 
     /**

@@ -128,14 +128,13 @@ export class AncientRuins {
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
 
-        this._teamCtrl = new TeamCtrl(this._scene, this._textures, ancientRuinsSpec);
-
         // Text, Button, and Event Listeners
         this._onInitialize(scene);
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
 
         this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec);
+        this._teamCtrl = new TeamCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._gridCtrl);
 
         this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
         this._descTextPanel.toggleOpacity();
@@ -205,7 +204,7 @@ export class AncientRuins {
                     `;
                     this._descText.update(desc);
                 }
-                
+
             });
         };
         document.onmousemove = event => {
@@ -301,7 +300,7 @@ export class AncientRuins {
             'Your team has successfully landed on the planet\'s surface as close to the ruins as they dare.',
             { height, left: left, top: null, width },
             null);
-        
+
         this._settingsCtrl = new SettingsCtrl(this._scene, border)
     }
 

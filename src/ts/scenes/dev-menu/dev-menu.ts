@@ -64,7 +64,7 @@ export class DevMenu {
         biomeWater: WaterBiome.Small_Lakes,
         crew: [
             {
-                animationTextures: [null, null, null],
+                animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Dark_Black,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -76,7 +76,7 @@ export class DevMenu {
                 title: 'Security',
             },
             {
-                animationTextures: [null, null, null],
+                animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Bald,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -88,7 +88,7 @@ export class DevMenu {
                 title: 'Security',
             },
             {
-                animationTextures: [null, null, null],
+                animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Blond,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -100,7 +100,7 @@ export class DevMenu {
                 title: 'Medical',
             },
             {
-                animationTextures: [null, null, null],
+                animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Red,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,
@@ -112,7 +112,7 @@ export class DevMenu {
                 title: 'Science',
             },
             {
-                animationTextures: [null, null, null],
+                animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Black,
                 currDirection: TeamMemberDirection.Up,
                 currTextureIndex: 0,

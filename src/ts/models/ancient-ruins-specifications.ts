@@ -72,7 +72,7 @@ export enum RuinsBiome {
 }
 
 export interface TeamMember {
-    animationTextures: [Mesh, Mesh, Mesh];
+    animationMeshes: [Mesh, Mesh, Mesh];
     appearance: TeamMemberAppearance;
     currDirection: TeamMemberDirection;
     currTextureIndex: number;

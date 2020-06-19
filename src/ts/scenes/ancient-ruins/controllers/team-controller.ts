@@ -14,6 +14,7 @@ import {
     CrewDictionary,
     CrewDictionaryValue,
     TeamMember } from "../../../models/ancient-ruins-specifications";
+import { GridCtrl, getXPos, getZPos } from "./grid-controller";
 
 const crewGraphicDictionary: CrewDictionary = {
     0: { devDescription: 'Red Shirt - Human - Light - Black Hair', spritePositionX: [3, 4, 5], spritePositionY: [7, 7, 7] },
@@ -39,11 +40,12 @@ const crewGraphicDictionary: CrewDictionary = {
 }
 
 const layerYPos = 13;
-
 const rad90DegLeft = -1.5708;
-
 const spriteMapCols = 8;
 const spriteMapRows = 8;
+const totalRedShirtTextures = 6;
+const totalBlueShirtTextures = 6;
+const totalYellowShirtTextures = 6;
 
 export class TeamCtrl {
     /**
@@ -60,6 +62,11 @@ export class TeamCtrl {
      * Team member geometry that makes up the ground tiles.
      */
     private _geometry: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
+
+    /**
+     * Reference to this scene's grid controller.
+     */
+    private _gridCtrl: GridCtrl;
 
     /**
      * Medical Officer
@@ -107,10 +114,11 @@ export class TeamCtrl {
      */
     private _textures: { [key: string]: Texture } = {};
 
-    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications) {
+    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications, gridCtrl: GridCtrl) {
         this._scene = scene;
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
+        this._gridCtrl = gridCtrl;
 
         this._makeMembers();
     }
@@ -148,7 +156,20 @@ export class TeamCtrl {
     /**
      * Makes all the team member meshes for the game map.
      */
+    private _makeMember(animationMeshArray: [Mesh, Mesh, Mesh], material: MeshBasicMaterial, index: number, row: number, col: number): void {
+        animationMeshArray[index] = new Mesh( this._geometry, material );
+        animationMeshArray[index].position.set(getXPos(col), layerYPos, getZPos(row));
+        animationMeshArray[index].rotation.set(rad90DegLeft, 0, 0);
+        animationMeshArray[index].name = `red-shirt-1-${index}`;
+        animationMeshArray[index].visible = index ? false : true;
+        this._scene.add(animationMeshArray[index]);
+    }
+
+    /**
+     * Makes all the team member meshes for the game map.
+     */
     private _makeMembers(): void {
+        const middleCol = Math.floor(this._gridCtrl.getMaxCols() / 2);
         this._redShirt1 = this._ancientRuinsSpec.crew[0];
         this._redShirt2 = this._ancientRuinsSpec.crew[1];
         this._medicalOfficer = this._ancientRuinsSpec.crew[2];
@@ -157,22 +178,77 @@ export class TeamCtrl {
 
         const redShirt1CrewDictionaryValue: CrewDictionaryValue = Object
             .entries(crewGraphicDictionary)
-            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) < 6)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) < totalRedShirtTextures)
             .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) === this._redShirt1.appearance)
             .map(entry => entry[1])[0];
-        
+
         [0, 1, 2].forEach((val: number) => {
+            console.log('Making Red Shirt 1');
             const offCoordsX = redShirt1CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt1CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
             const material = this._makeMaterial(offCoordsX, offCoordsY, size);
+            this._makeMember(this._redShirt1.animationMeshes, material, val, 2, middleCol - 1);
+        });
 
-            this._redShirt1.animationTextures[val] = new Mesh( this._geometry, material );
-            this._redShirt1.animationTextures[val].position.set(1, layerYPos, 1)
-            this._redShirt1.animationTextures[val].rotation.set(rad90DegLeft, 0, 0);
-            this._redShirt1.animationTextures[val].name = `red-shirt-1-${val}`;
-            this._redShirt1.animationTextures[val].visible = val ? false : true;
-            this._scene.add(this._redShirt1.animationTextures[val]);
+        const redShirt2CrewDictionaryValue: CrewDictionaryValue = Object
+            .entries(crewGraphicDictionary)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) < totalRedShirtTextures)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) === this._redShirt2.appearance)
+            .map(entry => entry[1])[0];
+
+        [0, 1, 2].forEach((val: number) => {
+            console.log('Making Red Shirt 2');
+            const offCoordsX = redShirt2CrewDictionaryValue.spritePositionX[val];
+            const offCoordsY = redShirt2CrewDictionaryValue.spritePositionY[val];
+            const size = [spriteMapCols, spriteMapRows];
+            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
+            this._makeMember(this._redShirt2.animationMeshes, material, val, 2, middleCol + 1);
+        });
+
+        const medicalOfficerCrewDictionaryValue: CrewDictionaryValue = Object
+            .entries(crewGraphicDictionary)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) >= totalRedShirtTextures && Number(entry[0]) < (totalRedShirtTextures + totalBlueShirtTextures))
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) === this._medicalOfficer.appearance + totalRedShirtTextures)
+            .map(entry => entry[1])[0];
+
+        [0, 1, 2].forEach((val: number) => {
+            console.log('Making Blue Shirt 1');
+            const offCoordsX = medicalOfficerCrewDictionaryValue.spritePositionX[val];
+            const offCoordsY = medicalOfficerCrewDictionaryValue.spritePositionY[val];
+            const size = [spriteMapCols, spriteMapRows];
+            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
+            this._makeMember(this._medicalOfficer.animationMeshes, material, val, 1, middleCol - 1);
+        });
+
+        const scienceOfficerCrewDictionaryValue: CrewDictionaryValue = Object
+            .entries(crewGraphicDictionary)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) >= totalRedShirtTextures && Number(entry[0]) < (totalRedShirtTextures + totalBlueShirtTextures))
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) === this._scienceOfficer.appearance + totalRedShirtTextures)
+            .map(entry => entry[1])[0];
+
+        [0, 1, 2].forEach((val: number) => {
+            console.log('Making Blue Shirt 2');
+            const offCoordsX = scienceOfficerCrewDictionaryValue.spritePositionX[val];
+            const offCoordsY = scienceOfficerCrewDictionaryValue.spritePositionY[val];
+            const size = [spriteMapCols, spriteMapRows];
+            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
+            this._makeMember(this._scienceOfficer.animationMeshes, material, val, 1, middleCol + 1);
+        });
+
+        const teamLeaderCrewDictionaryValue: CrewDictionaryValue = Object
+            .entries(crewGraphicDictionary)
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) >= (totalRedShirtTextures + totalBlueShirtTextures))
+            .filter((entry: [string, CrewDictionaryValue]) => Number(entry[0]) === this._teamLeader.appearance + (totalRedShirtTextures + totalBlueShirtTextures))
+            .map(entry => entry[1])[0];
+
+        [0, 1, 2].forEach((val: number) => {
+            console.log('Making Yellow Shirt ');
+            const offCoordsX = teamLeaderCrewDictionaryValue.spritePositionX[val];
+            const offCoordsY = teamLeaderCrewDictionaryValue.spritePositionY[val];
+            const size = [spriteMapCols, spriteMapRows];
+            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
+            this._makeMember(this._teamLeader.animationMeshes, material, val, 2, middleCol);
         });
     }
 
