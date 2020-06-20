@@ -16,7 +16,7 @@ import {
     TeamMember } from "../../../models/ancient-ruins-specifications";
 import { GridCtrl, getXPos, getZPos } from "./grid-controller";
 
-const crewGraphicDictionary: CrewDictionary = {
+export const crewGraphicDictionary: CrewDictionary = {
     0: { devDescription: 'Red Shirt - Human - Light - Black Hair', spritePositionX: [3, 4, 5], spritePositionY: [7, 7, 7] },
     1: { devDescription: 'Red Shirt - Human - Light - Bald Hair', spritePositionX: [3, 4, 5], spritePositionY: [6, 6, 6] },
     2: { devDescription: 'Red Shirt - Human - Light - Brown Hair', spritePositionX: [3, 4, 5], spritePositionY: [5, 5, 5] },
@@ -39,13 +39,60 @@ const crewGraphicDictionary: CrewDictionary = {
     17: { devDescription: 'Yellow Shirt - Human - Dark - Black Hair', spritePositionX: [6, 6, 6], spritePositionY: [4, 3, 2] },
 }
 
-const layerYPos = 13;
-const rad90DegLeft = -1.5708;
-const spriteMapCols = 8;
-const spriteMapRows = 8;
-const totalRedShirtTextures = 6;
-const totalBlueShirtTextures = 6;
-const totalYellowShirtTextures = 6;
+const LAYER_Y_POS = 13;
+const RAD_90_DEG_LEFT = -1.5708;
+export const spriteMapCols = 8;
+export const spriteMapRows = 8;
+export const totalRedShirtTextures = 6;
+export const totalBlueShirtTextures = 6;
+export const totalYellowShirtTextures = 6;
+
+/**
+ * Team member geometry that makes up the ground tiles.
+ */
+const GEOMETRY: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
+
+/**
+ * Makes a team member material for the game map.
+ */
+export function makeMaterial(textures: { [key: string]: Texture }, offCoordsX: number, offCoordsY: number, size: number[]): MeshBasicMaterial {
+    const material: MeshBasicMaterial = new MeshBasicMaterial({
+        color: 0xFFFFFF,
+        map: textures.spriteMapAncientRuinsCrew.clone(),
+        side: DoubleSide,
+        transparent: true
+    });
+
+    material.map.offset = new Vector2(
+        (1 / size[0]) * offCoordsX,
+        (1 / size[1]) * offCoordsY);
+
+    material.map.repeat = new Vector2(
+        (1 / size[0]),
+        (1 / size[1]));
+
+    material.map.magFilter = NearestFilter;
+    material.map.minFilter = NearestFilter;
+    material.map.wrapS = RepeatWrapping;
+    material.map.wrapT = RepeatWrapping;
+
+    material.depthTest = false;
+    material.map.needsUpdate = true;
+
+    return material;
+}
+
+/**
+ * Makes all the team member meshes for the game map.
+ */
+export function makeMember(scene: Scene, animationMeshArray: [Mesh, Mesh, Mesh], material: MeshBasicMaterial, index: number, row: number, col: number): void {
+    animationMeshArray[index] = new Mesh( GEOMETRY, material );
+    animationMeshArray[index].position.set(getXPos(col), LAYER_Y_POS, getZPos(row));
+    animationMeshArray[index].rotation.set(RAD_90_DEG_LEFT, 0, 0);
+    animationMeshArray[index].name = `team-member-${index}`;
+    animationMeshArray[index].visible = index ? false : true;
+    scene.add(animationMeshArray[index]);
+}
 
 export class TeamCtrl {
     /**
@@ -57,11 +104,6 @@ export class TeamCtrl {
      * Currently selected team member index.
      */
     private currTeamMember: number = 4;
-
-    /**
-     * Team member geometry that makes up the ground tiles.
-     */
-    private _geometry: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
 
     /**
      * Reference to this scene's grid controller.
@@ -124,48 +166,6 @@ export class TeamCtrl {
     }
 
     /**
-     * Makes a team member material for the game map.
-     */
-    private _makeMaterial(offCoordsX: number, offCoordsY: number, size: number[]): MeshBasicMaterial {
-        const material: MeshBasicMaterial = new MeshBasicMaterial({
-            color: 0xFFFFFF,
-            map: this._textures.spriteMapAncientRuinsCrew.clone(),
-            side: DoubleSide,
-            transparent: true
-        });
-
-        material.map.offset = new Vector2(
-            (1 / size[0]) * offCoordsX,
-            (1 / size[1]) * offCoordsY);
-
-        material.map.repeat = new Vector2(
-            (1 / size[0]),
-            (1 / size[1]));
-
-        material.map.magFilter = NearestFilter;
-        material.map.minFilter = NearestFilter;
-        material.map.wrapS = RepeatWrapping;
-        material.map.wrapT = RepeatWrapping;
-
-        material.depthTest = false;
-        material.map.needsUpdate = true;
-
-        return material;
-    }
-
-    /**
-     * Makes all the team member meshes for the game map.
-     */
-    private _makeMember(animationMeshArray: [Mesh, Mesh, Mesh], material: MeshBasicMaterial, index: number, row: number, col: number): void {
-        animationMeshArray[index] = new Mesh( this._geometry, material );
-        animationMeshArray[index].position.set(getXPos(col), layerYPos, getZPos(row));
-        animationMeshArray[index].rotation.set(rad90DegLeft, 0, 0);
-        animationMeshArray[index].name = `red-shirt-1-${index}`;
-        animationMeshArray[index].visible = index ? false : true;
-        this._scene.add(animationMeshArray[index]);
-    }
-
-    /**
      * Makes all the team member meshes for the game map.
      */
     private _makeMembers(): void {
@@ -187,8 +187,8 @@ export class TeamCtrl {
             const offCoordsX = redShirt1CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt1CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
-            this._makeMember(this._redShirt1.animationMeshes, material, val, 2, middleCol - 1);
+            const material = makeMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, this._redShirt1.animationMeshes, material, val, 2, middleCol - 1);
         });
 
         const redShirt2CrewDictionaryValue: CrewDictionaryValue = Object
@@ -202,8 +202,8 @@ export class TeamCtrl {
             const offCoordsX = redShirt2CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt2CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
-            this._makeMember(this._redShirt2.animationMeshes, material, val, 2, middleCol + 1);
+            const material = makeMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, this._redShirt2.animationMeshes, material, val, 2, middleCol + 1);
         });
 
         const medicalOfficerCrewDictionaryValue: CrewDictionaryValue = Object
@@ -217,8 +217,8 @@ export class TeamCtrl {
             const offCoordsX = medicalOfficerCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = medicalOfficerCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
-            this._makeMember(this._medicalOfficer.animationMeshes, material, val, 1, middleCol - 1);
+            const material = makeMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, this._medicalOfficer.animationMeshes, material, val, 1, middleCol - 1);
         });
 
         const scienceOfficerCrewDictionaryValue: CrewDictionaryValue = Object
@@ -232,8 +232,8 @@ export class TeamCtrl {
             const offCoordsX = scienceOfficerCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = scienceOfficerCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
-            this._makeMember(this._scienceOfficer.animationMeshes, material, val, 1, middleCol + 1);
+            const material = makeMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, this._scienceOfficer.animationMeshes, material, val, 1, middleCol + 1);
         });
 
         const teamLeaderCrewDictionaryValue: CrewDictionaryValue = Object
@@ -247,8 +247,8 @@ export class TeamCtrl {
             const offCoordsX = teamLeaderCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = teamLeaderCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = this._makeMaterial(offCoordsX, offCoordsY, size);
-            this._makeMember(this._teamLeader.animationMeshes, material, val, 2, middleCol);
+            const material = makeMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, this._teamLeader.animationMeshes, material, val, 2, middleCol);
         });
     }
 

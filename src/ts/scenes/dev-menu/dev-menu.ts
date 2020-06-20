@@ -1,4 +1,4 @@
-import { Scene, Texture } from "three";
+import { Scene, Texture, Mesh } from "three";
 
 import { SceneType } from "../../models/scene-type";
 import { LeftTopPanel } from "../../controls/panels/left-top-panel";
@@ -64,6 +64,7 @@ export class DevMenu {
         biomeWater: WaterBiome.Small_Lakes,
         crew: [
             {
+                animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Dark_Black,
                 currDirection: TeamMemberDirection.Up,
@@ -76,6 +77,7 @@ export class DevMenu {
                 title: 'Security',
             },
             {
+                animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Bald,
                 currDirection: TeamMemberDirection.Up,
@@ -88,6 +90,7 @@ export class DevMenu {
                 title: 'Security',
             },
             {
+                animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Blond,
                 currDirection: TeamMemberDirection.Up,
@@ -100,6 +103,7 @@ export class DevMenu {
                 title: 'Medical',
             },
             {
+                animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Red,
                 currDirection: TeamMemberDirection.Up,
@@ -112,6 +116,7 @@ export class DevMenu {
                 title: 'Science',
             },
             {
+                animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Black,
                 currDirection: TeamMemberDirection.Up,
@@ -136,6 +141,16 @@ export class DevMenu {
         waterPercentage: 0.025,
         waterSpreadability: 0.1
     };
+
+    /**
+     * List of buttons.
+     */
+    private _buttons: { [key: string]: ButtonBase | ToggleBase };
+
+    /**
+     * Current page number.
+     */
+    private _currentPage: number = 1;
 
     /**
     * Specification of what the planet below should look like.
@@ -165,6 +180,41 @@ export class DevMenu {
     };
 
     /**
+     * Reference to _onWindowResize so that it can be removed later.
+     */
+    private _listenerRef: () => void;
+
+    /**
+     * List of buttons on page 1.
+     */
+    private _page1buttons: { [key: string]: ButtonBase | ToggleBase } = {};
+
+    /**
+     * List of buttons on page 2.
+     */
+    private _page2buttons: { [key: string]: ButtonBase | ToggleBase } = {};
+
+    /**
+     * List of buttons on page 3.
+     */
+    private _page3buttons: { [key: string]: ButtonBase } = {};
+
+    /**
+     * Contains key-value mapping of all meshes used on page 1.
+     */
+    private _page1Meshes: { [key: string]: Mesh } = {};
+
+    /**
+     * Contains key-value mapping of all meshes used on page 2.
+     */
+    private _page2Meshes: { [key: string]: Mesh } = {};
+
+    /**
+     * Contains key-value mapping of all meshes used on page 3.
+     */
+    private _page3Meshes: { [key: string]: Mesh } = {};
+
+    /**
      * List of profiles on page 1.
      */
     private _page1profiles: { [key: string]: ProfileBase } = {};
@@ -180,39 +230,6 @@ export class DevMenu {
     private _page3profiles: { [key: string]: ProfileBase } = {};
 
     /**
-     * List of buttons on page 1.
-     */
-    private _page1buttons: { [key: string]: ButtonBase | ToggleBase } = {};
-    /**
-     * List of buttons on page 2.
-     */
-    private _page2buttons: { [key: string]: ButtonBase | ToggleBase } = {};
-    /**
-     * List of buttons on page 3.
-     */
-    private _page3buttons: { [key: string]: ButtonBase } = {};
-
-    /**
-     * List of buttons.
-     */
-    private _buttons: { [key: string]: ButtonBase | ToggleBase };
-
-    /**
-     * Current page number.
-     */
-    private _currentPage: number = 1;
-
-    /**
-     * Reference to _onWindowResize so that it can be removed later.
-     */
-    private _listenerRef: () => void;
-
-    /**
-     * Reference to the scene, used to remove and reinstall text geometries.
-     */
-    private _scene: Scene;
-
-    /**
      * Groups of text elements for page 1.
      */
     private _page1textElements: TextMap = {};
@@ -226,6 +243,11 @@ export class DevMenu {
      * Groups of text elements for page 3.
      */
     private _page3textElements: TextMap = {};
+
+    /**
+     * Reference to the scene, used to remove and reinstall text geometries.
+     */
+    private _scene: Scene;
 
     /**
      * Groups of text elements.
@@ -472,6 +494,33 @@ export class DevMenu {
         this._page1textElements.freestyleTreeColorDisplayText = new FreestyleText(
             `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
             { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+        //#endregion
+        //#region AncientRuinsScene Row 3
+        let row3Left = groupLeftStart;
+        onClick = () => {
+            let nextMedOfficerAppearanceNum = this._ancientRuinsSpec.crew[2].appearance + 1;
+            if (nextMedOfficerAppearanceNum > Object.keys(TeamMemberAppearance).length / 2) {
+                nextMedOfficerAppearanceNum = 0;
+            }
+            this._ancientRuinsSpec.crew[2].appearance = nextMedOfficerAppearanceNum;
+            
+        };
+
+        this._page1buttons.changeMedicalOfficerButton = new FreestyleSquareButton(
+            { left: left + (row3Left * width), height, top: 0.12 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-stethoscope',
+            0.5);
+
+        row3Left += 0.035;
+        this._page1textElements.freestyleMedicalOfficerDisplayText = new FreestyleText(
+            `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
+            { left: left + (row3Left * width), height, top: 0.12 * height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -970,7 +1019,7 @@ export class DevMenu {
             TextType.STATIC);
         //#endregion
         //#region LaunchLandAndMineScene Row 3
-        let row3Left = groupLeftStart;
+        row3Left = groupLeftStart;
         this._page1textElements.freestyleGravityText = new FreestyleText(
             'gravity:',
             { left: left + (row3Left * width), height, top: 0.925 * height, width },
@@ -1313,19 +1362,23 @@ export class DevMenu {
     private _next(): void {
         this._currentPage++;
         if (this._currentPage === 2) {
-            Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].hide());
             Object.keys(this._page1buttons).forEach(x => this._page1buttons[x] && this._page1buttons[x].hide());
+            Object.keys(this._page1Meshes).forEach(x => this._page1Meshes[x] && (this._page1Meshes[x].visible = false));
             Object.keys(this._page1profiles).forEach(x => this._page1profiles[x] && this._page1profiles[x].hide());
-            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
+            Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].hide());
             Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].show());
+            Object.keys(this._page2Meshes).forEach(x => this._page2Meshes[x] && (this._page2Meshes[x].visible = true));
             Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].show());
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
         } else if (this._currentPage === 3) {
-            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].hide());
             Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].hide());
+            Object.keys(this._page2Meshes).forEach(x => this._page2Meshes[x] && (this._page2Meshes[x].visible = false));
             Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].hide());
-            Object.keys(this._page3textElements).forEach(x => this._page3textElements[x] && this._page3textElements[x].show());
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].hide());
             Object.keys(this._page3buttons).forEach(x => this._page3buttons[x] && this._page3buttons[x].show());
+            Object.keys(this._page3Meshes).forEach(x => this._page3Meshes[x] && (this._page3Meshes[x].visible = true));
             Object.keys(this._page3profiles).forEach(x => this._page3profiles[x] && this._page3profiles[x].show());
+            Object.keys(this._page3textElements).forEach(x => this._page3textElements[x] && this._page3textElements[x].show());
         }
     }
 
@@ -1506,19 +1559,23 @@ export class DevMenu {
     private _previous(): void {
         this._currentPage--;
         if (this._currentPage === 1) {
-            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].hide());
             Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].hide());
+            Object.keys(this._page2Meshes).forEach(x => this._page2Meshes[x] && (this._page2Meshes[x].visible = false));
             Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].hide());
-            Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].show());
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].hide());
             Object.keys(this._page1buttons).forEach(x => this._page1buttons[x] && this._page1buttons[x].show());
+            Object.keys(this._page1Meshes).forEach(x => this._page1Meshes[x] && (this._page1Meshes[x].visible = true));
             Object.keys(this._page1profiles).forEach(x => this._page1profiles[x] && this._page1profiles[x].show());
+            Object.keys(this._page1textElements).forEach(x => this._page1textElements[x] && this._page1textElements[x].show());
         } else if (this._currentPage === 2) {
-            Object.keys(this._page3textElements).forEach(x => this._page3textElements[x] && this._page3textElements[x].hide());
             Object.keys(this._page3buttons).forEach(x => this._page3buttons[x] && this._page3buttons[x].hide());
+            Object.keys(this._page2Meshes).forEach(x => this._page2Meshes[x] && (this._page2Meshes[x].visible = false));
             Object.keys(this._page3profiles).forEach(x => this._page3profiles[x] && this._page3profiles[x].hide());
-            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
+            Object.keys(this._page3textElements).forEach(x => this._page3textElements[x] && this._page3textElements[x].hide());
             Object.keys(this._page2buttons).forEach(x => this._page2buttons[x] && this._page2buttons[x].show());
+            Object.keys(this._page2Meshes).forEach(x => this._page2Meshes[x] && (this._page2Meshes[x].visible = true));
             Object.keys(this._page2profiles).forEach(x => this._page2profiles[x] && this._page2profiles[x].show());
+            Object.keys(this._page2textElements).forEach(x => this._page2textElements[x] && this._page2textElements[x].show());
         }
     }
 

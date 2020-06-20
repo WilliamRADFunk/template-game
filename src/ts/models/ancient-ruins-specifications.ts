@@ -72,6 +72,7 @@ export enum RuinsBiome {
 }
 
 export interface TeamMember {
+    animationCounter: number;
     animationMeshes: [Mesh, Mesh, Mesh];
     appearance: TeamMemberAppearance;
     currDirection: TeamMemberDirection;
@@ -84,7 +85,7 @@ export interface TeamMember {
     title: string;
 }
 
-export const enum TeamMemberAppearance {
+export enum TeamMemberAppearance {
     'Human_Light_Black' = 0,
     'Human_Light_Bald' = 1,
     'Human_Light_Brown' = 2,
@@ -93,7 +94,7 @@ export const enum TeamMemberAppearance {
     'Human_Dark_Black' = 5,
 }
 
-export const enum TeamMemberDirection {
+export enum TeamMemberDirection {
     'Down' = 0,
     'Down-Left' = 1,
     'Down-Right' = 2,
@@ -104,7 +105,7 @@ export const enum TeamMemberDirection {
     'Up-Right' = 7
 }
 
-export const enum TeamMemberStatus {
+export enum TeamMemberStatus {
     'Healthy' = 0,
     'Injured' = 1,
     'Ill' = 2,
