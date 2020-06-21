@@ -1,0 +1,1 @@
+export const RAD_90_DEG_LEFT = -1.5708;

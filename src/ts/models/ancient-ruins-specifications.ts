@@ -91,7 +91,7 @@ export enum TeamMemberAppearance {
     'Human_Light_Brown' = 2,
     'Human_Light_Red' = 3,
     'Human_Light_Blond' = 4,
-    'Human_Dark_Black' = 5,
+    'Human_Dark_Black' = 5
 }
 
 export enum TeamMemberDirection {

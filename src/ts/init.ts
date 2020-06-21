@@ -612,12 +612,13 @@ const loadDevMenu = () => {
             activateVertexMapScene
         },
         {
+            arrow: TEXTURES.arrow[1],
             engineer: TEXTURES.engineerProfile[1],
             engineer2: TEXTURES.engineer2Profile[1],
+            enzmann: TEXTURES.enzmannOutside[1],
             miner1: TEXTURES.miningOfficerProfile1[1],
             science1: TEXTURES.scienceOfficerProfile1[1],
-            enzmann: TEXTURES.enzmannOutside[1],
-            arrow: TEXTURES.arrow[1]
+            spriteMapAncientRuinsCrew: TEXTURES.spriteMapAncientRuinsCrew[1],
         });
     scenes.devMenu.raycaster = raycaster;
     startDevMenuRendering();

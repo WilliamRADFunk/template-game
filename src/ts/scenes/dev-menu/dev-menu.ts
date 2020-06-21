@@ -44,7 +44,11 @@ import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-b
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
-import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor, TeamMember, TeamMemberDirection, TeamMemberStatus, TeamMemberAppearance } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor, TeamMemberDirection, TeamMemberStatus, TeamMemberAppearance } from "../../models/ancient-ruins-specifications";
+import { makeMember } from "../ancient-ruins/utils/make-member";
+import { findMemberValue, ShirtColor, spriteMapCols, spriteMapRows } from "../ancient-ruins/utils/crew-member-spritemap-values";
+import { makeMemberMaterial } from "../ancient-ruins/utils/make-member-material";
+import { MIDDLE_COL } from "../ancient-ruins/utils/grid-constants";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -502,28 +506,29 @@ export class DevMenu {
         let row3Left = groupLeftStart;
         onClick = () => {
             let nextMedOfficerAppearanceNum = this._ancientRuinsSpec.crew[2].appearance + 1;
-            if (nextMedOfficerAppearanceNum > Object.keys(TeamMemberAppearance).length / 2) {
+            if (nextMedOfficerAppearanceNum >= Object.keys(TeamMemberAppearance).length / 2) {
                 nextMedOfficerAppearanceNum = 0;
             }
             this._ancientRuinsSpec.crew[2].appearance = nextMedOfficerAppearanceNum;
-            
+            this._changeMedicalOfficerGraphic();
         };
 
         this._page1buttons.changeMedicalOfficerButton = new FreestyleSquareButton(
-            { left: left + (row3Left * width), height, top: 0.12 * height, width },
+            { left: left + (row3Left * width), height, top: 0.155 * height, width },
             BUTTON_COLORS,
             onClick,
             true,
             'fa-stethoscope',
             0.5);
+        this._changeMedicalOfficerGraphic();
 
-        row3Left += 0.035;
-        this._page1textElements.freestyleMedicalOfficerDisplayText = new FreestyleText(
-            `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
-            { left: left + (row3Left * width), height, top: 0.12 * height, width },
-            COLORS.default,
-            'none',
-            TextType.STATIC);
+        // row3Left += 0.035;
+        // this._page1textElements.freestyleMedicalOfficerDisplayText = new FreestyleText(
+        //     `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
+        //     { left: left + (row3Left * width), height, top: 0.155 * height, width },
+        //     COLORS.default,
+        //     'none',
+        //     TextType.STATIC);
         //#endregion
     //#endregion
     //#region LaunchShipLayout
@@ -1356,6 +1361,29 @@ export class DevMenu {
         };
     }
 
+    private _changeMedicalOfficerGraphic(): void {
+        // Remove old graphic from dev menu, and reset animation values.
+        if (this._page1Meshes.ancientRuinsMedicalOfficer0) {
+            [0, 1, 2].forEach(i => {
+                this._scene.remove(this._page1Meshes[`ancientRuinsMedicalOfficer${i}`]);
+                this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = null;
+            });
+        }
+        this._ancientRuinsSpec.crew[2].animationCounter = 0;
+
+        // Create the new graphic from the new value.
+        const medDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[2].appearance, ShirtColor.Blue);
+        const medMeshes: [Mesh, Mesh, Mesh] = [null, null, null];
+        [0, 1, 2].forEach(i => {
+            const offCoordsX = medDictionaryValue.spritePositionX[i];
+            const offCoordsY = medDictionaryValue.spritePositionY[i];
+            const size = [spriteMapCols, spriteMapRows];
+            const medMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, medMeshes, medMat, i, 24.4, MIDDLE_COL + 1, -7);
+            this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = medMeshes[i];
+        });
+    }
+
     /**
      * Transitions to the next page in the dev menu options.
      */
@@ -1427,6 +1455,10 @@ export class DevMenu {
         this._page1buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
         row2Left += 0.035;
         this._page1textElements.freestyleTreeColorDisplayText.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        //#endregion
+        //#region AncientRuinsScene Row 3
+        let row3Left = groupLeftStart;
+        this._page1buttons.changeMedicalOfficerButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
         //#endregion
     //#endregion
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
@@ -1508,7 +1540,7 @@ export class DevMenu {
         this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
         //#endregion
         //#region LandAndMine Row 3
-        let row3Left = groupLeftStart;
+        row3Left = groupLeftStart;
         this._textElements.freestyleGravityText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
         row3Left += 0.08;
         this._buttons.gravityMinusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
