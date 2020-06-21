@@ -522,13 +522,81 @@ export class DevMenu {
             0.5);
         this._changeMedicalOfficerGraphic();
 
-        // row3Left += 0.035;
-        // this._page1textElements.freestyleMedicalOfficerDisplayText = new FreestyleText(
-        //     `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
-        //     { left: left + (row3Left * width), height, top: 0.155 * height, width },
-        //     COLORS.default,
-        //     'none',
-        //     TextType.STATIC);
+        row3Left += 0.070;
+        onClick = () => {
+            let nextSciOfficerAppearanceNum = this._ancientRuinsSpec.crew[3].appearance + 1;
+            if (nextSciOfficerAppearanceNum >= Object.keys(TeamMemberAppearance).length / 2) {
+                nextSciOfficerAppearanceNum = 0;
+            }
+            this._ancientRuinsSpec.crew[3].appearance = nextSciOfficerAppearanceNum;
+            this._changeScienceOfficerGraphic();
+        };
+
+        this._page1buttons.changeScienceOfficerButton = new FreestyleSquareButton(
+            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-flask',
+            0.5);
+        this._changeScienceOfficerGraphic();
+
+        row3Left += 0.070;
+        onClick = () => {
+            let nextLeaderAppearanceNum = this._ancientRuinsSpec.crew[4].appearance + 1;
+            if (nextLeaderAppearanceNum >= Object.keys(TeamMemberAppearance).length / 2) {
+                nextLeaderAppearanceNum = 0;
+            }
+            this._ancientRuinsSpec.crew[4].appearance = nextLeaderAppearanceNum;
+            this._changeLeaderGraphic();
+        };
+
+        this._page1buttons.changeLeaderButton = new FreestyleSquareButton(
+            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-user-secret',
+            0.5);
+        this._changeLeaderGraphic();
+
+        row3Left += 0.070;
+        onClick = () => {
+            let nextSecurity1AppearanceNum = this._ancientRuinsSpec.crew[0].appearance + 1;
+            if (nextSecurity1AppearanceNum >= Object.keys(TeamMemberAppearance).length / 2) {
+                nextSecurity1AppearanceNum = 0;
+            }
+            this._ancientRuinsSpec.crew[0].appearance = nextSecurity1AppearanceNum;
+            this._changeSecurity1Graphic();
+        };
+
+        this._page1buttons.changeSecurity1Button = new FreestyleSquareButton(
+            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-shield',
+            0.5);
+        this._changeSecurity1Graphic();
+
+        row3Left += 0.070;
+        onClick = () => {
+            let nextSecurity2AppearanceNum = this._ancientRuinsSpec.crew[1].appearance + 1;
+            if (nextSecurity2AppearanceNum >= Object.keys(TeamMemberAppearance).length / 2) {
+                nextSecurity2AppearanceNum = 0;
+            }
+            this._ancientRuinsSpec.crew[1].appearance = nextSecurity2AppearanceNum;
+            this._changeSecurity2Graphic();
+        };
+
+        this._page1buttons.changeSecurity2Button = new FreestyleSquareButton(
+            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-shield',
+            0.5);
+        this._changeSecurity2Graphic();
         //#endregion
     //#endregion
     //#region LaunchShipLayout
@@ -1361,6 +1429,29 @@ export class DevMenu {
         };
     }
 
+    private _changeLeaderGraphic(): void {
+        // Remove old graphic from dev menu, and reset animation values.
+        if (this._page1Meshes.ancientRuinsLeaderOfficer0) {
+            [0, 1, 2].forEach(i => {
+                this._scene.remove(this._page1Meshes[`ancientRuinsLeaderOfficer${i}`]);
+                this._page1Meshes[`ancientRuinsLeaderOfficer${i}`] = null;
+            });
+        }
+        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
+
+        // Create the new graphic from the new value.
+        const leadDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[4].appearance, ShirtColor.Yellow);
+        const leadMeshes: [Mesh, Mesh, Mesh] = [null, null, null];
+        [0, 1, 2].forEach(i => {
+            const offCoordsX = leadDictionaryValue.spritePositionX[i];
+            const offCoordsY = leadDictionaryValue.spritePositionY[i];
+            const size = [spriteMapCols, spriteMapRows];
+            const leadMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, leadMeshes, leadMat, i, 24.4, MIDDLE_COL + 5.2, -7);
+            this._page1Meshes[`ancientRuinsLeaderOfficer${i}`] = leadMeshes[i];
+        });
+    }
+
     private _changeMedicalOfficerGraphic(): void {
         // Remove old graphic from dev menu, and reset animation values.
         if (this._page1Meshes.ancientRuinsMedicalOfficer0) {
@@ -1369,7 +1460,7 @@ export class DevMenu {
                 this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = null;
             });
         }
-        this._ancientRuinsSpec.crew[2].animationCounter = 0;
+        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
 
         // Create the new graphic from the new value.
         const medDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[2].appearance, ShirtColor.Blue);
@@ -1381,6 +1472,75 @@ export class DevMenu {
             const medMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, medMeshes, medMat, i, 24.4, MIDDLE_COL + 1, -7);
             this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = medMeshes[i];
+        });
+    }
+
+    private _changeScienceOfficerGraphic(): void {
+        // Remove old graphic from dev menu, and reset animation values.
+        if (this._page1Meshes.ancientRuinsScienceOfficer0) {
+            [0, 1, 2].forEach(i => {
+                this._scene.remove(this._page1Meshes[`ancientRuinsScienceOfficer${i}`]);
+                this._page1Meshes[`ancientRuinsScienceOfficer${i}`] = null;
+            });
+        }
+        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
+
+        // Create the new graphic from the new value.
+        const sciDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[3].appearance, ShirtColor.Blue);
+        const sciMeshes: [Mesh, Mesh, Mesh] = [null, null, null];
+        [0, 1, 2].forEach(i => {
+            const offCoordsX = sciDictionaryValue.spritePositionX[i];
+            const offCoordsY = sciDictionaryValue.spritePositionY[i];
+            const size = [spriteMapCols, spriteMapRows];
+            const sciMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, sciMeshes, sciMat, i, 24.4, MIDDLE_COL + 3.1, -7);
+            this._page1Meshes[`ancientRuinsScienceOfficer${i}`] = sciMeshes[i];
+        });
+    }
+
+    private _changeSecurity1Graphic(): void {
+        // Remove old graphic from dev menu, and reset animation values.
+        if (this._page1Meshes.ancientRuinsSecurity1Officer0) {
+            [0, 1, 2].forEach(i => {
+                this._scene.remove(this._page1Meshes[`ancientRuinsSecurity1Officer${i}`]);
+                this._page1Meshes[`ancientRuinsSecurity1Officer${i}`] = null;
+            });
+        }
+        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
+
+        // Create the new graphic from the new value.
+        const sec1DictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[0].appearance, ShirtColor.Red);
+        const sec1Meshes: [Mesh, Mesh, Mesh] = [null, null, null];
+        [0, 1, 2].forEach(i => {
+            const offCoordsX = sec1DictionaryValue.spritePositionX[i];
+            const offCoordsY = sec1DictionaryValue.spritePositionY[i];
+            const size = [spriteMapCols, spriteMapRows];
+            const sec1Mat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, sec1Meshes, sec1Mat, i, 24.4, MIDDLE_COL + 7.3, -7);
+            this._page1Meshes[`ancientRuinsSecurity1Officer${i}`] = sec1Meshes[i];
+        });
+    }
+
+    private _changeSecurity2Graphic(): void {
+        // Remove old graphic from dev menu, and reset animation values.
+        if (this._page1Meshes.ancientRuinsSecurity2Officer0) {
+            [0, 1, 2].forEach(i => {
+                this._scene.remove(this._page1Meshes[`ancientRuinsSecurity2Officer${i}`]);
+                this._page1Meshes[`ancientRuinsSecurity2Officer${i}`] = null;
+            });
+        }
+        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
+
+        // Create the new graphic from the new value.
+        const sec2DictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[1].appearance, ShirtColor.Red);
+        const sec2Meshes: [Mesh, Mesh, Mesh] = [null, null, null];
+        [0, 1, 2].forEach(i => {
+            const offCoordsX = sec2DictionaryValue.spritePositionX[i];
+            const offCoordsY = sec2DictionaryValue.spritePositionY[i];
+            const size = [spriteMapCols, spriteMapRows];
+            const sec2Mat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            makeMember(this._scene, sec2Meshes, sec2Mat, i, 24.4, MIDDLE_COL + 9.4, -7);
+            this._page1Meshes[`ancientRuinsSecurity2Officer${i}`] = sec2Meshes[i];
         });
     }
 
@@ -1459,6 +1619,14 @@ export class DevMenu {
         //#region AncientRuinsScene Row 3
         let row3Left = groupLeftStart;
         this._page1buttons.changeMedicalOfficerButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        row3Left += 0.070;
+        this._page1buttons.changeScienceOfficerButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        row3Left += 0.070;
+        this._page1buttons.changeLeaderButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        row3Left += 0.070;
+        this._page1buttons.changeSecurity1Button.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        row3Left += 0.070;
+        this._page1buttons.changeSecurity2Button.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
         //#endregion
     //#endregion
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });

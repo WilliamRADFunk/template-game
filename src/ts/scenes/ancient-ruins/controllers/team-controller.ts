@@ -92,7 +92,6 @@ export class TeamCtrl {
 
         const redShirt1CrewDictionaryValue = findMemberValue(this._redShirt1.appearance, ShirtColor.Red);
         [0, 1, 2].forEach((val: number) => {
-            console.log('Making Red Shirt 1');
             const offCoordsX = redShirt1CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt1CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
@@ -102,7 +101,6 @@ export class TeamCtrl {
 
         const redShirt2CrewDictionaryValue = findMemberValue(this._redShirt2.appearance, ShirtColor.Red);
         [0, 1, 2].forEach((val: number) => {
-            console.log('Making Red Shirt 2');
             const offCoordsX = redShirt2CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt2CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
@@ -112,7 +110,6 @@ export class TeamCtrl {
 
         const medicalOfficerCrewDictionaryValue = findMemberValue(this._medicalOfficer.appearance, ShirtColor.Blue);
         [0, 1, 2].forEach((val: number) => {
-            console.log('Making Blue Shirt 1');
             const offCoordsX = medicalOfficerCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = medicalOfficerCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
@@ -122,7 +119,6 @@ export class TeamCtrl {
 
         const scienceOfficerCrewDictionaryValue = findMemberValue(this._scienceOfficer.appearance, ShirtColor.Blue);
         [0, 1, 2].forEach((val: number) => {
-            console.log('Making Blue Shirt 2');
             const offCoordsX = scienceOfficerCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = scienceOfficerCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
@@ -132,7 +128,6 @@ export class TeamCtrl {
 
         const teamLeaderCrewDictionaryValue = findMemberValue(this._teamLeader.appearance, ShirtColor.Yellow);
         [0, 1, 2].forEach((val: number) => {
-            console.log('Making Yellow Shirt ');
             const offCoordsX = teamLeaderCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = teamLeaderCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
