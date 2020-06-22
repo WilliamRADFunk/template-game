@@ -49,6 +49,8 @@ import { makeMember } from "../ancient-ruins/utils/make-member";
 import { findMemberValue, ShirtColor, spriteMapCols, spriteMapRows } from "../ancient-ruins/utils/crew-member-spritemap-values";
 import { makeMemberMaterial } from "../ancient-ruins/utils/make-member-material";
 import { MIDDLE_COL } from "../ancient-ruins/utils/grid-constants";
+import { animateCrewMember } from "../ancient-ruins/utils/animate-crew-member";
+import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-90-degrees-left";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -204,6 +206,36 @@ export class DevMenu {
     private _page3buttons: { [key: string]: ButtonBase } = {};
 
     /**
+     * List of counters on page 1.
+     */
+    private _page1counters: { [key: string]: number } = {};
+
+    /**
+     * List of counters on page 2.
+     */
+    private _page2counters: { [key: string]: number } = {};
+
+    /**
+     * List of counters on page 3.
+     */
+    private _page3counters: { [key: string]: number } = {};
+
+    /**
+     * List of countermaxes on page 1.
+     */
+    private _page1countermaxes: { [key: string]: number } = {};
+
+    /**
+     * List of countermaxes on page 2.
+     */
+    private _page2countermaxes: { [key: string]: number } = {};
+
+    /**
+     * List of countermaxes on page 3.
+     */
+    private _page3countermaxes: { [key: string]: number } = {};
+
+    /**
      * Contains key-value mapping of all meshes used on page 1.
      */
     private _page1Meshes: { [key: string]: Mesh } = {};
@@ -312,6 +344,8 @@ export class DevMenu {
             buttonScale);
     //#endregion
     //#region AncientRuinsScene
+        this._page1counters.ancientRuinsCrew = 0;
+        this._page1countermaxes.ancientRuinsCrew = 479;
         let groupLeftStart = 0.5;
         this._page1textElements.rightTopTitleText = new RightTopTitleText(
             'Ancient Ruins',
@@ -1437,7 +1471,6 @@ export class DevMenu {
                 this._page1Meshes[`ancientRuinsLeaderOfficer${i}`] = null;
             });
         }
-        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
 
         // Create the new graphic from the new value.
         const leadDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[4].appearance, ShirtColor.Yellow);
@@ -1450,6 +1483,11 @@ export class DevMenu {
             makeMember(this._scene, leadMeshes, leadMat, i, 24.4, MIDDLE_COL + 5.2, -7);
             this._page1Meshes[`ancientRuinsLeaderOfficer${i}`] = leadMeshes[i];
         });
+        this._ancientRuinsSpec.crew[4].animationMeshes = leadMeshes;
+        this._ancientRuinsSpec.crew.forEach(cm => {
+            cm.animationCounter = 0;
+            [0, 1, 2].forEach(i => cm.animationMeshes[i] && cm.animationMeshes[i].rotation.set(RAD_90_DEG_LEFT, 0, 0));
+        });
     }
 
     private _changeMedicalOfficerGraphic(): void {
@@ -1460,7 +1498,6 @@ export class DevMenu {
                 this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = null;
             });
         }
-        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
 
         // Create the new graphic from the new value.
         const medDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[2].appearance, ShirtColor.Blue);
@@ -1473,6 +1510,11 @@ export class DevMenu {
             makeMember(this._scene, medMeshes, medMat, i, 24.4, MIDDLE_COL + 1, -7);
             this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = medMeshes[i];
         });
+        this._ancientRuinsSpec.crew[2].animationMeshes = medMeshes;
+        this._ancientRuinsSpec.crew.forEach(cm => {
+            cm.animationCounter = 0;
+            [0, 1, 2].forEach(i => cm.animationMeshes[i] && cm.animationMeshes[i].rotation.set(RAD_90_DEG_LEFT, 0, 0));
+        });
     }
 
     private _changeScienceOfficerGraphic(): void {
@@ -1483,7 +1525,6 @@ export class DevMenu {
                 this._page1Meshes[`ancientRuinsScienceOfficer${i}`] = null;
             });
         }
-        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
 
         // Create the new graphic from the new value.
         const sciDictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[3].appearance, ShirtColor.Blue);
@@ -1496,6 +1537,11 @@ export class DevMenu {
             makeMember(this._scene, sciMeshes, sciMat, i, 24.4, MIDDLE_COL + 3.1, -7);
             this._page1Meshes[`ancientRuinsScienceOfficer${i}`] = sciMeshes[i];
         });
+        this._ancientRuinsSpec.crew[3].animationMeshes = sciMeshes;
+        this._ancientRuinsSpec.crew.forEach(cm => {
+            cm.animationCounter = 0;
+            [0, 1, 2].forEach(i => cm.animationMeshes[i] && cm.animationMeshes[i].rotation.set(RAD_90_DEG_LEFT, 0, 0));
+        });
     }
 
     private _changeSecurity1Graphic(): void {
@@ -1506,7 +1552,6 @@ export class DevMenu {
                 this._page1Meshes[`ancientRuinsSecurity1Officer${i}`] = null;
             });
         }
-        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
 
         // Create the new graphic from the new value.
         const sec1DictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[0].appearance, ShirtColor.Red);
@@ -1519,6 +1564,11 @@ export class DevMenu {
             makeMember(this._scene, sec1Meshes, sec1Mat, i, 24.4, MIDDLE_COL + 7.3, -7);
             this._page1Meshes[`ancientRuinsSecurity1Officer${i}`] = sec1Meshes[i];
         });
+        this._ancientRuinsSpec.crew[0].animationMeshes = sec1Meshes;
+        this._ancientRuinsSpec.crew.forEach(cm => {
+            cm.animationCounter = 0;
+            [0, 1, 2].forEach(i => cm.animationMeshes[i] && cm.animationMeshes[i].rotation.set(RAD_90_DEG_LEFT, 0, 0));
+        });
     }
 
     private _changeSecurity2Graphic(): void {
@@ -1529,7 +1579,6 @@ export class DevMenu {
                 this._page1Meshes[`ancientRuinsSecurity2Officer${i}`] = null;
             });
         }
-        this._ancientRuinsSpec.crew.forEach(cm => cm.animationCounter = 0);
 
         // Create the new graphic from the new value.
         const sec2DictionaryValue = findMemberValue(this._ancientRuinsSpec.crew[1].appearance, ShirtColor.Red);
@@ -1541,6 +1590,11 @@ export class DevMenu {
             const sec2Mat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, sec2Meshes, sec2Mat, i, 24.4, MIDDLE_COL + 9.4, -7);
             this._page1Meshes[`ancientRuinsSecurity2Officer${i}`] = sec2Meshes[i];
+        });
+        this._ancientRuinsSpec.crew[1].animationMeshes = sec2Meshes;
+        this._ancientRuinsSpec.crew.forEach(cm => {
+            cm.animationCounter = 0;
+            [0, 1, 2].forEach(i => cm.animationMeshes[i] && cm.animationMeshes[i].rotation.set(RAD_90_DEG_LEFT, 0, 0));
         });
     }
 
@@ -1798,6 +1852,24 @@ export class DevMenu {
             this._textElements[el]
             && this._textElements[el].element.style.visibility === 'visible'
             && this._textElements[el].cycle());
+        
+        if (this._currentPage === 1) {
+            // Move all counters up by one and reset if they hit the ceiling
+            Object.keys(this._page1counters).forEach(counter => {
+                this._page1counters[counter]++;
+                if (this._page1counters[counter] > this._page1countermaxes[counter]) {
+                    this._page1counters[counter] = 0;
+                }
+            });
+
+            [ 0, 1, 2, 3, 4 ].forEach(i => animateCrewMember(this._ancientRuinsSpec.crew[i]));
+
+            if (this._page1counters.ancientRuinsCrew % 120 === 0) {
+                [ 0, 1, 2, 3, 4 ].forEach(i => {
+                    [0, 1, 2].forEach(x => this._ancientRuinsSpec.crew[i].animationMeshes[x].rotateZ(RAD_90_DEG_LEFT));
+                });
+            }
+        }
     }
 
 }
