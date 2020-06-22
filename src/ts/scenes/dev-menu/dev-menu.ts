@@ -345,7 +345,7 @@ export class DevMenu {
     //#endregion
     //#region AncientRuinsScene
         this._page1counters.ancientRuinsCrew = 0;
-        this._page1countermaxes.ancientRuinsCrew = 479;
+        this._page1countermaxes.ancientRuinsCrew = 719;
         let groupLeftStart = 0.5;
         this._page1textElements.rightTopTitleText = new RightTopTitleText(
             'Ancient Ruins',
@@ -1864,7 +1864,7 @@ export class DevMenu {
 
             [ 0, 1, 2, 3, 4 ].forEach(i => animateCrewMember(this._ancientRuinsSpec.crew[i]));
 
-            if (this._page1counters.ancientRuinsCrew % 120 === 0) {
+            if (this._page1counters.ancientRuinsCrew % 180 === 0) {
                 [ 0, 1, 2, 3, 4 ].forEach(i => {
                     [0, 1, 2].forEach(x => this._ancientRuinsSpec.crew[i].animationMeshes[x].rotateZ(RAD_90_DEG_LEFT));
                 });
