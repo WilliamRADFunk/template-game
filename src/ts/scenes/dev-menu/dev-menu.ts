@@ -44,18 +44,27 @@ import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-b
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
-import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor, TeamMemberDirection, TeamMemberStatus, TeamMemberAppearance } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor, TeamMemberDirection, TeamMemberStatus, TeamMemberAppearance, TeamMember } from "../../models/ancient-ruins-specifications";
 import { makeMember } from "../ancient-ruins/utils/make-member";
 import { findMemberValue, ShirtColor, spriteMapCols, spriteMapRows } from "../ancient-ruins/utils/crew-member-spritemap-values";
 import { makeMemberMaterial } from "../ancient-ruins/utils/make-member-material";
 import { MIDDLE_COL } from "../ancient-ruins/utils/grid-constants";
 import { animateCrewMember } from "../ancient-ruins/utils/animate-crew-member";
 import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-90-degrees-left";
+import { rotateCrewMember } from "../ancient-ruins/utils/rotate-crew-member";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
 const buttonScale: number = 2;
+
+function cycleCrewMemberDirection(teamMember: TeamMember): void {
+    let teamMemberDirectionNum = teamMember.currDirection + 1;
+    if (teamMemberDirectionNum >= Object.keys(TeamMemberDirection).length / 2) {
+        teamMemberDirectionNum = 0;
+    }
+    teamMember.currDirection = teamMemberDirectionNum;
+}
 
 /**
  * @class
@@ -73,7 +82,7 @@ export class DevMenu {
                 animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Dark_Black,
-                currDirection: TeamMemberDirection.Up,
+                currDirection: TeamMemberDirection.Down,
                 currTextureIndex: 0,
                 health: 100,
                 name: 'Bingo Bango',
@@ -86,7 +95,7 @@ export class DevMenu {
                 animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Bald,
-                currDirection: TeamMemberDirection.Up,
+                currDirection: TeamMemberDirection.Down,
                 currTextureIndex: 0,
                 health: 100,
                 name: 'Clooge McCloogy',
@@ -99,7 +108,7 @@ export class DevMenu {
                 animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Blond,
-                currDirection: TeamMemberDirection.Up,
+                currDirection: TeamMemberDirection.Down,
                 currTextureIndex: 0,
                 health: 100,
                 name: 'Feelz Good',
@@ -112,7 +121,7 @@ export class DevMenu {
                 animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Red,
-                currDirection: TeamMemberDirection.Up,
+                currDirection: TeamMemberDirection.Down,
                 currTextureIndex: 0,
                 health: 100,
                 name: 'Glock',
@@ -125,7 +134,7 @@ export class DevMenu {
                 animationCounter: 0,
                 animationMeshes: [null, null, null],
                 appearance: TeamMemberAppearance.Human_Light_Black,
-                currDirection: TeamMemberDirection.Up,
+                currDirection: TeamMemberDirection.Down,
                 currTextureIndex: 0,
                 health: 100,
                 name: 'James Kirkland',
@@ -345,7 +354,7 @@ export class DevMenu {
     //#endregion
     //#region AncientRuinsScene
         this._page1counters.ancientRuinsCrew = 0;
-        this._page1countermaxes.ancientRuinsCrew = 719;
+        this._page1countermaxes.ancientRuinsCrew = 1439;
         let groupLeftStart = 0.5;
         this._page1textElements.rightTopTitleText = new RightTopTitleText(
             'Ancient Ruins',
@@ -1866,7 +1875,9 @@ export class DevMenu {
 
             if (this._page1counters.ancientRuinsCrew % 180 === 0) {
                 [ 0, 1, 2, 3, 4 ].forEach(i => {
-                    [0, 1, 2].forEach(x => this._ancientRuinsSpec.crew[i].animationMeshes[x].rotateZ(RAD_90_DEG_LEFT));
+                    cycleCrewMemberDirection(this._ancientRuinsSpec.crew[i]);
+                    this._ancientRuinsSpec.crew[i].animationCounter = 0;
+                    rotateCrewMember(this._ancientRuinsSpec.crew[i]);
                 });
             }
         }

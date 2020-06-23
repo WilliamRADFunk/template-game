@@ -28,7 +28,7 @@ export class FreestyleSquareButton extends ButtonBase {
 
         this._scale = scale || 1;
 
-        this.element.classList.add('fa', icon);
+        this.element.classList.add('fa', ...icon.split(' '));
         this.element.style.borderRadius = '10px';
         document.body.appendChild(this.element);
 
@@ -46,6 +46,6 @@ export class FreestyleSquareButton extends ButtonBase {
         this.element.style.height = `${this._scale * (0.06 * position.height)}px`;
         this.element.style.top = `${position.top}px`;
         this.element.style.left = `${position.left}px`;
-        this.element.style.fontSize = `${this._scale * (0.022 * position.width)}px`;
+        this.element.style.fontSize = `${this._scale * (0.029 * position.width)}px`;
     }
 }

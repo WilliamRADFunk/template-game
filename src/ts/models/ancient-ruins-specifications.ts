@@ -96,13 +96,13 @@ export enum TeamMemberAppearance {
 
 export enum TeamMemberDirection {
     'Down' = 0,
-    'Down-Left' = 1,
-    'Down-Right' = 2,
-    'Left' = 3,
-    'Right' = 4,
-    'Up' = 5,
-    'Up-Left' = 6,
-    'Up-Right' = 7
+    'Down_Left' = 1,
+    'Left' = 2,
+    'Up_Left' = 3,
+    'Up' = 4,
+    'Up_Right' = 5,
+    'Right' = 6,
+    'Down_Right' = 7,
 }
 
 export enum TeamMemberStatus {
