@@ -420,6 +420,10 @@ export class TileCtrl {
         return this._groundPlantLookupTable[key] || this._groundPlantBase;
     }
 
+    public getLandingZoneValue(): number {
+        return 5000;
+    }
+
     public getTreeLeafBaseValue(): number {
         return this._ancientRuinsSpec.treeLeafColor !== TreeLeafColor.None ? this._treeLeafBase : 0;
     }

@@ -50,7 +50,7 @@ import { findMemberValue, ShirtColor, spriteMapCols, spriteMapRows } from "../an
 import { makeMemberMaterial } from "../ancient-ruins/utils/make-member-material";
 import { MIDDLE_COL } from "../ancient-ruins/utils/grid-constants";
 import { animateCrewMember } from "../ancient-ruins/utils/animate-crew-member";
-import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-90-degrees-left";
+import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-x-degrees-left";
 import { rotateCrewMember } from "../ancient-ruins/utils/rotate-crew-member";
 
 // const border: string = '1px solid #FFF';

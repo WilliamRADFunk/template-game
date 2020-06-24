@@ -20,13 +20,23 @@ import {
 import { TileCtrl } from "./tile-controller";
 import { RandomWithBounds } from "../../../utils/random-with-bounds";
 import { LayerYPos } from "../utils/layer-y-values";
-import { RAD_90_DEG_LEFT } from "../utils/radians-90-degrees-left";
+import { RAD_90_DEG_LEFT } from "../utils/radians-x-degrees-left";
 import { spriteMapCols, spriteMapRows } from "../utils/tile-spritemap-values";
 import { MIN_ROWS, MAX_ROWS, MIN_COLS, MAX_COLS, MIDDLE_ROW, MIDDLE_COL } from "../utils/grid-constants";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
 const layerSkyYPos = 6;
+
+function shuffle(arr: any[]): any[] {
+    for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * i);
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+}
 
 export const getXPos = function(col: number): number {
     return -5.8 + (col/2.5);
@@ -119,6 +129,8 @@ export class GridCtrl {
         this._scene.add(megaMesh);
 
         this._createClouds();
+
+        this._createLandingZone();
     }
 
     /**
@@ -130,6 +142,18 @@ export class GridCtrl {
     private _checkGrassSpread(row: number, col: number): number {
         // If non-zero, then it's a grass tile, thus increasing grass spread another 15%
         return (this._isInBounds(row, col) && this._grid[row][col][1] === 1) ? this._ancientRuinsSpec.plantSpreadability : 0;
+    }
+
+    /**
+     * Checks surrounding tiles for obstructions to determine if area is good landing area.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     * @param rowMod row mod to discern direction
+     * @param colMod col mod to discern direction
+     * @returns TRUE if valid landing zone | FALSE if there are obstructions
+     */
+    private _checkPotentialLandingZone(row: number, col: number, rowMod: number, colMod: number): boolean {
+        return false;
     }
 
     /**
@@ -190,34 +214,112 @@ export class GridCtrl {
     }
 
     /**
-     * Uses the tile grid to make meshes that match tile values.
-     * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     * Finds a place along the edge of one of the four sides of the map to place the away team.
      */
-    private _createTraverseLevelMeshes(megaMesh: Object3D): void {
-        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
-            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this._isInBounds(row, col) && this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
-                    const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2]);
-                    const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2], true);
-                    const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2]);
-                    const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2], true);
-
-                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][2]];
-
-                    // If material type has a second variation, randomize between the two.
-                    if (this._tileCtrl.getGridDicVariation(this._grid[row][col][2]) && fiftyFifty()) {
-                        material = this._materialsMap[this._grid[row][col][2] + 1];
+    private _createLandingZone(): void {
+        const bottomRowColModVals = [ [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2] ];
+        const leftRowColModVals = [ [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2] ];
+        const rightRowColModVals = [ [0, 0], [0, -1], [0, -2], [1, 0], [1, -1], [1, -2], [2, 0], [2, -1], [2, -2] ];
+        const topEdgeRowColModVals = [ [0, 0], [0, 1], [0, 2], [-1, 0], [-1, 1], [-1, 2], [-2, 0], [-2, 1], [-2, 2] ];
+        const sideOfMapPreference = shuffle([1, 2, 3, 4]);
+        const landZoneVal = this._tileCtrl.getLandingZoneValue();
+        let isFinished = false;
+        do {
+            switch(sideOfMapPreference[0]) {
+                case 1: { // Bottom of screen
+                    // Middle toward right first.
+                    for (let row = MIN_ROWS; row < 4; row++) {
+                        for (let col = MIDDLE_COL; col < MAX_COLS - 1; col++) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, 1, 1)) {
+                                isFinished = true;
+                                bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
                     }
-
-                    const tile = new Mesh( this._geometry, material );
-                    tile.scale.set(scaleX, scaleZ, scaleZ);
-                    tile.position.set(posX, LayerYPos.LAYER_1, posZ)
-                    tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-                    tile.updateMatrix();
-                    megaMesh.add(tile);
+                    // Middle toward left second.
+                    for (let row = MIN_ROWS; row < 4; row++) {
+                        for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, 1, -1)) {
+                                isFinished = true;
+                                bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 2: { // Top of screen
+                    // Middle toward right first.
+                    for (let row = MAX_ROWS; row > MAX_ROWS - 4; row++) {
+                        for (let col = MIDDLE_COL; col < MAX_COLS - 1; col++) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, 1, 1)) {
+                                isFinished = true;
+                                topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    // Middle toward left second.
+                    for (let row = MAX_ROWS; row > MAX_ROWS - 4; row++) {
+                        for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, 1, -1)) {
+                                isFinished = true;
+                                topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 3: { // Left side of screen
+                    // Middle toward top first.
+                    for (let col = MIN_COLS; col < 4; col++) {
+                        for (let row = MIDDLE_ROW; row < MAX_ROWS - 2; row++) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, 1, 1)) {
+                                isFinished = true;
+                                leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    // Middle toward bottom second.
+                    for (let col = MIN_COLS; col < 4; col++) {
+                        for (let row = MIDDLE_ROW; row < MIN_ROWS + 2; row--) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, -1, 1)) {
+                                isFinished = true;
+                                leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 4: { // Right side of screen
+                    // Middle toward top first.
+                    for (let col = MAX_COLS; col > MAX_COLS - 4; col--) {
+                        for (let row = MIDDLE_ROW; row < MAX_ROWS - 2; row++) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, 1, -1)) {
+                                isFinished = true;
+                                rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    // Middle toward bottom second.
+                    for (let col = MAX_COLS; col > MAX_COLS - 4; col--) {
+                        for (let row = MIDDLE_ROW; row < MIN_ROWS + 2; row--) {
+                            if (this._grid[row][col][1] === 0 && this._checkPotentialLandingZone(row, col, -1, -1)) {
+                                isFinished = true;
+                                rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][1] = landZoneVal);
+                                break;
+                            }
+                        }
+                    }
+                    break;
                 }
             }
-        }
+        } while (sideOfMapPreference.length && !isFinished);
     }
 
     /**
@@ -245,6 +347,37 @@ export class GridCtrl {
                     tile.position.set(posX, LayerYPos.LAYER_2, posZ)
                     tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                     (tile.material as MeshBasicMaterial).opacity = 1;
+                    tile.updateMatrix();
+                    megaMesh.add(tile);
+                }
+            }
+        }
+    }
+
+    /**
+     * Uses the tile grid to make meshes that match tile values.
+     * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     */
+    private _createTraverseLevelMeshes(megaMesh: Object3D): void {
+        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                if (this._isInBounds(row, col) && this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
+                    const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2]);
+                    const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2], true);
+                    const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2]);
+                    const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2], true);
+
+                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][2]];
+
+                    // If material type has a second variation, randomize between the two.
+                    if (this._tileCtrl.getGridDicVariation(this._grid[row][col][2]) && fiftyFifty()) {
+                        material = this._materialsMap[this._grid[row][col][2] + 1];
+                    }
+
+                    const tile = new Mesh( this._geometry, material );
+                    tile.scale.set(scaleX, scaleZ, scaleZ);
+                    tile.position.set(posX, LayerYPos.LAYER_1, posZ)
+                    tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                     tile.updateMatrix();
                     megaMesh.add(tile);
                 }
@@ -352,6 +485,7 @@ export class GridCtrl {
     private _makeCemetery(): void {
         // TODO: Scatter tombstones, and funeral plots all about. Have at least on mausoleum styled structure somewhere.
         // Must make sure any interactable cemetery tiles are not on flooded tiles.
+        console.log('_makeCemetery', 'called');
     }
 
     /**
@@ -360,6 +494,7 @@ export class GridCtrl {
     private _makeCity(): void {
         // TODO: Cover upper 2/3rds of the map with buildings, roads, lighting, vehicles.
         // Optionally choose to do nothing, add craters, or other signs of how the city was destroyed.
+        console.log('_makeCity', 'called');
     }
 
     /**
@@ -543,6 +678,7 @@ export class GridCtrl {
     private _makeLibrary(): void {
         // TODO: either a cluster of small connected buildings, or one large building. Rows of shelves for scrolls, books, or pictures.
         // Depending on tech level could actually be a server farm for digital data storage.
+        console.log('_makeLibrary', 'called');
     }
 
     /**
@@ -587,6 +723,7 @@ export class GridCtrl {
      */
     private _makeMilitaryBase(): void {
         // TODO: centrally located with large hangers, concrete bunkers, missile silos, etc.
+        console.log('_makeMilitaryBase', 'called');
     }
 
     /**
@@ -595,6 +732,7 @@ export class GridCtrl {
     private _makeMonastery(): void {
         // TODO: Randomly places a large religious structure somewhere in center of map.
         // If in water biome like large lake, must make sure a bridge reaches an entrance.
+        console.log('_makeMonastery', 'called');
     }
 
     /**
@@ -1060,6 +1198,7 @@ export class GridCtrl {
     private _makeTown(): void {
         // TODO: Starting roughly at the center, randomly choose between scattered, circular, square, or row format
         // Add 6-10 small structures, and a rough road. Randomly decide whether to put small funeral plot.
+        console.log('_makeTown', 'called');
     }
 
     /**
@@ -1200,6 +1339,7 @@ export class GridCtrl {
     private _makeVillage(): void {
         // TODO: Randomly choose between top-left, top-right, and center to place 3-4 small structure
         // Add a well-like structure, and some fencing for animals.
+        console.log('_makeVillage', 'called');
     }
 
     /**
