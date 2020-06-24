@@ -6,7 +6,7 @@ import {
     RAD_180_DEG_LEFT,
     RAD_225_DEG_LEFT,
     RAD_270_DEG_LEFT,
-    RAD_315_DEG_LEFT } from "./radians-90-degrees-left";
+    RAD_315_DEG_LEFT } from "./radians-x-degrees-left";
 
 export function rotateCrewMember(teamMember: TeamMember): void {
     const zRot = teamMember.animationMeshes[0].rotation.z;

@@ -2,7 +2,7 @@ import { Mesh, MeshBasicMaterial, Scene } from "three";
 import { GEOMETRY } from "./tile-geometry";
 import { getXPos, getZPos } from "../controllers/grid-controller";
 import { LayerYPos } from "./layer-y-values";
-import { RAD_90_DEG_LEFT } from "./radians-90-degrees-left";
+import { RAD_90_DEG_LEFT } from "./radians-x-degrees-left";
 
 /**
  * Makes all the team member meshes for the game map.
