@@ -15,6 +15,7 @@ import { SettingsCtrl } from "../../controls/controllers/settings-controllers";
 import { ButtonBase } from "../../controls/buttons/button-base";
 import { TextBase } from "../../controls/text/text-base";
 import { TeamCtrl } from "./controllers/team-controller";
+import { TileCtrl } from "./controllers/tile-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -115,6 +116,11 @@ export class AncientRuins {
     private _textures: { [key: string]: Texture } = {};
 
     /**
+     * Reference to this scene's tile controller.
+     */
+    private _tileCtrl: TileCtrl;
+
+    /**
      * Constructor for the Ancient Ruins (Scene) class
      * @param scene     graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param textures  all the needed textures for ancient ruins.
@@ -133,8 +139,9 @@ export class AncientRuins {
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
 
-        this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec);
-        this._teamCtrl = new TeamCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._gridCtrl);
+        this._tileCtrl = new TileCtrl(ancientRuinsSpec);
+        this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl);
+        this._teamCtrl = new TeamCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._gridCtrl, this._tileCtrl.getLandingZoneValue());
 
         this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
         this._descTextPanel.toggleOpacity();
@@ -174,9 +181,9 @@ export class AncientRuins {
                 const tileName = el && el.object && el.object.name;
                 const tileSplit = tileName.split('-');
                 if (tileSplit.length === 3) {
-                    const tileGround = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 1);
-                    const tileTraverse = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 2);
-                    const tileOverhead = this._gridCtrl.getTileValue(Number(tileSplit[1]), Number(tileSplit[2]), 3);
+                    const tileGround = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 1);
+                    const tileTraverse = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 2);
+                    const tileOverhead = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 3);
                     const desc = `
                         <table>
                             ${tileOverhead ? `
