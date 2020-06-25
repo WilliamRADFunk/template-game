@@ -223,12 +223,12 @@ export class GridCtrl {
         const leftRowColModVals = [ [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2] ];
         const rightRowColModVals = [ [0, 0], [0, -1], [0, -2], [1, 0], [1, -1], [1, -2], [2, 0], [2, -1], [2, -2] ];
         const topEdgeRowColModVals = [ [0, 0], [0, 1], [0, 2], [-1, 0], [-1, 1], [-1, 2], [-2, 0], [-2, 1], [-2, 2] ];
-        const sideOfMapPreference = shuffle([1, 1, 2, 3, 4]);
+        const sideOfMapPreference = shuffle(shuffle(shuffle([1, 2, 3, 4, 1])));
         const landZoneVal = this._tileCtrl.getLandingZoneValue();
         let isFinished = false;
-        
-        console.log('_createLandingZone', 'Called', sideOfMapPreference[0]);
+
         do {
+            console.log('_createLandingZone', 'Called', sideOfMapPreference[0]);
             switch(sideOfMapPreference[0]) {
                 case 1: { // Bottom of screen
                     // Middle toward right first.
