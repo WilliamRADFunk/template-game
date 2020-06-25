@@ -223,10 +223,11 @@ export class GridCtrl {
         const leftRowColModVals = [ [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2] ];
         const rightRowColModVals = [ [0, 0], [0, -1], [0, -2], [1, 0], [1, -1], [1, -2], [2, 0], [2, -1], [2, -2] ];
         const topEdgeRowColModVals = [ [0, 0], [0, 1], [0, 2], [-1, 0], [-1, 1], [-1, 2], [-2, 0], [-2, 1], [-2, 2] ];
-        const sideOfMapPreference = shuffle([1, 2, 3, 4]);
+        const sideOfMapPreference = shuffle([1, 1, 2, 3, 4]);
         const landZoneVal = this._tileCtrl.getLandingZoneValue();
         let isFinished = false;
-
+        
+        console.log('_createLandingZone', 'Called', sideOfMapPreference[0]);
         do {
             switch(sideOfMapPreference[0]) {
                 case 1: { // Bottom of screen
@@ -254,7 +255,7 @@ export class GridCtrl {
                 }
                 case 2: { // Top of screen
                     // Middle toward right first.
-                    for (let row = MAX_ROWS; row > MAX_ROWS - 2; row++) {
+                    for (let row = MAX_ROWS; row > MAX_ROWS - 2; row--) {
                         for (let col = MIDDLE_COL; col < MAX_COLS - 2; col++) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
                                 isFinished = true;
@@ -264,7 +265,7 @@ export class GridCtrl {
                         }
                     }
                     // Middle toward left second.
-                    for (let row = MAX_ROWS; row > MAX_ROWS - 2; row++) {
+                    for (let row = MAX_ROWS; row > MAX_ROWS - 2; row--) {
                         for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
                                 isFinished = true;
