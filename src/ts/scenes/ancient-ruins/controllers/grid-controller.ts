@@ -21,7 +21,7 @@ import { TileCtrl } from "./tile-controller";
 import { RandomWithBounds } from "../../../utils/random-with-bounds";
 import { LayerYPos } from "../utils/layer-y-values";
 import { RAD_90_DEG_LEFT } from "../utils/radians-x-degrees-left";
-import { spriteMapCols, spriteMapRows } from "../utils/tile-spritemap-values";
+import { spriteMapCols, spriteMapRows } from "../utils/tile-values";
 import { MIN_ROWS, MAX_ROWS, MIN_COLS, MAX_COLS, MIDDLE_ROW, MIDDLE_COL } from "../utils/grid-constants";
 
 const fiftyFifty = () => Math.random() < 0.5;
@@ -154,6 +154,7 @@ export class GridCtrl {
         // If even one of the 9 cells is out of bounsd or blocked, then it isn't a valid landing zone.
         return !cellsToCheck.some(rowColMods => 
             !this._isInBounds(row + rowColMods[0], col + rowColMods[1])
+            || !!this._grid[row + rowColMods[0]][col + rowColMods[1]][0]
             || !!this._grid[row + rowColMods[0]][col + rowColMods[1]][2]
             || !!this._grid[row + rowColMods[0]][col + rowColMods[1]][3]);
     }
@@ -236,7 +237,7 @@ export class GridCtrl {
                         for (let col = MIDDLE_COL; col < MAX_COLS - 2; col++) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, bottomRowColModVals)) {
                                 isFinished = true;
-                                bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal + 2);
+                                bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 2);
                                 break;
                             }
                         }
@@ -246,7 +247,7 @@ export class GridCtrl {
                         for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, bottomRowColModVals)) {
                                 isFinished = true;
-                                bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal + 2);
+                                bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 2);
                                 break;
                             }
                         }
@@ -259,7 +260,7 @@ export class GridCtrl {
                         for (let col = MIDDLE_COL; col < MAX_COLS - 2; col++) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
                                 isFinished = true;
-                                topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal);
+                                topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal);
                                 break;
                             }
                         }
@@ -269,7 +270,7 @@ export class GridCtrl {
                         for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
                                 isFinished = true;
-                                topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal);
+                                topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal);
                                 break;
                             }
                         }
@@ -282,7 +283,7 @@ export class GridCtrl {
                         for (let row = MIDDLE_ROW; row < MAX_ROWS - 2; row++) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, leftRowColModVals)) {
                                 isFinished = true;
-                                leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal + 3);
+                                leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 3);
                                 break;
                             }
                         }
@@ -292,7 +293,7 @@ export class GridCtrl {
                         for (let row = MIDDLE_ROW; row < MIN_ROWS + 2; row--) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, leftRowColModVals)) {
                                 isFinished = true;
-                                leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal + 3);
+                                leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 3);
                                 break;
                             }
                         }
@@ -305,7 +306,7 @@ export class GridCtrl {
                         for (let row = MIDDLE_ROW; row < MAX_ROWS - 2; row++) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, rightRowColModVals)) {
                                 isFinished = true;
-                                rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal + 1);
+                                rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 1);
                                 break;
                             }
                         }
@@ -315,7 +316,7 @@ export class GridCtrl {
                         for (let row = MIDDLE_ROW; row < MIN_ROWS + 2; row--) {
                             if (this._isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, rightRowColModVals)) {
                                 isFinished = true;
-                                rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][2] = landZoneVal + 1);
+                                rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 1);
                                 break;
                             }
                         }
@@ -1565,5 +1566,16 @@ export class GridCtrl {
      */
     public getTileValue(row: number, col: number, elev: number): number {
         return this._isInBounds(row, col) ? this._grid[row][col][elev] : -1;
+    }
+
+    /**
+     * Updates a grid tile with crew value
+     */
+    public updateCrewInGrid(row: number, col: number, crewMember: number): number {
+        const tileVal: number = this._tileCtrl.getCrewValue(crewMember);
+        if (this._isInBounds(row, col) && (!this._grid[row][col][2] || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
+            this._grid[row][col][2] = tileVal;
+        }
+        return tileVal;
     }
 }

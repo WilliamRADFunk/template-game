@@ -773,6 +773,18 @@ export const gridDictionary: GridDictionary = {
     3022: { devDescription: 'Pier - Ends on right (Wood)', gameDescription: 'Eastern edge of a disintegrating pier', spritePosition: [0, 15], blocker: true },
     3023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
     3024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
+
+    // Away team references.
+    6000: { devDescription: 'Team leader', gameDescription: 'Team leader: {0} {1}', spritePosition: [-1, -1], blocker: true },
+    6001: { devDescription: 'Science Officer', gameDescription: 'Science Officer: {0} {1}', spritePosition: [-1, -1], blocker: true },
+    6002: { devDescription: 'Medical Officer', gameDescription: 'Medical Officer: {0} {1}', spritePosition: [-1, -1], blocker: true },
+    6003: { devDescription: 'Security 1', gameDescription: 'Security: {0} {1}', spritePosition: [-1, -1], blocker: true },
+    6004: { devDescription: 'Security 2', gameDescription: 'Security: {0} {1}', spritePosition: [-1, -1], blocker: true },
+    
+    10000: { devDescription: 'Landing Zone (Top of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
+    10001: { devDescription: 'Landing Zone (Right of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
+    10002: { devDescription: 'Landing Zone (Bottom of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
+    10003: { devDescription: 'Landing Zone (Left of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
 };
 
 export const spriteMapCols = 32;

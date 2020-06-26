@@ -8,7 +8,7 @@ import { SceneType } from "../../models/scene-type";
 import { ControlPanel } from "../../controls/panels/control-panel";
 import { getIntersections } from "../../utils/get-intersections";
 import { GridCtrl } from "./controllers/grid-controller";
-import { AncientRuinsSpecifications } from "../../models/ancient-ruins-specifications";
+import { AncientRuinsSpecifications, TeamMember } from "../../models/ancient-ruins-specifications";
 import { PanelBase } from "../../controls/panels/panel-base";
 import { TileDescriptionText } from "./custom-controls/tile-description-text";
 import { SettingsCtrl } from "../../controls/controllers/settings-controllers";
@@ -140,8 +140,18 @@ export class AncientRuins {
         window.addEventListener('resize', this._listenerRef, false);
 
         this._tileCtrl = new TileCtrl(ancientRuinsSpec);
+
+        // This line must run after tile controller instantiation, but before grid or team controller.
+        this._ancientRuinsSpec.crew.forEach((member: TeamMember, index: number) => member.tileValue = this._tileCtrl.getCrewValue(index));
+
         this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl);
-        this._teamCtrl = new TeamCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._gridCtrl, this._tileCtrl.getLandingZoneValue());
+
+        this._teamCtrl = new TeamCtrl(
+            this._scene,
+            this._textures,
+            this._ancientRuinsSpec,
+            this._gridCtrl,
+            this._tileCtrl);
 
         this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
         this._descTextPanel.toggleOpacity();
@@ -181,6 +191,7 @@ export class AncientRuins {
                 const tileName = el && el.object && el.object.name;
                 const tileSplit = tileName.split('-');
                 if (tileSplit.length === 3) {
+                    const tileSpecial = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 0);
                     const tileGround = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 1);
                     const tileTraverse = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 2);
                     const tileOverhead = this._gridCtrl.getTileDescription(Number(tileSplit[1]), Number(tileSplit[2]), 3);
@@ -203,15 +214,25 @@ export class AncientRuins {
                             ${tileGround ? `
                                 <tr>
                                     <th>Below:&nbsp;</th>
-                                    <td>${tileGround}</td>
+                                    <td style="padding-bottom: 3px;">${tileGround}</td>
+                                </tr>` :
+                                ''
+                            }
+                            ${tileSpecial ? `
+                                <tr>
+                                    <th>Notes:&nbsp;</th>
+                                    <td>${tileSpecial}</td>
                                 </tr>` :
                                 ''
                             }
                         </table>
                     `;
                     this._descText.update(desc);
-                }
 
+                    if (tileSplit[0] === 'crew') {
+                        this._teamCtrl.selectCrewMember(Number(tileSplit[1]), Number(tileSplit[2]));
+                    }
+                }
             });
         };
         document.onmousemove = event => {

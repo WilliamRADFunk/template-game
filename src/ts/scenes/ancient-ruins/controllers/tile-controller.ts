@@ -5,7 +5,7 @@ import {
     PlantColor,
     TreeTrunkColor,
     TreeLeafColor} from "../../../models/ancient-ruins-specifications";
-import { gridDictionary } from "../utils/tile-spritemap-values";
+import { gridDictionary } from "../utils/tile-values";
 
 export class TileCtrl {
     private _ancientRuinsSpec: AncientRuinsSpecifications;
@@ -15,6 +15,11 @@ export class TileCtrl {
     private _groundGrassEnd: number;
     // Lookup table for grass/plant tiles when assigning edge graphics.
     private _groundPlantLookupTable: { [key: string]: number };
+    private _medicalOfficer: number;
+    private _redshirt1: number;
+    private _redshirt2: number;
+    private _scienceOfficer: number;
+    private _teamLeader: number;
     private _treeLeafBase: number;
     private _treeLeafEnd: number;
     private _treeLeafLookupTable: { [key: string]: number };
@@ -40,6 +45,12 @@ export class TileCtrl {
         this._treeTrunkEnd = this._treeTrunkBase + 19;
         this._bridgeBase = 3000;
         this._bridgeEnd = 3999;
+        
+        this._teamLeader = 6000;
+        this._scienceOfficer = 6001;
+        this._medicalOfficer = 6002;
+        this._redshirt1 = 6003;
+        this._redshirt2 = 6004;
 
         this._groundPlantLookupTable = {
             '0000': this._groundPlantBase,
@@ -380,6 +391,26 @@ export class TileCtrl {
         return this._bridgeBase + key;
     }
 
+    public getCrewValue(index: number): number {
+        switch(index) {
+            case 0: {
+                return this._redshirt1;
+            }
+            case 1: {
+                return this._redshirt2;
+            }
+            case 2: {
+                return this._medicalOfficer;
+            }
+            case 3: {
+                return this._scienceOfficer;
+            }
+            case 4: {
+                return this._teamLeader;
+            }
+        }
+    }
+
     public getGridDicCustomSize(key: number): [number, number] {
         return gridDictionary[key].customSize || null;
     }
@@ -421,7 +452,7 @@ export class TileCtrl {
     }
 
     public getLandingZoneValue(): number {
-        return 5000;
+        return 10000;
     }
 
     public getTreeLeafBaseValue(): number {

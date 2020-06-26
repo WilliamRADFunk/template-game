@@ -9,6 +9,10 @@ import { makeMember } from "../utils/make-member";
 import { spriteMapCols, spriteMapRows, findMemberValue, ShirtColor } from "../utils/crew-member-spritemap-values";
 import { MIDDLE_COL, MAX_ROWS, MIN_COLS, MIN_ROWS, MAX_COLS } from "../utils/grid-constants";
 import { rotateCrewMember } from "../utils/rotate-crew-member";
+import { gridDictionary } from "../utils/tile-values";
+import { formatString } from "../../../utils/format-string";
+import { RankAbbreviationsMap } from "../../../utils/rank-map";
+import { TileCtrl } from "./tile-controller";
 
 export class TeamCtrl {
     /**
@@ -63,6 +67,11 @@ export class TeamCtrl {
     ];
 
     /**
+     * Reference to this scene's tile controller.
+     */
+    private _tileCtrl: TileCtrl;
+
+    /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
@@ -72,17 +81,19 @@ export class TeamCtrl {
      */
     private _textures: { [key: string]: Texture } = {};
 
-    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications, gridCtrl: GridCtrl, landingTileValue: number) {
+    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications, gridCtrl: GridCtrl, tileCtrl: TileCtrl) {
         this._scene = scene;
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
         this._gridCtrl = gridCtrl;
+        this._tileCtrl = tileCtrl;
+        const landingTileValue = this._tileCtrl.getLandingZoneValue();
 
         const landingTiles: number[][] = [];
 
         for (let row = MIN_ROWS; row <= MAX_ROWS; row++) {
             for (let col = MIN_COLS; col <= MAX_COLS; col++) {
-                if (this._gridCtrl.getTileValue(row, col, 2) >= landingTileValue && this._gridCtrl.getTileValue(row, col, 2) < landingTileValue + 4) {
+                if (this._gridCtrl.getTileValue(row, col, 0) >= landingTileValue) {
                     landingTiles.push([row, col]);
                 }
             }
@@ -92,7 +103,7 @@ export class TeamCtrl {
             const firstTile = landingTiles[0];
             const lowestRowVal = Math.min(...landingTiles.map(rowCol => rowCol[0]));
             const lowestColVal = Math.min(...landingTiles.map(rowCol => rowCol[1]));
-            switch(this._gridCtrl.getTileValue(firstTile[0], firstTile[1], 2)) {
+            switch(this._gridCtrl.getTileValue(firstTile[0], firstTile[1], 0)) {
                 // At top of screen. Point team downward.
                 case landingTileValue: {
                     this._ancientRuinsSpec.crew.forEach(x => x.currDirection = TeamMemberDirection.Down);
@@ -164,6 +175,14 @@ export class TeamCtrl {
             const size = [spriteMapCols, spriteMapRows];
             const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._redShirt1.animationMeshes, material, val, crewPosition[0][0], crewPosition[0][1]);
+            this._redShirt1.position = [crewPosition[0][0], crewPosition[0][1]];
+
+            // Updates grid with team member value
+            const tileVal = this._gridCtrl.updateCrewInGrid(this._redShirt1.position[0], this._redShirt1.position[1], 0);
+            gridDictionary[tileVal].gameDescription = formatString(
+                gridDictionary[tileVal].gameDescription,
+                `(${RankAbbreviationsMap[this._redShirt1.rank]})`,
+                this._redShirt1.name);
         });
 
         const redShirt2CrewDictionaryValue = findMemberValue(this._redShirt2.appearance, ShirtColor.Red);
@@ -173,6 +192,14 @@ export class TeamCtrl {
             const size = [spriteMapCols, spriteMapRows];
             const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._redShirt2.animationMeshes, material, val, crewPosition[1][0], crewPosition[1][1]);
+            this._redShirt2.position = [crewPosition[1][0], crewPosition[1][1]];
+
+            // Updates grid with team member value
+            const tileVal = this._gridCtrl.updateCrewInGrid(this._redShirt2.position[0], this._redShirt2.position[1], 1);
+            gridDictionary[tileVal].gameDescription = formatString(
+                gridDictionary[tileVal].gameDescription,
+                `(${RankAbbreviationsMap[this._redShirt2.rank]})`,
+                this._redShirt2.name);
         });
 
         const medicalOfficerCrewDictionaryValue = findMemberValue(this._medicalOfficer.appearance, ShirtColor.Blue);
@@ -182,6 +209,14 @@ export class TeamCtrl {
             const size = [spriteMapCols, spriteMapRows];
             const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._medicalOfficer.animationMeshes, material, val, crewPosition[2][0], crewPosition[2][1]);
+            this._medicalOfficer.position = [crewPosition[2][0], crewPosition[2][1]];
+
+            // Updates grid with team member value
+            const tileVal = this._gridCtrl.updateCrewInGrid(this._medicalOfficer.position[0], this._medicalOfficer.position[1], 2);
+            gridDictionary[tileVal].gameDescription = formatString(
+                gridDictionary[tileVal].gameDescription,
+                `(${RankAbbreviationsMap[this._medicalOfficer.rank]})`,
+                this._medicalOfficer.name);
         });
 
         const scienceOfficerCrewDictionaryValue = findMemberValue(this._scienceOfficer.appearance, ShirtColor.Blue);
@@ -191,6 +226,14 @@ export class TeamCtrl {
             const size = [spriteMapCols, spriteMapRows];
             const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._scienceOfficer.animationMeshes, material, val, crewPosition[3][0], crewPosition[3][1]);
+            this._scienceOfficer.position = [crewPosition[3][0], crewPosition[3][1]];
+
+            // Updates grid with team member value
+            const tileVal = this._gridCtrl.updateCrewInGrid(this._scienceOfficer.position[0], this._scienceOfficer.position[1], 3);
+            gridDictionary[tileVal].gameDescription = formatString(
+                gridDictionary[tileVal].gameDescription,
+                `(${RankAbbreviationsMap[this._scienceOfficer.rank]})`,
+                this._scienceOfficer.name);
         });
 
         const teamLeaderCrewDictionaryValue = findMemberValue(this._teamLeader.appearance, ShirtColor.Yellow);
@@ -200,6 +243,14 @@ export class TeamCtrl {
             const size = [spriteMapCols, spriteMapRows];
             const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._teamLeader.animationMeshes, material, val, crewPosition[4][0], crewPosition[4][1]);
+            this._teamLeader.position = [crewPosition[4][0], crewPosition[4][1]];
+
+            // Updates grid with team member value
+            const tileVal = this._gridCtrl.updateCrewInGrid(this._teamLeader.position[0], this._teamLeader.position[1], 4);
+            gridDictionary[tileVal].gameDescription = formatString(
+                gridDictionary[tileVal].gameDescription,
+                `(${RankAbbreviationsMap[this._teamLeader.rank]})`,
+                this._teamLeader.name);
         });
     }
 
@@ -215,6 +266,22 @@ export class TeamCtrl {
      */
     public endCycle(): void {
 
+    }
+
+    /**
+     * Uses the row/col combo to find crew member, and switch them to active.
+     * @param row row coordinate in the terrain grid
+     * @param col col coordinate in the terrain grid
+     */
+    public selectCrewMember(row: number, col: number): void {
+        const clickedCrewMember = this._ancientRuinsSpec.crew.findIndex((c: TeamMember) => c.position[0] === row && c.position[1] === col);
+        this.currTeamMember = clickedCrewMember > -1 ? clickedCrewMember : this.currTeamMember;
+
+        // TODO: eliminate when mini game is complete
+        const tileVal = this._ancientRuinsSpec.crew[this.currTeamMember].tileValue;
+        const rank = this._ancientRuinsSpec.crew[this.currTeamMember].rank;
+        const name = this._ancientRuinsSpec.crew[this.currTeamMember].name;
+        console.log('[Active]', formatString(gridDictionary[tileVal].gameDescription, `(${RankAbbreviationsMap[rank]})`, name));
     }
 
 }

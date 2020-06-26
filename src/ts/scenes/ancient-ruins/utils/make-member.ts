@@ -20,7 +20,7 @@ export function makeMember(
     animationMeshArray[index] = new Mesh( GEOMETRY, material );
     animationMeshArray[index].position.set(getXPos(col), elev, getZPos(row));
     animationMeshArray[index].rotation.set(RAD_90_DEG_LEFT, 0, 0);
-    animationMeshArray[index].name = `team-member-${index}`;
+    animationMeshArray[index].name = `crew-${row}-${col}`;
     animationMeshArray[index].visible = index ? false : true;
     scene.add(animationMeshArray[index]);
 }

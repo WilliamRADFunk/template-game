@@ -76,12 +76,12 @@ export interface TeamMember {
     animationMeshes: [Mesh, Mesh, Mesh];
     appearance: TeamMemberAppearance;
     currDirection: TeamMemberDirection;
-    currTextureIndex: number;
     health: number;
     name: string;
     position: [number, number];
     rank: number;
     status: TeamMemberStatus;
+    tileValue: number;
     title: string;
 }
 
