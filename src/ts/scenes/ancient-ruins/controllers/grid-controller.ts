@@ -28,6 +28,11 @@ const fiftyFifty = () => Math.random() < 0.5;
 
 const layerSkyYPos = 6;
 
+let overheadMeshOpacityFrameCounter = 0;
+let overheadMeshOpacityFrameCounterReset = 30;
+
+const overheadRowColModVals = [ [0, 0], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1] ];
+
 function shuffle(arr: any[]): any[] {
     for(let i = arr.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * i);
@@ -78,6 +83,11 @@ export class GridCtrl {
      * Dictionary of materials already made for use in building out the game's tile map.
      */
     private _materialsMap: { [key: number]: MeshBasicMaterial } = {};
+
+    /**
+     * The mesh array with meshes of all tiles on game map at level 3.
+     */
+    private _overheadMeshMap: Mesh[][] = [];
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -353,8 +363,13 @@ export class GridCtrl {
                     tile.position.set(posX, LayerYPos.LAYER_2, posZ)
                     tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                     (tile.material as MeshBasicMaterial).opacity = 1;
+                    tile.name = `over:${row}:${col}`;
                     tile.updateMatrix();
                     megaMesh.add(tile);
+                    if (!this._overheadMeshMap[row]) {
+                        this._overheadMeshMap[row] = [];
+                    }
+                    this._overheadMeshMap[row][col] = tile;
                 }
             }
         }
@@ -384,6 +399,7 @@ export class GridCtrl {
                     tile.scale.set(scaleX, scaleZ, scaleZ);
                     tile.position.set(posX, LayerYPos.LAYER_1, posZ)
                     tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+                    tile.name = `level:${row}:${col}`;
                     tile.updateMatrix();
                     megaMesh.add(tile);
                 }
@@ -1528,6 +1544,29 @@ export class GridCtrl {
      */
     public endCycle(): void {
         this._cycleClouds();
+        overheadMeshOpacityFrameCounter++;
+        if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
+            overheadMeshOpacityFrameCounter = 0;
+
+            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+                for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                    if (!this._isInBounds(row, col) || !this._grid[row][col][3]) continue;
+
+                    (this._overheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
+                }
+            }
+
+            this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
+                overheadRowColModVals.forEach(overPos => {
+                    const posX = cPos[0] + overPos[0];
+                    const posY = cPos[1] + overPos[1];
+                    if (this._isInBounds(posX, posY) && this._grid[posX][posY][3]) {
+                        (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.4;
+                    }
+                });
+            });
+        }
+        
     }
 
     /**
