@@ -351,12 +351,7 @@ export class GridCtrl {
                     const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3]);
                     const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3], true);
 
-                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]];
-
-                    // If material type has a second variation, randomize between the two.
-                    if (this._tileCtrl.getGridDicVariation(this._grid[row][col][3]) && fiftyFifty()) {
-                        material = this._materialsMap[this._grid[row][col][3]];
-                    }
+                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]].clone();
 
                     const tile = new Mesh( this._geometry, material );
                     tile.scale.set(scaleX, scaleZ, scaleZ);
@@ -392,7 +387,7 @@ export class GridCtrl {
 
                     // If material type has a second variation, randomize between the two.
                     if (this._tileCtrl.getGridDicVariation(this._grid[row][col][2]) && fiftyFifty()) {
-                        material = this._materialsMap[this._grid[row][col][2] + 1];
+                        material = this._materialsMap[this._grid[row][col][2] + 1]
                     }
 
                     const tile = new Mesh( this._geometry, material );
@@ -1560,8 +1555,9 @@ export class GridCtrl {
                 overheadRowColModVals.forEach(overPos => {
                     const posX = cPos[0] + overPos[0];
                     const posY = cPos[1] + overPos[1];
+
                     if (this._isInBounds(posX, posY) && this._grid[posX][posY][3]) {
-                        (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.4;
+                        (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
                     }
                 });
             });
