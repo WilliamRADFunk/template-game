@@ -20,6 +20,18 @@ export enum RankAbbreviationsMap {
     'ADM'   = 16,
 }
 
+export const ENLISTED_RANK_START = 1;
+
+export const OFFICER_RANK_START = 10;
+
+export const OFFICER_RANK_END = 16;
+
+/**
+ * There should be only one captain of the enzmann: the player.
+ * This helps prevent crew members promoting up to or above the player.
+ */
+export const MAX_OFFICER_RANK = 15;
+
 export enum RankTitlesMap {
     ''                              = 0,
     // Enlisted Ranks
