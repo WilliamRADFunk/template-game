@@ -1918,15 +1918,25 @@ export class DevMenu {
         let row4Left = groupLeftStart;
         let row4height = sizeHeightForAncientRuins(4, height);
 
-        this._page1buttons.changeMedicalOfficerButton.resize({ left: left + (row3Left * width), height, top: row4height, width });
-        row3Left += 0.070;
-        this._page1buttons.changeScienceOfficerButton.resize({ left: left + (row3Left * width), height, top: row4height, width });
-        row3Left += 0.070;
-        this._page1buttons.changeLeaderButton.resize({ left: left + (row3Left * width), height, top: row4height, width });
-        row3Left += 0.070;
-        this._page1buttons.changeSecurity1Button.resize({ left: left + (row3Left * width), height, top: row4height, width });
-        row3Left += 0.070;
-        this._page1buttons.changeSecurity2Button.resize({ left: left + (row3Left * width), height, top: row4height, width });
+        this._page1buttons.changeMedicalOfficerRankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.040;
+        this._page1textElements.freestyleMedicalOfficerRankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.030;
+        this._page1buttons.changeScienceOfficerRankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.040;
+        this._page1textElements.freestyleScienceOfficerRankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.030;
+        this._page1buttons.changeLeaderRankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.040;
+        this._page1textElements.freestyleTeamLeaderRankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.030;
+        this._page1buttons.changeSecurity1RankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.045;
+        this._page1textElements.freestyleRedShirt1RankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.025;
+        this._page1buttons.changeSecurity2RankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.045;
+        this._page1textElements.freestyleRedShirt2RankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
         //#endregion
     //#endregion
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
