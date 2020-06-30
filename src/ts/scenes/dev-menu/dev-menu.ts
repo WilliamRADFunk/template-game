@@ -52,18 +52,81 @@ import { MIDDLE_COL } from "../ancient-ruins/utils/grid-constants";
 import { animateCrewMember } from "../ancient-ruins/utils/animate-crew-member";
 import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-x-degrees-left";
 import { rotateCrewMember } from "../ancient-ruins/utils/rotate-crew-member";
+import { OFFICER_RANK_END, OFFICER_RANK_START, ENLISTED_RANK_START, MAX_OFFICER_RANK } from "../../utils/rank-map";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
 const buttonScale: number = 2;
 
+/**
+ * Changes crew members direction by 45 degrees clockwise to ensure all directions are still working.
+ * @param teamMember crew member whose direction should be changed
+ */
 function cycleCrewMemberDirection(teamMember: TeamMember): void {
     let teamMemberDirectionNum = teamMember.currDirection + 1;
     if (teamMemberDirectionNum >= Object.keys(TeamMemberDirection).length / 2) {
         teamMemberDirectionNum = 0;
     }
     teamMember.currDirection = teamMemberDirectionNum;
+}
+
+/**
+ * Establishes a one-plce fetch for the height of dev menu elements in the Ancient Ruins scene.
+ * @param row row number on the dev menu section for the Ancient Ruins scene.
+ * @param height the height of the window to multiply modifer against.
+ * @returns the height to use on all elements on that row.
+ */
+function sizeHeightForAncientRuins(row: number, height: number): number {
+    switch(row) {
+        case 0: {
+            return 0.05 * height;
+        }
+        case 1: {
+            return 0.085 * height;
+        }
+        case 2: {
+            return 0.12 * height;
+        }
+        case 3: {
+            return 0.155 * height;
+        }
+        case 4: {
+            return 0.19 * height;
+        }
+    }
+}
+
+/**
+ * Establishes a one-plce fetch for the height of dev menu elements in the Land And Mine scene.
+ * @param row row number on the dev menu section for the Land And Mine scene.
+ * @param height the height of the window to multiply modifer against.
+ * @returns the height to use on all elements on that row.
+ */
+function sizeHeightForLandAndMine(row: number, height: number): number {
+    switch(row) {
+        case -2: {
+            return 0.755 * height;
+        }
+        case -1: {
+            return 0.784 * height;
+        }
+        case 0: {
+            return 0.82 * height;
+        }
+        case 1: {
+            return 0.855 * height;
+        }
+        case 2: {
+            return 0.89 * height;
+        }
+        case 3: {
+            return 0.925 * height;
+        }
+        case 4: {
+            return 0.96 * height;
+        }
+    }
 }
 
 /**
@@ -112,7 +175,7 @@ export class DevMenu {
                 health: 100,
                 name: 'Feelz Good',
                 position: null,
-                rank: 7,
+                rank: 11,
                 status: TeamMemberStatus.Healthy,
                 tileValue: null,
                 title: 'Medical',
@@ -125,7 +188,7 @@ export class DevMenu {
                 health: 100,
                 name: 'Glock',
                 position: null,
-                rank: 5,
+                rank: 12,
                 status: TeamMemberStatus.Healthy,
                 tileValue: null,
                 title: 'Science',
@@ -138,7 +201,7 @@ export class DevMenu {
                 health: 100,
                 name: 'James Kirkland',
                 position: null,
-                rank: 9,
+                rank: 14,
                 status: TeamMemberStatus.Healthy,
                 tileValue: null,
                 title: 'Command',
@@ -384,12 +447,13 @@ export class DevMenu {
         };
 
         this._page1buttons.launchAncientRuinsSceneButton = new LoadButton(
-            { left: left + (0.54 * width), height, top: 0.20 * height, width },
+            { left: left + (0.50 * width), height, top: 0.01 * height, width },
             BUTTON_COLORS,
             onClick,
             true);
         //#region AncientRuinsScene Row 0
         let row0Left = groupLeftStart;
+        let row0height = sizeHeightForAncientRuins(0, height);
         onClick = () => {
             let nextNum = this._ancientRuinsSpec.plantColor + 1;
             if (nextNum > Object.keys(PlantColor).length / 2) {
@@ -400,7 +464,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changePlantColorButton = new FreestyleSquareButton(
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -410,7 +474,7 @@ export class DevMenu {
         row0Left += 0.035;
         this._page1textElements.freestylePlantColorDisplayText = new FreestyleText(
             PlantColor[this._ancientRuinsSpec.plantColor],
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -426,7 +490,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeWaterColorButton = new FreestyleSquareButton(
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -436,13 +500,14 @@ export class DevMenu {
         row0Left += 0.035;
         this._page1textElements.freestyleWaterColorDisplayText = new FreestyleText(
             WaterColor[this._ancientRuinsSpec.waterColor],
-            { left: left + (row0Left * width), height, top: 0.05 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
         //#endregion
         //#region AncientRuinsScene Row 1
         let row1Left = groupLeftStart;
+        let row1height = sizeHeightForAncientRuins(1, height);
 
         onClick = () => {
             let nextNum = this._ancientRuinsSpec.groundMaterial + 1;
@@ -454,7 +519,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeGroundMaterialButton = new FreestyleSquareButton(
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -464,7 +529,7 @@ export class DevMenu {
         row1Left += 0.035;
         this._page1textElements.freestyleGroundMaterialDisplayText = new FreestyleText(
             GroundMaterial[this._ancientRuinsSpec.groundMaterial],
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -480,7 +545,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeWaterBiomeButton = new FreestyleSquareButton(
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -490,16 +555,17 @@ export class DevMenu {
         row1Left += 0.035;
         this._page1textElements.freestyleWaterBiomeDisplayText = new FreestyleText(
             WaterBiome[this._ancientRuinsSpec.biomeWater].replace('_', ' '),
-            { left: left + (row1Left * width), height, top: 0.085 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
         //#endregion
         //#region AncientRuinsScene Row 2
         let row2Left = groupLeftStart;
+        let row2height = sizeHeightForAncientRuins(2, height);
 
         this._page1buttons.hasCloudsButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             BUTTON_COLORS,
             'fa-cloud',
             true,
@@ -508,7 +574,7 @@ export class DevMenu {
 
         row2Left += 0.035;
         this._page1buttons.hasSomethingButton = new SmallToggleButton(
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             BUTTON_COLORS,
             'fa-question',
             true);
@@ -530,7 +596,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeTreeColorButton = new FreestyleSquareButton(
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -540,13 +606,15 @@ export class DevMenu {
         row2Left += 0.035;
         this._page1textElements.freestyleTreeColorDisplayText = new FreestyleText(
             `${TreeTrunkColor[this._ancientRuinsSpec.treeTrunkColor]}-${TreeLeafColor[this._ancientRuinsSpec.treeLeafColor]}`,
-            { left: left + (row2Left * width), height, top: 0.12 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
         //#endregion
         //#region AncientRuinsScene Row 3
         let row3Left = groupLeftStart;
+        let row3height = sizeHeightForAncientRuins(3, height);
+
         onClick = () => {
             let nextMedOfficerAppearanceNum = this._ancientRuinsSpec.crew[2].appearance + 1;
             if (nextMedOfficerAppearanceNum >= Object.keys(TeamMemberAppearance).length / 2) {
@@ -557,7 +625,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeMedicalOfficerButton = new FreestyleSquareButton(
-            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -576,7 +644,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeScienceOfficerButton = new FreestyleSquareButton(
-            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -595,7 +663,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeLeaderButton = new FreestyleSquareButton(
-            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -614,7 +682,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeSecurity1Button = new FreestyleSquareButton(
-            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -633,13 +701,146 @@ export class DevMenu {
         };
 
         this._page1buttons.changeSecurity2Button = new FreestyleSquareButton(
-            { left: left + (row3Left * width), height, top: 0.155 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
             'fa-shield',
             0.5);
         this._changeSecurity2Graphic();
+        //#endregion
+        //#region AncientRuinsScene Row 4
+        let row4Left = groupLeftStart;
+        let row4height = sizeHeightForAncientRuins(4, height);
+
+        onClick = () => {
+            let nextMedOfficerRankNum = this._ancientRuinsSpec.crew[2].rank + 1;
+            if (nextMedOfficerRankNum >= MAX_OFFICER_RANK) {
+                nextMedOfficerRankNum = OFFICER_RANK_START;
+            }
+            this._ancientRuinsSpec.crew[2].rank = nextMedOfficerRankNum;
+            this._page1textElements.freestyleMedicalOfficerRankDisplayText.update(`${this._ancientRuinsSpec.crew[2].rank}`);
+        };
+
+        this._page1buttons.changeMedicalOfficerRankButton = new FreestyleSquareButton(
+            { left: left + (row4Left * width), height, top: row4height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-stethoscope',
+            0.5);
+
+        row4Left += 0.040;
+        this._page1textElements.freestyleMedicalOfficerRankDisplayText = new FreestyleText(
+            `${this._ancientRuinsSpec.crew[2].rank}`,
+            { left: left + (row4Left * width), height, top: row4height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row4Left += 0.030;
+        onClick = () => {
+            let nextSciOfficerRankNum = this._ancientRuinsSpec.crew[3].rank + 1;
+            if (nextSciOfficerRankNum >= MAX_OFFICER_RANK) {
+                nextSciOfficerRankNum = OFFICER_RANK_START;
+            }
+            this._ancientRuinsSpec.crew[3].rank = nextSciOfficerRankNum;
+            this._page1textElements.freestyleScienceOfficerRankDisplayText.update(`${this._ancientRuinsSpec.crew[3].rank}`);
+        };
+
+        this._page1buttons.changeScienceOfficerRankButton = new FreestyleSquareButton(
+            { left: left + (row4Left * width), height, top: row4height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-flask',
+            0.5);
+
+        row4Left += 0.040;
+        this._page1textElements.freestyleScienceOfficerRankDisplayText = new FreestyleText(
+            `${this._ancientRuinsSpec.crew[3].rank}`,
+            { left: left + (row4Left * width), height, top: row4height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row4Left += 0.030;
+        onClick = () => {
+            let nextLeadOfficerRankNum = this._ancientRuinsSpec.crew[4].rank + 1;
+            if (nextLeadOfficerRankNum >= MAX_OFFICER_RANK) {
+                nextLeadOfficerRankNum = OFFICER_RANK_START;
+            }
+            this._ancientRuinsSpec.crew[4].rank = nextLeadOfficerRankNum;
+            this._page1textElements.freestyleTeamLeaderRankDisplayText.update(`${this._ancientRuinsSpec.crew[4].rank}`);
+        };
+
+        this._page1buttons.changeLeaderRankButton = new FreestyleSquareButton(
+            { left: left + (row4Left * width), height, top: row4height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-user-secret',
+            0.5);
+
+        row4Left += 0.040;
+        this._page1textElements.freestyleTeamLeaderRankDisplayText = new FreestyleText(
+            `${this._ancientRuinsSpec.crew[4].rank}`,
+            { left: left + (row4Left * width), height, top: row4height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row4Left += 0.030;
+        onClick = () => {
+            let nextRedShirt1RankNum = this._ancientRuinsSpec.crew[0].rank + 1;
+            if (nextRedShirt1RankNum >= OFFICER_RANK_START) {
+                nextRedShirt1RankNum = ENLISTED_RANK_START;
+            }
+            this._ancientRuinsSpec.crew[0].rank = nextRedShirt1RankNum;
+            this._page1textElements.freestyleRedShirt1RankDisplayText.update(`${this._ancientRuinsSpec.crew[0].rank}`);
+        };
+
+        this._page1buttons.changeSecurity1RankButton = new FreestyleSquareButton(
+            { left: left + (row4Left * width), height, top: row4height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-shield',
+            0.5);
+
+        row4Left += 0.045;
+        this._page1textElements.freestyleRedShirt1RankDisplayText = new FreestyleText(
+            `${this._ancientRuinsSpec.crew[0].rank}`,
+            { left: left + (row4Left * width), height, top: row4height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row4Left += 0.025;
+        onClick = () => {
+            let nextRedShirt2RankNum = this._ancientRuinsSpec.crew[1].rank + 1;
+            if (nextRedShirt2RankNum >= OFFICER_RANK_START) {
+                nextRedShirt2RankNum = ENLISTED_RANK_START;
+            }
+            this._ancientRuinsSpec.crew[1].rank = nextRedShirt2RankNum;
+            this._page1textElements.freestyleRedShirt2RankDisplayText.update(`${this._ancientRuinsSpec.crew[1].rank}`);
+        };
+
+        this._page1buttons.changeSecurity2RankButton = new FreestyleSquareButton(
+            { left: left + (row4Left * width), height, top: row4height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-shield',
+            0.5);
+
+        row4Left += 0.044;
+        this._page1textElements.freestyleRedShirt2RankDisplayText = new FreestyleText(
+            `${this._ancientRuinsSpec.crew[1].rank}`,
+            { left: left + (row4Left * width), height, top: row4height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
         //#endregion
     //#endregion
     //#region LaunchShipLayout
@@ -764,22 +965,26 @@ export class DevMenu {
         groupLeftStart = 0.015;
         //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
+        let rowSub2height = sizeHeightForLandAndMine(-2, height);
+
         this._page1textElements.freestyleHThresholdText = new FreestyleText(
             'H Threshold',
-            { left: left + (rowSub2Left * width), height, top: 0.755 * height, width },
+            { left: left + (rowSub2Left * width), height, top: rowSub2height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
         rowSub2Left += 0.325;
         this._page1textElements.freestyleVThresholdText = new FreestyleText(
             'V Threshold',
-            { left: left + (rowSub2Left * width), height, top: 0.755 * height, width },
+            { left: left + (rowSub2Left * width), height, top: rowSub2height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
         //#endregion
         //#region LaunchLandAndMineScene Row -1
         let rowSub1Left = groupLeftStart;
+        let rowSub1height = sizeHeightForLandAndMine(-1, height);
+
         onClick = () => {
             let newHorizontalCrashMargin = this._landAndMineLanderSpec.horizontalCrashMargin - 0.001;
             if (newHorizontalCrashMargin < 0.001) {
@@ -790,7 +995,7 @@ export class DevMenu {
         };
 
         this._page1buttons.horizontalCrashMarginMinusButton = new MinusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            { left: left + (rowSub1Left * width), height, top: rowSub1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -799,7 +1004,7 @@ export class DevMenu {
         rowSub1Left += 0.035;
         this._page1textElements.freestyleHorizontalCrashMarginReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.horizontalCrashMargin.toFixed(3),
-            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            { left: left + (rowSub1Left * width), height, top: rowSub1height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -815,7 +1020,7 @@ export class DevMenu {
 
         rowSub1Left += 0.05;
         this._page1buttons.horizontalCrashMarginPlusButton = new PlusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            { left: left + (rowSub1Left * width), height, top: rowSub1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -832,7 +1037,7 @@ export class DevMenu {
         };
 
         this._page1buttons.verticalCrashMarginMinusButton = new MinusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            { left: left + (rowSub1Left * width), height, top: rowSub1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -841,7 +1046,7 @@ export class DevMenu {
         rowSub1Left += 0.035;
         this._page1textElements.freestyleVerticalCrashMarginReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.verticalCrashMargin.toFixed(2),
-            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            { left: left + (rowSub1Left * width), height, top: rowSub1height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -857,7 +1062,7 @@ export class DevMenu {
 
         rowSub1Left += 0.04;
         this._page1buttons.verticalCrashMarginPlusButton = new PlusButton(
-            { left: left + (rowSub1Left * width), height, top: 0.784 * height, width },
+            { left: left + (rowSub1Left * width), height, top: rowSub1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -865,9 +1070,11 @@ export class DevMenu {
         //#endregion
         //#region LaunchLandAndMineScene Row 0
         row0Left = groupLeftStart;
+        row0height = sizeHeightForLandAndMine(0, height);
+
         this._page1textElements.freestyleOxygenBurnText = new FreestyleText(
             'oxygen burn:',
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -883,7 +1090,7 @@ export class DevMenu {
 
         row0Left += 0.12;
         this._page1buttons.oxygenBurnMinusButton = new MinusButton(
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -892,7 +1099,7 @@ export class DevMenu {
         row0Left += 0.035;
         this._page1textElements.freestyleOxygenBurnReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.oxygenBurn.toFixed(2),
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -908,7 +1115,7 @@ export class DevMenu {
 
         row0Left += 0.04;
         this._page1buttons.oxygenBurnPlusButton = new PlusButton(
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -917,7 +1124,7 @@ export class DevMenu {
         row0Left += 0.04;
         this._page1textElements.freestyleFuelBurnText = new FreestyleText(
             'fuel burn:',
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -933,7 +1140,7 @@ export class DevMenu {
 
         row0Left += 0.095;
         this._page1buttons.fuelBurnMinusButton = new MinusButton(
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -942,7 +1149,7 @@ export class DevMenu {
         row0Left += 0.035;
         this._page1textElements.freestyleFuelBurnReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.fuelBurn.toFixed(2),
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -958,7 +1165,7 @@ export class DevMenu {
 
         row0Left += 0.0425;
         this._page1buttons.fuelBurnPlusButton = new PlusButton(
-            { left: left + (row0Left * width), height, top: 0.82 * height, width },
+            { left: left + (row0Left * width), height, top: row0height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -966,9 +1173,11 @@ export class DevMenu {
         //#endregion
         //#region LaunchLandAndMineScene Row 1
         row1Left = groupLeftStart;
+        row1height = sizeHeightForLandAndMine(1, height);
+
         this._page1textElements.freestylePeakElevationText = new FreestyleText(
             'peak elevation:',
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -984,7 +1193,7 @@ export class DevMenu {
 
         row1Left += 0.14;
         this._page1buttons.peakElevationMinusButton = new MinusButton(
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -993,7 +1202,7 @@ export class DevMenu {
         row1Left += 0.035;
         this._page1textElements.freestylePeakElevationReadoutText = new FreestyleText(
             this._landAndMinePlanetSpec.peakElevation.toFixed(0),
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1009,7 +1218,7 @@ export class DevMenu {
 
         row1Left += 0.02;
         this._page1buttons.peakElevationPlusButton = new PlusButton(
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1018,7 +1227,7 @@ export class DevMenu {
         row1Left += 0.04;
         this._page1textElements.freestyleDrillLengthText = new FreestyleText(
             'drill length:',
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -1034,7 +1243,7 @@ export class DevMenu {
 
         row1Left += 0.12;
         this._page1buttons.drillLengthMinusButton = new MinusButton(
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1043,7 +1252,7 @@ export class DevMenu {
         row1Left += 0.035;
         this._page1textElements.freestyleDrillLengthReadoutText = new FreestyleText(
             this._landAndMineLanderSpec.drillLength.toFixed(0),
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1059,7 +1268,7 @@ export class DevMenu {
 
         row1Left += 0.025;
         this._page1buttons.drillLengthPlusButton = new PlusButton(
-            { left: left + (row1Left * width), height, top: 0.855 * height, width },
+            { left: left + (row1Left * width), height, top: row1height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1067,9 +1276,11 @@ export class DevMenu {
         //#endregion
         //#region LaunchLandAndMineScene Row 2
         row2Left = groupLeftStart;
+        row2height = sizeHeightForLandAndMine(2, height);
+
         this._page1textElements.freestyleSkyColorText = new FreestyleText(
             'Sky Color:',
-            { left: left + (row2Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -1085,7 +1296,7 @@ export class DevMenu {
 
         row2Left += 0.095;
         this._page1buttons.changeSkyTypeButton = new FreestyleSquareButton(
-            { left: left + (row2Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1095,7 +1306,7 @@ export class DevMenu {
         row2Left += 0.035;
         this._page1textElements.freestyleSkyColorReadoutText = new FreestyleText(
             SkyTypes[this._landAndMinePlanetSpec.skyBase],
-            { left: left + (row2Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1103,7 +1314,7 @@ export class DevMenu {
         row2Left += 0.08;
         this._page1textElements.freestylePlanetLandColorText = new FreestyleText(
             'Land Color:',
-            { left: left + (row2Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -1119,7 +1330,7 @@ export class DevMenu {
 
         row2Left += 0.105;
         this._page1buttons.changePlanetLandTypeButton = new FreestyleSquareButton(
-            { left: left + (row2Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1129,16 +1340,18 @@ export class DevMenu {
         row2Left += 0.035;
         this._page1textElements.freestylePlanetLandColorReadoutText = new FreestyleText(
             PlanetLandTypes[this._landAndMinePlanetSpec.planetBase],
-            { left: left + (row2Left * width), height, top: 0.89 * height, width },
+            { left: left + (row2Left * width), height, top: row2height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
         //#endregion
         //#region LaunchLandAndMineScene Row 3
         row3Left = groupLeftStart;
+        row3height = sizeHeightForLandAndMine(3, height);
+
         this._page1textElements.freestyleGravityText = new FreestyleText(
             'gravity:',
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -1154,7 +1367,7 @@ export class DevMenu {
 
         row3Left += 0.08;
         this._page1buttons.gravityMinusButton = new MinusButton(
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1163,7 +1376,7 @@ export class DevMenu {
         row3Left += 0.035;
         this._page1textElements.freestyleGravityReadoutText = new FreestyleText(
             this._landAndMinePlanetSpec.gravity.toFixed(5),
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1179,7 +1392,7 @@ export class DevMenu {
 
         row3Left += 0.075;
         this._page1buttons.gravityPlusButton = new PlusButton(
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1188,7 +1401,7 @@ export class DevMenu {
         row3Left += 0.05;
         this._page1textElements.freestyleWindText = new FreestyleText(
             'wind:',
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             COLORS.neutral,
             'none',
             TextType.STATIC);
@@ -1204,7 +1417,7 @@ export class DevMenu {
 
         row3Left += 0.06;
         this._page1buttons.windMinusButton = new MinusButton(
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1213,7 +1426,7 @@ export class DevMenu {
         row3Left += 0.035;
         this._page1textElements.freestyleWindReadoutText = new FreestyleText(
             `${this._landAndMinePlanetSpec.wind}%`,
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1229,30 +1442,32 @@ export class DevMenu {
 
         row3Left += 0.045;
         this._page1buttons.windPlusButton = new PlusButton(
-            { left: left + (row3Left * width), height, top: 0.925 * height, width },
+            { left: left + (row3Left * width), height, top: row3height, width },
             BUTTON_COLORS,
             onClick,
             true,
             0.5);
         //#endregion
         //#region LaunchLandAndMineScene Row 4
-        let row4Left = groupLeftStart;
+        row4Left = groupLeftStart;
+        row4height = sizeHeightForLandAndMine(4, height);
+
         this._page1buttons.isWaterButton = new SmallToggleButton(
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             BUTTON_COLORS,
             'fa-tint',
             true);
 
         row4Left += 0.035;
         this._page1buttons.isFrozenButton = new SmallToggleButton(
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             BUTTON_COLORS,
             'fa-snowflake-o',
             true);
 
         row4Left += 0.035;
         this._page1buttons.isLifeButton = new SmallToggleButton(
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             BUTTON_COLORS,
             'fa-leaf',
             true);
@@ -1269,7 +1484,7 @@ export class DevMenu {
         };
 
         this._page1buttons.changeOreTypeButton = new FreestyleSquareButton(
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1279,7 +1494,7 @@ export class DevMenu {
         row4Left += 0.035;
         this._page1textElements.freestyleOreTypeText = new FreestyleText(
             OreTypes[this._landAndMinePlanetSpec.ore],
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1295,7 +1510,7 @@ export class DevMenu {
 
         row4Left += 0.1;
         this._page1buttons.changeOreQuantityButton = new FreestyleSquareButton(
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             BUTTON_COLORS,
             onClick,
             true,
@@ -1305,7 +1520,7 @@ export class DevMenu {
         row4Left += 0.035;
         this._page1textElements.freestyleOreQuantityText = new FreestyleText(
             OreQuantity[this._landAndMinePlanetSpec.oreQuantity],
-            { left: left + (row4Left * width), height, top: 0.96 * height, width },
+            { left: left + (row4Left * width), height, top: row4height, width },
             COLORS.default,
             'none',
             TextType.STATIC);
@@ -1647,49 +1862,81 @@ export class DevMenu {
         Object.keys(this._textElements).forEach(el =>this._textElements[el] && this._textElements[el].resize({ left, height, top: null, width }));
 
     //#region AncientRuinsScene
-        this._buttons.launchAncientRuinsSceneButton.resize({ left: left + (0.54 * width), height, top: 0.20 * height, width });
+        this._buttons.launchAncientRuinsSceneButton.resize({ left: left + (0.50 * width), height, top: 0.01 * height, width });
         let groupLeftStart = 0.5;
         //#region AncientRuinsScene Row 0
         let row0Left = groupLeftStart;
-        this._page1buttons.changePlantColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        let row0height = sizeHeightForAncientRuins(0, height);
+
+        this._page1buttons.changePlantColorButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.035;
-        this._page1textElements.freestylePlantColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1textElements.freestylePlantColorDisplayText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.1;
-        this._page1buttons.changeWaterColorButton.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1buttons.changeWaterColorButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.035;
-        this._page1textElements.freestyleWaterColorDisplayText.resize({ left: left + (row0Left * width), height, top: 0.05 * height, width });
+        this._page1textElements.freestyleWaterColorDisplayText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         //#endregion
         //#region AncientRuinsScene Row 1
         let row1Left = groupLeftStart;
-        this._page1buttons.changeGroundMaterialButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        let row1height = sizeHeightForAncientRuins(1, height);
+
+        this._page1buttons.changeGroundMaterialButton.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.035;
-        this._page1textElements.freestyleGroundMaterialDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1textElements.freestyleGroundMaterialDisplayText.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.1;
-        this._page1buttons.changeWaterBiomeButton.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1buttons.changeWaterBiomeButton.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.035;
-        this._page1textElements.freestyleWaterBiomeDisplayText.resize({ left: left + (row1Left * width), height, top: 0.085 * height, width });
+        this._page1textElements.freestyleWaterBiomeDisplayText.resize({ left: left + (row1Left * width), height, top: row1height, width });
         //#endregion
         //#region AncientRuinsScene Row 2
         let row2Left = groupLeftStart;
-        this._page1buttons.hasCloudsButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        let row2height = sizeHeightForAncientRuins(2, height);
+
+        this._page1buttons.hasCloudsButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
-        this._page1buttons.hasSomethingButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1buttons.hasSomethingButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
-        this._page1buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
-        this._page1textElements.freestyleTreeColorDisplayText.resize({ left: left + (row2Left * width), height, top: 0.12 * height, width });
+        this._page1textElements.freestyleTreeColorDisplayText.resize({ left: left + (row2Left * width), height, top: row2height, width });
         //#endregion
         //#region AncientRuinsScene Row 3
         let row3Left = groupLeftStart;
-        this._page1buttons.changeMedicalOfficerButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        let row3height = sizeHeightForAncientRuins(3, height);
+
+        this._page1buttons.changeMedicalOfficerButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.070;
-        this._page1buttons.changeScienceOfficerButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        this._page1buttons.changeScienceOfficerButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.070;
-        this._page1buttons.changeLeaderButton.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        this._page1buttons.changeLeaderButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.070;
-        this._page1buttons.changeSecurity1Button.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        this._page1buttons.changeSecurity1Button.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.070;
-        this._page1buttons.changeSecurity2Button.resize({ left: left + (row3Left * width), height, top: 0.155 * height, width });
+        this._page1buttons.changeSecurity2Button.resize({ left: left + (row3Left * width), height, top: row3height, width });
+        //#endregion
+        //#region AncientRuinsScene Row 4
+        let row4Left = groupLeftStart;
+        let row4height = sizeHeightForAncientRuins(4, height);
+
+        this._page1buttons.changeMedicalOfficerRankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.040;
+        this._page1textElements.freestyleMedicalOfficerRankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.030;
+        this._page1buttons.changeScienceOfficerRankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.040;
+        this._page1textElements.freestyleScienceOfficerRankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.030;
+        this._page1buttons.changeLeaderRankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.040;
+        this._page1textElements.freestyleTeamLeaderRankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.030;
+        this._page1buttons.changeSecurity1RankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.045;
+        this._page1textElements.freestyleRedShirt1RankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.025;
+        this._page1buttons.changeSecurity2RankButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
+        row4Left += 0.045;
+        this._page1textElements.freestyleRedShirt2RankDisplayText.resize({ left: left + (row4Left * width), height, top: row4height, width });
         //#endregion
     //#endregion
         this._buttons.launchGameMenuButton.resize({ left: left + (0.115 * width), height, top: 0.1 * height, width });
@@ -1699,110 +1946,124 @@ export class DevMenu {
         groupLeftStart = 0.015;
         //#region LandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
-        this._textElements.freestyleHThresholdText.resize({ left: left + (rowSub2Left * width), height, top: 0.755 * height, width });
+        let rowSub2height = sizeHeightForLandAndMine(-2, height);
+
+        this._textElements.freestyleHThresholdText.resize({ left: left + (rowSub2Left * width), height, top: rowSub2height, width });
         rowSub2Left += 0.325;
-        this._textElements.freestyleVThresholdText.resize({ left: left + (rowSub2Left * width), height, top: 0.755 * height, width });
+        this._textElements.freestyleVThresholdText.resize({ left: left + (rowSub2Left * width), height, top: rowSub2height, width });
         //#endregion
         //#region LandAndMine Row -1
         let rowSub1Left = groupLeftStart;
-        this._buttons.horizontalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        let rowSub1height = sizeHeightForLandAndMine(-1, height);
+
+        this._buttons.horizontalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
         rowSub1Left += 0.035;
-        this._textElements.freestyleHorizontalCrashMarginReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        this._textElements.freestyleHorizontalCrashMarginReadoutText.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
         rowSub1Left += 0.05;
-        this._buttons.horizontalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        this._buttons.horizontalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
 
         rowSub1Left += 0.238;
-        this._buttons.verticalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        this._buttons.verticalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
         rowSub1Left += 0.035;
-        this._textElements.freestyleVerticalCrashMarginReadoutText.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        this._textElements.freestyleVerticalCrashMarginReadoutText.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
         rowSub1Left += 0.04;
-        this._buttons.verticalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: 0.784 * height, width });
+        this._buttons.verticalCrashMarginPlusButton.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
         //#endregion
         //#region LandAndMine Row 0
         row0Left = groupLeftStart;
-        this._textElements.freestyleOxygenBurnText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        row0height = sizeHeightForLandAndMine(0, height);
+
+        this._textElements.freestyleOxygenBurnText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.12;
-        this._buttons.oxygenBurnMinusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._buttons.oxygenBurnMinusButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.035;
-        this._textElements.freestyleOxygenBurnReadoutText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._textElements.freestyleOxygenBurnReadoutText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.04;
-        this._buttons.oxygenBurnPlusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._buttons.oxygenBurnPlusButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
 
         row0Left += 0.04;
-        this._textElements.freestyleFuelBurnText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._textElements.freestyleFuelBurnText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.095;
-        this._buttons.fuelBurnMinusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._buttons.fuelBurnMinusButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.035;
-        this._textElements.freestyleFuelBurnReadoutText.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._textElements.freestyleFuelBurnReadoutText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.0425;
-        this._buttons.fuelBurnPlusButton.resize({ left: left + (row0Left * width), height, top: 0.82 * height, width });
+        this._buttons.fuelBurnPlusButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
         //#endregion
         //#region LandAndMine Row 1
         row1Left = groupLeftStart;
-        this._textElements.freestylePeakElevationText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        row1height = sizeHeightForLandAndMine(1, height);
+
+        this._textElements.freestylePeakElevationText.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.14;
-        this._buttons.peakElevationMinusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._buttons.peakElevationMinusButton.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.035;
-        this._textElements.freestylePeakElevationReadoutText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._textElements.freestylePeakElevationReadoutText.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.02;
-        this._buttons.peakElevationPlusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._buttons.peakElevationPlusButton.resize({ left: left + (row1Left * width), height, top: row1height, width });
 
         row1Left += 0.04;
-        this._textElements.freestyleDrillLengthText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._textElements.freestyleDrillLengthText.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.12;
-        this._buttons.drillLengthMinusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._buttons.drillLengthMinusButton.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.035;
-        this._textElements.freestyleDrillLengthReadoutText.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._textElements.freestyleDrillLengthReadoutText.resize({ left: left + (row1Left * width), height, top: row1height, width });
         row1Left += 0.025;
-        this._buttons.drillLengthPlusButton.resize({ left: left + (row1Left * width), height, top: 0.855 * height, width });
+        this._buttons.drillLengthPlusButton.resize({ left: left + (row1Left * width), height, top: row1height, width });
         //#endregion
         //#region LandAndMine Row 2
         row2Left = groupLeftStart;
-        this._textElements.freestyleSkyColorText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        row2height = sizeHeightForLandAndMine(2, height);
+
+        this._textElements.freestyleSkyColorText.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.095;
-        this._buttons.changeSkyTypeButton.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        this._buttons.changeSkyTypeButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
-        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        this._textElements.freestyleSkyColorReadoutText.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.08;
-        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        this._textElements.freestylePlanetLandColorText.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.105;
-        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        this._buttons.changePlanetLandTypeButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
-        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row2Left * width), height, top: 0.89 * height, width });
+        this._textElements.freestylePlanetLandColorReadoutText.resize({ left: left + (row2Left * width), height, top: row2height, width });
         //#endregion
         //#region LandAndMine Row 3
         row3Left = groupLeftStart;
-        this._textElements.freestyleGravityText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        row3height = sizeHeightForLandAndMine(3, height);
+
+        this._textElements.freestyleGravityText.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.08;
-        this._buttons.gravityMinusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._buttons.gravityMinusButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.035;
-        this._textElements.freestyleGravityReadoutText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._textElements.freestyleGravityReadoutText.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.075;
-        this._buttons.gravityPlusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._buttons.gravityPlusButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.05;
-        this._textElements.freestyleWindText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._textElements.freestyleWindText.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.06;
-        this._buttons.windMinusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._buttons.windMinusButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.035;
-        this._textElements.freestyleWindReadoutText.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._textElements.freestyleWindReadoutText.resize({ left: left + (row3Left * width), height, top: row3height, width });
         row3Left += 0.045;
-        this._buttons.windPlusButton.resize({ left: left + (row3Left * width), height, top: 0.925 * height, width });
+        this._buttons.windPlusButton.resize({ left: left + (row3Left * width), height, top: row3height, width });
         //#endregion
         //#region LandAndMine Row 4
-        let row4Left = groupLeftStart;
-        this._buttons.isWaterButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        row4Left = groupLeftStart;
+        row4height = sizeHeightForLandAndMine(4, height);
+
+        this._buttons.isWaterButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
         row4Left += 0.035;
-        this._buttons.isFrozenButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        this._buttons.isFrozenButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
         row4Left += 0.035;
-        this._buttons.isLifeButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        this._buttons.isLifeButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
         row4Left += 0.035;
-        this._buttons.changeOreTypeButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        this._buttons.changeOreTypeButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
         row4Left += 0.035;
-        this._textElements.freestyleOreTypeText.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        this._textElements.freestyleOreTypeText.resize({ left: left + (row4Left * width), height, top: row4height, width });
         row4Left += 0.1;
-        this._buttons.changeOreQuantityButton.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        this._buttons.changeOreQuantityButton.resize({ left: left + (row4Left * width), height, top: row4height, width });
         row4Left += 0.035;
-        this._textElements.freestyleOreQuantityText.resize({ left: left + (row4Left * width), height, top: 0.96 * height, width });
+        this._textElements.freestyleOreQuantityText.resize({ left: left + (row4Left * width), height, top: row4height, width });
         //#endregion
     //#endregion
         this._buttons.launchPlanetRaidSceneButton.resize({ left: left + (0.29 * width), height, top: 0.20 * height, width });
