@@ -133,6 +133,7 @@ export interface AncientRuinsSpecifications {
     biomeWater: WaterBiome;
     crew: TeamMember[];
     groundMaterial: GroundMaterial;
+    hasAnimalLife?: boolean;
     hasClouds: boolean;
     plantColor: PlantColor;
     plantPercentage: number;
