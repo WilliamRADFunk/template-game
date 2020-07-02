@@ -78,23 +78,7 @@ function cycleCrewMemberDirection(teamMember: TeamMember): void {
  * @returns the height to use on all elements on that row.
  */
 function sizeHeightForAncientRuins(row: number, height: number): number {
-    switch(row) {
-        case 0: {
-            return 0.05 * height;
-        }
-        case 1: {
-            return 0.085 * height;
-        }
-        case 2: {
-            return 0.12 * height;
-        }
-        case 3: {
-            return 0.155 * height;
-        }
-        case 4: {
-            return 0.19 * height;
-        }
-    }
+    return (0.047 + (row * 0.035)) * height;
 }
 
 /**
@@ -138,7 +122,7 @@ export class DevMenu {
     * Specification of what the planet and ruins below should look like.
     */
     private _ancientRuinsSpec: AncientRuinsSpecifications = {
-        biomeRuins: RuinsBiome.Cemetery,
+        biomeRuins: RuinsBiome.Military_Base,
         biomeWater: WaterBiome.Small_Lakes,
         crew: [
             {
@@ -208,6 +192,7 @@ export class DevMenu {
             }
         ],
         groundMaterial: GroundMaterial.Dirt,
+        hasAnimalLife: true,
         hasClouds: true,
         plantColor: PlantColor.Green,
         plantPercentage: 0.3,
@@ -429,10 +414,11 @@ export class DevMenu {
         onClick = () => {
             this._page1buttons.launchAncientRuinsSceneButton.disable();
             callbacks.activateAncientRuinsScene({
-                biomeRuins: RuinsBiome.Cemetery,
+                biomeRuins: this._ancientRuinsSpec.biomeRuins,
                 biomeWater: this._ancientRuinsSpec.biomeWater,
                 crew: this._ancientRuinsSpec.crew,
                 groundMaterial: this._ancientRuinsSpec.groundMaterial,
+                hasAnimalLife: (this._buttons.hasAnimalLifeButton as ToggleBase).getState(),
                 hasClouds: (this._buttons.hasCloudsButton as ToggleBase).getState(),
                 plantColor: this._ancientRuinsSpec.plantColor,
                 plantPercentage: this._ancientRuinsSpec.plantColor !== PlantColor.None ? 0.3 : 0,
@@ -500,6 +486,32 @@ export class DevMenu {
         row0Left += 0.035;
         this._page1textElements.freestyleWaterColorDisplayText = new FreestyleText(
             WaterColor[this._ancientRuinsSpec.waterColor],
+            { left: left + (row0Left * width), height, top: row0height, width },
+            COLORS.default,
+            'none',
+            TextType.STATIC);
+
+        row0Left += 0.12;
+        onClick = () => {
+            let nextNum = this._ancientRuinsSpec.biomeRuins + 1;
+            if (nextNum > Object.keys(RuinsBiome).length / 2) {
+                nextNum = 1;
+            }
+            this._ancientRuinsSpec.biomeRuins = nextNum;
+            this._page1textElements.freestyleBiomeRuinsDisplayText.update(RuinsBiome[this._ancientRuinsSpec.biomeRuins]);
+        };
+
+        this._page1buttons.changeBiomeRuinsButton = new FreestyleSquareButton(
+            { left: left + (row0Left * width), height, top: row0height, width },
+            BUTTON_COLORS,
+            onClick,
+            true,
+            'fa-institution',
+            0.5);
+
+        row0Left += 0.035;
+        this._page1textElements.freestyleBiomeRuinsDisplayText = new FreestyleText(
+            RuinsBiome[this._ancientRuinsSpec.biomeRuins],
             { left: left + (row0Left * width), height, top: row0height, width },
             COLORS.default,
             'none',
@@ -573,11 +585,13 @@ export class DevMenu {
             this._ancientRuinsSpec.hasClouds);
 
         row2Left += 0.035;
-        this._page1buttons.hasSomethingButton = new SmallToggleButton(
+        this._page1buttons.hasAnimalLifeButton = new SmallToggleButton(
             { left: left + (row2Left * width), height, top: row2height, width },
             BUTTON_COLORS,
-            'fa-question',
-            true);
+            'fa-paw',
+            true,
+            1,
+            this._ancientRuinsSpec.hasAnimalLife);
 
         row2Left += 0.035;
         onClick = () => {
@@ -1875,6 +1889,10 @@ export class DevMenu {
         this._page1buttons.changeWaterColorButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
         row0Left += 0.035;
         this._page1textElements.freestyleWaterColorDisplayText.resize({ left: left + (row0Left * width), height, top: row0height, width });
+        row0Left += 0.12;
+        this._page1buttons.changeBiomeRuinsButton.resize({ left: left + (row0Left * width), height, top: row0height, width });
+        row0Left += 0.035;
+        this._page1textElements.freestyleBiomeRuinsDisplayText.resize({ left: left + (row0Left * width), height, top: row0height, width });
         //#endregion
         //#region AncientRuinsScene Row 1
         let row1Left = groupLeftStart;
@@ -1894,7 +1912,7 @@ export class DevMenu {
 
         this._page1buttons.hasCloudsButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
-        this._page1buttons.hasSomethingButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
+        this._page1buttons.hasAnimalLifeButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
         this._page1buttons.changeTreeColorButton.resize({ left: left + (row2Left * width), height, top: row2height, width });
         row2Left += 0.035;
