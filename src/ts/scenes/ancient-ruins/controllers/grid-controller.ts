@@ -24,11 +24,13 @@ import { RAD_90_DEG_LEFT } from "../utils/radians-x-degrees-left";
 import { spriteMapCols, spriteMapRows } from "../utils/tile-values";
 import { MIN_ROWS, MAX_ROWS, MIN_COLS, MAX_COLS, MIDDLE_ROW, MIDDLE_COL } from "../utils/grid-constants";
 import { createBoxWithRoundedEdges } from "../../../utils/create-box-with-rounded-edges";
+import { AncientRuinsState } from "../ancient-ruins";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
+let landingFrameCounter = -1;
 let overheadMeshOpacityFrameCounter = 0;
-let overheadMeshOpacityFrameCounterReset = 30;
+const overheadMeshOpacityFrameCounterReset = 30;
 
 const overheadRowColModVals = [ [0, 0], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1] ];
 
@@ -77,6 +79,11 @@ export class GridCtrl {
      * Type:            [row][col][elevation] gives "type" of tile
      */
     private _grid: number[][][] = [];
+
+    /**
+     * Landing shadow the grows and shrinks when ship lands and takes off again.
+     */
+    private _landingShadow: Mesh = null;
 
     /**
      * Dictionary of materials already made for use in building out the game's tile map.
@@ -346,10 +353,10 @@ export class GridCtrl {
                 side: DoubleSide,
                 transparent: true
             });
-            const landingMesh = new Mesh(landingGeo, landingMat);
-            landingMesh.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-            landingMesh.position.set(getXPos(center[1]), LayerYPos.LAYER_0_5, getZPos(center[0]));
-            this._scene.add(landingMesh);
+            this._landingShadow = new Mesh(landingGeo, landingMat);
+            this._landingShadow.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+            this._landingShadow.position.set(getXPos(center[1]), LayerYPos.LAYER_0_5, getZPos(center[0]));
+            this._scene.add(this._landingShadow);
         }
     }
 
@@ -1552,32 +1559,55 @@ export class GridCtrl {
     /**
      * At the end of each loop iteration, check for grid-specific animations.
      */
-    public endCycle(): void {
+    public endCycle(state?: AncientRuinsState): boolean {
         this._cycleClouds();
-        overheadMeshOpacityFrameCounter++;
-        if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
-            overheadMeshOpacityFrameCounter = 0;
-
-            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
-                for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                    if (!this._isInBounds(row, col) || !this._grid[row][col][3]) continue;
-
-                    (this._overheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
-                }
+        if (state === AncientRuinsState.landing_start || state === AncientRuinsState.leaving_start) {
+            // TODO: Add animated scene that first grows ship shadow, deposits crew, then shrinks shadow again.
+            landingFrameCounter++;
+            const landingShadowScale = this._landingShadow.scale;
+            if (!landingFrameCounter) {
+                this._landingShadow.scale.set(0.1, 0.1, 0.1);
+                this._landingShadow.visible = true;
+                this._landingShadow.updateMatrix();
+            } else if (landingFrameCounter < 240) {
+                this._landingShadow.scale.set(landingShadowScale.x + 0.00375, landingShadowScale.y + 0.00375, landingShadowScale.z + 0.00375);
+            } else if (landingFrameCounter === 240) {
+                return true;
+            } else if (landingFrameCounter < 480) {
+                // Do nothing. Deposit crew.
+            } else if (landingFrameCounter < 720) {
+                this._landingShadow.scale.set(landingShadowScale.x - 0.00375, landingShadowScale.y - 0.00375, landingShadowScale.z - 0.00375);
+            } else if (landingFrameCounter === 720) {
+                this._landingShadow.visible = false;
+                landingFrameCounter = -1;
+                return true;
             }
+        } else {
+            overheadMeshOpacityFrameCounter++;
+            if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
+                overheadMeshOpacityFrameCounter = 0;
 
-            this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
-                overheadRowColModVals.forEach(overPos => {
-                    const posX = cPos[0] + overPos[0];
-                    const posY = cPos[1] + overPos[1];
+                for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+                    for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                        if (!this._isInBounds(row, col) || !this._grid[row][col][3]) continue;
 
-                    if (this._isInBounds(posX, posY) && this._grid[posX][posY][3]) {
-                        (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
+                        (this._overheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
                     }
+                }
+
+                this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
+                    overheadRowColModVals.forEach(overPos => {
+                        const posX = cPos[0] + overPos[0];
+                        const posY = cPos[1] + overPos[1];
+
+                        if (this._isInBounds(posX, posY) && this._grid[posX][posY][3]) {
+                            (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
+                        }
+                    });
                 });
-            });
+            }
         }
-        
+        return false;
     }
 
     /**

@@ -30,7 +30,9 @@ export enum AncientRuinsState {
     'paused' = 0,
     'newGame' = 1,
     'tutorial' = 2,
-    'settings' = 3
+    'settings' = 3,
+    'landing_start' = 4,
+    'leaving_start' = 5
 }
 
 /**
@@ -98,7 +100,7 @@ export class AncientRuins {
     /**
      * Tracks current game state mode.
      */
-    private _state: AncientRuinsState = AncientRuinsState.newGame;
+    private _state: AncientRuinsState = AncientRuinsState.landing_start;
 
     /**
      * Text and button objects that were visible before player entered help or settings mode.
@@ -380,8 +382,20 @@ export class AncientRuins {
             this._settingsCtrl.endCycle();
             return;
         }
-        this._gridCtrl.endCycle();
-        this._teamCtrl.endCycle();
+        // Game is in landing_start mode. Freeze user team controls.
+        if (this._state === AncientRuinsState.landing_start) {
+            if (this._gridCtrl.endCycle(AncientRuinsState.landing_start)) {
+                this._state = AncientRuinsState.leaving_start;
+            }
+        }
+        if (this._state === AncientRuinsState.leaving_start) {
+            if (this._gridCtrl.endCycle(AncientRuinsState.leaving_start)) {
+                this._state = AncientRuinsState.newGame;
+            }
+        } else {
+            this._gridCtrl.endCycle();
+            this._teamCtrl.endCycle();
+        }
         return null;
     }
 }
