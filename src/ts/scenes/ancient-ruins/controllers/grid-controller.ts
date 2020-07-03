@@ -91,6 +91,11 @@ export class GridCtrl {
     private _materialsMap: { [key: number]: MeshBasicMaterial } = {};
 
     /**
+     * Massive Object3D with most of the static meshes in the scene asa children.
+     */
+    private _megaMesh: Object3D = new Object3D();
+
+    /**
      * The mesh array with meshes of all tiles on game map at level 3.
      */
     private _overheadMeshMap: Mesh[][] = [];
@@ -116,9 +121,6 @@ export class GridCtrl {
         this._ancientRuinsSpec = ancientRuinsSpec;
         this._tileCtrl = tileCtrl;
 
-        // All meshes added here first to be added as single mesh to the scene.
-        const megaMesh = new Object3D();
-
         this._makeMaterials();
 
         this._makeGrass();
@@ -135,19 +137,7 @@ export class GridCtrl {
 
         this._makeTreeTrunks();
 
-        this._createGroundLevelMeshes(megaMesh);
-
-        this._createTraverseLevelMeshes(megaMesh);
-
-        this._createOverheadLevelMeshes(megaMesh);
-
-        this._scene.add(megaMesh);
-
-        this._createClouds();
-
-        const landingMiddleTile = this._createLandingZone();
-
-        this._createLandingZoneScorch(landingMiddleTile);
+        // Remaining initialization functions called by game controller.
     }
 
     /**
@@ -1646,6 +1636,64 @@ export class GridCtrl {
      */
     public getTileValue(row: number, col: number, elev: number): number {
         return this._isInBounds(row, col) ? this._grid[row][col][elev] : -1;
+    }
+
+    /**
+     * Constructor level initializer for clouds and landing zone, made public to allow game controller to control timing of loading graphic.
+     */
+    public async initiateCloudsAndLandingMeshes(): Promise<void> {
+        this._createClouds();
+
+        const landingMiddleTile = this._createLandingZone();
+
+        this._createLandingZoneScorch(landingMiddleTile);
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 0);
+        }).then(() => {});
+    }
+
+    /**
+     * Constructor level initializer for ground level meshes, made public to allow game controller to control timing of loading graphic.
+     */
+    public async initiateGroundLevelMeshes(): Promise<void> {
+        this._createGroundLevelMeshes(this._megaMesh);
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 0);
+        }).then(() => {});
+    }
+
+    /**
+     * Constructor level initializer for overhead level meshes, made public to allow game controller to control timing of loading graphic.
+     */
+    public async initiateOverheadLevelMeshes(): Promise<void> {
+        this._createOverheadLevelMeshes(this._megaMesh);
+
+        this._scene.add(this._megaMesh);
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 0);
+        }).then(() => {});
+    }
+
+    /**
+     * Constructor level initializer for traverse level meshes, made public to allow game controller to control timing of loading graphic.
+     */
+    public async initiateTraverseLevelMeshes(): Promise<void> {
+        this._createTraverseLevelMeshes(this._megaMesh);
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 0);
+        }).then(() => {});
     }
 
     /**

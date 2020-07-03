@@ -16,6 +16,7 @@ import { ButtonBase } from "../../controls/buttons/button-base";
 import { TextBase } from "../../controls/text/text-base";
 import { TeamCtrl } from "./controllers/team-controller";
 import { TileCtrl } from "./controllers/tile-controller";
+import { LoadingCtrl } from "./controllers/loading-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -32,7 +33,8 @@ export enum AncientRuinsState {
     'tutorial' = 2,
     'settings' = 3,
     'landing_start' = 4,
-    'leaving_start' = 5
+    'leaving_start' = 5,
+    'loading' = 6
 }
 
 /**
@@ -83,6 +85,11 @@ export class AncientRuins {
     private _listenerRef: () => void;
 
     /**
+     * Reference to this scene's loading controller.
+     */
+    private _loadingCtrl: LoadingCtrl;
+
+    /**
      * All of the materials contained in this scene.
      */
     private _materials: { [key: string]: MeshPhongMaterial };
@@ -100,7 +107,7 @@ export class AncientRuins {
     /**
      * Tracks current game state mode.
      */
-    private _state: AncientRuinsState = AncientRuinsState.landing_start;
+    private _state: AncientRuinsState = AncientRuinsState.loading;
 
     /**
      * Text and button objects that were visible before player entered help or settings mode.
@@ -136,27 +143,88 @@ export class AncientRuins {
         this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
 
-        // Text, Button, and Event Listeners
-        this._onInitialize(scene);
-        this._listenerRef = this._onWindowResize.bind(this);
-        window.addEventListener('resize', this._listenerRef, false);
+        this._loadingCtrl = new LoadingCtrl();
+        this._loadingCtrl.loadingMode();
 
-        this._tileCtrl = new TileCtrl(ancientRuinsSpec);
+        setTimeout(async () => {
+            // Text, Button, and Event Listeners
+            await async function(scene: SceneType): Promise<void> {
+                this._onInitialize(scene);
+                this._listenerRef = this._onWindowResize.bind(this);
+                window.addEventListener('resize', this._listenerRef, false);
+        
+                return this._loadingCtrl.getLoadWaitPromise(100, 24);
+            }.bind(this)(scene);
 
-        // This line must run after tile controller instantiation, but before grid or team controller.
-        this._ancientRuinsSpec.crew.forEach((member: TeamMember, index: number) => member.tileValue = this._tileCtrl.getCrewValue(index));
+            // Tile controller initialization and crew tile value.
+            await async function(): Promise<void> {
+                this._tileCtrl = new TileCtrl(this._ancientRuinsSpec);
+                // This line must run after tile controller instantiation, but before grid or team controller.
+                this._ancientRuinsSpec.crew.forEach((member: TeamMember, index: number) => member.tileValue = this._tileCtrl.getCrewValue(index));
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 38);
+            }.bind(this)();
 
-        this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl);
+            // Grid controller base initialization.
+            await async function(): Promise<void> {
+                this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl);
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 54);
+            }.bind(this)();
 
-        this._teamCtrl = new TeamCtrl(
-            this._scene,
-            this._textures,
-            this._ancientRuinsSpec,
-            this._gridCtrl,
-            this._tileCtrl);
+            // Grid controller ground level mesh initialization.
+            await async function(): Promise<void> {
+                await this._gridCtrl.initiateGroundLevelMeshes();
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 59);
+            }.bind(this)();
 
-        this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
-        this._descTextPanel.toggleOpacity();
+            // Grid controller traverse level mesh initialization.
+            await async function(): Promise<void> {
+                await this._gridCtrl.initiateTraverseLevelMeshes();
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 63);
+            }.bind(this)();
+
+            // Grid controller overhead level mesh initialization.
+            await async function(): Promise<void> {
+                await this._gridCtrl.initiateOverheadLevelMeshes();
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 67);
+            }.bind(this)();
+
+            // Initialization clouds and landing zone.
+            await async function(): Promise<void> {
+                await this._gridCtrl.initiateCloudsAndLandingMeshes();
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 75);
+            }.bind(this)();
+
+            // Team controller initialization, and creation of lower right description panel.
+            await async function(): Promise<void> {
+                this._teamCtrl = new TeamCtrl(
+                    this._scene,
+                    this._textures,
+                    this._ancientRuinsSpec,
+                    this._gridCtrl,
+                    this._tileCtrl);
+        
+                this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
+                this._descTextPanel.toggleOpacity();
+                this._teamCtrl.hideTeam();
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 89);
+            }.bind(this)();
+
+            // Turn off loading graphic and initiate game.
+            await async function(): Promise<void> {
+                this._loadingCtrl.gameMode();
+        
+                this._state = AncientRuinsState.landing_start;
+        
+                return this._loadingCtrl.getLoadWaitPromise(1000, 100);
+            }.bind(this)();
+        }, 0);
     }
 
     /**
@@ -368,6 +436,10 @@ export class AncientRuins {
      * @returns whether or not the scene is done.
      */
     public endCycle(): { [key: number]: number } {
+        // Game is loading, run absolutely nothing.
+        if (this._state === AncientRuinsState.loading) {
+            return;
+        }
         // Game externally paused from control panel. Nothing should progress.
         if (this._state === AncientRuinsState.paused) {
             return;
@@ -386,6 +458,7 @@ export class AncientRuins {
         if (this._state === AncientRuinsState.landing_start) {
             if (this._gridCtrl.endCycle(AncientRuinsState.landing_start)) {
                 this._state = AncientRuinsState.leaving_start;
+                this._teamCtrl.showTeam();
             }
         }
         if (this._state === AncientRuinsState.leaving_start) {

@@ -269,6 +269,19 @@ export class TeamCtrl {
     }
 
     /**
+     * Hides one or all of the crew member meshes. Usually for landing and taking off sequences.
+     */
+    public hideTeam(index?: number): void {
+        if (undefined !== index && index !== null) {
+            this._ancientRuinsSpec.crew[index].animationMeshes.forEach(mesh => mesh.visible = false);
+            return;
+        }
+        this._ancientRuinsSpec.crew.forEach(member => {
+            member.animationMeshes.forEach(mesh => mesh.visible = false);
+        });
+    }
+
+    /**
      * Uses the row/col combo to find crew member, and switch them to active.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
@@ -282,6 +295,19 @@ export class TeamCtrl {
         const rank = this._ancientRuinsSpec.crew[this.currTeamMember].rank;
         const name = this._ancientRuinsSpec.crew[this.currTeamMember].name;
         console.log('[Active]', formatString(gridDictionary[tileVal].gameDescription, `(${RankAbbreviationsMap[rank]})`, name));
+    }    
+
+    /**
+     * Shows one or all of the crew member meshes. Usually for landing and taking off sequences.
+     */
+    public showTeam(index?: number): void {
+        if (undefined !== index && index !== null) {
+            this._ancientRuinsSpec.crew[index].animationMeshes[0].visible = true;
+            return;
+        }
+        this._ancientRuinsSpec.crew.forEach(member => {
+            member.animationMeshes[0].visible = true;
+        });
     }
 
 }
