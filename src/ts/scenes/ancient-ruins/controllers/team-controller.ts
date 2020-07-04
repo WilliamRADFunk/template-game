@@ -23,7 +23,7 @@ export class TeamCtrl {
     /**
      * Currently selected team member index.
      */
-    private currTeamMember: number = 4;
+    private _currTeamMember: number = -1;
 
     /**
      * Reference to this scene's grid controller.
@@ -282,18 +282,26 @@ export class TeamCtrl {
     }
 
     /**
+     * Getter for the current active team member.
+     * @returns active team member index. -1 signals there is no active team member.
+     */
+    public getCurrTeamMember(): number {
+        return this._currTeamMember;
+    }
+
+    /**
      * Uses the row/col combo to find crew member, and switch them to active.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
      */
     public selectCrewMember(row: number, col: number): void {
         const clickedCrewMember = this._ancientRuinsSpec.crew.findIndex((c: TeamMember) => c.position[0] === row && c.position[1] === col);
-        this.currTeamMember = clickedCrewMember > -1 ? clickedCrewMember : this.currTeamMember;
+        this._currTeamMember = clickedCrewMember > -1 ? clickedCrewMember : this._currTeamMember;
 
         // TODO: eliminate when mini game is complete
-        const tileVal = this._ancientRuinsSpec.crew[this.currTeamMember].tileValue;
-        const rank = this._ancientRuinsSpec.crew[this.currTeamMember].rank;
-        const name = this._ancientRuinsSpec.crew[this.currTeamMember].name;
+        const tileVal = this._ancientRuinsSpec.crew[this._currTeamMember].tileValue;
+        const rank = this._ancientRuinsSpec.crew[this._currTeamMember].rank;
+        const name = this._ancientRuinsSpec.crew[this._currTeamMember].name;
         console.log('[Active]', formatString(gridDictionary[tileVal].gameDescription, `(${RankAbbreviationsMap[rank]})`, name));
     }    
 
@@ -309,5 +317,4 @@ export class TeamCtrl {
             member.animationMeshes[0].visible = true;
         });
     }
-
 }

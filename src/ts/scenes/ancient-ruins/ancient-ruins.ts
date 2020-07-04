@@ -17,6 +17,7 @@ import { TextBase } from "../../controls/text/text-base";
 import { TeamCtrl } from "./controllers/team-controller";
 import { TileCtrl } from "./controllers/tile-controller";
 import { LoadingCtrl } from "./controllers/loading-controller";
+import { GridCtrlFactory } from "./utils/grid-controller-factory";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -146,85 +147,86 @@ export class AncientRuins {
         this._loadingCtrl = new LoadingCtrl();
         this._loadingCtrl.loadingMode();
 
-        setTimeout(async () => {
-            // Text, Button, and Event Listeners
-            await async function(scene: SceneType): Promise<void> {
-                this._onInitialize(scene);
-                this._listenerRef = this._onWindowResize.bind(this);
-                window.addEventListener('resize', this._listenerRef, false);
-        
-                return this._loadingCtrl.getLoadWaitPromise(100, 24);
-            }.bind(this)(scene);
+        // Text, Button, and Event Listeners
+        const initialize = async function(scene: SceneType): Promise<void> {
+            this._onInitialize(scene);
+            this._listenerRef = this._onWindowResize.bind(this);
+            window.addEventListener('resize', this._listenerRef, false);
+    
+            return this._loadingCtrl.getLoadWaitPromise(100, 24);
+        };
 
-            // Tile controller initialization and crew tile value.
-            await async function(): Promise<void> {
-                this._tileCtrl = new TileCtrl(this._ancientRuinsSpec);
-                // This line must run after tile controller instantiation, but before grid or team controller.
-                this._ancientRuinsSpec.crew.forEach((member: TeamMember, index: number) => member.tileValue = this._tileCtrl.getCrewValue(index));
-        
-                return this._loadingCtrl.getLoadWaitPromise(1000, 38);
-            }.bind(this)();
-
-            // Grid controller base initialization.
-            await async function(): Promise<void> {
-                this._gridCtrl = new GridCtrl(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl);
-        
+        initialize.bind(this)(scene)
+        // Tile controller initialization and crew tile value.
+        .then(() => {
+            this._tileCtrl = new TileCtrl(this._ancientRuinsSpec);
+            // This line must run after tile controller instantiation, but before grid or team controller.
+            this._ancientRuinsSpec.crew.forEach((member: TeamMember, index: number) => member.tileValue = this._tileCtrl.getCrewValue(index));
+    
+            return this._loadingCtrl.getLoadWaitPromise(1000, 38);
+        })
+        // Grid controller base initialization.
+        .then(() => {
+            return GridCtrlFactory(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl)
+                .then((gridCtrl) => {
+                    this._gridCtrl = gridCtrl;
+                    return this._loadingCtrl.getLoadWaitPromise(750, 43);
+                });
+        })
+        // Grid controller grid values initialization.
+        .then(() => {
+            return this._gridCtrl.initiateGridValues().then(() => {
                 return this._loadingCtrl.getLoadWaitPromise(1000, 54);
-            }.bind(this)();
-
-            // Grid controller ground level mesh initialization.
-            await async function(): Promise<void> {
-                await this._gridCtrl.initiateGroundLevelMeshes();
-        
-                return this._loadingCtrl.getLoadWaitPromise(1000, 59);
-            }.bind(this)();
-
-            // Grid controller traverse level mesh initialization.
-            await async function(): Promise<void> {
-                await this._gridCtrl.initiateTraverseLevelMeshes();
-        
-                return this._loadingCtrl.getLoadWaitPromise(1000, 63);
-            }.bind(this)();
-
-            // Grid controller overhead level mesh initialization.
-            await async function(): Promise<void> {
-                await this._gridCtrl.initiateOverheadLevelMeshes();
-        
-                return this._loadingCtrl.getLoadWaitPromise(1000, 67);
-            }.bind(this)();
-
-            // Initialization clouds and landing zone.
-            await async function(): Promise<void> {
-                await this._gridCtrl.initiateCloudsAndLandingMeshes();
-        
+            });
+        })
+        // Grid controller ground level mesh initialization.
+        .then(() => {
+            return this._gridCtrl.initiateGroundLevelMeshes().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(250, 59);
+            });
+        })
+        // Grid controller traverse level mesh initialization.
+        .then(() => {
+            return this._gridCtrl.initiateTraverseLevelMeshes().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(250, 63);
+            });
+        })
+        // Grid controller overhead level mesh initialization.
+        .then(() => {
+            return this._gridCtrl.initiateOverheadLevelMeshes().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(250, 67);
+            });
+        })
+        // Initialization clouds and landing zone.
+        .then(() => {
+            return this._gridCtrl.initiateCloudsAndLandingMeshes().then(() => {
                 return this._loadingCtrl.getLoadWaitPromise(1000, 75);
-            }.bind(this)();
-
-            // Team controller initialization, and creation of lower right description panel.
-            await async function(): Promise<void> {
-                this._teamCtrl = new TeamCtrl(
-                    this._scene,
-                    this._textures,
-                    this._ancientRuinsSpec,
-                    this._gridCtrl,
-                    this._tileCtrl);
-        
-                this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
-                this._descTextPanel.toggleOpacity();
-                this._teamCtrl.hideTeam();
-        
-                return this._loadingCtrl.getLoadWaitPromise(1000, 89);
-            }.bind(this)();
-
-            // Turn off loading graphic and initiate game.
-            await async function(): Promise<void> {
-                this._loadingCtrl.gameMode();
-        
-                this._state = AncientRuinsState.landing_start;
-        
-                return this._loadingCtrl.getLoadWaitPromise(1000, 100);
-            }.bind(this)();
-        }, 0);
+            });
+        })
+        // Team controller initialization, and creation of lower right description panel.
+        .then(() => {
+            this._teamCtrl = new TeamCtrl(
+                this._scene,
+                this._textures,
+                this._ancientRuinsSpec,
+                this._gridCtrl,
+                this._tileCtrl);
+    
+            this._descTextPanel = new PanelBase('Description Panel', this._scene, 4, 4.2, 1.2, 3.9, 4.95);
+            this._descTextPanel.toggleOpacity();
+            this._teamCtrl.hideTeam();
+    
+            return this._loadingCtrl.getLoadWaitPromise(100, 89);
+        })
+        // Turn off loading graphic and initiate game.
+        .then(() => {
+            return this._loadingCtrl.getLoadWaitPromise(750, 100);
+        })
+        // Loading finished. Switch screens and state.
+        .then(() => {
+            this._loadingCtrl.gameMode();
+            this._state = AncientRuinsState.landing_start;
+        });
     }
 
     /**
@@ -252,11 +254,36 @@ export class AncientRuins {
         // DOM Events
         const container = document.getElementById('mainview');
         document.oncontextmenu = event => {
+            event.preventDefault();
+            // If no crew member active, or in intro sequence, do nothing.
+            if (this._teamCtrl.getCurrTeamMember() < 0
+                || this._state === AncientRuinsState.landing_start
+                || this._state === AncientRuinsState.leaving_start) {
+                return false;
+            }
+            // ThreeJS object intersections.
+            getIntersections(event, container, sceneType).forEach(el => {
+                const tileName = el && el.object && el.object.name;
+                const tileSplit = tileName.split('-');
+                if (tileSplit.length === 3) {
+                    const currTeamMemberTile = this._ancientRuinsSpec.crew[this._teamCtrl.getCurrTeamMember()].position;
+                    console.log(`Move ${
+                        this._gridCtrl.getTileDescription(Number(currTeamMemberTile[0]), Number(currTeamMemberTile[1]), 2)} to tile ${
+                        Number(tileSplit[1])}, ${
+                        Number(tileSplit[2])}`);
+                }
+            });
             return false;
         };
         document.onclick = event => {
             event.preventDefault();
-            // Three JS object intersections.
+            // If no crew member active, or in intro sequence, do nothing.
+            if (this._teamCtrl.getCurrTeamMember() < 0
+                || this._state === AncientRuinsState.landing_start
+                || this._state === AncientRuinsState.leaving_start) {
+                return false;
+            }
+            // ThreeJS object intersections.
             getIntersections(event, container, sceneType).forEach(el => {
                 const tileName = el && el.object && el.object.name;
                 const tileSplit = tileName.split('-');

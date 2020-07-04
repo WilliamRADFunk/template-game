@@ -123,19 +123,7 @@ export class GridCtrl {
 
         this._makeMaterials();
 
-        this._makeGrass();
-
-        this._makeWater();
-
-        this._modifyWatersForEdges();
-
-        this._modifyGrassesForEdges();
-
-        this._makeStructures();
-
-        this._dropBouldersInWater();
-
-        this._makeTreeTrunks();
+        
 
         // Remaining initialization functions called by game controller.
     }
@@ -152,7 +140,7 @@ export class GridCtrl {
     }
 
     /**
-     * Checks surrounding tiles for obstructions to determine if area is good landing area.
+     * Checks surrounding tiles for obstructions to determine if area is good for landing.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
      * @param cellsToCheck list of row/col mod values to check.
@@ -206,26 +194,30 @@ export class GridCtrl {
     /**
      * Uses the tile grid to make meshes that match tile values.
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     * @returns an empty promise to make function async
      */
-    private _createGroundLevelMeshes(megaMesh: Object3D): void {
-        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
-            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this._isInBounds(row, col) && this._grid[row][col][1]) {
-                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][1]];
+    private async _createGroundLevelMeshes(megaMesh: Object3D): Promise<void> {
+        return new Promise((resolve) => {
+            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+                for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                    if (this._isInBounds(row, col) && this._grid[row][col][1]) {
+                        let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][1]];
 
-                    // If material type has a second variation, randomize between the two.
-                    if (this._tileCtrl.getGridDicVariation(this._grid[row][col][1]) && fiftyFifty()) {
-                        material = this._materialsMap[this._grid[row][col][1] + 1];
+                        // If material type has a second variation, randomize between the two.
+                        if (this._tileCtrl.getGridDicVariation(this._grid[row][col][1]) && fiftyFifty()) {
+                            material = this._materialsMap[this._grid[row][col][1] + 1];
+                        }
+
+                        const tile = new Mesh( this._geometry, material );
+                        tile.position.set(getXPos(col), LayerYPos.LAYER_0, getZPos(row))
+                        tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+                        tile.name = `tile-${row}-${col}`;
+                        this._scene.add(tile);
                     }
-
-                    const tile = new Mesh( this._geometry, material );
-                    tile.position.set(getXPos(col), LayerYPos.LAYER_0, getZPos(row))
-                    tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-                    tile.name = `tile-${row}-${col}`;
-                    this._scene.add(tile);
                 }
             }
-        }
+            resolve();
+        }).then(() => {});
     }
 
     /**
@@ -353,65 +345,75 @@ export class GridCtrl {
     /**
      * Uses the tile grid to make meshes that match tile values.
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     * @returns an empty promise to make function async
      */
-    private _createOverheadLevelMeshes(megaMesh: Object3D): void {
-        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
-            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this._isInBounds(row, col) && this._grid[row][col][3] && this._materialsMap[this._grid[row][col][3]]) {
-                    const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3]);
-                    const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3], true);
-                    const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3]);
-                    const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3], true);
+    private async _createOverheadLevelMeshes(megaMesh: Object3D): Promise<void> {
+        return new Promise((resolve) => {
+            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+                for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                    if (this._isInBounds(row, col) && this._grid[row][col][3] && this._materialsMap[this._grid[row][col][3]]) {
+                        const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3]);
+                        const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3], true);
+                        const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3]);
+                        const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3], true);
 
-                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]].clone();
+                        let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]].clone();
 
-                    const tile = new Mesh( this._geometry, material );
-                    tile.scale.set(scaleX, scaleZ, scaleZ);
-                    tile.position.set(posX, LayerYPos.LAYER_2, posZ)
-                    tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-                    (tile.material as MeshBasicMaterial).opacity = 1;
-                    tile.name = `over:${row}:${col}`;
-                    tile.updateMatrix();
-                    megaMesh.add(tile);
-                    if (!this._overheadMeshMap[row]) {
-                        this._overheadMeshMap[row] = [];
+                        const tile = new Mesh( this._geometry, material );
+                        tile.scale.set(scaleX, scaleZ, scaleZ);
+                        tile.position.set(posX, LayerYPos.LAYER_2, posZ)
+                        tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+                        (tile.material as MeshBasicMaterial).opacity = 1;
+                        tile.name = `over:${row}:${col}`;
+                        tile.updateMatrix();
+                        megaMesh.add(tile);
+                        if (!this._overheadMeshMap[row]) {
+                            this._overheadMeshMap[row] = [];
+                        }
+                        this._overheadMeshMap[row][col] = tile;
                     }
-                    this._overheadMeshMap[row][col] = tile;
                 }
             }
-        }
+            this._scene.add(this._megaMesh);
+
+            resolve();
+        }).then(() => {});
     }
 
     /**
      * Uses the tile grid to make meshes that match tile values.
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     * @returns an empty promise to make function async
      */
-    private _createTraverseLevelMeshes(megaMesh: Object3D): void {
-        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
-            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this._isInBounds(row, col) && this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
-                    const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2]);
-                    const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2], true);
-                    const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2]);
-                    const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2], true);
+    private async _createTraverseLevelMeshes(megaMesh: Object3D): Promise<void> {
+        new Promise((resolve) => {
+            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+                for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                    if (this._isInBounds(row, col) && this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
+                        const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2]);
+                        const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2], true);
+                        const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2]);
+                        const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2], true);
 
-                    let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][2]];
+                        let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][2]];
 
-                    // If material type has a second variation, randomize between the two.
-                    if (this._tileCtrl.getGridDicVariation(this._grid[row][col][2]) && fiftyFifty()) {
-                        material = this._materialsMap[this._grid[row][col][2] + 1]
+                        // If material type has a second variation, randomize between the two.
+                        if (this._tileCtrl.getGridDicVariation(this._grid[row][col][2]) && fiftyFifty()) {
+                            material = this._materialsMap[this._grid[row][col][2] + 1]
+                        }
+
+                        const tile = new Mesh( this._geometry, material );
+                        tile.scale.set(scaleX, scaleZ, scaleZ);
+                        tile.position.set(posX, LayerYPos.LAYER_1, posZ)
+                        tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+                        tile.name = `level:${row}:${col}`;
+                        tile.updateMatrix();
+                        megaMesh.add(tile);
                     }
-
-                    const tile = new Mesh( this._geometry, material );
-                    tile.scale.set(scaleX, scaleZ, scaleZ);
-                    tile.position.set(posX, LayerYPos.LAYER_1, posZ)
-                    tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-                    tile.name = `level:${row}:${col}`;
-                    tile.updateMatrix();
-                    megaMesh.add(tile);
                 }
             }
-        }
+            resolve();
+        }).then(() => {});
     }
 
     /**
@@ -1262,8 +1264,8 @@ export class GridCtrl {
                     this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
 
                     const above = this._isInBounds(row + 1, col);
-                    const aboveRight = this._isInBounds(row + 1, col);
-                    const right = this._isInBounds(row + 1, col + 1);
+                    const aboveRight = this._isInBounds(row + 1, col + 1);
+                    const right = this._isInBounds(row, col + 1);
 
                     if (fiftyFifty()
                         && !((above && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue())
@@ -1540,6 +1542,30 @@ export class GridCtrl {
     }
 
     /**
+     * Sets the grid values
+     * @returns an empty promise to make function async
+     */
+    private async _setGridValues(): Promise<void> {
+        return new Promise((resolve) => {
+            this._makeGrass();
+
+            this._makeWater();
+
+            this._modifyWatersForEdges();
+
+            this._modifyGrassesForEdges();
+
+            this._makeStructures();
+
+            this._dropBouldersInWater();
+
+            this._makeTreeTrunks();
+
+            resolve();
+        }).then(() => {});
+    }
+
+    /**
      * Handles all cleanup responsibility for controller before it's destroyed.
      */
     public dispose(): void {
@@ -1659,41 +1685,28 @@ export class GridCtrl {
      * Constructor level initializer for ground level meshes, made public to allow game controller to control timing of loading graphic.
      */
     public async initiateGroundLevelMeshes(): Promise<void> {
-        this._createGroundLevelMeshes(this._megaMesh);
-
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 0);
-        }).then(() => {});
+        return this._createGroundLevelMeshes(this._megaMesh);
     }
 
     /**
      * Constructor level initializer for overhead level meshes, made public to allow game controller to control timing of loading graphic.
      */
     public async initiateOverheadLevelMeshes(): Promise<void> {
-        this._createOverheadLevelMeshes(this._megaMesh);
+        return this._createOverheadLevelMeshes(this._megaMesh);
+    }
 
-        this._scene.add(this._megaMesh);
-
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 0);
-        }).then(() => {});
+    /**
+     * Constructor level initializer for setting grid grid values, made public to allow game controller to control timing of loading graphic.
+     */
+    public async initiateGridValues(): Promise<void> {
+        return this._setGridValues();
     }
 
     /**
      * Constructor level initializer for traverse level meshes, made public to allow game controller to control timing of loading graphic.
      */
     public async initiateTraverseLevelMeshes(): Promise<void> {
-        this._createTraverseLevelMeshes(this._megaMesh);
-
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 0);
-        }).then(() => {});
+        return this._createTraverseLevelMeshes(this._megaMesh);
     }
 
     /**
