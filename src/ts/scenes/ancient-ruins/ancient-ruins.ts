@@ -289,9 +289,9 @@ export class AncientRuins {
                         currTeamMemberTile[1],
                         Number(tileSplit[1]), Number(tileSplit[2]));
                     
-                    console.log(`   Starting Tile: [${Number(currTeamMemberTile[0])}, ${Number(currTeamMemberTile[1])}]
-                        Target Tile: [${Number(tileSplit[1])}, ${Number(tileSplit[2])}]
-                        Shortest Path: ${shortestPath}`);
+                    console.log(`Starting Tile: [${Number(currTeamMemberTile[0])}, ${Number(currTeamMemberTile[1])}]`,
+                        `Target Tile: [${Number(tileSplit[1])}, ${Number(tileSplit[2])}]`,
+                        'Shortest Path: ', shortestPath);
                 }
             });
             return false;
@@ -299,9 +299,7 @@ export class AncientRuins {
         document.onclick = event => {
             event.preventDefault();
             // If no crew member active, or in intro sequence, do nothing.
-            if (this._teamCtrl.getCurrTeamMember() < 0
-                || this._state === AncientRuinsState.landing_start
-                || this._state === AncientRuinsState.leaving_start) {
+            if (this._state === AncientRuinsState.landing_start || this._state === AncientRuinsState.leaving_start) {
                 return false;
             }
             // ThreeJS object intersections.

@@ -68,7 +68,7 @@ export class PathFindingCtrl {
                 }
 
                 // Verifies that this new cell doesn't create a cycle. If so, bail out early.
-                if (this._checkForCycle(testedPath, testedCell)) {
+                if (this._checkForCycle(testPath, testedCell)) {
                     return [];
                 }
 
@@ -86,17 +86,17 @@ export class PathFindingCtrl {
                 testedPath = this._getShortestPath(testedRow, testedCol, testedPath.slice(), startCell, targetCell);
 
                 // Only return the value if the final value is the target cell.
-                if (testedPath[testedPath.length - 1] === targetCell) {
+                if (testedPath && testedPath[testedPath.length - 1] === targetCell) {
                     return testedPath;
                 }
 
                 // If this is reached, there was no valid path leading out from this cell.
                 return [];
             })
-            .filter(x => x.length);
+            .filter(x => x && x.length);
         
         // Start with the first path, to compare again the other seven possibilities.
-        let shortestPath = availablePaths.pop();
+        let shortestPath = availablePaths.pop() || [];
 
         // Check remaining paths if any were shorter than the first.
         availablePaths.forEach(path => {
@@ -146,17 +146,17 @@ export class PathFindingCtrl {
                 testedPath = this._getShortestPath(testedRow, testedCol, testedPath.slice(), startCell, targetCell);
 
                 // Only return the value if the final value is the target cell.
-                if (testedPath[testedPath.length - 1] === targetCell) {
+                if (testedPath && testedPath[testedPath.length - 1] === targetCell) {
                     return testedPath;
                 }
 
                 // If this is reached, there was no valid path leading out from this cell.
                 return [];
             })
-            .filter(x => x.length);
+            .filter(x => x && x.length);
         
         // Start with the first path, to compare again the other seven possibilities.
-        let shortestPath = availablePaths.pop();
+        let shortestPath = availablePaths.pop() || [];
 
         // Check remaining paths if any were shorter than the first.
         availablePaths.forEach(path => {
