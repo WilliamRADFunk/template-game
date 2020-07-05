@@ -18,6 +18,7 @@ import { TeamCtrl } from "./controllers/team-controller";
 import { TileCtrl } from "./controllers/tile-controller";
 import { LoadingCtrl } from "./controllers/loading-controller";
 import { GridCtrlFactory } from "./utils/grid-controller-factory";
+import { PathFindingCtrl } from "./controllers/path-finding-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -94,6 +95,11 @@ export class AncientRuins {
      * All of the materials contained in this scene.
      */
     private _materials: { [key: string]: MeshPhongMaterial };
+
+    /**
+     * Reference to this scene's path finding controller.
+     */
+    private _pathFindingCtrl: PathFindingCtrl;
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -218,6 +224,12 @@ export class AncientRuins {
     
             return this._loadingCtrl.getLoadWaitPromise(100, 89);
         })
+        // Path Finder Controller initialization.
+        .then(() => {
+            this._pathFindingCtrl = new PathFindingCtrl(this._gridCtrl);
+
+            return this._loadingCtrl.getLoadWaitPromise(100, 94);
+        })
         // Turn off loading graphic and initiate game.
         .then(() => {
             return this._loadingCtrl.getLoadWaitPromise(750, 100);
@@ -271,6 +283,15 @@ export class AncientRuins {
                         this._gridCtrl.getTileDescription(Number(currTeamMemberTile[0]), Number(currTeamMemberTile[1]), 2)} to tile ${
                         Number(tileSplit[1])}, ${
                         Number(tileSplit[2])}`);
+                    
+                    const shortestPath = this._pathFindingCtrl.getShortestPath(
+                        currTeamMemberTile[0],
+                        currTeamMemberTile[1],
+                        Number(tileSplit[1]), Number(tileSplit[2]));
+                    
+                    console.log(`   Starting Tile: [${Number(currTeamMemberTile[0])}, ${Number(currTeamMemberTile[1])}]
+                        Target Tile: [${Number(tileSplit[1])}, ${Number(tileSplit[2])}]
+                        Shortest Path: ${shortestPath}`);
                 }
             });
             return false;
@@ -492,10 +513,11 @@ export class AncientRuins {
             if (this._gridCtrl.endCycle(AncientRuinsState.leaving_start)) {
                 this._state = AncientRuinsState.newGame;
             }
-        } else {
-            this._gridCtrl.endCycle();
-            this._teamCtrl.endCycle();
         }
+
+        this._gridCtrl.endCycle();
+        this._teamCtrl.endCycle();
+
         return null;
     }
 }
