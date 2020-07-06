@@ -17,6 +17,20 @@ export class PathFindingCtrl {
     }
 
     /**
+     * Calculates the (as a crow flies) distance between two tiles
+     * @param row1 coordinate of the start tile
+     * @param col1 coordinate of the start tile
+     * @param row2 coordinate of the end tile
+     * @param col2 coordinate of the end tile
+     * @returns the absolute distance between two tiles
+     */
+    private _calculateDistance(row1: number, col1: number, row2: number, col2: number): number {
+        const xDistSqr = Math.pow(Math.abs(col2 - col1), 2);
+        const yDistSqr = Math.pow(Math.abs(row2 - row1), 2);
+        return Math.sqrt(xDistSqr + yDistSqr);
+    }
+
+    /**
      * Checks if the cell is already in the tested path. If it is then the new cell would make a cycle.
      * @param testPath path up to, but not including, the tested cell
      * @param testedCell the cell to use to test the path for a cycle
@@ -49,71 +63,56 @@ export class PathFindingCtrl {
      * Recursive function to find each path that leads to the target cell.
      * @param row coordinate of the tile
      * @param col coordinate of the tile
-     * @param testPath path leading up to this cell in order to check for cycles
-     * @param startCell reference number for the cell crew member started from
+     * @param testPath used to push and pop values depending on the success of the path
      * @param targetCell reference number fot the cell crew member is trying to reach
-     * @returns path of cell reference numbers that lead to target cell. Empty means not a valid path
+     * @returns true if this cell is target cell, false if path is blocked out out of bounds
      */
-    private _getShortestPath(row: number, col: number, testPath: number[], startCell: number, targetCell: number): number[] {
-        const availablePaths: number[][] = adjacencyMods
+    private _getShortestPath(row: number, col: number, testPath: number[], targetCell: number): boolean {
+        const nextCell = this._convertRowColToCell(row, col);
+        testPath.push(nextCell);
+
+        // Found the target, time to bail out.
+        if (nextCell === targetCell) {
+            return true;
+        }
+
+        // List of neighboring tiles to starting point, ordered by closeness to target cell.
+        const closenessScores = adjacencyMods
+            // Gets row, col, and distance of considered tile with target tile.
             .map(mod => {
                 const testedRow = row + mod[0];
                 const testedCol = col + mod[1];
-                const testedCell = this._convertRowColToCell(testedRow, testedCol);
-                let testedPath: number[] = [...testPath, testedCell];
-
-                // If new cell is the same as the original cell, it make a perfect cycle. Bail out early.
-                if (testedCell === startCell) {
-                    return [];
-                }
-
-                // Verifies that this new cell doesn't create a cycle. If so, bail out early.
-                if (this._checkForCycle(testPath, testedCell)) {
-                    return [];
-                }
-
-                // If the cell is out of bounds, it's not a valid path. Bail out early.
-                if (!this._gridCtrl.isInBounds(testedRow, testedCol)) {
-                    return [];
-                }
-
-                // This is the target cell. Bail out early.
-                if (testedCell === targetCell) {
-                    return testedPath;
-                }
-                
-                // Finds shortest path to target leading out from this cell.
-                testedPath = this._getShortestPath(testedRow, testedCol, testedPath.slice(), startCell, targetCell);
-
-                // Only return the value if the final value is the target cell.
-                if (testedPath && testedPath[testedPath.length - 1] === targetCell) {
-                    return testedPath;
-                }
-
-                // If this is reached, there was no valid path leading out from this cell.
-                return [];
+                return [testedRow, testedCol, this._calculateDistance(row, col, testedRow, testedCol)];
             })
-            .filter(x => x && x.length);
-        
-        // Start with the first path, to compare again the other seven possibilities.
-        let shortestPath = availablePaths.pop() || [];
+            // Check cells in order of closer distance to target cell
+            .sort((tile1, tile2) => {
+                return tile1[2] - tile2[2];
+            })
+            // Only in-bounds and unobstructed tiles are considered.
+            .filter(tile => {
+                return this._gridCtrl.isInBounds(tile[0], tile[1]) && !this._gridCtrl.getTileValue(tile[0], tile[1], 2);
+            });
 
-        // Check remaining paths if any were shorter than the first.
-        availablePaths.forEach(path => {
-            if (path.length < shortestPath.length) {
-                shortestPath = path;
+        // Check paths leading out from these neighboring cells.
+        for (let x = 0; x < closenessScores.length; x++) {
+            const tile = closenessScores[x];
+
+            // If path proves true, go all the way back up the rabbit hole.
+            if (this._getShortestPath(tile[0], tile[1], testPath, targetCell)) {
+                return true;
             }
-        });
-
-        return shortestPath;
+            // If path proves false, pop the last cell to prepare for the next iteration.
+            testPath.pop();
+            return false;
+        }
     }
 
     /**
      * Parent function to the recursive path finding function calls. Chooses the path with the least number of cells.
-     * @param row1 coordinate of the tile
-     * @param col1 coordinate of the tile
-     * @param row2 coordinate of the tile
-     * @param col2 coordinate of the tile
+     * @param row1 coordinate of the start tile
+     * @param col1 coordinate of the start tile
+     * @param row2 coordinate of the end tile
+     * @param col2 coordinate of the end tile
      * @returns path of [row, col] values that lead to target cell. Empty means not a valid path
      */
     public getShortestPath(row1: number, col1: number, row2: number, col2: number): [number, number][] {
@@ -125,47 +124,35 @@ export class PathFindingCtrl {
             return [];
         }
 
-        const availablePaths: number[][] = adjacencyMods
+        // List of neighboring tiles to starting point, ordered by closeness to target cell.
+        const closenessScores = adjacencyMods
+            // Gets row, col, and distance of considered tile with target tile.
             .map(mod => {
                 const testedRow = row1 + mod[0];
                 const testedCol = col1 + mod[1];
-                const testedCell = this._convertRowColToCell(testedRow, testedCol);
-                let testedPath: number[] = [testedCell];
-
-                // If the cell is out of bounds, it's not a valid path. Bail out early.
-                if (!this._gridCtrl.isInBounds(testedRow, testedCol)) {
-                    return [];
-                }
-
-                // This is the target cell. Bail out early.
-                if (testedCell === targetCell) {
-                    return testedPath;
-                }
-                
-                // Finds shortest path to target leading out from this cell.
-                testedPath = this._getShortestPath(testedRow, testedCol, testedPath.slice(), startCell, targetCell);
-
-                // Only return the value if the final value is the target cell.
-                if (testedPath && testedPath[testedPath.length - 1] === targetCell) {
-                    return testedPath;
-                }
-
-                // If this is reached, there was no valid path leading out from this cell.
-                return [];
+                return [testedRow, testedCol, this._calculateDistance(row1, col1, testedRow, testedCol)];
             })
-            .filter(x => x && x.length);
-        
-        // Start with the first path, to compare again the other seven possibilities.
-        let shortestPath = availablePaths.pop() || [];
+            // Check cells in order of closer distance to target cell
+            .sort((tile1, tile2) => {
+                return tile1[2] - tile2[2];
+            })
+            // Only in-bounds and unobstructed tiles are considered.
+            .filter(tile => {
+                return this._gridCtrl.isInBounds(tile[0], tile[1]) && !this._gridCtrl.getTileValue(tile[0], tile[1], 2);
+            });
 
-        // Check remaining paths if any were shorter than the first.
-        availablePaths.forEach(path => {
-            if (path.length < shortestPath.length) {
-                shortestPath = path;
+        // Check paths leading out from these neighboring cells.
+        const path = [startCell];
+        for (let x = 0; x < closenessScores.length; x++) {
+            const tile = closenessScores[x];
+
+            // If final cell is target cell, we've found our shortest path.
+            if (this._getShortestPath(tile[0], tile[1], path, targetCell)) {
+                return path.map(cell => this._convertCellToRowCol(cell));
             }
-        });
+        }
 
-        // Convert path of cells back to their usable [row, col] values.
-        return shortestPath.map(cell => this._convertCellToRowCol(cell));
+        // Having reached this point, there was no viable path to target cell.
+        return [];
     }
 }
