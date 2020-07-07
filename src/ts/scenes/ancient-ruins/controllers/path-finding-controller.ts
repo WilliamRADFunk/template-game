@@ -1,4 +1,6 @@
 import { GridCtrl } from "./grid-controller";
+import { isBlocking } from "../utils/is-blocking";
+import { isInBounds } from "../utils/is-in-bounds";
 
 const adjacencyMods: [number, number][] = [ [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1] ];
 
@@ -43,6 +45,58 @@ export class PathFindingCtrl {
     }
 
     /**
+     * Checks to see if a straightish line path between current tile and start tile would have been possible.
+     * @param row coordinate of the tile
+     * @param col coordinate of the tile
+     * @param testPath path up to, but not including, the tested cell
+     * @param startCell tile the crew member is starting from
+     * @returns TRUE means there was a shorter path to current tile if in straightish line | FALSE means the straightish path was longer or blocked
+     */
+    private _checkShorterLinearPath(row: number, col: number, testPath: number[], startCell: number): boolean {
+        const startPos = this._convertCellToRowCol(startCell);
+        const currLength = testPath.length;
+
+        const nextCell = [row, col];
+        let numTiles = 1; // includes current tile.
+        // Bails out internally if straightish path is longer than current path (impossible) or if arrived at start tile.
+        while (true) {
+            const rowDiff = startPos[0] - nextCell[0];
+            const colDiff = startPos[1] - nextCell[1];
+
+            // Somewhat diagonal from starting point.
+            if (rowDiff && colDiff) {
+                nextCell[0] += (rowDiff / Math.abs(rowDiff));
+                nextCell[1] += (colDiff / Math.abs(colDiff));
+            // Perfectly horizontal from starting point.
+            } else if (colDiff) {
+                nextCell[1] += (colDiff / Math.abs(colDiff));
+            // Perfectly vertical from starting point.
+            } else {
+                nextCell[0] += (rowDiff / Math.abs(rowDiff));
+            }
+            numTiles++;
+
+            // Bails out if straightish path is longer than current path (impossible).
+            if (currLength <= numTiles) {
+                console.log('_checkShorterLinearPath: too long', currLength, numTiles, nextCell);
+                return false;
+            }
+
+            // If we made it to start tile, and here, we can bail because path is unblocked and shorter than current path.
+            if (nextCell[0] === startPos[0] && nextCell[1] === startPos[1]) {
+                console.log('_checkShorterLinearPath: true', currLength, numTiles);
+                return true;
+            }
+
+            // Checks if next tile in straightish path is out of bounds or blocked.
+            if (!isInBounds(nextCell[0], nextCell[1]) || isBlocking(this._gridCtrl.getTileValue(nextCell[0], nextCell[1], 2))) {
+                console.log('_checkShorterLinearPath: blocked', currLength, numTiles);
+                return false;
+            }
+        }
+    }
+
+    /**
      * Converts the row and col values into a single unique number for reference.
      * @param row coordinate of the tile
      * @param col coordinate of the tile
@@ -78,6 +132,12 @@ export class PathFindingCtrl {
             return true;
         }
 
+        // There is a shorter, straightish (unblocked) path between this point and starting point. Bail out early.
+        if (this._checkShorterLinearPath(nextRow, nextCol, testPath, testPath[0])) {
+            console.log('shorter path found', nextCell);
+            return false;
+        }
+
         // List of neighboring tiles to starting point, ordered by closeness to target cell.
         const closenessScores = adjacencyMods
             // Gets row, col, and distance of considered tile with target tile.
@@ -92,7 +152,7 @@ export class PathFindingCtrl {
             })
             // Only in-bounds and unobstructed tiles are considered.
             .filter(tile => {
-                return this._gridCtrl.isInBounds(tile[0], tile[1]) && !this._gridCtrl.getTileValue(tile[0], tile[1], 2);
+                return isInBounds(tile[0], tile[1]) && !isBlocking(this._gridCtrl.getTileValue(tile[0], tile[1], 2));
             });
 
         // Check paths leading out from these neighboring cells.
@@ -132,8 +192,8 @@ export class PathFindingCtrl {
      * @returns path of [row, col] values that lead to target cell. Empty means not a valid path
      */
     public getShortestPath(row1: number, col1: number, row2: number, col2: number): [number, number][] {
-        // For now, don't let user travel to blocked tile.
-        if (this._gridCtrl.getTileValue(row2, col2, 2)) {
+        // TODO: For now, don't let user travel to blocked tile. Eventually pick an adjacent tile.
+        if (isBlocking(this._gridCtrl.getTileValue(row2, col2, 2))) {
             return [];
         }
 
@@ -159,7 +219,7 @@ export class PathFindingCtrl {
             })
             // Only in-bounds and unobstructed tiles are considered.
             .filter(tile => {
-                return this._gridCtrl.isInBounds(tile[0], tile[1]) && !this._gridCtrl.getTileValue(tile[0], tile[1], 2);
+                return isInBounds(tile[0], tile[1]) && !isBlocking(this._gridCtrl.getTileValue(tile[0], tile[1], 2));
             });
 
         // Check paths leading out from these neighboring cells.

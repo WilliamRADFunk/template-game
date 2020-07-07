@@ -123,7 +123,7 @@ export class DevMenu {
     */
     private _ancientRuinsSpec: AncientRuinsSpecifications = {
         biomeRuins: RuinsBiome.Military_Base,
-        biomeWater: WaterBiome.Small_Lakes,
+        biomeWater: WaterBiome.Large_Lake,
         crew: [
             {
                 animationCounter: 0,

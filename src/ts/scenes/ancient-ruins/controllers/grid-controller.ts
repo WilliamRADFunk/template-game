@@ -25,6 +25,7 @@ import { spriteMapCols, spriteMapRows } from "../utils/tile-values";
 import { MIN_ROWS, MAX_ROWS, MIN_COLS, MAX_COLS, MIDDLE_ROW, MIDDLE_COL } from "../utils/grid-constants";
 import { createBoxWithRoundedEdges } from "../../../utils/create-box-with-rounded-edges";
 import { AncientRuinsState } from "../ancient-ruins";
+import { isInBounds } from "../utils/is-in-bounds";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
@@ -136,7 +137,7 @@ export class GridCtrl {
      */
     private _checkGrassSpread(row: number, col: number): number {
         // If non-zero, then it's a grass tile, thus increasing grass spread another 15%
-        return (this.isInBounds(row, col) && this._grid[row][col][1] === 1) ? this._ancientRuinsSpec.plantSpreadability : 0;
+        return (isInBounds(row, col) && this._grid[row][col][1] === 1) ? this._ancientRuinsSpec.plantSpreadability : 0;
     }
 
     /**
@@ -150,7 +151,7 @@ export class GridCtrl {
         // If even one of the 9 cells is out of bounds or blocked or water tile, then it isn't a valid landing zone.
         return !cellsToCheck.some(rowColMods => {
             const cell = [row + rowColMods[0], col + rowColMods[1]];
-            return !this.isInBounds(cell[0], cell[1])
+            return !isInBounds(cell[0], cell[1])
                 || !!this._grid[cell[0]][cell[1]][0]
                 || !!this._grid[cell[0]][cell[1]][2]
                 || !!this._grid[cell[0]][cell[1]][3]
@@ -167,7 +168,7 @@ export class GridCtrl {
      */
     private _checkWaterSpread(row: number, col: number): number {
         // If non-zero, then it's a water tile, thus increasing water spread another 10%
-        return (this.isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) ? this._ancientRuinsSpec.waterSpreadability : 0;
+        return (isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) ? this._ancientRuinsSpec.waterSpreadability : 0;
     }
 
     /**
@@ -200,7 +201,7 @@ export class GridCtrl {
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                    if (this.isInBounds(row, col) && this._grid[row][col][1]) {
+                    if (isInBounds(row, col) && this._grid[row][col][1]) {
                         let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][1]];
 
                         // If material type has a second variation, randomize between the two.
@@ -237,7 +238,7 @@ export class GridCtrl {
                     // Middle toward right first.
                     for (let row = MIN_ROWS; row < 2; row++) {
                         for (let col = MIDDLE_COL; col < MAX_COLS - 10; col++) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, bottomRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, bottomRowColModVals)) {
                                 bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 2);
                                 return [row + bottomRowColModVals[4][0], col + bottomRowColModVals[4][1]];
                             }
@@ -246,7 +247,7 @@ export class GridCtrl {
                     // Middle toward left second.
                     for (let row = MIN_ROWS; row < 2; row++) {
                         for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, bottomRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, bottomRowColModVals)) {
                                 bottomRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 2);
                                 return [row + bottomRowColModVals[4][0], col + bottomRowColModVals[4][1]];
                             }
@@ -258,7 +259,7 @@ export class GridCtrl {
                     // Middle toward right first.
                     for (let row = MAX_ROWS; row > MAX_ROWS - 2; row--) {
                         for (let col = MIDDLE_COL; col < MAX_COLS - 2; col++) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
                                 topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal);
                                 return [row + topEdgeRowColModVals[4][0], col + topEdgeRowColModVals[4][1]];
                             }
@@ -267,7 +268,7 @@ export class GridCtrl {
                     // Middle toward left second.
                     for (let row = MAX_ROWS; row > MAX_ROWS - 2; row--) {
                         for (let col = MIDDLE_COL - 1; col > MIN_COLS + 2; col--) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, topEdgeRowColModVals)) {
                                 topEdgeRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal);
                                 return [row + topEdgeRowColModVals[4][0], col + topEdgeRowColModVals[4][1]];
                             }
@@ -279,7 +280,7 @@ export class GridCtrl {
                     // Middle toward top first.
                     for (let col = MIN_COLS; col < 2; col++) {
                         for (let row = MIDDLE_ROW; row < MAX_ROWS - 2; row++) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, leftRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, leftRowColModVals)) {
                                 leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 3);
                                 return [row + leftRowColModVals[4][0], col + leftRowColModVals[4][1]];
                             }
@@ -288,7 +289,7 @@ export class GridCtrl {
                     // Middle toward bottom second.
                     for (let col = MIN_COLS; col < 2; col++) {
                         for (let row = MIDDLE_ROW; row < MIN_ROWS + 2; row--) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, leftRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, leftRowColModVals)) {
                                 leftRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 3);
                                 return [row + leftRowColModVals[4][0], col + leftRowColModVals[4][1]];
                             }
@@ -300,7 +301,7 @@ export class GridCtrl {
                     // Middle toward top first.
                     for (let col = MAX_COLS; col > MAX_COLS - 2; col--) {
                         for (let row = MIDDLE_ROW; row < MAX_ROWS - 4; row++) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, rightRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, rightRowColModVals)) {
                                 rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 1);
                                 return [row + rightRowColModVals[4][0], col + rightRowColModVals[4][1]];
                             }
@@ -309,7 +310,7 @@ export class GridCtrl {
                     // Middle toward bottom second.
                     for (let col = MAX_COLS; col > MAX_COLS - 2; col--) {
                         for (let row = MIDDLE_ROW; row < MIN_ROWS + 2; row--) {
-                            if (this.isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, rightRowColModVals)) {
+                            if (isInBounds(row, col) && !this._grid[row][col][2] && this._checkPotentialLandingZone(row, col, rightRowColModVals)) {
                                 rightRowColModVals.forEach( rowColMods => this._grid[row + rowColMods[0]][col + rowColMods[1]][0] = landZoneVal + 1);
                                 return [row + rightRowColModVals[4][0], col + rightRowColModVals[4][1]];
                             }
@@ -351,7 +352,7 @@ export class GridCtrl {
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                    if (this.isInBounds(row, col) && this._grid[row][col][3] && this._materialsMap[this._grid[row][col][3]]) {
+                    if (isInBounds(row, col) && this._grid[row][col][3] && this._materialsMap[this._grid[row][col][3]]) {
                         const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3]);
                         const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][3], true);
                         const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3]);
@@ -389,7 +390,7 @@ export class GridCtrl {
         new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                    if (this.isInBounds(row, col) && this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
+                    if (isInBounds(row, col) && this._grid[row][col][2] && this._materialsMap[this._grid[row][col][2]]) {
                         const posX = getXPos(col) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2]);
                         const posZ = getZPos(row) + this._tileCtrl.getGridDicPosMod(this._grid[row][col][2], true);
                         const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][2]);
@@ -436,7 +437,7 @@ export class GridCtrl {
     private _dropBouldersInWater(): void {
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (!this.isInBounds(row, col)) continue;
+                if (!isInBounds(row, col)) continue;
 
                 if (this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue() && !this._grid[row][col][2]) {
                     this._grid[row][col][2] = this._tileCtrl.getWaterBaseValue() + 30; // Water is too deep to cross.
@@ -460,9 +461,9 @@ export class GridCtrl {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col += 3) {
                     const fillAmount = RandomWithBounds(min, max);
                     for (let row = MAX_ROWS; row > MAX_ROWS - fillAmount; row--) {
-                        this.isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
-                        this.isInBounds(row, col + 1) && (this._grid[row][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                        this.isInBounds(row, col + 2) && (this._grid[row][col + 2][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row, col + 1) && (this._grid[row][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row, col + 2) && (this._grid[row][col + 2][1] = this._tileCtrl.getWaterBaseValue());
                     }
                 }
                 break;
@@ -471,9 +472,9 @@ export class GridCtrl {
                 for (let row = MIN_ROWS; row < MAX_ROWS + 1; row += 3) {
                     const fillAmount = RandomWithBounds(min, max);
                     for (let col = MIN_COLS; col < fillAmount; col++) {
-                        this.isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
-                        this.isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
-                        this.isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
                     }
                 }
                 break;
@@ -482,9 +483,9 @@ export class GridCtrl {
                 for (let row = MIN_ROWS; row < MAX_ROWS + 1; row += 3) {
                     const fillAmount = RandomWithBounds(min, max);
                     for (let col = MAX_COLS; col > MAX_COLS - fillAmount; col--) {
-                        this.isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
-                        this.isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
-                        this.isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row, col) && (this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
                     }
                 }
                 break;
@@ -532,8 +533,8 @@ export class GridCtrl {
                     }
                     this._grid[lastRow][col][1] = this._tileCtrl.getWaterBaseValue();
                     this._grid[lastRow + 1][col][1] = this._tileCtrl.getWaterBaseValue();
-                    this.isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                 }
             } else {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col += 2) {
@@ -546,8 +547,8 @@ export class GridCtrl {
                     }
                     this._grid[lastRow][col][1] = this._tileCtrl.getWaterBaseValue();
                     this._grid[lastRow + 1][col][1] = this._tileCtrl.getWaterBaseValue();
-                    this.isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(lastRow, col + 1) && (this._grid[lastRow][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(lastRow + 1, col + 1) && (this._grid[lastRow + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                 }
             }
         } else {
@@ -564,8 +565,8 @@ export class GridCtrl {
                     }
                     this._grid[row][lastCol][1] = this._tileCtrl.getWaterBaseValue();
                     this._grid[row][lastCol + 1][1] = this._tileCtrl.getWaterBaseValue();
-                    this.isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = this._tileCtrl.getWaterBaseValue());
                 }
             } else {
                 for (let row = MIN_ROWS; row < MAX_ROWS + 1; row += 2) {
@@ -578,8 +579,8 @@ export class GridCtrl {
                     }
                     this._grid[row][lastCol][1] = this._tileCtrl.getWaterBaseValue();
                     this._grid[row][lastCol + 1][1] = this._tileCtrl.getWaterBaseValue();
-                    this.isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 1, lastCol) && (this._grid[row + 1][lastCol][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 1, lastCol + 1) && (this._grid[row + 1][lastCol + 1][1] = this._tileCtrl.getWaterBaseValue());
                 }
             }
         }
@@ -594,7 +595,7 @@ export class GridCtrl {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 this._grid[row] = [];
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                    if (!this.isInBounds(row, col)) continue;
+                    if (!isInBounds(row, col)) continue;
 
                     this._grid[row][col] = [];
                     this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
@@ -611,7 +612,7 @@ export class GridCtrl {
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             this._grid[row] = [];
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (!this.isInBounds(row, col)) continue;
+                if (!isInBounds(row, col)) continue;
 
                 this._grid[row][col] = [];
                 if (Math.random() < this._ancientRuinsSpec.plantPercentage) {
@@ -629,7 +630,7 @@ export class GridCtrl {
         // Organically let the grass spread
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] !== 1) {
+                if (isInBounds(row, col) && this._grid[row][col][1] !== 1) {
                     const hasGrassPercentage = 0.01
                         + this._checkGrassSpread(row + 1, col - 1)
                         + this._checkGrassSpread(row, col - 1)
@@ -659,13 +660,13 @@ export class GridCtrl {
             const rightRadius = RandomWithBounds(min, max);
             for (let col = centerCol; col > centerCol - leftRadius; col--) {
                 this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
-                this.isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
-                this.isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
             }
             for (let col = centerCol; col < centerCol + rightRadius; col++) {
                 this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
-                this.isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
-                this.isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row + 1, col) && (this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row + 2, col) && (this._grid[row + 2][col][1] = this._tileCtrl.getWaterBaseValue());
             }
         }
         for (let row = centerRow; row > MIN_ROWS + 4; row -= 3) {
@@ -673,13 +674,13 @@ export class GridCtrl {
             const rightRadius = RandomWithBounds(min, max);
             for (let col = centerCol; col > centerCol - leftRadius; col--) {
                 this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
-                this.isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue());
-                this.isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = this._tileCtrl.getWaterBaseValue());
             }
             for (let col = centerCol; col < centerCol + rightRadius; col++) {
                 this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
-                this.isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue());
-                this.isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row - 1, col) && (this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue());
+                isInBounds(row - 2, col) && (this._grid[row - 2][col][1] = this._tileCtrl.getWaterBaseValue());
             }
         }
 
@@ -769,12 +770,12 @@ export class GridCtrl {
 
                 const thickness = Math.floor(Math.random() * (maxThickness - minThickness + 1)) + minThickness;
                 for (let t = 0; t <= thickness; t++) {
-                    this.isInBounds(prevRow + t, col) && (this._grid[prevRow + t][col][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(prevRow + t, col + 1) && (this._grid[prevRow + t][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(prevRow + t, col + 2) && (this._grid[prevRow + t][col + 2][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(prevRow - t, col) && (this._grid[prevRow - t][col][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(prevRow - t, col + 1) && (this._grid[prevRow - t][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(prevRow - t, col + 2) && (this._grid[prevRow - t][col + 2][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(prevRow + t, col) && (this._grid[prevRow + t][col][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(prevRow + t, col + 1) && (this._grid[prevRow + t][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(prevRow + t, col + 2) && (this._grid[prevRow + t][col + 2][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(prevRow - t, col) && (this._grid[prevRow - t][col][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(prevRow - t, col + 1) && (this._grid[prevRow - t][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(prevRow - t, col + 2) && (this._grid[prevRow - t][col + 2][1] = this._tileCtrl.getWaterBaseValue());
                 }
             }
         } else {
@@ -786,12 +787,12 @@ export class GridCtrl {
 
                 const thickness = Math.floor(Math.random() * (maxThickness - minThickness + 1)) + minThickness;
                 for (let t = 0; t <= thickness; t++) {
-                    this.isInBounds(row, prevCol + t) && (this._grid[row][prevCol + t][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row + 1, prevCol + t) && (this._grid[row + 1][prevCol + t][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row + 2, prevCol + t) && (this._grid[row + 2][prevCol + t][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row, prevCol - t) && (this._grid[row][prevCol - t][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row + 1, prevCol - t) && (this._grid[row + 1][prevCol - t][1] = this._tileCtrl.getWaterBaseValue());
-                    this.isInBounds(row + 2, prevCol - t) && (this._grid[row + 2][prevCol - t][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row, prevCol + t) && (this._grid[row][prevCol + t][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 1, prevCol + t) && (this._grid[row + 1][prevCol + t][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 2, prevCol + t) && (this._grid[row + 2][prevCol + t][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row, prevCol - t) && (this._grid[row][prevCol - t][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 1, prevCol - t) && (this._grid[row + 1][prevCol - t][1] = this._tileCtrl.getWaterBaseValue());
+                    isInBounds(row + 2, prevCol - t) && (this._grid[row + 2][prevCol - t][1] = this._tileCtrl.getWaterBaseValue());
                 }
             }
         }
@@ -804,13 +805,13 @@ export class GridCtrl {
             while(true) {
                 randomCol = Math.floor(Math.random() * ((MAX_COLS - 2) - (MIN_COLS + 2) + 1)) + (MIN_COLS + 2);
                 for (let i = MIN_ROWS; i < MAX_ROWS + 1; i++) {
-                    if (this.isInBounds(i, randomCol) && this._grid[i][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (isInBounds(i, randomCol) && this._grid[i][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
                         bottomRow = i;
                         break;
                     }
                 }
                 for (let j = bottomRow; j < MAX_ROWS + 1; j++) {
-                    if (this.isInBounds(j, randomCol) && this._grid[j][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (isInBounds(j, randomCol) && this._grid[j][randomCol][1] === this._tileCtrl.getWaterBaseValue()) {
                         topRow = j;
                     } else {
                         break;
@@ -823,11 +824,11 @@ export class GridCtrl {
             }
             let leftCol = randomCol;
             let currCol = randomCol;
-            while (this.isInBounds(bottomRow, currCol - 1)
+            while (isInBounds(bottomRow, currCol - 1)
                 && this._grid[bottomRow][currCol - 1][1] === this._tileCtrl.getWaterBaseValue()
-                && this.isInBounds(bottomRow - 1, currCol - 1)
+                && isInBounds(bottomRow - 1, currCol - 1)
                 && this._grid[bottomRow - 1][currCol - 1][1] !== this._tileCtrl.getWaterBaseValue()
-                && this.isInBounds(topRow + 1, currCol - 1)
+                && isInBounds(topRow + 1, currCol - 1)
                 && this._grid[topRow + 1][currCol - 1][1] !== this._tileCtrl.getWaterBaseValue()) {
                 leftCol = currCol - 1;
                 currCol = leftCol;
@@ -860,13 +861,13 @@ export class GridCtrl {
             while(true) {
                 randomRow = Math.floor(Math.random() * ((MAX_ROWS - 2) - (MIN_ROWS + 2) + 1)) + (MIN_ROWS + 2);
                 for (let i = 0; i < MAX_COLS + 1; i++) {
-                    if (this.isInBounds(randomRow, i) && this._grid[randomRow][i][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (isInBounds(randomRow, i) && this._grid[randomRow][i][1] === this._tileCtrl.getWaterBaseValue()) {
                         colLeft = i;
                         break;
                     }
                 }
                 for (let j = colLeft; j < MAX_COLS + 1; j++) {
-                    if (this.isInBounds(randomRow, j) && this._grid[randomRow][j][1] === this._tileCtrl.getWaterBaseValue()) {
+                    if (isInBounds(randomRow, j) && this._grid[randomRow][j][1] === this._tileCtrl.getWaterBaseValue()) {
                         colRight = j;
                     } else {
                         break;
@@ -879,11 +880,11 @@ export class GridCtrl {
             }
             let rowBottom = randomRow;
             let currRow = randomRow;
-            while (this.isInBounds(currRow - 1, colLeft)
+            while (isInBounds(currRow - 1, colLeft)
                 && this._grid[currRow - 1][colLeft][1] === this._tileCtrl.getWaterBaseValue()
-                && this.isInBounds(currRow - 1, colLeft - 1)
+                && isInBounds(currRow - 1, colLeft - 1)
                 && this._grid[currRow - 1][colLeft - 1][1] !== this._tileCtrl.getWaterBaseValue()
-                && this.isInBounds(currRow - 1, colRight + 1)
+                && isInBounds(currRow - 1, colRight + 1)
                 && this._grid[currRow - 1][colRight + 1][1] !== this._tileCtrl.getWaterBaseValue()) {
                 rowBottom = currRow - 1;
                 currRow = rowBottom;
@@ -918,34 +919,34 @@ export class GridCtrl {
                 // Pier starts left and goes right
                 if (fiftyFifty()) {
                     for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                        if (this.isInBounds(rightPierRow, col) && this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (isInBounds(rightPierRow, col) && this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this.isInBounds(rightPierRow, firstWaterCol) && (this._grid[rightPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
+                    isInBounds(rightPierRow, firstWaterCol) && (this._grid[rightPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
                     if (fiftyFifty()) {
-                        this.isInBounds(rightPierRow, firstWaterCol + 1) && (this._grid[rightPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(23));
-                        this.isInBounds(rightPierRow, firstWaterCol + 2) && (this._grid[rightPierRow][firstWaterCol + 2][2] = this._tileCtrl.getBridgeTileValue(22));
+                        isInBounds(rightPierRow, firstWaterCol + 1) && (this._grid[rightPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(23));
+                        isInBounds(rightPierRow, firstWaterCol + 2) && (this._grid[rightPierRow][firstWaterCol + 2][2] = this._tileCtrl.getBridgeTileValue(22));
                     } else {
-                        this.isInBounds(rightPierRow, firstWaterCol + 1) && (this._grid[rightPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(22));
+                        isInBounds(rightPierRow, firstWaterCol + 1) && (this._grid[rightPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(22));
                     }
                 // Pier starts right and goes left
                 } else {
                     for (let col = MAX_COLS; col >= MIN_COLS; col--) {
-                        if (this.isInBounds(rightPierRow, col) && this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (isInBounds(rightPierRow, col) && this._grid[rightPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this.isInBounds(rightPierRow, firstWaterCol) && (this._grid[rightPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
+                    isInBounds(rightPierRow, firstWaterCol) && (this._grid[rightPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
                     if (fiftyFifty()) {
-                        this.isInBounds(rightPierRow, firstWaterCol - 1) && (this._grid[rightPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(23));
-                        this.isInBounds(rightPierRow, firstWaterCol - 2) && (this._grid[rightPierRow][firstWaterCol - 2][2] = this._tileCtrl.getBridgeTileValue(24));
+                        isInBounds(rightPierRow, firstWaterCol - 1) && (this._grid[rightPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(23));
+                        isInBounds(rightPierRow, firstWaterCol - 2) && (this._grid[rightPierRow][firstWaterCol - 2][2] = this._tileCtrl.getBridgeTileValue(24));
                     } else {
-                        this.isInBounds(rightPierRow, firstWaterCol - 1) && (this._grid[rightPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(24));
+                        isInBounds(rightPierRow, firstWaterCol - 1) && (this._grid[rightPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(24));
                     }
                 }
             }
@@ -955,34 +956,34 @@ export class GridCtrl {
                 // Pier starts left and goes right
                 if (fiftyFifty()) {
                     for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                        if (this.isInBounds(leftPierRow, col) && this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (isInBounds(leftPierRow, col) && this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this.isInBounds(leftPierRow, firstWaterCol) && (this._grid[leftPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
+                    isInBounds(leftPierRow, firstWaterCol) && (this._grid[leftPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
                     if (fiftyFifty()) {
-                        this.isInBounds(leftPierRow, firstWaterCol + 1) && (this._grid[leftPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(23));
-                        this.isInBounds(leftPierRow, firstWaterCol + 2) && (this._grid[leftPierRow][firstWaterCol + 2][2] = this._tileCtrl.getBridgeTileValue(22));
+                        isInBounds(leftPierRow, firstWaterCol + 1) && (this._grid[leftPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(23));
+                        isInBounds(leftPierRow, firstWaterCol + 2) && (this._grid[leftPierRow][firstWaterCol + 2][2] = this._tileCtrl.getBridgeTileValue(22));
                     } else {
-                        this.isInBounds(leftPierRow, firstWaterCol + 1) && (this._grid[leftPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(22));
+                        isInBounds(leftPierRow, firstWaterCol + 1) && (this._grid[leftPierRow][firstWaterCol + 1][2] = this._tileCtrl.getBridgeTileValue(22));
                     }
                 // Pier starts right and goes left
                 } else {
                     for (let col = MAX_COLS; col >= MIN_COLS; col--) {
-                        if (this.isInBounds(leftPierRow, col) && this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                        if (isInBounds(leftPierRow, col) && this._grid[leftPierRow][col][1] === this._tileCtrl.getWaterBaseValue()) {
                             firstWaterCol = col;
                             break;
                         }
                     }
                     // Two or three tiles long?
-                    this.isInBounds(leftPierRow, firstWaterCol) && (this._grid[leftPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
+                    isInBounds(leftPierRow, firstWaterCol) && (this._grid[leftPierRow][firstWaterCol][2] = this._tileCtrl.getBridgeTileValue(23));
                     if (fiftyFifty()) {
-                        this.isInBounds(leftPierRow, firstWaterCol - 1) && (this._grid[leftPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(23));
-                        this.isInBounds(leftPierRow, firstWaterCol - 2) && (this._grid[leftPierRow][firstWaterCol - 2][2] = this._tileCtrl.getBridgeTileValue(24));
+                        isInBounds(leftPierRow, firstWaterCol - 1) && (this._grid[leftPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(23));
+                        isInBounds(leftPierRow, firstWaterCol - 2) && (this._grid[leftPierRow][firstWaterCol - 2][2] = this._tileCtrl.getBridgeTileValue(24));
                     } else {
-                        this.isInBounds(leftPierRow, firstWaterCol - 1) && (this._grid[leftPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(24));
+                        isInBounds(leftPierRow, firstWaterCol - 1) && (this._grid[leftPierRow][firstWaterCol - 1][2] = this._tileCtrl.getBridgeTileValue(24));
                     }
                 }
             }
@@ -996,7 +997,7 @@ export class GridCtrl {
         // Seed the water
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && Math.random() < this._ancientRuinsSpec.waterPercentage) {
+                if (isInBounds(row, col) && Math.random() < this._ancientRuinsSpec.waterPercentage) {
                     this._grid[row][col][1] = this._tileCtrl.getWaterBaseValue();
                 }
             }
@@ -1005,7 +1006,7 @@ export class GridCtrl {
         // Organically let the water spread
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] !== this._tileCtrl.getWaterBaseValue()) {
+                if (isInBounds(row, col) && this._grid[row][col][1] !== this._tileCtrl.getWaterBaseValue()) {
                     const hasWaterPercentage = 0.01
                         + this._checkWaterSpread(row + 1, col - 1)
                         + this._checkWaterSpread(row, col - 1)
@@ -1025,16 +1026,16 @@ export class GridCtrl {
         // Check minimum water reqs.
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
-                    const above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    const below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    const left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    const right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                if (isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                    const above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    const below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    const left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    const right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
-                    const upperLeftCorner = (this.isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col - 1)
-                    const upperRightCorner = (this.isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col + 1);
-                    const lowerLeftCorner = (this.isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col - 1)
-                    const lowerRightCorner = (this.isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col + 1);
+                    const upperLeftCorner = (isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col - 1)
+                    const upperRightCorner = (isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col + 1);
+                    const lowerLeftCorner = (isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col - 1)
+                    const lowerRightCorner = (isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col + 1);
 
                     if ([above, below, left, right].every(x => !x)) {
                         continue;
@@ -1042,23 +1043,23 @@ export class GridCtrl {
                     if (!above && !below) {
                         if (lowerLeftCorner || lowerRightCorner) { // If an adjacent lower tile, fill in bottom
                             this._grid[row - 1][col][1] = this._tileCtrl.getWaterBaseValue();
-                            this.isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
-                            this.isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                         } else { // If an adjacent upper tile, fill in top
                             this._grid[row + 1][col][1] = this._tileCtrl.getWaterBaseValue();
-                            this.isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
-                            this.isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                         }
                     }
                     if (!left && !right) { // If an adjacent left tile, fill in left
                         if (lowerLeftCorner || upperLeftCorner) {
                             this._grid[row][col - 1][1] = this._tileCtrl.getWaterBaseValue();
-                            this.isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
-                            this.isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                         } else { // If an adjacent right tile, fill in right
                             this._grid[row][col + 1][1] = this._tileCtrl.getWaterBaseValue();
-                            this.isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
-                            this.isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                            isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                         }
                     }
                 }
@@ -1068,11 +1069,11 @@ export class GridCtrl {
         // Remove waters with only 1 tile thickness
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
-                    let above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    let below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    let left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    let right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                if (isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                    let above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    let below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    let left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    let right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                     if ([above, below, left, right].every(x => !x)) {
                         continue;
@@ -1085,44 +1086,44 @@ export class GridCtrl {
                         continue;
                     }
 
-                    const upperLeftCorner = (this.isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col - 1)
-                    const upperRightCorner = (this.isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col + 1);
-                    const lowerLeftCorner = (this.isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col - 1)
-                    const lowerRightCorner = (this.isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col + 1);
+                    const upperLeftCorner = (isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col - 1)
+                    const upperRightCorner = (isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col + 1);
+                    const lowerLeftCorner = (isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col - 1)
+                    const lowerRightCorner = (isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col + 1);
 
                     // If the lower-left corner is missing with only one tile thickness to its right or above.
                     if (below && left && (!right || !above)) {
-                        this.isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
 
-                    above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                    above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                     // If the lower-right corner is missing with only one tile thickness to its left or above.
                     if (below && right && (!left || !above)) {
-                        this.isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
 
-                    above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                    above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                     // If the upper-left corner is missing with only one tile thickness to its right or below.
                     if (above && left && (!right || !below)) {
-                        this.isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
 
-                    above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                    above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                     // If the upper-right corner is missing with only one tile thickness to its left or below.
                     if (above && right && (!left || !below)) {
-                        this.isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
+                        isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] = this._tileCtrl.getWaterBaseValue());
                     }
                 }
             }
@@ -1131,31 +1132,31 @@ export class GridCtrl {
         // Eliminate rare occasions where fill-in blocks connect to a former stand alone pond into a 1 thickness stream.
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
-                    let above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    let below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    let left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    let right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                if (isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                    let above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    let below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    let left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    let right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                     // If single tile stream going from left to right, fill in with dirt.
                     if (!above && !below && ((left && !right) || (!left && right) || (left && right))) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
 
-                    above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                    above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                      // If single tile stream going from top to bottom, fill in with dirt.
                     if (!left && !right && ((above && !below) || (!above && below) || (above && below))) {
                         this._grid[row][col][1] = this._tileCtrl.getGroundBaseValue() + 21;
                     }
 
-                    above = (this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row + 1, col);
-                    below = (this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row - 1, col);
-                    left = (this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col - 1);
-                    right = (this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !this.isInBounds(row, col + 1);
+                    above = (isInBounds(row + 1, col) && this._grid[row + 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row + 1, col);
+                    below = (isInBounds(row - 1, col) && this._grid[row - 1][col][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row - 1, col);
+                    left = (isInBounds(row, col - 1) && this._grid[row][col - 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col - 1);
+                    right = (isInBounds(row, col + 1) && this._grid[row][col + 1][1] === this._tileCtrl.getWaterBaseValue()) || !isInBounds(row, col + 1);
 
                     // If a solo 1-tile puddle, 50% to fill in with dirt.
                     if ([above, below, left, right].every(x => !x) && fiftyFifty()) {
@@ -1226,7 +1227,7 @@ export class GridCtrl {
         // Chooses between small or large tree trunks and covers the square over and around tree trunks with leaf canopy.
         for (let row = MIN_ROWS; row < MAX_ROWS; row++) {
             for (let col = MIN_COLS; col < MAX_COLS; col++) {
-                if (!this.isInBounds(row, col)) continue;
+                if (!isInBounds(row, col)) continue;
 
                 if (Math.random() < this._ancientRuinsSpec.treePercentage
                     && this._grid[row][col][1] < this._tileCtrl.getWaterBaseValue()
@@ -1245,9 +1246,9 @@ export class GridCtrl {
                     this._grid[row][col][2] = this._tileCtrl.getTreeTrunkBaseValue() + version;
                     this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
 
-                    const above = this.isInBounds(row + 1, col);
-                    const aboveRight = this.isInBounds(row + 1, col + 1);
-                    const right = this.isInBounds(row, col + 1);
+                    const above = isInBounds(row + 1, col);
+                    const aboveRight = isInBounds(row + 1, col + 1);
+                    const right = isInBounds(row, col + 1);
 
                     if (fiftyFifty()
                         && !((above && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue())
@@ -1283,7 +1284,7 @@ export class GridCtrl {
                             [row + 1, col - 1],
                             [row + 2, col - 1],
                         ]
-                            .filter(tile => this.isInBounds(tile[0], tile[1]))
+                            .filter(tile => isInBounds(tile[0], tile[1]))
                             .filter(tile => this._grid[tile[0]][tile[1]][3] !== this._tileCtrl.getTreeLeafBaseValue())
                             .forEach(tile => {
                                 this._grid[tile[0]][tile[1]][3] = -100;
@@ -1299,7 +1300,7 @@ export class GridCtrl {
                             [row, col - 1],
                             [row + 1, col - 1]
                         ]
-                            .filter(tile => this.isInBounds(tile[0], tile[1]))
+                            .filter(tile => isInBounds(tile[0], tile[1]))
                             .filter(tile => this._grid[tile[0]][tile[1]][3] !== this._tileCtrl.getTreeLeafBaseValue())
                             .forEach(tile => {
                                 this._grid[tile[0]][tile[1]][3] = -100;
@@ -1316,7 +1317,7 @@ export class GridCtrl {
         // Spreads canopy out in a variable shape.
         for (let row = MIN_ROWS; row < MAX_ROWS; row++) {
             for (let col = MIN_COLS; col < MAX_COLS; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][3] === -100) {
+                if (isInBounds(row, col) && this._grid[row][col][3] === -100) {
                     this._grid[row][col][3] = this._tileCtrl.getTreeLeafBaseValue();
                     const potentialLeaves = [
                         [[row - 1, col], [row, col - 1], [row - 1, col - 1]],
@@ -1329,9 +1330,9 @@ export class GridCtrl {
                         [[row, col + 1], [row - 1, col + 1], [row - 1, col]]
                     ];
                     potentialLeaves
-                        .filter(option => this.isInBounds(option[0][0], option[0][1]))
-                        .filter(option => this.isInBounds(option[1][0], option[1][1]))
-                        .filter(option => this.isInBounds(option[2][0], option[2][1]))
+                        .filter(option => isInBounds(option[0][0], option[0][1]))
+                        .filter(option => isInBounds(option[1][0], option[1][1]))
+                        .filter(option => isInBounds(option[2][0], option[2][1]))
                         .filter(option => this._grid[option[0][0]][option[0][1]][3] === this._tileCtrl.getTreeLeafBaseValue() || this._grid[option[0][0]][option[0][1]][3] === -100)
                         .filter(() => Math.random() < 0.25)
                         .forEach(option => {
@@ -1397,14 +1398,14 @@ export class GridCtrl {
      * @param col col coordinate in the terrain grid
      */
     private _modifyGrassForEdges(row: number, col: number): void {
-        const top = this.isInBounds(row + 1, col) && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const topRight = this.isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const right = this.isInBounds(row, col + 1) && this._grid[row][col + 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const bottomRight = this.isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const bottom = this.isInBounds(row - 1, col) && this._grid[row - 1][col][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const bottomLeft = this.isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const left = this.isInBounds(row, col - 1) && this._grid[row][col - 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
-        const topLeft = this.isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const top = isInBounds(row + 1, col) && this._grid[row + 1][col][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const topRight = isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const right = isInBounds(row, col + 1) && this._grid[row][col + 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const bottomRight = isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const bottom = isInBounds(row - 1, col) && this._grid[row - 1][col][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const bottomLeft = isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const left = isInBounds(row, col - 1) && this._grid[row][col - 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
+        const topLeft = isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][1] > this._tileCtrl.getGroundEndValue() ? 1 : 0;
 
         // 1 === non-grass tile found
         // 0 === grass tile found
@@ -1424,7 +1425,7 @@ export class GridCtrl {
     private _modifyGrassesForEdges(): void {
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] === 1) {
+                if (isInBounds(row, col) && this._grid[row][col][1] === 1) {
                     this._modifyGrassForEdges(row, col);
                 }
             }
@@ -1437,7 +1438,7 @@ export class GridCtrl {
     private _modifyLeavesForEdges(): void {
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (!this.isInBounds(row, col)) continue;
+                if (!isInBounds(row, col)) continue;
 
                 if (this._grid[row][col][3] === -100 || this._grid[row][col][3] === this._tileCtrl.getTreeLeafBaseValue()) {
                     this._modifyLeavesForEdge(row, col);
@@ -1452,14 +1453,14 @@ export class GridCtrl {
      * @param col col coordinate in the terrain grid
      */
     private _modifyLeavesForEdge(row: number, col: number): void {
-        const top = this.isInBounds(row + 1, col) && this._grid[row + 1][col][3] !== -100 && (this._grid[row + 1][col][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const topRight = this.isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][3] !== -100 && (this._grid[row + 1][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const right = this.isInBounds(row, col + 1) && this._grid[row][col + 1][3] !== -100 && (this._grid[row][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const bottomRight = this.isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][3] !== -100 && (this._grid[row - 1][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const bottom = this.isInBounds(row - 1, col) && this._grid[row - 1][col][3] !== -100 && (this._grid[row - 1][col][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const bottomLeft = this.isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][3] !== -100 && (this._grid[row - 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const left = this.isInBounds(row, col - 1) && this._grid[row][col - 1][3] !== -100 && (this._grid[row][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
-        const topLeft = this.isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][3] !== -100 && (this._grid[row + 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const top = isInBounds(row + 1, col) && this._grid[row + 1][col][3] !== -100 && (this._grid[row + 1][col][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const topRight = isInBounds(row + 1, col + 1) && this._grid[row + 1][col + 1][3] !== -100 && (this._grid[row + 1][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const right = isInBounds(row, col + 1) && this._grid[row][col + 1][3] !== -100 && (this._grid[row][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const bottomRight = isInBounds(row - 1, col + 1) && this._grid[row - 1][col + 1][3] !== -100 && (this._grid[row - 1][col + 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col + 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const bottom = isInBounds(row - 1, col) && this._grid[row - 1][col][3] !== -100 && (this._grid[row - 1][col][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const bottomLeft = isInBounds(row - 1, col - 1) && this._grid[row - 1][col - 1][3] !== -100 && (this._grid[row - 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row - 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const left = isInBounds(row, col - 1) && this._grid[row][col - 1][3] !== -100 && (this._grid[row][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
+        const topLeft = isInBounds(row + 1, col - 1) && this._grid[row + 1][col - 1][3] !== -100 && (this._grid[row + 1][col - 1][3] < this._tileCtrl.getTreeLeafBaseValue() || this._grid[row + 1][col - 1][3] > this._tileCtrl.getTreeLeafEndValue()) ? 1 : 0;
 
         // 1 === non-leaf tile found
         // 0 === leaf tile found
@@ -1478,7 +1479,7 @@ export class GridCtrl {
     private _modifyWatersForEdges(): void {
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (this.isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
+                if (isInBounds(row, col) && this._grid[row][col][1] === this._tileCtrl.getWaterBaseValue()) {
                     this._modifyWaterForEdge(row, col);
                 }
             }
@@ -1491,14 +1492,14 @@ export class GridCtrl {
      * @param col col coordinate in the terrain grid
      */
     private _modifyWaterForEdge(row: number, col: number): void {
-        const top = this.isInBounds(row + 1, col) && (this._grid[row + 1][col][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row + 1][col][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const topRight = this.isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row + 1][col + 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const right = this.isInBounds(row, col + 1) && (this._grid[row][col + 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row][col + 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const bottomRight = this.isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row - 1][col + 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const bottom = this.isInBounds(row - 1, col) && (this._grid[row - 1][col][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row - 1][col][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const bottomLeft = this.isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row - 1][col - 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const left = this.isInBounds(row, col - 1) && (this._grid[row][col - 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row][col - 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
-        const topLeft = this.isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row + 1][col - 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const top = isInBounds(row + 1, col) && (this._grid[row + 1][col][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row + 1][col][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const topRight = isInBounds(row + 1, col + 1) && (this._grid[row + 1][col + 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row + 1][col + 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const right = isInBounds(row, col + 1) && (this._grid[row][col + 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row][col + 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const bottomRight = isInBounds(row - 1, col + 1) && (this._grid[row - 1][col + 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row - 1][col + 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const bottom = isInBounds(row - 1, col) && (this._grid[row - 1][col][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row - 1][col][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const bottomLeft = isInBounds(row - 1, col - 1) && (this._grid[row - 1][col - 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row - 1][col - 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const left = isInBounds(row, col - 1) && (this._grid[row][col - 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row][col - 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
+        const topLeft = isInBounds(row + 1, col - 1) && (this._grid[row + 1][col - 1][1] < this._tileCtrl.getWaterBaseValue() || this._grid[row + 1][col - 1][1] > this._tileCtrl.getWaterEndValue()) ? 1 : 0;
 
         // 1 === non-water tile found
         // 0 === water tile found
@@ -1587,7 +1588,7 @@ export class GridCtrl {
 
                 for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                     for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                        if (!this.isInBounds(row, col) || !this._grid[row][col][3]) continue;
+                        if (!isInBounds(row, col) || !this._grid[row][col][3]) continue;
 
                         (this._overheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
                     }
@@ -1598,7 +1599,7 @@ export class GridCtrl {
                         const posX = cPos[0] + overPos[0];
                         const posY = cPos[1] + overPos[1];
 
-                        if (this.isInBounds(posX, posY) && this._grid[posX][posY][3]) {
+                        if (isInBounds(posX, posY) && this._grid[posX][posY][3]) {
                             (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
                         }
                     });
@@ -1643,7 +1644,7 @@ export class GridCtrl {
      * @returns numerical tile value
      */
     public getTileValue(row: number, col: number, elev: number): number {
-        return this.isInBounds(row, col) ? this._grid[row][col][elev] : -1;
+        return isInBounds(row, col) ? this._grid[row][col][elev] : -1;
     }
 
     /**
@@ -1697,24 +1698,6 @@ export class GridCtrl {
     }
 
     /**
-     * Checks out of bound scenarios for the tile grid.
-     * @param row row coordinate in the terrain grid
-     * @param col col coordinate in the terrain grid
-     * @returns TRUE is in grid range | FALSE not in grid range
-     */
-    public isInBounds(row: number, col: number): boolean {
-        // Check out of bounds.
-        if (row < MIN_ROWS || row > MAX_ROWS) {
-            return false;
-        } else if (col < MIN_COLS || col > MAX_COLS) {
-            return false;
-        } else if (row === MIN_ROWS && col > MAX_COLS - 4) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Updates a grid tile with crew value.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
@@ -1723,13 +1706,13 @@ export class GridCtrl {
      */
     public updateCrewInGrid(row: number, col: number, crewMember: number): number {
         // If -1 then the crewMember has left the tile, and it needs to be reset.
-        if (crewMember === -1 && this.isInBounds(row, col)) {
+        if (crewMember === -1 && isInBounds(row, col)) {
             this._grid[row][col][2] = 0;
             return 0;
         }
 
         const tileVal: number = this._tileCtrl.getCrewValue(crewMember);
-        if (this.isInBounds(row, col) && (!this._grid[row][col][2] || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
+        if (isInBounds(row, col) && (!this._grid[row][col][2] || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
             this._grid[row][col][2] = tileVal;
         }
         return tileVal;
