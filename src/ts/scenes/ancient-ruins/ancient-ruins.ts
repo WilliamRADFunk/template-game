@@ -203,6 +203,12 @@ export class AncientRuins {
                 return this._loadingCtrl.getLoadWaitPromise(250, 67);
             });
         })
+        // Grid controller fog of war level mesh initialization.
+        .then(() => {
+            return this._gridCtrl.initiateFogOfWarLevelMeshes().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(250, 70);
+            });
+        })
         // Initialization clouds and landing zone.
         .then(() => {
             return this._gridCtrl.initiateCloudsAndLandingMeshes().then(() => {

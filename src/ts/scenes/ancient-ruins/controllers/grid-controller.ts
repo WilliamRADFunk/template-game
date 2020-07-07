@@ -26,6 +26,7 @@ import { MIN_ROWS, MAX_ROWS, MIN_COLS, MAX_COLS, MIDDLE_ROW, MIDDLE_COL } from "
 import { createBoxWithRoundedEdges } from "../../../utils/create-box-with-rounded-edges";
 import { AncientRuinsState } from "../ancient-ruins";
 import { isInBounds } from "../utils/is-in-bounds";
+import { isBlocking } from "../utils/is-blocking";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
@@ -64,6 +65,11 @@ export class GridCtrl {
     private _clouds: Mesh[] = [];
 
     /**
+     * The mesh array with meshes of all tiles on game map at level 4.
+     */
+    private _fogMeshMap: Mesh[][] = [];
+
+    /**
      * Tile geometry that makes up the ground tiles.
      */
     private _geometry: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
@@ -75,7 +81,7 @@ export class GridCtrl {
      * [elevation] 1    Ground tile on which a player might stand and interact. Also triggers events.
      * [elevation] 2    Obstruction tile. Might be a person, boulder, wall, or tree trunk. Can interact with mouse clicks, but can't move into space.
      * [elevation] 3    Overhead tile such as low ceiling of building. Can move "under" and must turn semi-transparent.
-     * [elevation] 4    High overhead tile like tree canopy or high ceiling. Can move "under" and must turn semi-trnsparent.
+     * [elevation] 4    Fog of war. Normally high opacity, but transparent when in range of crew member's view distance.
      * Light:           Negative values mirror the positive values as the same content, but dark. Astroteam can counter when in range.
      * Type:            [row][col][elevation] gives "type" of tile
      */
@@ -190,6 +196,43 @@ export class GridCtrl {
 
             this._resetCloud(cloud);
         }
+    }
+
+
+    /**
+     * Uses the tile grid to make meshes that match tile values.
+     * @param megaMesh all meshes added here first to be added as single mesh to the scene
+     * @returns an empty promise to make function async
+     */
+    private async _createFogOfWarLevelMeshes(megaMesh: Object3D): Promise<void> {
+        const material: MeshBasicMaterial = new MeshBasicMaterial({
+            color: 0x000000,
+            opacity: 0.9
+        });
+        return new Promise((resolve) => {
+            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+                for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                    if (isInBounds(row, col)) {
+                        const mat = material.clone();
+                        const geometry: PlaneGeometry = new PlaneGeometry( 0.4, 0.4, 10, 10 );
+
+                        const fogTile = new Mesh( geometry, mat );
+                        fogTile.position.set(getXPos(col), LayerYPos.LAYER_3, getZPos(row))
+                        fogTile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+                        fogTile.name = `fog-${row}-${col}`;
+                        fogTile.updateMatrix();
+                        megaMesh.add(fogTile);
+                        if (!this._fogMeshMap[row]) {
+                            this._fogMeshMap[row] = [];
+                        }
+                        this._fogMeshMap[row][col] = fogTile;
+                    }
+                }
+            }
+            this._scene.add(this._megaMesh);
+
+            resolve();
+        }).then(() => {});
     }
 
     /**
@@ -327,7 +370,7 @@ export class GridCtrl {
     /**
      * Places a square graphic above the ground but below away team that "scorches" the ground to designate landing zone.
      */
-    private _createLandingZoneScorch(center: number[]): void {
+    private _createLandingZoneShadow(center: number[]): void {
         if (center) {
             const landingGeo = createBoxWithRoundedEdges(1.2, 1.2, 0.05, 0)
             const landingMat: MeshBasicMaterial = new MeshBasicMaterial({
@@ -375,7 +418,6 @@ export class GridCtrl {
                     }
                 }
             }
-            this._scene.add(this._megaMesh);
 
             resolve();
         }).then(() => {});
@@ -1656,13 +1698,21 @@ export class GridCtrl {
 
         const landingMiddleTile = this._createLandingZone();
 
-        this._createLandingZoneScorch(landingMiddleTile);
+        this._createLandingZoneShadow(landingMiddleTile);
 
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve();
             }, 0);
         }).then(() => {});
+    }    
+
+    /**
+     * Constructor level initializer for fog of war level meshes, made public to allow game controller to control timing of loading graphic.
+     * @returns an empty promise to make function async
+     */
+    public async initiateFogOfWarLevelMeshes(): Promise<void> {
+        return this._createFogOfWarLevelMeshes(this._megaMesh);
     }
 
     /**
@@ -1712,7 +1762,7 @@ export class GridCtrl {
         }
 
         const tileVal: number = this._tileCtrl.getCrewValue(crewMember);
-        if (isInBounds(row, col) && (!this._grid[row][col][2] || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
+        if (isInBounds(row, col) && !isBlocking(this._grid[row][col][2])) {
             this._grid[row][col][2] = tileVal;
         }
         return tileVal;

@@ -78,19 +78,16 @@ export class PathFindingCtrl {
 
             // Bails out if straightish path is longer than current path (impossible).
             if (currLength <= numTiles) {
-                console.log('_checkShorterLinearPath: too long', currLength, numTiles, nextCell);
                 return false;
             }
 
             // If we made it to start tile, and here, we can bail because path is unblocked and shorter than current path.
             if (nextCell[0] === startPos[0] && nextCell[1] === startPos[1]) {
-                console.log('_checkShorterLinearPath: true', currLength, numTiles);
                 return true;
             }
 
             // Checks if next tile in straightish path is out of bounds or blocked.
             if (!isInBounds(nextCell[0], nextCell[1]) || isBlocking(this._gridCtrl.getTileValue(nextCell[0], nextCell[1], 2))) {
-                console.log('_checkShorterLinearPath: blocked', currLength, numTiles);
                 return false;
             }
         }
@@ -121,20 +118,25 @@ export class PathFindingCtrl {
      * @param col coordinate of the tile
      * @param testPath used to push and pop values depending on the success of the path
      * @param targetCell reference number fot the cell crew member is trying to reach
-     * @returns true if this cell is target cell, false if path is blocked out out of bounds
+     * @returns true if this cell is target cell, false if path is blocked, out of bounds, too long, cyclical, or meandering
      */
     private _getShortestPath(nextRow: number, nextCol: number, targetRow: number, targetCol: number, testPath: number[], targetCell: number): boolean {
         const nextCell = this._convertRowColToCell(nextRow, nextCol);
         testPath.push(nextCell);
+        console.log(`_getShortestPath (${nextRow}, ${nextCol}): path length = `, testPath.length);
+
+        // If potential path reaches 30 or more tiles, it's already too long. Bail out early (too long).
+        if (testPath.length >= 30) {
+            return false;
+        }
 
         // Found the target, time to bail out.
         if (nextCell === targetCell) {
             return true;
         }
 
-        // There is a shorter, straightish (unblocked) path between this point and starting point. Bail out early.
+        // There is a shorter, straightish (unblocked) path between this point and starting point. Bail out early (meandering).
         if (this._checkShorterLinearPath(nextRow, nextCol, testPath, testPath[0])) {
-            console.log('shorter path found', nextCell);
             return false;
         }
 
@@ -165,8 +167,6 @@ export class PathFindingCtrl {
                 continue;
             }
 
-            console.log('Sub tile', `${tile[0]}, ${tile[1]}, ${tile[2]}`);
-
             // If adjacent cell is the target cell, add it and bail.
             if (nextNextCell === targetCell) {
                 testPath.push(nextNextCell);
@@ -180,6 +180,7 @@ export class PathFindingCtrl {
             // If path proves false, pop the last cell to prepare for the next iteration.
             testPath.pop();
         }
+        // All neighboring options proved to be cyclical. Bail out (cycle).
         return false;
     }
 
