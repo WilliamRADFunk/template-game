@@ -25,8 +25,10 @@ export class PathFindingCtrl {
      * @returns the absolute distance between two tiles
      */
     private _calculateDistance(row1: number, col1: number, row2: number, col2: number): number {
-        const xDistSqr = Math.pow(Math.abs(col2 - col1), 2);
-        const yDistSqr = Math.pow(Math.abs(row2 - row1), 2);
+        const xDist = Math.abs(col2 - col1);
+        const xDistSqr = xDist * xDist;
+        const yDist = Math.abs(row2 - row1);
+        const yDistSqr = yDist * yDist;
         return Math.sqrt(xDistSqr + yDistSqr);
     }
 
@@ -67,8 +69,8 @@ export class PathFindingCtrl {
      * @param targetCell reference number fot the cell crew member is trying to reach
      * @returns true if this cell is target cell, false if path is blocked out out of bounds
      */
-    private _getShortestPath(row: number, col: number, testPath: number[], targetCell: number): boolean {
-        const nextCell = this._convertRowColToCell(row, col);
+    private _getShortestPath(nextRow: number, nextCol: number, targetRow: number, targetCol: number, testPath: number[], targetCell: number): boolean {
+        const nextCell = this._convertRowColToCell(nextRow, nextCol);
         testPath.push(nextCell);
 
         // Found the target, time to bail out.
@@ -80,9 +82,9 @@ export class PathFindingCtrl {
         const closenessScores = adjacencyMods
             // Gets row, col, and distance of considered tile with target tile.
             .map(mod => {
-                const testedRow = row + mod[0];
-                const testedCol = col + mod[1];
-                return [testedRow, testedCol, this._calculateDistance(row, col, testedRow, testedCol)];
+                const testedRow = nextRow + mod[0];
+                const testedCol = nextCol + mod[1];
+                return [testedRow, testedCol, this._calculateDistance(testedRow, testedCol, targetRow, targetCol)];
             })
             // Check cells in order of closer distance to target cell
             .sort((tile1, tile2) => {
@@ -96,15 +98,29 @@ export class PathFindingCtrl {
         // Check paths leading out from these neighboring cells.
         for (let x = 0; x < closenessScores.length; x++) {
             const tile = closenessScores[x];
+            const nextNextCell = this._convertRowColToCell(tile[0], tile[1]);
+
+            // Avoid revisiting a tile that's already in possible path, otherwise infinite looping can happen.
+            if (this._checkForCycle(testPath, nextNextCell)) {
+                continue;
+            }
+
+            console.log('Sub tile', `${tile[0]}, ${tile[1]}, ${tile[2]}`);
+
+            // If adjacent cell is the target cell, add it and bail.
+            if (nextNextCell === targetCell) {
+                testPath.push(nextNextCell);
+                return true;
+            }
 
             // If path proves true, go all the way back up the rabbit hole.
-            if (this._getShortestPath(tile[0], tile[1], testPath, targetCell)) {
+            if (this._getShortestPath(tile[0], tile[1], targetRow, targetCol, testPath, targetCell)) {
                 return true;
             }
             // If path proves false, pop the last cell to prepare for the next iteration.
             testPath.pop();
-            return false;
         }
+        return false;
     }
 
     /**
@@ -116,6 +132,11 @@ export class PathFindingCtrl {
      * @returns path of [row, col] values that lead to target cell. Empty means not a valid path
      */
     public getShortestPath(row1: number, col1: number, row2: number, col2: number): [number, number][] {
+        // For now, don't let user travel to blocked tile.
+        if (this._gridCtrl.getTileValue(row2, col2, 2)) {
+            return [];
+        }
+
         const startCell = this._convertRowColToCell(row1, col1);
         const targetCell = this._convertRowColToCell(row2, col2);
 
@@ -130,7 +151,7 @@ export class PathFindingCtrl {
             .map(mod => {
                 const testedRow = row1 + mod[0];
                 const testedCol = col1 + mod[1];
-                return [testedRow, testedCol, this._calculateDistance(row1, col1, testedRow, testedCol)];
+                return [testedRow, testedCol, this._calculateDistance(testedRow, testedCol, row2, col2)];
             })
             // Check cells in order of closer distance to target cell
             .sort((tile1, tile2) => {
@@ -145,9 +166,17 @@ export class PathFindingCtrl {
         const path = [startCell];
         for (let x = 0; x < closenessScores.length; x++) {
             const tile = closenessScores[x];
+            const nextCell = this._convertRowColToCell(tile[0], tile[1]);
+            console.log('Base tile', `${tile[0]}, ${tile[1]}, ${tile[2]}`);
+
+            // If adjacent cell is the target cell, add it and bail.
+            if (nextCell === targetCell) {
+                path.push(nextCell);
+                return path.map(cell => this._convertCellToRowCol(cell));
+            }
 
             // If final cell is target cell, we've found our shortest path.
-            if (this._getShortestPath(tile[0], tile[1], path, targetCell)) {
+            if (this._getShortestPath(tile[0], tile[1], row2, col2, path, targetCell)) {
                 return path.map(cell => this._convertCellToRowCol(cell));
             }
         }

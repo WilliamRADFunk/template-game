@@ -1558,7 +1558,6 @@ export class GridCtrl {
      * At the end of each loop iteration, check for grid-specific animations.
      */
     public endCycle(state?: AncientRuinsState): boolean {
-        this._cycleClouds();
         if (state === AncientRuinsState.landing_start || state === AncientRuinsState.leaving_start) {
             // TODO: Add animated scene that first grows ship, deposits crew, then shrinks ship again.
             landingFrameCounter++;
@@ -1581,6 +1580,7 @@ export class GridCtrl {
                 return true;
             }
         } else {
+            this._cycleClouds();
             overheadMeshOpacityFrameCounter++;
             if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
                 overheadMeshOpacityFrameCounter = 0;
