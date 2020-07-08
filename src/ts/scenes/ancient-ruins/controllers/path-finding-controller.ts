@@ -193,6 +193,11 @@ export class PathFindingCtrl {
      * @returns path of [row, col] values that lead to target cell. Empty means not a valid path
      */
     public getShortestPath(row1: number, col1: number, row2: number, col2: number): [number, number][] {
+        // If tile clicked is under the fog of war, player can't use that as point to walk to.
+        if (this._gridCtrl.getTileValue(row2, col2, 4)) {
+            return [];
+        }
+
         // TODO: For now, don't let user travel to blocked tile. Eventually pick an adjacent tile.
         if (isBlocking(this._gridCtrl.getTileValue(row2, col2, 2))) {
             return [];

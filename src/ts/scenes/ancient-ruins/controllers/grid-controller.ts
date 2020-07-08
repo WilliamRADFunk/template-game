@@ -130,9 +130,44 @@ export class GridCtrl {
 
         this._makeMaterials();
 
-        
-
         // Remaining initialization functions called by game controller.
+    }
+
+    private _adjustFogOfWar(): void {
+        // Reset all fog of war tiles to 1
+        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                if (!isInBounds(row, col)) continue;
+                this._grid[row][col][4] = 1;
+            }
+        }
+
+        // Set only those tiles in range of crew members' visibility to 0
+        this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
+            if (cPos) {
+                overheadRowColModVals.forEach(overPos => {
+                    const posX = cPos[0] + overPos[0];
+                    const posY = cPos[1] + overPos[1];
+
+                    if (isInBounds(posX, posY)) {
+                        this._grid[posX][posY][4] = 0;
+                    }
+                });
+            }
+        });
+
+        // Not that the tiles are updated, it only takes a single pass through to update material opacities.
+        for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+            for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
+                if (!isInBounds(row, col)) continue;
+                
+                if (this._grid[row][col][4]) {
+                    (this._fogMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.9;
+                } else {
+                    (this._fogMeshMap[row][col].material as MeshBasicMaterial).opacity = 0;
+                }
+            }
+        }
     }
 
     /**
@@ -200,14 +235,16 @@ export class GridCtrl {
 
 
     /**
-     * Uses the tile grid to make meshes that match tile values.
+     * Create opaque fog of war tiles at level 4.
      * @param megaMesh all meshes added here first to be added as single mesh to the scene
      * @returns an empty promise to make function async
      */
     private async _createFogOfWarLevelMeshes(megaMesh: Object3D): Promise<void> {
         const material: MeshBasicMaterial = new MeshBasicMaterial({
             color: 0x000000,
-            opacity: 0.9
+            opacity: 0.9,
+            side: DoubleSide,
+            transparent: true
         });
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
@@ -226,6 +263,7 @@ export class GridCtrl {
                             this._fogMeshMap[row] = [];
                         }
                         this._fogMeshMap[row][col] = fogTile;
+                        this._grid[row][col][4] = 1;
                     }
                 }
             }
@@ -1762,9 +1800,15 @@ export class GridCtrl {
         }
 
         const tileVal: number = this._tileCtrl.getCrewValue(crewMember);
-        if (isInBounds(row, col) && !isBlocking(this._grid[row][col][2])) {
+        if (isInBounds(row, col) && (!isBlocking(this._grid[row][col][2]) || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
             this._grid[row][col][2] = tileVal;
+
+            this._adjustFogOfWar();
+
+            return tileVal;
         }
-        return tileVal;
+
+        // Row/Col not in range or blocked.
+        return 0;
     }
 }
