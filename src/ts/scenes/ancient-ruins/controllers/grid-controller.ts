@@ -2,13 +2,14 @@ import {
     DoubleSide,
     Mesh,
     MeshBasicMaterial,
-    Object3D,
     PlaneGeometry,
     Scene,
     Texture,
     Vector2,
     NearestFilter,
-    RepeatWrapping} from "three";
+    RepeatWrapping,
+    FrontSide} from "three";
+
 import {
     AncientRuinsSpecifications,
     PlantColor,
@@ -65,11 +66,6 @@ export class GridCtrl {
     private _clouds: Mesh[] = [];
 
     /**
-     * The mesh array with meshes of all tiles on game map at level 4.
-     */
-    private _fogMeshMap: Mesh[][] = [];
-
-    /**
      * Tile geometry that makes up the ground tiles.
      */
     private _geometry: PlaneGeometry = new PlaneGeometry( 0.40, 0.40, 10, 10 );
@@ -98,14 +94,24 @@ export class GridCtrl {
     private _materialsMap: { [key: number]: MeshBasicMaterial } = {};
 
     /**
-     * Massive Object3D with most of the static meshes in the scene asa children.
+     * The mesh array with meshes of all tiles on game map at level 1.
      */
-    private _megaMesh: Object3D = new Object3D();
+    private _level1GroundMeshMap: Mesh[][] = [];
+
+    /**
+     * The mesh array with meshes of all tiles on game map at level 2.
+     */
+    private _level2TraverseMeshMap: Mesh[][] = [];
 
     /**
      * The mesh array with meshes of all tiles on game map at level 3.
      */
-    private _overheadMeshMap: Mesh[][] = [];
+    private _level3OverheadMeshMap: Mesh[][] = [];
+
+    /**
+     * The mesh array with meshes of all tiles on game map at level 4.
+     */
+    private _level4FogOfWarMeshMap: Mesh[][] = [];
 
     /**
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
@@ -162,9 +168,9 @@ export class GridCtrl {
                 if (!isInBounds(row, col)) continue;
                 
                 if (this._grid[row][col][4]) {
-                    (this._fogMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.9;
+                    (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.9;
                 } else {
-                    (this._fogMeshMap[row][col].material as MeshBasicMaterial).opacity = 0;
+                    (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0;
                 }
             }
         }
@@ -236,10 +242,9 @@ export class GridCtrl {
 
     /**
      * Create opaque fog of war tiles at level 4.
-     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      * @returns an empty promise to make function async
      */
-    private async _createFogOfWarLevelMeshes(megaMesh: Object3D): Promise<void> {
+    private async _createFogOfWarLevelMeshes(): Promise<void> {
         const material: MeshBasicMaterial = new MeshBasicMaterial({
             color: 0x000000,
             opacity: 0.9,
@@ -258,16 +263,15 @@ export class GridCtrl {
                         fogTile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                         fogTile.name = `fog-${row}-${col}`;
                         fogTile.updateMatrix();
-                        megaMesh.add(fogTile);
-                        if (!this._fogMeshMap[row]) {
-                            this._fogMeshMap[row] = [];
+                        this._scene.add(fogTile);
+                        if (!this._level4FogOfWarMeshMap[row]) {
+                            this._level4FogOfWarMeshMap[row] = [];
                         }
-                        this._fogMeshMap[row][col] = fogTile;
+                        this._level4FogOfWarMeshMap[row][col] = fogTile;
                         this._grid[row][col][4] = 1;
                     }
                 }
             }
-            this._scene.add(this._megaMesh);
 
             resolve();
         }).then(() => {});
@@ -275,10 +279,9 @@ export class GridCtrl {
 
     /**
      * Uses the tile grid to make meshes that match tile values.
-     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      * @returns an empty promise to make function async
      */
-    private async _createGroundLevelMeshes(megaMesh: Object3D): Promise<void> {
+    private async _createGroundLevelMeshes(): Promise<void> {
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
@@ -295,6 +298,10 @@ export class GridCtrl {
                         tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                         tile.name = `tile-${row}-${col}`;
                         this._scene.add(tile);
+                        if (!this._level1GroundMeshMap[row]) {
+                            this._level1GroundMeshMap[row] = [];
+                        }
+                        this._level1GroundMeshMap[row][col] = tile;
                     }
                 }
             }
@@ -426,10 +433,9 @@ export class GridCtrl {
 
     /**
      * Uses the tile grid to make meshes that match tile values.
-     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      * @returns an empty promise to make function async
      */
-    private async _createOverheadLevelMeshes(megaMesh: Object3D): Promise<void> {
+    private async _createOverheadLevelMeshes(): Promise<void> {
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
@@ -448,11 +454,11 @@ export class GridCtrl {
                         (tile.material as MeshBasicMaterial).opacity = 1;
                         tile.name = `over:${row}:${col}`;
                         tile.updateMatrix();
-                        megaMesh.add(tile);
-                        if (!this._overheadMeshMap[row]) {
-                            this._overheadMeshMap[row] = [];
+                        this._scene.add(tile);
+                        if (!this._level3OverheadMeshMap[row]) {
+                            this._level3OverheadMeshMap[row] = [];
                         }
-                        this._overheadMeshMap[row][col] = tile;
+                        this._level3OverheadMeshMap[row][col] = tile;
                     }
                 }
             }
@@ -463,10 +469,9 @@ export class GridCtrl {
 
     /**
      * Uses the tile grid to make meshes that match tile values.
-     * @param megaMesh all meshes added here first to be added as single mesh to the scene
      * @returns an empty promise to make function async
      */
-    private async _createTraverseLevelMeshes(megaMesh: Object3D): Promise<void> {
+    private async _createTraverseLevelMeshes(): Promise<void> {
         new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
@@ -489,7 +494,11 @@ export class GridCtrl {
                         tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                         tile.name = `level:${row}:${col}`;
                         tile.updateMatrix();
-                        megaMesh.add(tile);
+                        this._scene.add(tile);
+                        if (!this._level2TraverseMeshMap[row]) {
+                            this._level2TraverseMeshMap[row] = [];
+                        }
+                        this._level2TraverseMeshMap[row][col] = tile;
                     }
                 }
             }
@@ -784,11 +793,12 @@ export class GridCtrl {
             const size = this._tileCtrl.getGridDicCustomSize(key) || [spriteMapCols, spriteMapRows];
 
             if (offCoords[0] >= 0 && offCoords[1] >= 0) {
+                const isGroundLevelMat = (Number(key) <= this._tileCtrl.getGroundLevelEndValue());
                 const material: MeshBasicMaterial = new MeshBasicMaterial({
                     color: 0xFFFFFF,
                     map: this._textures.spriteMapAncientRuins.clone(),
-                    side: DoubleSide,
-                    transparent: true
+                    side: isGroundLevelMat ? FrontSide : DoubleSide,
+                    transparent: !isGroundLevelMat
                 });
 
                 material.map.offset = new Vector2(
@@ -1670,7 +1680,7 @@ export class GridCtrl {
                     for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                         if (!isInBounds(row, col) || !this._grid[row][col][3]) continue;
 
-                        (this._overheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
+                        (this._level3OverheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
                     }
                 }
 
@@ -1680,7 +1690,7 @@ export class GridCtrl {
                         const posY = cPos[1] + overPos[1];
 
                         if (isInBounds(posX, posY) && this._grid[posX][posY][3]) {
-                            (this._overheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
+                            (this._level3OverheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
                         }
                     });
                 });
@@ -1750,7 +1760,7 @@ export class GridCtrl {
      * @returns an empty promise to make function async
      */
     public async initiateFogOfWarLevelMeshes(): Promise<void> {
-        return this._createFogOfWarLevelMeshes(this._megaMesh);
+        return this._createFogOfWarLevelMeshes();
     }
 
     /**
@@ -1758,7 +1768,7 @@ export class GridCtrl {
      * @returns an empty promise to make function async
      */
     public async initiateGroundLevelMeshes(): Promise<void> {
-        return this._createGroundLevelMeshes(this._megaMesh);
+        return this._createGroundLevelMeshes();
     }
 
     /**
@@ -1766,7 +1776,7 @@ export class GridCtrl {
      * @returns an empty promise to make function async
      */
     public async initiateOverheadLevelMeshes(): Promise<void> {
-        return this._createOverheadLevelMeshes(this._megaMesh);
+        return this._createOverheadLevelMeshes();
     }
 
     /**
@@ -1782,7 +1792,7 @@ export class GridCtrl {
      * @returns an empty promise to make function async
      */
     public async initiateTraverseLevelMeshes(): Promise<void> {
-        return this._createTraverseLevelMeshes(this._megaMesh);
+        return this._createTraverseLevelMeshes();
     }
 
     /**

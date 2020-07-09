@@ -447,6 +447,10 @@ export class TileCtrl {
         return this._groundGrassEnd;
     }
 
+    public getGroundLevelEndValue(): number {
+        return 1999;
+    }
+
     public getGroundTileValue(key: string): number {
         return this._groundPlantLookupTable[key] || this._groundPlantBase;
     }
