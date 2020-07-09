@@ -141,6 +141,7 @@ gulp.task('typescript', () => {
       noImplicitAny: true,
       sourceMap: true,
       module: "commonjs",
+      skipLibCheck: true,
       target: 'ESNext'
     }))
       .on('error', log)
