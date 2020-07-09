@@ -54,7 +54,7 @@
     "tslint": "^5.11.0",
     "typedoc": "0.11.0",
     "typedoc-plugin-markdown": "1.1.15",
-    "typescript": "^3.5.3",
+    "typescript": "^3.9.6",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
