@@ -182,7 +182,7 @@ export class AncientRuins {
         // Grid controller grid values initialization.
         .then(() => {
             return this._gridCtrl.initiateGridValues().then(() => {
-                return this._loadingCtrl.getLoadWaitPromise(1000, 54);
+                return this._loadingCtrl.getLoadWaitPromise(250, 54);
             });
         })
         // Grid controller ground level mesh initialization.
@@ -212,7 +212,7 @@ export class AncientRuins {
         // Initialization clouds and landing zone.
         .then(() => {
             return this._gridCtrl.initiateCloudsAndLandingMeshes().then(() => {
-                return this._loadingCtrl.getLoadWaitPromise(1000, 75);
+                return this._loadingCtrl.getLoadWaitPromise(500, 75);
             });
         })
         // Team controller initialization, and creation of lower right description panel.
@@ -228,13 +228,13 @@ export class AncientRuins {
             this._descTextPanel.toggleOpacity();
             this._teamCtrl.hideTeam();
     
-            return this._loadingCtrl.getLoadWaitPromise(100, 89);
+            return this._loadingCtrl.getLoadWaitPromise(250, 89);
         })
         // Path Finder Controller initialization.
         .then(() => {
             this._pathFindingCtrl = new PathFindingCtrl(this._gridCtrl);
 
-            return this._loadingCtrl.getLoadWaitPromise(100, 94);
+            return this._loadingCtrl.getLoadWaitPromise(250, 94);
         })
         // Turn off loading graphic and initiate game.
         .then(() => {

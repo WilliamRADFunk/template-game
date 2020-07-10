@@ -486,8 +486,8 @@ const loadDevMenu = () => {
     scenes.devMenu.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
     scenes.devMenu.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer()
-        : new WebGLRenderer(); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
+        ? new WebGLRenderer({ powerPreference: "high-performance" })
+        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
     // Make it black and size it to window.
     (scenes.devMenu.renderer as any).setClearColor(0x000000, 0);
     scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
@@ -660,7 +660,7 @@ const loadGameMenu = () => {
     scenes.menu.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
     scenes.menu.renderer = ((window as any)['WebGLRenderingContext']) ?
-        new WebGLRenderer() : new WebGLRenderer(); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
+        new WebGLRenderer({ powerPreference: "high-performance" }) : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
     // Make it black and size it to window.
     (scenes.menu.renderer as any).setClearColor(0x000000, 0);
     scenes.menu.renderer.setSize( WIDTH, HEIGHT );
@@ -834,8 +834,8 @@ const loadIntroScene = () => {
     scenes.intro.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
     scenes.intro.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer()
-        : new WebGLRenderer(); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
+        ? new WebGLRenderer({ powerPreference: "high-performance" })
+        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
     // Make it black and size it to window.
     (scenes.intro.renderer as any).setClearColor(0x000000, 0);
     scenes.intro.renderer.setSize( WIDTH, HEIGHT );
@@ -968,8 +968,8 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
     scenes.ancientRuins.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
     scenes.ancientRuins.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer()
-        : new WebGLRenderer(); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
+        ? new WebGLRenderer({ powerPreference: "high-performance" })
+        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
     // Make it black and size it to window.
     (scenes.ancientRuins.renderer as any).setClearColor(0x000000, 0);
     scenes.ancientRuins.renderer.setSize( WIDTH, HEIGHT );
@@ -1085,8 +1085,8 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
     scenes.landAndMine.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
     scenes.landAndMine.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer()
-        : new WebGLRenderer(); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
+        ? new WebGLRenderer({ powerPreference: "high-performance" })
+        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
     // Make it black and size it to window.
     (scenes.landAndMine.renderer as any).setClearColor(0x000000, 0);
     scenes.landAndMine.renderer.setSize( WIDTH, HEIGHT );
@@ -1228,8 +1228,8 @@ const loadShipLayoutScene = () => {
     scenes.shipLayout.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
     scenes.shipLayout.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer()
-        : new WebGLRenderer(); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
+        ? new WebGLRenderer({ powerPreference: "high-performance" })
+        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
     // Make it black and size it to window.
     (scenes.shipLayout.renderer as any).setClearColor(0x000000, 0);
     scenes.shipLayout.renderer.setSize( WIDTH, HEIGHT );

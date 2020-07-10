@@ -1,5 +1,6 @@
 import {
     DoubleSide,
+    FrontSide,
     Mesh,
     MeshBasicMaterial,
     PlaneGeometry,
@@ -7,8 +8,7 @@ import {
     Texture,
     Vector2,
     NearestFilter,
-    RepeatWrapping,
-    FrontSide} from "three";
+    RepeatWrapping } from "three";
 
 import {
     AncientRuinsSpecifications,
@@ -172,6 +172,7 @@ export class GridCtrl {
                 } else {
                     (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0;
                 }
+                this._level4FogOfWarMeshMap[row][col].updateMatrix();
             }
         }
     }
@@ -248,7 +249,7 @@ export class GridCtrl {
         const material: MeshBasicMaterial = new MeshBasicMaterial({
             color: 0x000000,
             opacity: 0.9,
-            side: DoubleSide,
+            side: FrontSide,
             transparent: true
         });
         return new Promise((resolve) => {
@@ -256,9 +257,9 @@ export class GridCtrl {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                     if (isInBounds(row, col)) {
                         const mat = material.clone();
-                        const geometry: PlaneGeometry = new PlaneGeometry( 0.4, 0.4, 10, 10 );
 
-                        const fogTile = new Mesh( geometry, mat );
+                        const fogTile = new Mesh( this._geometry, mat );
+                        fogTile.matrixAutoUpdate = false;
                         fogTile.position.set(getXPos(col), LayerYPos.LAYER_3, getZPos(row))
                         fogTile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                         fogTile.name = `fog-${row}-${col}`;
@@ -292,16 +293,20 @@ export class GridCtrl {
                         if (this._tileCtrl.getGridDicVariation(this._grid[row][col][1]) && fiftyFifty()) {
                             material = this._materialsMap[this._grid[row][col][1] + 1];
                         }
+                        material.transparent = false;
+                        material.opacity = 1;
 
                         const tile = new Mesh( this._geometry, material );
+                        tile.matrixAutoUpdate = false;
                         tile.position.set(getXPos(col), LayerYPos.LAYER_0, getZPos(row))
                         tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
                         tile.name = `tile-${row}-${col}`;
+                        tile.updateMatrix();
                         this._scene.add(tile);
-                        if (!this._level1GroundMeshMap[row]) {
-                            this._level1GroundMeshMap[row] = [];
-                        }
-                        this._level1GroundMeshMap[row][col] = tile;
+                        // if (!this._level1GroundMeshMap[row]) {
+                        //     this._level1GroundMeshMap[row] = [];
+                        // }
+                        // this._level1GroundMeshMap[row][col] = tile;
                     }
                 }
             }
@@ -421,10 +426,11 @@ export class GridCtrl {
             const landingMat: MeshBasicMaterial = new MeshBasicMaterial({
                 color: 0x333333,
                 opacity: 0.9,
-                side: DoubleSide,
+                side: FrontSide,
                 transparent: true
             });
             this._landingShadow = new Mesh(landingGeo, landingMat);
+            this._landingShadow.matrixAutoUpdate = false;
             this._landingShadow.rotation.set(RAD_90_DEG_LEFT, 0, 0);
             this._landingShadow.position.set(getXPos(center[1]), LayerYPos.LAYER_0_5, getZPos(center[0]));
             this._scene.add(this._landingShadow);
@@ -448,6 +454,7 @@ export class GridCtrl {
                         let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]].clone();
 
                         const tile = new Mesh( this._geometry, material );
+                        tile.matrixAutoUpdate = false;
                         tile.scale.set(scaleX, scaleZ, scaleZ);
                         tile.position.set(posX, LayerYPos.LAYER_2, posZ)
                         tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
@@ -489,6 +496,7 @@ export class GridCtrl {
                         }
 
                         const tile = new Mesh( this._geometry, material );
+                        tile.matrixAutoUpdate = false;
                         tile.scale.set(scaleX, scaleZ, scaleZ);
                         tile.position.set(posX, LayerYPos.LAYER_1, posZ)
                         tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
@@ -797,7 +805,7 @@ export class GridCtrl {
                 const material: MeshBasicMaterial = new MeshBasicMaterial({
                     color: 0xFFFFFF,
                     map: this._textures.spriteMapAncientRuins.clone(),
-                    side: isGroundLevelMat ? FrontSide : DoubleSide,
+                    side: isGroundLevelMat ? DoubleSide : FrontSide,
                     transparent: !isGroundLevelMat
                 });
 
@@ -1556,10 +1564,6 @@ export class GridCtrl {
         // 0 === leaf tile found
 
         const key = `${top}${right}${bottom}${left}-${topRight}${bottomRight}${bottomLeft}${topLeft}`;
-        // TODO: remove when confident leaf canopy is done properly.
-        if (this._tileCtrl.getTreeLeafTileValue(key) === this._tileCtrl.getTreeLeafBaseValue() && key !== '0000-0000') {
-            console.log('key', key, this._tileCtrl.getTreeLeafTileValue(key), row, col);
-        }
         this._grid[row][col][3] = this._tileCtrl.getTreeLeafTileValue(key);
     }
 
@@ -1659,12 +1663,14 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
             } else if (landingFrameCounter < 240) {
                 this._landingShadow.scale.set(landingShadowScale.x + 0.00375, landingShadowScale.y + 0.00375, landingShadowScale.z + 0.00375);
+                this._landingShadow.updateMatrix();
             } else if (landingFrameCounter === 240) {
                 return true;
             } else if (landingFrameCounter < 480) {
                 // Do nothing. Deposit crew.
             } else if (landingFrameCounter < 720) {
                 this._landingShadow.scale.set(landingShadowScale.x - 0.00375, landingShadowScale.y - 0.00375, landingShadowScale.z - 0.00375);
+                this._landingShadow.updateMatrix();
             } else if (landingFrameCounter === 720) {
                 this._landingShadow.visible = false;
                 landingFrameCounter = -1;
@@ -1681,6 +1687,7 @@ export class GridCtrl {
                         if (!isInBounds(row, col) || !this._grid[row][col][3]) continue;
 
                         (this._level3OverheadMeshMap[row][col].material as MeshBasicMaterial).opacity = 1;
+                        this._level3OverheadMeshMap[row][col].updateMatrix();
                     }
                 }
 
@@ -1691,6 +1698,7 @@ export class GridCtrl {
 
                         if (isInBounds(posX, posY) && this._grid[posX][posY][3]) {
                             (this._level3OverheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
+                            this._level3OverheadMeshMap[posX][posY].updateMatrix();
                         }
                     });
                 });
