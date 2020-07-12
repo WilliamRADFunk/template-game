@@ -284,7 +284,9 @@ export class GridCtrl {
      */
     private async _createGroundLevelMeshes(): Promise<void> {
         return new Promise((resolve) => {
-            for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
+            const geometry = new PlaneGeometry(12, 12, 30, 30);
+            const materials = [];
+            for (let row = MAX_ROWS; row >= MIN_ROWS; row--) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                     if (isInBounds(row, col) && this._grid[row][col][1]) {
                         let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][1]];
@@ -296,13 +298,15 @@ export class GridCtrl {
                         material.transparent = false;
                         material.opacity = 1;
 
-                        const tile = new Mesh( this._geometry, material );
-                        tile.matrixAutoUpdate = false;
-                        tile.position.set(getXPos(col), LayerYPos.LAYER_0, getZPos(row))
-                        tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-                        tile.name = `tile-${row}-${col}`;
-                        tile.updateMatrix();
-                        this._scene.add(tile);
+                        materials.push(material);
+
+                        // const tile = new Mesh( this._geometry, material );
+                        // tile.matrixAutoUpdate = false;
+                        // tile.position.set(getXPos(col), LayerYPos.LAYER_0, getZPos(row))
+                        // tile.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+                        // tile.name = `tile-${row}-${col}`;
+                        // tile.updateMatrix();
+                        // this._scene.add(tile);
                         // if (!this._level1GroundMeshMap[row]) {
                         //     this._level1GroundMeshMap[row] = [];
                         // }
@@ -310,6 +314,20 @@ export class GridCtrl {
                     }
                 }
             }
+            
+            // Add materialIndex to face
+            const l = geometry.faces.length / 2;
+            console.log('faces', geometry.faces.length, l)
+            for (let i = 0; i < l; i++) {
+                const j = 2 * i;
+                geometry.faces[j].materialIndex = i;
+                geometry.faces[j + 1].materialIndex = i;
+            }
+
+            const mesh = new Mesh(geometry, materials);
+            mesh.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+            this._scene.add(mesh);
+
             resolve();
         }).then(() => {});
     }
