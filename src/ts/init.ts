@@ -506,10 +506,20 @@ const loadDevMenu = () => {
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.devMenu.camera and scenes.devMenu.renderer.
      */
     const onWindowResize = () => {
+        const ldBar = document.getElementsByClassName('ldBar')[0];
+        ldBar.classList.remove('ldBar-fat');
+        ldBar.classList.remove('ldBar-skinny');
+
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
+        if(WIDTH < HEIGHT) {
+            HEIGHT = WIDTH;
+            ldBar.classList.add('ldBar-skinny');
+        } else {
+            WIDTH = HEIGHT;
+            ldBar.classList.add('ldBar-fat');
+        }
+
         scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
         const loading = document.getElementById('loading');
         loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
@@ -677,10 +687,20 @@ const loadGameMenu = () => {
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.menu.camera and scenes.menu.renderer.
      */
     const onWindowResize = () => {
+        const ldBar = document.getElementsByClassName('ldBar')[0];
+        ldBar.classList.remove('ldBar-fat');
+        ldBar.classList.remove('ldBar-skinny');
+
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
+        if(WIDTH < HEIGHT) {
+            HEIGHT = WIDTH;
+            ldBar.classList.add('ldBar-skinny');
+        } else {
+            WIDTH = HEIGHT;
+            ldBar.classList.add('ldBar-fat');
+        }
+
         scenes.menu.renderer.setSize( WIDTH, HEIGHT );
         const loading = document.getElementById('loading');
         loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
@@ -854,6 +874,20 @@ const loadIntroScene = () => {
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.intro.camera and scenes.intro.renderer.
      */
     const onWindowResize = () => {
+        const ldBar = document.getElementsByClassName('ldBar')[0];
+        ldBar.classList.remove('ldBar-fat');
+        ldBar.classList.remove('ldBar-skinny');
+
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) {
+            HEIGHT = WIDTH;
+            ldBar.classList.add('ldBar-skinny');
+        } else {
+            WIDTH = HEIGHT;
+            ldBar.classList.add('ldBar-fat');
+        }
+
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
@@ -988,6 +1022,20 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.ancientRuins.camera and scenes.ancientRuins.renderer.
      */
     const onWindowResize = () => {
+        const ldBar = document.getElementsByClassName('ldBar')[0];
+        ldBar.classList.remove('ldBar-fat');
+        ldBar.classList.remove('ldBar-skinny');
+
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) {
+            HEIGHT = WIDTH;
+            ldBar.classList.add('ldBar-skinny');
+        } else {
+            WIDTH = HEIGHT;
+            ldBar.classList.add('ldBar-fat');
+        }
+
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
@@ -1105,6 +1153,20 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.landAndMine.camera and scenes.landAndMine.renderer.
      */
     const onWindowResize = () => {
+        const ldBar = document.getElementsByClassName('ldBar')[0];
+        ldBar.classList.remove('ldBar-fat');
+        ldBar.classList.remove('ldBar-skinny');
+
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) {
+            HEIGHT = WIDTH;
+            ldBar.classList.add('ldBar-skinny');
+        } else {
+            WIDTH = HEIGHT;
+            ldBar.classList.add('ldBar-fat');
+        }
+
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
@@ -1248,6 +1310,20 @@ const loadShipLayoutScene = () => {
      * Gracefully handles a change in window size, by recalculating shape and updating scenes.shipLayout.camera and scenes.shipLayout.renderer.
      */
     const onWindowResize = () => {
+        const ldBar = document.getElementsByClassName('ldBar')[0];
+        ldBar.classList.remove('ldBar-fat');
+        ldBar.classList.remove('ldBar-skinny');
+
+        WIDTH = window.innerWidth * 0.99;
+        HEIGHT = window.innerHeight * 0.99;
+        if(WIDTH < HEIGHT) {
+            HEIGHT = WIDTH;
+            ldBar.classList.add('ldBar-skinny');
+        } else {
+            WIDTH = HEIGHT;
+            ldBar.classList.add('ldBar-fat');
+        }
+
         WIDTH = window.innerWidth * 0.99;
         HEIGHT = window.innerHeight * 0.99;
         if(WIDTH < HEIGHT) HEIGHT = WIDTH;
@@ -1330,15 +1406,24 @@ const loadShipLayoutScene = () => {
  * Called by DOM when page is finished loading. Now load assets, then the game.
  */
 export default () => {
-    let INITIAL_WIDTH = window.innerWidth * 0.99;
-    let INITIAL_HEIGHT = window.innerHeight * 0.99;
-    if(INITIAL_WIDTH < INITIAL_HEIGHT) INITIAL_HEIGHT = INITIAL_WIDTH;
-    else INITIAL_WIDTH = INITIAL_HEIGHT;
+    const ldBar = document.getElementsByClassName('ldBar')[0];
+    ldBar.classList.remove('ldBar-fat');
+    ldBar.classList.remove('ldBar-skinny');
+
+    let WIDTH = window.innerWidth * 0.99;
+    let HEIGHT = window.innerHeight * 0.99;
+    if(WIDTH < HEIGHT) {
+        HEIGHT = WIDTH;
+        ldBar.classList.add('ldBar-skinny');
+    } else {
+        WIDTH = HEIGHT;
+        ldBar.classList.add('ldBar-fat');
+    }
 
     const loading = document.getElementById('loading');
-    loading.style.left = (((window.innerWidth * 0.99) - INITIAL_WIDTH) / 2) + 'px';
-    loading.style.width = INITIAL_WIDTH + 'px';
-    loading.style.height = INITIAL_HEIGHT + 'px';
+    loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
+    loading.style.width = WIDTH + 'px';
+    loading.style.height = HEIGHT + 'px';
 
     loadAssets();
 }

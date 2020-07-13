@@ -32,7 +32,14 @@ h1 {
 .ldBar {
   margin-left: auto;
   margin-right: auto;
+}
+
+.ldBar-fat {
   margin-top: calc(50vh - 90px);
+}
+
+.ldBar-skinny {
+  margin-top: calc(50vw - 90px);
 }
 
 #mainview {
