@@ -13,7 +13,7 @@ import {
 
 import { HelpHandler } from '../help-screen/help-handler';
 import { LoadHandler } from '../load-screen/load-handler';
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { SceneType } from '../../models/scene-type';
 
 // const backgroundColor = 0xFF0044;
@@ -389,7 +389,7 @@ export class Menu {
         this.onGeometry = new TextGeometry('ON', this.fontDifficultyBtnParams);
         this.on = new Mesh(
             this.onGeometry,
-            SoundinatorSingleton.getMute() ? this.menuMaterial : this.menuSelectedMaterial);
+            SOUNDS_CTRL.getMute() ? this.menuMaterial : this.menuSelectedMaterial);
         this.on.position.set(-0.3, -0.5, 3.2);
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
@@ -397,7 +397,7 @@ export class Menu {
         this.offGeometry = new TextGeometry('OFF', this.fontDifficultyBtnParams);
         this.off = new Mesh(
             this.offGeometry,
-            SoundinatorSingleton.getMute() ? this.menuSelectedMaterial : this.menuMaterial);
+            SOUNDS_CTRL.getMute() ? this.menuSelectedMaterial : this.menuMaterial);
         this.off.position.set(0.85, -0.5, 3.2);
         this.off.rotation.x = -1.5708;
         this.scene.add(this.off);
@@ -598,8 +598,8 @@ export class Menu {
         this.on.position.set(-0.3, -0.5, 3.2);
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
-        SoundinatorSingleton.playBidooo();
-        SoundinatorSingleton.toggleMute(true);
+        SOUNDS_CTRL.playBidooo();
+        SOUNDS_CTRL.toggleMute(true);
     }
     /**
      * Turns sound on.
@@ -618,8 +618,8 @@ export class Menu {
         this.on.position.set(-0.3, -0.5, 3.2);
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
-        SoundinatorSingleton.toggleMute(false);
-        SoundinatorSingleton.playBidooo();
+        SOUNDS_CTRL.toggleMute(false);
+        SOUNDS_CTRL.playBidooo();
     }
     /**
      * Changes the start menu button text when clicked to signal to user that their click worked.

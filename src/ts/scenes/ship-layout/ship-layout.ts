@@ -6,7 +6,7 @@ import {
     Scene,
     Texture } from 'three';
 
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { Actor } from '../../models/actor';
 import { createShip } from './actors/create-ship';
 import { createShipInteriorFrame } from './actors/create-ship-interior-frame';
@@ -194,7 +194,7 @@ export class ShipLayout {
                     }
                 });
                 if (hit) {
-                    SoundinatorSingleton.playBidooo();
+                    SOUNDS_CTRL.playBidooo();
                 }
                 if (hit && hit.name !== (this._selectedBox && this._selectedBox.name)) {
                     Object.keys(this._meshMap).forEach(key => {
@@ -203,7 +203,7 @@ export class ShipLayout {
 
                     this._selectedBox = this._meshMap[hit.name];
                     (this._meshMap[hit.name].material as any).color.set(COLORS.selected);
-                    SoundinatorSingleton.playBidooo();
+                    SOUNDS_CTRL.playBidooo();
 
                     this._textElements.hoverText.update(hit.name);
                     this._textElements.selectionText.update(hit.name);

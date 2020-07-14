@@ -1,4 +1,4 @@
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../controllers/sounds-controller';
 import { ButtonColors } from "../../models/button-colors";
 import { HTMLElementPosition } from "../../models/html-element-position";
 
@@ -141,7 +141,7 @@ export class ButtonBase {
             this.element.style.color = this._colorTheme.onMouseUp.color;
             this.element.style.border = '1px solid ' + this._colorTheme.onMouseUp.border;
 
-            SoundinatorSingleton.playBidooo();
+            SOUNDS_CTRL.playBidooo();
 
             this._callback();
         }

@@ -2,8 +2,7 @@ import { FunctionMap } from "../../models/function-map";
 import { HTMLElementPosition } from "../../models/html-element-position";
 import { FreestyleSquareButton } from "../buttons/freestyle-square-button";
 import { BUTTON_COLORS } from "../../styles/button-colors";
-import { SoundinatorSingleton } from "../../soundinator";
-import { Sound } from "../../sound";
+import { SOUNDS_CTRL } from "../controllers/sounds-controller";
 
 /**
  * @class
@@ -23,7 +22,7 @@ export class ControlPanel {
     /**
      * Tracks what sound mute state was before user clicked help, or settings.
      */
-    private _prevMute: boolean = SoundinatorSingleton.getMute();
+    private _prevMute: boolean = SOUNDS_CTRL.getMute();
 
     /**
      * When pause button is pressed, a previous state may be captured for return when play button is pressed.
@@ -138,8 +137,8 @@ export class ControlPanel {
             'fa-play',
             0.5);
 
-        SoundinatorSingleton.getMute() ? this._buttons.soundOnButton.show() : this._buttons.soundOnButton.hide();
-        SoundinatorSingleton.getMute() ? this._buttons.soundOnButton.hide() : this._buttons.soundOnButton.show();
+        SOUNDS_CTRL.getMute() ? this._buttons.soundOnButton.show() : this._buttons.soundOnButton.hide();
+        SOUNDS_CTRL.getMute() ? this._buttons.soundOnButton.hide() : this._buttons.soundOnButton.show();
         startPaused ? this._buttons.pauseButton.show() : this._buttons.pauseButton.hide();
         startPaused ? this._buttons.playButton.hide() : this._buttons.playButton.show();
 
@@ -148,7 +147,7 @@ export class ControlPanel {
 
     private _onExitHelpClicked(): void {
         console.log('Control Panel: Exit Help Button Clicked');
-        SoundinatorSingleton.resumeSound();
+        SOUNDS_CTRL.resumeSound();
 
         this._buttons.exitHelpButton.hide();
         this._buttons.helpButton.show();
@@ -166,7 +165,7 @@ export class ControlPanel {
 
     private _onExitSettingsClicked(): void {
         console.log('Control Panel: Exit Settings Button Clicked');
-        SoundinatorSingleton.resumeSound();
+        SOUNDS_CTRL.resumeSound();
 
         this._buttons.exitSettingsButton.hide();
         this._buttons.settingsButton.show();
@@ -184,7 +183,7 @@ export class ControlPanel {
 
     private _onHelpClicked(): void {
         console.log('Control Panel: Help Button Clicked');
-        SoundinatorSingleton.pauseSound();
+        SOUNDS_CTRL.pauseSound();
 
         this._buttons.helpButton.hide();
         this._buttons.exitHelpButton.show();
@@ -201,7 +200,7 @@ export class ControlPanel {
 
     private _onPauseClicked(): void {
         console.log('Control Panel: Pause Button Clicked');
-        SoundinatorSingleton.pauseSound();
+        SOUNDS_CTRL.pauseSound();
 
         this._buttons.pauseButton.hide();
         this._buttons.playButton.show();
@@ -214,7 +213,7 @@ export class ControlPanel {
 
     private _onPlayClicked(): void {
         console.log('Control Panel: Play Button Clicked');
-        SoundinatorSingleton.resumeSound();
+        SOUNDS_CTRL.resumeSound();
 
         this._buttons.playButton.hide();
         this._buttons.pauseButton.show();
@@ -225,7 +224,7 @@ export class ControlPanel {
 
     private _onSettingsClicked(): void {
         console.log('Control Panel: Settings Button Clicked');
-        SoundinatorSingleton.pauseSound();
+        SOUNDS_CTRL.pauseSound();
 
         this._buttons.exitSettingsButton.show();
         this._buttons.settingsButton.hide();
@@ -242,7 +241,7 @@ export class ControlPanel {
 
     private _onSoundOffClicked(): void {
         console.log('Control Panel: Sound Off Button Clicked');
-        SoundinatorSingleton.resumeSound();
+        SOUNDS_CTRL.resumeSound();
 
         this._buttons.soundOffButton.hide();
         this._buttons.soundOnButton.show();
@@ -250,7 +249,7 @@ export class ControlPanel {
 
     private _onSoundOnClicked(): void {
         console.log('Control Panel: Sound On Button Clicked');
-        SoundinatorSingleton.pauseSound();
+        SOUNDS_CTRL.pauseSound();
 
         this._buttons.soundOnButton.hide();
         this._buttons.soundOffButton.show();

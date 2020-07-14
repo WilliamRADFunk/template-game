@@ -9,7 +9,7 @@ import {
 
 import { Actor } from "../../../models/actor";
 import { createMiningTeam } from "../utils/create-mining-team";
-import { SoundinatorSingleton } from "../../../soundinator";
+import { SOUNDS_CTRL } from "../../../controls/controllers/sounds-controller";
 import { LootCtrl } from "./loot-controller";
 import { ButtonBase } from "../../../controls/buttons/button-base";
 
@@ -272,7 +272,7 @@ export class MiningCtrl {
             this._camera.position.set(miningEquipmentPos.x, this._camera.position.y, miningEquipmentPos.z);
             this._camera.zoom = 4;
             this._camera.updateProjectionMatrix();
-            SoundinatorSingleton.playHollowClank();
+            SOUNDS_CTRL.playHollowClank();
         }, 100);
     }
 
@@ -293,20 +293,20 @@ export class MiningCtrl {
             if (this._grid[tipDrillRowAfter][drillCol] !== 7) {
                 currentDrillBit.position.set(currDrillPos.x, currDrillPos.y, currDrillPos.z + 0.001);
             } else {
-                SoundinatorSingleton.playFooPang();
+                SOUNDS_CTRL.playFooPang();
             }
             if (this._grid[centerDrillRowAfter][drillCol] !== 4) {
                 if (this._grid[centerDrillRowAfter][drillCol] === 3) {
                     this._lootCtrl.addTempWater(value);
-                    SoundinatorSingleton.playBlip();
+                    SOUNDS_CTRL.playBlip();
                 } else if (this._grid[centerDrillRowAfter][drillCol] === 5) {
                     this._lootCtrl.addTempOre(value);
-                    SoundinatorSingleton.playBlip();
+                    SOUNDS_CTRL.playBlip();
                 } else if (this._grid[centerDrillRowAfter][drillCol] === 8) {
                     this._lootCtrl.addTempFood(value);
-                    SoundinatorSingleton.playBlip();
+                    SOUNDS_CTRL.playBlip();
                 } else {
-                    SoundinatorSingleton.playBlap();
+                    SOUNDS_CTRL.playBlap();
                 }
                 this._grid[centerDrillRowAfter][drillCol] = 4;
                 const minedBlockPos = this._positionGrid[centerDrillRowAfter][drillCol];
@@ -393,7 +393,7 @@ export class MiningCtrl {
             this._camera.position.set(0, this._camera.position.y, 0);
             this._camera.zoom = 1;
             this._camera.updateProjectionMatrix();
-            SoundinatorSingleton.playHollowClunk();
+            SOUNDS_CTRL.playHollowClunk();
         }, 100);
     }
 
@@ -403,7 +403,7 @@ export class MiningCtrl {
     public packupDrill(): void {
         this._drillBits.forEach(bit => bit && this._scene.remove(bit));
         this._drillBits.length = 0;
-        SoundinatorSingleton.stopDrilling();
+        SOUNDS_CTRL.stopDrilling();
     }
 
     /**
@@ -446,7 +446,7 @@ export class MiningCtrl {
         this._drillBits.push(drillMesh);
         this._scene.add(drillMesh);
 
-        SoundinatorSingleton.playDrilling();
+        SOUNDS_CTRL.playDrilling();
     }
 
     /**
@@ -489,8 +489,8 @@ export class MiningCtrl {
         this._isMiningTeamMovingLeft = goingLeft;
         this._isMiningTeamMovingRight = !goingLeft;
 
-        if (!SoundinatorSingleton.isPlaying('walkingFastGravel')) {
-            SoundinatorSingleton.playWalkingFastGravel();
+        if (!SOUNDS_CTRL.isPlaying('walkingFastGravel')) {
+            SOUNDS_CTRL.playWalkingFastGravel();
         }
     }
 

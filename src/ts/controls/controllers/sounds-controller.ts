@@ -1,8 +1,8 @@
 import { Audio, AudioListener } from 'three';
 
-import { Sound } from "./sound";
+import { Sound } from "../../sound";
 
-interface SoundinatorSound {
+interface SoundWrapper {
     audio: Audio;
     misc?: any;
     notPausable?: boolean;
@@ -13,7 +13,7 @@ interface SoundinatorSound {
  * @class
  * The sound effects and music system.
  */
-class Soundinator {
+class SoundsCtrl {
     /**
      * Local reference to the audiolistener made during initialization.
      */
@@ -32,10 +32,10 @@ class Soundinator {
     /**
      * Audio and Sound objects for each of the loaded sound effects.
      */
-    private _sounds: { [key: string]: SoundinatorSound } = {};
+    private _sounds: { [key: string]: SoundWrapper } = {};
 
     /**
-     * Constructor for the Soundinator class
+     * Constructor for the SoundsCtrl class
      * @hidden
      */
     constructor() {}
@@ -416,4 +416,4 @@ class Soundinator {
         }
     }
 }
-export const SoundinatorSingleton = new Soundinator();
+export const SOUNDS_CTRL = new SoundsCtrl();

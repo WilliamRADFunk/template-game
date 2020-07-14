@@ -9,17 +9,13 @@ import {
     Texture,
     Vector3 } from 'three';
 
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { Actor } from '../../models/actor';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';
 import { ButtonBase } from '../../controls/buttons/button-base';
 import { createLander } from './utils/create-lander';
-import {
-    PlanetSpecifications,
-    OreTypeColors,
-    SkyColors,
-    PlanetLandColors } from '../../models/planet-specifications';
+import { OreTypeColors, PlanetLandColors, PlanetSpecifications, SkyColors } from '../../models/planet-specifications';
 import { MainThruster } from './utils/main-thruster';
 import { SideThruster } from './utils/side-thruster';
 import { Explosion } from '../../weapons/explosion';
@@ -473,7 +469,7 @@ export class LandAndMine {
                 renderedInert: false,
                 y: 14
             });
-        SoundinatorSingleton.playExplosionSmall();
+        SOUNDS_CTRL.playExplosionSmall();
         setTimeout(() => this._destroyTiles(landerCol, landerRow), 900);
     }
 
@@ -954,10 +950,10 @@ export class LandAndMine {
                 }
             } else if (this._state === LandAndMineState.walkingByLander || this._state === LandAndMineState.walkingAwayFromLander) {
                 if (event.keyCode === 65 || event.keyCode === 37) {
-                    SoundinatorSingleton.stopWalkingFastGravel();
+                    SOUNDS_CTRL.stopWalkingFastGravel();
                     this._miningCtrl.standing(true);
                 } else if (event.keyCode === 68 || event.keyCode === 39) {
-                    SoundinatorSingleton.stopWalkingFastGravel();
+                    SOUNDS_CTRL.stopWalkingFastGravel();
                     this._miningCtrl.standing(false);
                 }
             } else if (this._state === LandAndMineState.mining) {
@@ -1090,9 +1086,9 @@ export class LandAndMine {
             if (this._state === LandAndMineState.newGame) {
                 this._state = LandAndMineState.flying;
                 this._buttons.startButton.hide();
-                SoundinatorSingleton.playBackgroundMusicScifi01();
+                SOUNDS_CTRL.playBackgroundMusicScifi01();
                 if (Math.abs(this._planetSpecifications.wind) > 0) {
-                    SoundinatorSingleton.playWind();
+                    SOUNDS_CTRL.playWind();
                 }
             }
         };
@@ -1286,13 +1282,13 @@ export class LandAndMine {
             .filter(key => !!this._buttons[key])
             .forEach(key => this._buttons[key].dispose());
         window.removeEventListener( 'resize', this._listenerRef, false);
-        SoundinatorSingleton.stopAirThruster();
-        SoundinatorSingleton.stopAirThruster();
-        SoundinatorSingleton.stopBackgroundMusicScifi01();
-        SoundinatorSingleton.stopDrilling();
-        SoundinatorSingleton.stopMainThrusterSmall();
-        SoundinatorSingleton.stopWalkingFastGravel();
-        SoundinatorSingleton.stopWind();
+        SOUNDS_CTRL.stopAirThruster();
+        SOUNDS_CTRL.stopAirThruster();
+        SOUNDS_CTRL.stopBackgroundMusicScifi01();
+        SOUNDS_CTRL.stopDrilling();
+        SOUNDS_CTRL.stopMainThrusterSmall();
+        SOUNDS_CTRL.stopWalkingFastGravel();
+        SOUNDS_CTRL.stopWind();
     }
 
     /**
@@ -1316,8 +1312,8 @@ export class LandAndMine {
         }
         // Game not yet started. Nothing should progress.
         if (this._state === LandAndMineState.newGame) {
-            SoundinatorSingleton.stopBackgroundMusicScifi01();
-            SoundinatorSingleton.stopWind();
+            SOUNDS_CTRL.stopBackgroundMusicScifi01();
+            SOUNDS_CTRL.stopWind();
             return;
         }
 
@@ -1483,15 +1479,15 @@ export class LandAndMine {
                 this._state = LandAndMineState.autopilot;
             } else {
                 this._state = LandAndMineState.suffocating;
-                SoundinatorSingleton.stopDrilling();
-                SoundinatorSingleton.stopWalkingFastGravel();
-                SoundinatorSingleton.playDeathNoNoAchEhh();
+                SOUNDS_CTRL.stopDrilling();
+                SOUNDS_CTRL.stopWalkingFastGravel();
+                SOUNDS_CTRL.playDeathNoNoAchEhh();
             }
             this._buttons.mineButton.hide();
             this._buttons.loadButton.hide();
             this._buttons.unloadButton.hide();
             this._buttons.packUpButton.hide();
-            SoundinatorSingleton.playBipBipBipBing();
+            SOUNDS_CTRL.playBipBipBipBing();
             return;
         }
 

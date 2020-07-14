@@ -44,7 +44,19 @@ import { FreestyleSquareButton } from "../../controls/buttons/freestyle-square-b
 import { LanderSpecifications } from "../../models/lander-specifications";
 import { ProfileBase } from "../../controls/profiles/profile-base";
 import { RightTopDialogueText } from "../../controls/text/dialogue/right-top-dialogue-text";
-import { AncientRuinsSpecifications, RuinsBiome, WaterBiome, GroundMaterial, PlantColor, WaterColor, TreeLeafColor, TreeTrunkColor, TeamMemberDirection, TeamMemberStatus, TeamMemberAppearance, TeamMember } from "../../models/ancient-ruins-specifications";
+import {
+    AncientRuinsSpecifications,
+    RuinsBiome,
+    WaterBiome,
+    GroundMaterial,
+    PlantColor,
+    WaterColor,
+    TreeLeafColor,
+    TreeTrunkColor,
+    TeamMemberDirection,
+    TeamMemberStatus,
+    TeamMemberAppearance,
+    TeamMember } from "../../models/ancient-ruins-specifications";
 import { makeMember } from "../ancient-ruins/utils/make-member";
 import { findMemberValue, ShirtColor, spriteMapCols, spriteMapRows } from "../ancient-ruins/utils/crew-member-spritemap-values";
 import { makeMemberMaterial } from "../ancient-ruins/utils/make-member-material";
@@ -52,7 +64,7 @@ import { MIDDLE_COL } from "../ancient-ruins/utils/grid-constants";
 import { animateCrewMember } from "../ancient-ruins/utils/animate-crew-member";
 import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-x-degrees-left";
 import { rotateCrewMember } from "../ancient-ruins/utils/rotate-crew-member";
-import { OFFICER_RANK_END, OFFICER_RANK_START, ENLISTED_RANK_START, MAX_OFFICER_RANK } from "../../utils/rank-map";
+import { OFFICER_RANK_START, ENLISTED_RANK_START, MAX_OFFICER_RANK } from "../../utils/rank-map";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';

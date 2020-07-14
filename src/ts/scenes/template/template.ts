@@ -6,7 +6,7 @@ import {
     Scene,
     Texture } from 'three';
 
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { Actor } from '../../models/actor';
 import { SceneType } from '../../models/scene-type';
 import { getIntersections } from '../../utils/get-intersections';

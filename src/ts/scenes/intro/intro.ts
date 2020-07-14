@@ -8,7 +8,7 @@ import {
     DoubleSide,
     Font } from 'three';
 
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { Actor } from '../../models/actor';
 import { FadableText } from '../../models/fadable-text';
 import { Sequence } from '../../models/sequence';

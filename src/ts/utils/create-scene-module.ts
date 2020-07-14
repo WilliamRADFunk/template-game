@@ -1,4 +1,13 @@
-import { AmbientLight, AudioListener, Color, DoubleSide, Mesh, MeshBasicMaterial, OrthographicCamera, PlaneGeometry, Scene, WebGLRenderer } from "three";
+import {
+    AmbientLight,
+    AudioListener,
+    DoubleSide,
+    Mesh,
+    MeshBasicMaterial,
+    OrthographicCamera,
+    PlaneGeometry,
+    Scene,
+    WebGLRenderer } from "three";
 
 import { SceneType } from "../models/scene-type";
 import { onWindowResize } from "./on-window-resize";

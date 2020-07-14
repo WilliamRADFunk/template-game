@@ -9,7 +9,7 @@ import {
     Texture} from 'three';
 
 import { SceneType } from './models/scene-type';
-import { SoundinatorSingleton } from './soundinator';
+import { SOUNDS_CTRL } from './controls/controllers/sounds-controller';
 import { Menu } from './scenes/main-menu/menu';
 import { Intro } from './scenes/intro/intro';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';
@@ -413,7 +413,7 @@ let assetsLoadedCount = 0;
  * each fitted with their chance to check if all others are done.
  */
 const loadAssets = () => {
-    SoundinatorSingleton.addListener(AUDIO_LISTENER);
+    SOUNDS_CTRL.addListener(AUDIO_LISTENER);
     const loadingBar = document.getElementById('loading').getElementsByClassName('ldBar')[0];
     Object.keys(TEXTURES).forEach(key => {
         (new TextureLoader()).load( TEXTURES[key][0], texture => {
@@ -455,7 +455,7 @@ const checkAssetsLoaded = () => {
     if (gameFont &&
         !Object.keys(TEXTURES).some(key => !TEXTURES[key][1]) &&
         Object.keys(SOUNDS).length === SOUND_LOADERS.length) {
-        SoundinatorSingleton.addSounds(SOUNDS);
+        SOUNDS_CTRL.addSounds(SOUNDS);
 
         setTimeout(() => {
             const loading = document.getElementById('loading');
@@ -637,7 +637,7 @@ const loadGameMenu = () => {
                         }
                     );
                 }, 750);
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Load Code') {
                 setTimeout(() => {
@@ -646,31 +646,31 @@ const loadGameMenu = () => {
                     sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
                     // loadGame(1);
                 }, 250);
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Easy') {
                 scenes.menu.instance.changeDifficulty(0);
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Normal') {
                 scenes.menu.instance.changeDifficulty(1);
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Hard') {
                 scenes.menu.instance.changeDifficulty(2);
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Hardcore') {
                 scenes.menu.instance.changeDifficulty(3);
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Load') {
                 scenes.menu.instance.pressedLoad();
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Help') {
                 scenes.menu.instance.pressedHelp();
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'On') {
                 scenes.menu.instance.pressedOn();
@@ -680,11 +680,11 @@ const loadGameMenu = () => {
                 return;
             } else if (el.object.name === 'Return Help') {
                 scenes.menu.instance.returnToMainMenu();
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             } else if (el.object.name === 'Return Load') {
                 scenes.menu.instance.returnToMainMenu();
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 return;
             }
         });
@@ -724,7 +724,7 @@ const loadIntroScene = () => {
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
             if (el.object.name === 'Click Barrier') {
-                SoundinatorSingleton.playBidooo();
+                SOUNDS_CTRL.playBidooo();
                 scenes.intro.active = false;
                 loadMenu();
                 return;

@@ -9,7 +9,7 @@ import {
 import { Collidable } from '../collidable';
 import { CollisionatorSingleton } from '../collisionator';
 import { Explosion } from '../weapons/explosion';
-import { SoundinatorSingleton } from '../soundinator';
+import { SOUNDS_CTRL } from '../controls/controllers/sounds-controller';
 
 let index: number = 0;
 
@@ -135,9 +135,9 @@ export class Asteroid implements Collidable {
             });
         if (!isInert) {
             CollisionatorSingleton.add(this.explosion);
-            SoundinatorSingleton.playExplosionLarge(false);
+            SOUNDS_CTRL.playExplosionLarge(false);
         } else {
-            SoundinatorSingleton.playExplosionLarge(true);
+            SOUNDS_CTRL.playExplosionLarge(true);
         }
     }
     /**

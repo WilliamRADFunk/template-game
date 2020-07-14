@@ -49,7 +49,7 @@ import { LanderSpecifications } from "../../models/lander-specifications";
 import { PlanetLandColors, PlanetSpecifications, OreTypeColors, SkyColors } from "../../models/planet-specifications";
 
 // Constants and Singletons
-import { SoundinatorSingleton } from "../../soundinator";
+import { SOUNDS_CTRL } from "./sounds-controller";
 import { COLORS } from "../../styles/colors";
 import { colorLuminance } from "../../utils/color-shader";
 import { noOp } from "../../utils/no-op";
@@ -121,8 +121,8 @@ export class SettingsCtrl {
 
     /**
      * Constructor for the SettingsCtrl Class.
-     * @param scene                 ThreeJS scene to add meshes to for settings screen.
-     * @param brdr                  dev environment brdr set in creating class.
+     * @param scene ThreeJS scene to add meshes to for settings screen.
+     * @param brdr  dev environment brdr set in creating class.
      */
     constructor(
         scene: Scene,

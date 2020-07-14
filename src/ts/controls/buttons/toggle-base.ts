@@ -1,4 +1,4 @@
-import { SoundinatorSingleton } from '../../soundinator';
+import { SOUNDS_CTRL } from '../controllers/sounds-controller';
 import { ButtonColors } from "../../models/button-colors";
 import { HTMLElementPosition } from "../../models/html-element-position";
 
@@ -137,7 +137,7 @@ export class ToggleBase {
      */
     public onMouseUp(): void {
         if (this._isEnabled) {
-            SoundinatorSingleton.playBidooo();
+            SOUNDS_CTRL.playBidooo();
             this._state = !this._state;
         }
     }

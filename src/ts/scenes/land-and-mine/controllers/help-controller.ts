@@ -53,7 +53,7 @@ import { LanderSpecifications } from "../../../models/lander-specifications";
 import { PlanetLandColors, PlanetSpecifications, OreTypeColors, SkyColors } from "../../../models/planet-specifications";
 
 // Constants and Singletons
-import { SoundinatorSingleton } from "../../../soundinator";
+import { SOUNDS_CTRL } from "../../../controls/controllers/sounds-controller";
 import { COLORS } from "../../../styles/colors";
 import { colorLuminance } from "../../../utils/color-shader";
 import { noOp } from "../../../utils/no-op";
@@ -3823,7 +3823,7 @@ export class HelpCtrl {
      * Calls the next frame in the animation cycle.
      */
     public endCycle(): void {
-        SoundinatorSingleton.pauseSound();
+        SOUNDS_CTRL.pauseSound();
 
         this._endCycleLanderControls();
         this._endCycleThresholds();
