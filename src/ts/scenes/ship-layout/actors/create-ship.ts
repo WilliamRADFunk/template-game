@@ -2,22 +2,21 @@ import {
     LinearFilter,
     Mesh,
     MeshPhongMaterial,
-    PlaneGeometry,
-    Texture } from "three";
+    PlaneGeometry } from "three";
 import { createActor } from "../../../utils/create-actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 /**
  * Creates the rectangle image of the ship.
- * @param dialogueTexture texture for the ship image.
  */
-export function createShip(shipTexture: Texture) {
+export function createShip() {
     const ship = createActor();
     ship.originalStartingPoint = [0, -0.75];
     ship.currentPoint = [0, -0.75];
     ship.endingPoint = [0, -0.75];
     ship.geometry = new PlaneGeometry(12, 6, 96, 96);
     ship.material = new MeshPhongMaterial();
-    ship.material.map = shipTexture;
+    ship.material.map = ASSETS_CTRL.textures.enzmannOutside;
     ship.material.map.minFilter = LinearFilter;
     (ship.material as any).shininess = 0;
     ship.material.transparent = true;

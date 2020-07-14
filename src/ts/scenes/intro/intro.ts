@@ -28,6 +28,7 @@ import { createShip1 } from './actors/create-ship-1';
 import { createGeminiStation } from './actors/createGeminiStation';
 import { createEntryEffect } from './actors/create-entry-effect';
 import { SceneType } from '../../models/scene-type';
+import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -124,19 +125,8 @@ export class Intro {
     /**
      * Constructor for the Intro (Scene) class
      * @param scene         graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param shipTexture   texture for the ship.
-     * @param earthTexture  texture for the earth.
-     * @param marsTexture   texture for the mars.
-     * @param introFont     loaded font to use for help display text.
      */
-    constructor(
-        scene: SceneType,
-        shipTexture: Texture,
-        earthTexture: Texture,
-        marsTexture: Texture,
-        asteroidTexture: Texture,
-        enceladusTexture: Texture,
-        introFont: Font) {
+    constructor(scene: SceneType) {
         this.scene = scene.scene;
 
         document.oncontextmenu = event => {
@@ -148,13 +138,7 @@ export class Intro {
         window.addEventListener('resize', this.listenerRef, false);
 
         this.createStars();
-		this.createActors(
-            earthTexture,
-            marsTexture,
-            asteroidTexture,
-            enceladusTexture,
-            shipTexture,
-            introFont);
+		this.createActors();
     }
     /**
      * Calculates the next point in the ship's path.
@@ -169,16 +153,9 @@ export class Intro {
     /**
      * Creates items to be moved around in scene.
      */
-    private createActors(
-        earthTexture: Texture,
-        marsTexture: Texture,
-        asteroidTexture: Texture,
-        enceladusTexture: Texture,
-        shipTexture: Texture,
-        introFont: Font
-    ): void {
+    private createActors(): void {
         const headerParams = {
-            font: introFont,
+            font: ASSETS_CTRL.gameFont,
             size: 0.25,
             height: 0.2,
             curveSegments: 12,
@@ -204,7 +181,6 @@ export class Intro {
         const labelBackGlowGeometry = new PlaneGeometry( 4.7, 0.9, 0, 0 );
 
         const earth = createEarth(
-            earthTexture,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
@@ -214,7 +190,6 @@ export class Intro {
         this.actors.push(earth);
 
         const mars = createMars(
-            marsTexture,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
@@ -224,7 +199,6 @@ export class Intro {
         this.actors.push(mars);
 
         const asteroid = createAsteroid(
-            asteroidTexture,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
@@ -234,7 +208,6 @@ export class Intro {
         this.actors.push(asteroid);
 
         const enceladus = createEnceladus(
-            enceladusTexture,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
@@ -244,7 +217,7 @@ export class Intro {
         this.actors.push(enceladus);
 
         this.actors.push(...createSolarSystem(
-            introFont,
+            ASSETS_CTRL.gameFont,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
@@ -256,7 +229,6 @@ export class Intro {
         }));
 
         const station = createGeminiStation(
-            earthTexture,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
             labelBackGeometry,
@@ -269,7 +241,7 @@ export class Intro {
         this.scene.add(entryEffect.mesh);
         this.actors.push(entryEffect);
 
-        const ship = createShip1(shipTexture);
+        const ship = createShip1();
         this.scene.add(ship.mesh);
         this.actors.push(ship);
     }

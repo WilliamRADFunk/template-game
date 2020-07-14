@@ -8,14 +8,13 @@ import {
     Object3D,
     PlaneGeometry,
     TextGeometry,
-    TextGeometryParameters,
-    Texture } from "three";
+    TextGeometryParameters } from "three";
 
 import { Actor } from "../../../models/actor";
 import { createActor } from "../../../utils/create-actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 export function createEnceladus(
-    enceladusTexture: Texture,
     lbgGeo: PlaneGeometry,
     lbgMat: MeshPhongMaterial,
     lbGeo: PlaneGeometry,
@@ -43,7 +42,7 @@ export function createEnceladus(
     const meshGroup = new Object3D();
     enceladus.geometry = new CircleGeometry(5, 48, 48);
     enceladus.material = new MeshPhongMaterial();
-    enceladus.material.map = enceladusTexture;
+    enceladus.material.map = ASSETS_CTRL.textures.enceladus;
     enceladus.material.map.minFilter = LinearFilter;
     (enceladus.material as any).shininess = 0;
     enceladus.material.transparent = true;

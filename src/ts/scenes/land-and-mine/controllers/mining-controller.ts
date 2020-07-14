@@ -87,7 +87,6 @@ export class MiningCtrl {
      * Constructor for the Mining Controller class.
      * @param scene             ThreeJS scene for adding and removing object
      * @param camera            camera in the scene for zomming in and out from mining team
-     * @param textures          textures needed to make ThreeJS objects
      * @param grid              the grid array with values of all tiles on game map
      * @param positionGrid      the Vector3 array with positions of all tiles on game map
      * @param lootCtrl          reference to the Loot Controller to add or remove loot from tally
@@ -96,7 +95,6 @@ export class MiningCtrl {
     constructor(
         scene: Scene,
         camera: OrthographicCamera,
-        textures: { [key: string]: Texture },
         grid: number[][],
         positionGrid: Vector3[][],
         lootCtrl: LootCtrl,
@@ -105,25 +103,10 @@ export class MiningCtrl {
         this._camera = camera;
         this._grid = grid;
         this._positionGrid = positionGrid;
-        this._textures = textures;
         this._lootCtrl = lootCtrl;
         this._maxDrillLength = maxDrillLength;
 
-        this._astronauts = createMiningTeam(
-            {
-                astronaut1: textures.astronaut1,
-                astronaut2: textures.astronaut2,
-                astronaut3: textures.astronaut3,
-                astronautSuffocation1: textures.astronautSuffocation1,
-                astronautSuffocation2: textures.astronautSuffocation2,
-                astronautSuffocation3: textures.astronautSuffocation3,
-                astronautSuffocation4: textures.astronautSuffocation4,
-                astronautSuffocation5: textures.astronautSuffocation5
-            },
-            {
-                miningEquipment1: textures.miningEquipment1,
-                miningEquipment2: textures.miningEquipment2
-            });
+        this._astronauts = createMiningTeam();
         this._astronauts.filter(astro => !!astro).forEach(astro => {
             this._scene.add(astro.mesh);
             astro.mesh.visible = false;

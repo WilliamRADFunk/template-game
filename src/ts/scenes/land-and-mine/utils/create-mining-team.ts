@@ -3,33 +3,31 @@ import {
     Mesh,
     MeshPhongMaterial,
     PlaneGeometry,
-    Texture,
     Object3D} from "three";
 import { createActor } from "../../../utils/create-actor";
 import { Actor } from "../../../models/actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 /**
  * Creates the rectangle image of the lander.
- * @param astronautTextures         textures for the astronaut images.
- * @param miningEquipmentTextures   textures for the mining equipment images.
  */
-export function createMiningTeam(astronautTextures: { [key: string]: Texture }, miningEquipmentTextures: { [key: string]: Texture }): Actor[] {
+export function createMiningTeam(): Actor[] {
     const astronautGeometry = new PlaneGeometry( 0.15, 0.15, 10, 10 );
     const astronautMaterialStanding = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronaut1,
+        map: ASSETS_CTRL.textures.astronaut1,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialWalking1 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronaut2,
+        map: ASSETS_CTRL.textures.astronaut2,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialWalking2 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronaut3,
+        map: ASSETS_CTRL.textures.astronaut3,
         shininess: 0,
         transparent: true
     });
@@ -92,7 +90,7 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
     const mwGeo = new CircleGeometry( 0.075, 10, 10 );
     const mwMat = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: miningEquipmentTextures.miningEquipment1,
+        map: ASSETS_CTRL.textures.miningEquipment1,
         shininess: 0,
         transparent: true
     });
@@ -104,7 +102,7 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
     const mbGeo = new PlaneGeometry( 0.15, 0.15, 10, 10 );
     const mbMat = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: miningEquipmentTextures.miningEquipment2,
+        map: ASSETS_CTRL.textures.miningEquipment2,
         shininess: 0,
         transparent: true
     });
@@ -122,31 +120,31 @@ export function createMiningTeam(astronautTextures: { [key: string]: Texture }, 
 
     const astronautMaterialSuffocation1 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronautSuffocation1,
+        map: ASSETS_CTRL.textures.astronautSuffocation1,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialSuffocation2 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronautSuffocation2,
+        map: ASSETS_CTRL.textures.astronautSuffocation2,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialSuffocation3 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronautSuffocation3,
+        map: ASSETS_CTRL.textures.astronautSuffocation3,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialSuffocation4 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronautSuffocation4,
+        map: ASSETS_CTRL.textures.astronautSuffocation4,
         shininess: 0,
         transparent: true
     });
     const astronautMaterialSuffocation5 = new MeshPhongMaterial({
         color: '#FFFFFF',
-        map: astronautTextures.astronautSuffocation5,
+        map: ASSETS_CTRL.textures.astronautSuffocation5,
         shininess: 0,
         transparent: true
     });

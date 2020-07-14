@@ -81,9 +81,15 @@ export class TeamCtrl {
      */
     private _textures: { [key: string]: Texture } = {};
 
-    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications, gridCtrl: GridCtrl, tileCtrl: TileCtrl) {
+    /**
+     * Constructor for the Team Controller class.
+     * @param scene the scene to which meshes are added
+     * @param ancientRuinsSpec all the details for these ancient ruins
+     * @param gridCtrl reference for the Grid Controller
+     * @param tileCtrl reference for the Tile Controller
+     */
+    constructor(scene: Scene, ancientRuinsSpec: AncientRuinsSpecifications, gridCtrl: GridCtrl, tileCtrl: TileCtrl) {
         this._scene = scene;
-        this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
         this._gridCtrl = gridCtrl;
         this._tileCtrl = tileCtrl;
@@ -173,7 +179,7 @@ export class TeamCtrl {
             const offCoordsX = redShirt1CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt1CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._redShirt1.animationMeshes, material, val, crewPosition[0][0], crewPosition[0][1]);
             this._redShirt1.position = [crewPosition[0][0], crewPosition[0][1]];
 
@@ -190,7 +196,7 @@ export class TeamCtrl {
             const offCoordsX = redShirt2CrewDictionaryValue.spritePositionX[val];
             const offCoordsY = redShirt2CrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._redShirt2.animationMeshes, material, val, crewPosition[1][0], crewPosition[1][1]);
             this._redShirt2.position = [crewPosition[1][0], crewPosition[1][1]];
 
@@ -207,7 +213,7 @@ export class TeamCtrl {
             const offCoordsX = medicalOfficerCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = medicalOfficerCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._medicalOfficer.animationMeshes, material, val, crewPosition[2][0], crewPosition[2][1]);
             this._medicalOfficer.position = [crewPosition[2][0], crewPosition[2][1]];
 
@@ -224,7 +230,7 @@ export class TeamCtrl {
             const offCoordsX = scienceOfficerCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = scienceOfficerCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._scienceOfficer.animationMeshes, material, val, crewPosition[3][0], crewPosition[3][1]);
             this._scienceOfficer.position = [crewPosition[3][0], crewPosition[3][1]];
 
@@ -241,7 +247,7 @@ export class TeamCtrl {
             const offCoordsX = teamLeaderCrewDictionaryValue.spritePositionX[val];
             const offCoordsY = teamLeaderCrewDictionaryValue.spritePositionY[val];
             const size = [spriteMapCols, spriteMapRows];
-            const material = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._teamLeader.animationMeshes, material, val, crewPosition[4][0], crewPosition[4][1]);
             this._teamLeader.position = [crewPosition[4][0], crewPosition[4][1]];
 

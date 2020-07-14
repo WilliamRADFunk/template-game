@@ -15,11 +15,6 @@ interface SoundWrapper {
  */
 class SoundsCtrl {
     /**
-     * Local reference to the audiolistener made during initialization.
-     */
-    private audioListener: AudioListener;
-
-    /**
      * Tracks whether game is in silent mode or not.
      */
     private isMute: boolean = false;
@@ -33,6 +28,11 @@ class SoundsCtrl {
      * Audio and Sound objects for each of the loaded sound effects.
      */
     private _sounds: { [key: string]: SoundWrapper } = {};
+    
+    /**
+     * Local reference to the audiolistener made during initialization.
+     */
+    public audioListener: AudioListener = new AudioListener();
 
     /**
      * Constructor for the SoundsCtrl class

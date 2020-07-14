@@ -8,14 +8,13 @@ import {
     Object3D,
     PlaneGeometry,
     TextGeometry,
-    TextGeometryParameters,
-    Texture } from "three";
+    TextGeometryParameters } from "three";
 
 import { Actor } from "../../../models/actor";
 import { createActor } from "../../../utils/create-actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 export function createAsteroid(
-    asteroidTexture: Texture,
     lbgGeo: PlaneGeometry,
     lbgMat: MeshPhongMaterial,
     lbGeo: PlaneGeometry,
@@ -43,7 +42,7 @@ export function createAsteroid(
     const meshGroup = new Object3D();
     asteroid.geometry = new CircleGeometry(5, 48, 48);
     asteroid.material = new MeshPhongMaterial();
-    asteroid.material.map = asteroidTexture;
+    asteroid.material.map = ASSETS_CTRL.textures.asteroid;
     asteroid.material.map.minFilter = LinearFilter;
     (asteroid.material as any).shininess = 0;
     asteroid.material.transparent = true;

@@ -15,6 +15,7 @@ import { HelpHandler } from '../help-screen/help-handler';
 import { LoadHandler } from '../load-screen/load-handler';
 import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { SceneType } from '../../models/scene-type';
+import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
 
 // const backgroundColor = 0xFF0044;
 const backgroundColor: number = null;
@@ -213,11 +214,10 @@ export class Menu {
     /**
      * Constructor for the Menu class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param menuFont loaded font to use for menu button text.
      * @hidden
      */
-    constructor(scene: SceneType, menuFont: Font) {
-        this.menuFont = menuFont;
+    constructor(scene: SceneType) {
+        this.menuFont = ASSETS_CTRL.gameFont;
         this.scene = scene.scene;
         this.fontDifficultyBtnParams = {
             font: this.menuFont,

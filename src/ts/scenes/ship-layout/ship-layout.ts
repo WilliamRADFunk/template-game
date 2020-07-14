@@ -34,6 +34,7 @@ import { LeftTopPanel } from '../../controls/panels/left-top-panel';
 import { RightTopPanel } from '../../controls/panels/right-top-panel';
 import { COLORS } from '../../styles/colors';
 import { noOp } from '../../utils/no-op';
+import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -133,16 +134,9 @@ export class ShipLayout {
 
     /**
      * Constructor for the Ship Layout (Scene) class
-     * @param scene             graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param shipIntTexture    texture for the ship in cut profile.
-     * @param shipTexture       texture for the ship.
-     * @param dialogueTexture   texture for the profile image.
+     * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      */
-    constructor(
-        scene: SceneType,
-        shipIntTexture: Texture,
-        shipTexture: Texture,
-        dialogueTexture: Texture) {
+    constructor(scene: SceneType) {
         this._scene = scene.scene;
 
         this._onInitialize();
@@ -151,13 +145,13 @@ export class ShipLayout {
 
         this._createStars();
 
-        const ship = createShip(shipTexture);
+        const ship = createShip();
         this._actors.push(ship);
         this._scene.add(ship.mesh);
-        const shipInterior = createShipInteriorFrame(shipIntTexture);
+        const shipInterior = createShipInteriorFrame(ASSETS_CTRL.textures.enzmannLayout);
         this._actors.push(shipInterior);
         this._scene.add(shipInterior.mesh);
-        this._actors.push(new RightTopProfile(this._scene, dialogueTexture, false).profile);
+        this._actors.push(new RightTopProfile(this._scene, ASSETS_CTRL.textures.engineerProfile, false).profile);
 
         techPellets.forEach(pellet => {
             const pelletMaterial = new MeshBasicMaterial({

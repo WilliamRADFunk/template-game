@@ -2,19 +2,19 @@ import {
     CircleGeometry,
     LinearFilter,
     Mesh,
-    MeshPhongMaterial,
-    Texture } from "three";
+    MeshPhongMaterial } from "three";
 
 import { createActor } from "../../../utils/create-actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
-export function createShip1(shipTexture: Texture) {
+export function createShip1() {
     const ship = createActor();
     ship.originalStartingPoint = [0, 0];
     ship.currentPoint = [0, 0];
     ship.endingPoint = [0, 0];
     ship.geometry = new CircleGeometry(0.5, 16, 16);
     ship.material = new MeshPhongMaterial();
-    ship.material.map = shipTexture;
+    ship.material.map = ASSETS_CTRL.textures.ship;
     ship.material.map.minFilter = LinearFilter;
     (ship.material as any).shininess = 0;
     ship.material.transparent = true;

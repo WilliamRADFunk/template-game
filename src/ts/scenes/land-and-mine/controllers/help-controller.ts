@@ -65,6 +65,7 @@ import { RightBottomMiddleProfile } from "../../../controls/profiles/right-botto
 import { RightBottomMiddleDialogueText } from "../../../controls/text/dialogue/right-bottom-middle-dialogue-text";
 import { dialogues } from "../configs/dialogues";
 import { FreestyleSquareButton } from "../../../controls/buttons/freestyle-square-button";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 /**
  * Border for dev purposes. Normally set to null.
@@ -318,19 +319,16 @@ export class HelpCtrl {
     /**
      * Constructor for the HelpCtrl Class.
      * @param scene                 ThreeJS scene to add meshes to for help screen.
-     * @param textures              textures used to make certain meshes in the help screen.
      * @param planetSpecifications  all the details about the planet body needed for building the scene.
      * @param landerSpecifications  all the details about the ship needed for determining speed, suffocation, and crashes.
      * @param brdr                  dev environment brdr set in creating class.
      */
     constructor(
         scene: Scene,
-        textures: { [key: string]: Texture },
         planetSpecifications: PlanetSpecifications,
         landerSpecifications: LanderSpecifications,
         brdr: string) {
         this._scene = scene;
-        this._textures = textures;
         this._planetSpecifications = planetSpecifications;
         this._landerSpecifications = landerSpecifications;
         border = brdr;
@@ -388,43 +386,43 @@ export class HelpCtrl {
         const mouseGeo = new PlaneGeometry( 0.5, 0.5, 10, 10 );
 
         const arrowMat = new MeshBasicMaterial();
-        arrowMat.map = this._textures.arrow;
+        arrowMat.map = ASSETS_CTRL.textures.arrow;
         arrowMat.map.minFilter = LinearFilter;
         (arrowMat as any).shininess = 0;
         arrowMat.transparent = true;
 
         const keyLeftMat = new MeshBasicMaterial();
-        keyLeftMat.map = this._textures.keysForLeft;
+        keyLeftMat.map = ASSETS_CTRL.textures.keysForLeft;
         keyLeftMat.map.minFilter = LinearFilter;
         (keyLeftMat as any).shininess = 0;
         keyLeftMat.transparent = true;
 
         const keyRightMat = new MeshBasicMaterial();
-        keyRightMat.map = this._textures.keysForRight;
+        keyRightMat.map = ASSETS_CTRL.textures.keysForRight;
         keyRightMat.map.minFilter = LinearFilter;
         (keyRightMat as any).shininess = 0;
         keyRightMat.transparent = true;
 
         const keyUpMat = new MeshBasicMaterial();
-        keyUpMat.map = this._textures.keysForUp;
+        keyUpMat.map = ASSETS_CTRL.textures.keysForUp;
         keyUpMat.map.minFilter = LinearFilter;
         (keyUpMat as any).shininess = 0;
         keyUpMat.transparent = true;
 
         const keyDownMat = new MeshBasicMaterial();
-        keyDownMat.map = this._textures.keysForDown;
+        keyDownMat.map = ASSETS_CTRL.textures.keysForDown;
         keyDownMat.map.minFilter = LinearFilter;
         (keyDownMat as any).shininess = 0;
         keyDownMat.transparent = true;
 
         const mouseLeftMat = new MeshBasicMaterial();
-        mouseLeftMat.map = this._textures.mouseLeft;
+        mouseLeftMat.map = ASSETS_CTRL.textures.mouseLeft;
         mouseLeftMat.map.minFilter = LinearFilter;
         (mouseLeftMat as any).shininess = 0;
         mouseLeftMat.transparent = true;
 
         const mouseMat = new MeshBasicMaterial();
-        mouseMat.map = this._textures.mouse;
+        mouseMat.map = ASSETS_CTRL.textures.mouse;
         mouseMat.map.minFilter = LinearFilter;
         (mouseMat as any).shininess = 0;
         mouseMat.transparent = true;
@@ -531,21 +529,7 @@ export class HelpCtrl {
         keyRightMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Create astronaut mining team for astronaut controls
-        this._helpActors.astronauts = createMiningTeam(
-            {
-                astronaut1: this._textures.astronaut1,
-                astronaut2: this._textures.astronaut2,
-                astronaut3: this._textures.astronaut3,
-                astronautSuffocation1: this._textures.astronautSuffocation1,
-                astronautSuffocation2: this._textures.astronautSuffocation2,
-                astronautSuffocation3: this._textures.astronautSuffocation3,
-                astronautSuffocation4: this._textures.astronautSuffocation4,
-                astronautSuffocation5: this._textures.astronautSuffocation5
-            },
-            {
-                miningEquipment1: this._textures.miningEquipment1,
-                miningEquipment2: this._textures.miningEquipment2
-            }).slice(0, 9);
+        this._helpActors.astronauts = createMiningTeam().slice(0, 9);
 
         // Position the miners on the screen, make them larger, and hide them.
         this._helpActors.astronauts.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
@@ -618,7 +602,7 @@ export class HelpCtrl {
         waterMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Profile Image graphics
-        this._helpProfile = new RightBottomMiddleProfile(this._scene, this._textures.miningOfficerProfile1, true);
+        this._helpProfile = new RightBottomMiddleProfile(this._scene, ASSETS_CTRL.textures.miningOfficerProfile1, true);
         this._helpProfile.hide();
 
         // Dialogue Text graphics
@@ -1226,7 +1210,7 @@ export class HelpCtrl {
         keyUpMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Create lander graphic
-        this._helpMeshes.lander1 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander1 = createLander(ASSETS_CTRL.textures.ship).mesh;
         this._helpMeshes.lander1.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1], HELP_LANDER_1_POSITION[2]);
         this._helpMeshes.lander1.visible = false;
         this._helpMeshes.lander1.scale.set(2, 2, 2);
@@ -1245,7 +1229,7 @@ export class HelpCtrl {
         this._helpMeshes.arrowRight = arrowRight;
 
         // Left Arrow graphics
-        arrowMat.map = this._textures.arrow;
+        arrowMat.map = ASSETS_CTRL.textures.arrow;
         const arrowLeft = new Mesh(arrowGeo, arrowMat);
         arrowLeft.name = 'Left Arrow Mesh';
         arrowLeft.position.set(HELP_LANDER_1_POSITION[0] - 0.85, HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2]);
@@ -1255,7 +1239,7 @@ export class HelpCtrl {
         this._helpMeshes.arrowLeft = arrowLeft;
 
         // Up Arrow graphics
-        arrowMat.map = this._textures.arrow;
+        arrowMat.map = ASSETS_CTRL.textures.arrow;
         const arrowUp = new Mesh(arrowGeo, arrowMat);
         arrowUp.name = 'Up Arrow Mesh';
         arrowUp.position.set(HELP_LANDER_1_POSITION[0], HELP_LANDER_1_POSITION[1] - 1, HELP_LANDER_1_POSITION[2] - 1);
@@ -1478,21 +1462,21 @@ export class HelpCtrl {
         }
 
         // Landing & Leaving Lander graphics
-        this._helpMeshes.lander3 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander3 = createLander(ASSETS_CTRL.textures.ship).mesh;
         this._helpMeshes.lander3.position.set(HELP_LANDER_3_POSITION[0], HELP_LANDER_3_POSITION[1], HELP_LANDER_3_POSITION[2]);
         this._helpMeshes.lander3.visible = false;
         this._helpMeshes.lander3.scale.set(1, 1, 1);
         this._scene.add(this._helpMeshes.lander3);
         this._helpActors.mainThruster3 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_3_POSITION, 1);
 
-        this._helpMeshes.lander4 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander4 = createLander(ASSETS_CTRL.textures.ship).mesh;
         this._helpMeshes.lander4.position.set(HELP_LANDER_4_POSITION[0], HELP_LANDER_4_POSITION[1], HELP_LANDER_4_POSITION[2]);
         this._helpMeshes.lander4.visible = false;
         this._helpMeshes.lander4.scale.set(1, 1, 1);
         this._scene.add(this._helpMeshes.lander4);
         this._helpActors.mainThruster4 = new MainThruster(this._scene, HELP_MAIN_THRUSTER_4_POSITION, 1);
 
-        this._helpMeshes.lander5 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander5 = createLander(ASSETS_CTRL.textures.ship).mesh;
         this._helpMeshes.lander5.position.set(HELP_LANDER_5_POSITION[0], HELP_LANDER_5_POSITION[1], HELP_LANDER_5_POSITION[2]);
         this._helpMeshes.lander5.visible = false;
         this._helpMeshes.lander5.scale.set(1, 1, 1);
@@ -1736,28 +1720,14 @@ export class HelpCtrl {
         }
 
         // Load & Unload Lander graphics
-        this._helpMeshes.lander6 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander6 = createLander(ASSETS_CTRL.textures.ship).mesh;
         this._helpMeshes.lander6.position.set(HELP_LANDER_6_POSITION[0], HELP_LANDER_6_POSITION[1], HELP_LANDER_6_POSITION[2]);
         this._helpMeshes.lander6.visible = false;
         this._helpMeshes.lander6.scale.set(2, 2, 2);
         this._scene.add(this._helpMeshes.lander6);
 
         // Create astronaut mining team for astronaut controls
-        this._helpActors.astronautsLoadUnload = createMiningTeam(
-            {
-                astronaut1: this._textures.astronaut1,
-                astronaut2: this._textures.astronaut2,
-                astronaut3: this._textures.astronaut3,
-                astronautSuffocation1: this._textures.astronautSuffocation1,
-                astronautSuffocation2: this._textures.astronautSuffocation2,
-                astronautSuffocation3: this._textures.astronautSuffocation3,
-                astronautSuffocation4: this._textures.astronautSuffocation4,
-                astronautSuffocation5: this._textures.astronautSuffocation5
-            },
-            {
-                miningEquipment1: this._textures.miningEquipment1,
-                miningEquipment2: this._textures.miningEquipment2
-            }).slice(0, 9);
+        this._helpActors.astronautsLoadUnload = createMiningTeam().slice(0, 9);
 
         // Position the miners on the screen, make them larger, and hide them.
         this._helpActors.astronautsLoadUnload.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
@@ -1912,21 +1882,7 @@ export class HelpCtrl {
         mouseLeftMat: MeshBasicMaterial,
         position: HTMLElementPosition): void {
         // Create astronaut mining team for mining controls.
-        this._helpActors.miners = createMiningTeam(
-            {
-                astronaut1: this._textures.astronaut1,
-                astronaut2: this._textures.astronaut2,
-                astronaut3: this._textures.astronaut3,
-                astronautSuffocation1: this._textures.astronautSuffocation1,
-                astronautSuffocation2: this._textures.astronautSuffocation2,
-                astronautSuffocation3: this._textures.astronautSuffocation3,
-                astronautSuffocation4: this._textures.astronautSuffocation4,
-                astronautSuffocation5: this._textures.astronautSuffocation5
-            },
-            {
-                miningEquipment1: this._textures.miningEquipment1,
-                miningEquipment2: this._textures.miningEquipment2
-            }).slice(0, 9);
+        this._helpActors.miners = createMiningTeam().slice(0, 9);
 
         // Position the miners on the screen, make them larger, and hide them.
         this._helpActors.miners.filter((astro: Actor) => !!astro).forEach((astro: Actor, index: number) => {
@@ -2091,7 +2047,7 @@ export class HelpCtrl {
         }
 
         // Landing Thresholds Lander graphics
-        this._helpMeshes.lander2 = createLander(this._textures.ship).mesh;
+        this._helpMeshes.lander2 = createLander(ASSETS_CTRL.textures.ship).mesh;
         this._helpMeshes.lander2.position.set(HELP_LANDER_2_POSITION[0], HELP_LANDER_2_POSITION[1], HELP_LANDER_2_POSITION[2]);
         this._helpMeshes.lander2.visible = false;
         this._helpMeshes.lander2.scale.set(2, 2, 2);
@@ -3793,7 +3749,7 @@ export class HelpCtrl {
         const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
         const drillMat = new MeshPhongMaterial({
             color: '#FFFFFF',
-            map: this._textures.miningDrill,
+            map: ASSETS_CTRL.textures.miningDrill,
             shininess: 0,
             transparent: true
         });

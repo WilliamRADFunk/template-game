@@ -127,27 +127,18 @@ export class AncientRuins {
     private _teamCtrl: TeamCtrl;
 
     /**
-     * All of the textures contained in this scene.
-     */
-    private _textures: { [key: string]: Texture } = {};
-
-    /**
      * Reference to this scene's tile controller.
      */
     private _tileCtrl: TileCtrl;
 
     /**
      * Constructor for the Ancient Ruins (Scene) class
-     * @param scene     graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param textures  all the needed textures for ancient ruins.
+     * @param scene             graphic rendering scene object. Used each iteration to redraw things contained in scene.
+     * @param ancientRuinsSpec  all the details for these ancient ruins.
      */
-    constructor(
-        scene: SceneType,
-        textures: { [key: string]: Texture },
-        ancientRuinsSpec: AncientRuinsSpecifications) {
+    constructor(scene: SceneType, ancientRuinsSpec: AncientRuinsSpecifications) {
 
         this._scene = scene.scene;
-        this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
 
         this._loadingCtrl = new LoadingCtrl();
@@ -173,7 +164,7 @@ export class AncientRuins {
         })
         // Grid controller base initialization.
         .then(() => {
-            return GridCtrlFactory(this._scene, this._textures, this._ancientRuinsSpec, this._tileCtrl)
+            return GridCtrlFactory(this._scene, this._ancientRuinsSpec, this._tileCtrl)
                 .then((gridCtrl) => {
                     this._gridCtrl = gridCtrl;
                     return this._loadingCtrl.getLoadWaitPromise(750, 43);
@@ -219,7 +210,6 @@ export class AncientRuins {
         .then(() => {
             this._teamCtrl = new TeamCtrl(
                 this._scene,
-                this._textures,
                 this._ancientRuinsSpec,
                 this._gridCtrl,
                 this._tileCtrl);

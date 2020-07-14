@@ -8,14 +8,13 @@ import {
     Object3D,
     PlaneGeometry,
     TextGeometry,
-    TextGeometryParameters,
-    Texture } from "three";
+    TextGeometryParameters } from "three";
 
 import { Actor } from "../../../models/actor";
 import { createActor } from "../../../utils/create-actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 export function createMars(
-    marsTexture: Texture,
     lbgGeo: PlaneGeometry,
     lbgMat: MeshPhongMaterial,
     lbGeo: PlaneGeometry,
@@ -43,7 +42,7 @@ export function createMars(
     const meshGroup = new Object3D();
     mars.geometry = new CircleGeometry(5, 48, 48);
     mars.material = new MeshPhongMaterial();
-    mars.material.map = marsTexture;
+    mars.material.map = ASSETS_CTRL.textures.mars;
     mars.material.map.minFilter = LinearFilter;
     (mars.material as any).shininess = 0;
     mars.material.transparent = true;

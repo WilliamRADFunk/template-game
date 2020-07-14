@@ -1,12 +1,13 @@
 import { DoubleSide, MeshBasicMaterial, NearestFilter, RepeatWrapping, Texture, Vector2 } from "three";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 /**
  * Makes a team member material for the game map.
  */
-export function makeMemberMaterial(textures: { [key: string]: Texture }, offCoordsX: number, offCoordsY: number, size: number[]): MeshBasicMaterial {
+export function makeMemberMaterial(offCoordsX: number, offCoordsY: number, size: number[]): MeshBasicMaterial {
     const material: MeshBasicMaterial = new MeshBasicMaterial({
         color: 0xFFFFFF,
-        map: textures.spriteMapAncientRuinsCrew.clone(),
+        map: ASSETS_CTRL.textures.spriteMapAncientRuinsCrew.clone(),
         side: DoubleSide,
         transparent: true
     });

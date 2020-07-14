@@ -8,14 +8,13 @@ import {
     Object3D,
     PlaneGeometry,
     TextGeometry,
-    TextGeometryParameters,
-    Texture } from "three";
+    TextGeometryParameters } from "three";
 
 import { Actor } from "../../../models/actor";
 import { createActor } from "../../../utils/create-actor";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 export function createEarth(
-    earthTexture: Texture,
     lbgGeo: PlaneGeometry,
     lbgMat: MeshPhongMaterial,
     lbGeo: PlaneGeometry,
@@ -42,7 +41,7 @@ export function createEarth(
     const meshGroup = new Object3D();
     earth.geometry = new CircleGeometry(5, 48, 48);
     earth.material = new MeshPhongMaterial();
-    earth.material.map = earthTexture;
+    earth.material.map = ASSETS_CTRL.textures.earth;
     earth.material.map.minFilter = LinearFilter;
     (earth.material as any).shininess = 0;
     earth.material.transparent = true;

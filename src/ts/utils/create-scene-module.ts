@@ -1,6 +1,5 @@
 import {
     AmbientLight,
-    AudioListener,
     DoubleSide,
     Mesh,
     MeshBasicMaterial,
@@ -11,8 +10,9 @@ import {
 
 import { SceneType } from "../models/scene-type";
 import { onWindowResize } from "./on-window-resize";
+import { SOUNDS_CTRL } from "../controls/controllers/sounds-controller";
 
-export function createSceneModule(scene: SceneType, audioListener: AudioListener, excludeAmbientLight?: boolean) {
+export function createSceneModule(scene: SceneType, excludeAmbientLight?: boolean) {
     scene.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;
@@ -36,7 +36,7 @@ export function createSceneModule(scene: SceneType, audioListener: AudioListener
     scene.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
 	scene.camera.position.set(0, -20, 0);
     scene.camera.lookAt(scene.scene.position);
-    scene.camera.add(audioListener);
+    scene.camera.add(SOUNDS_CTRL.audioListener);
 
     // Resize window setup.
     const onWindowResizeRef = () => { onWindowResize(scene.renderer) };

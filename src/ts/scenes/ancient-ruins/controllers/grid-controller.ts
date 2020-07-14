@@ -28,6 +28,7 @@ import { createBoxWithRoundedEdges } from "../../../utils/create-box-with-rounde
 import { AncientRuinsState } from "../ancient-ruins";
 import { isInBounds } from "../utils/is-in-bounds";
 import { isBlocking } from "../utils/is-blocking";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
@@ -119,18 +120,18 @@ export class GridCtrl {
     private _scene: Scene;
 
     /**
-     * All of the textures contained in this scene.
-     */
-    private _textures: { [key: string]: Texture } = {};
-
-    /**
      * All of the tile textures contained in this scene.
      */
     private _tileCtrl: TileCtrl;
 
-    constructor(scene: Scene, textures: { [key: string]: Texture }, ancientRuinsSpec: AncientRuinsSpecifications, tileCtrl: TileCtrl) {
+    /**
+     * Constructor for the Grid Controller class.
+     * @param scene the scene to which meshes are added
+     * @param ancientRuinsSpec all the details for these ancient ruins
+     * @param tileCtrl reference for the Tile Controller
+     */
+    constructor(scene: Scene, ancientRuinsSpec: AncientRuinsSpecifications, tileCtrl: TileCtrl) {
         this._scene = scene;
-        this._textures = textures;
         this._ancientRuinsSpec = ancientRuinsSpec;
         this._tileCtrl = tileCtrl;
 
@@ -804,7 +805,7 @@ export class GridCtrl {
                 const isGroundLevelMat = (Number(key) <= this._tileCtrl.getGroundLevelEndValue());
                 const material: MeshBasicMaterial = new MeshBasicMaterial({
                     color: 0xFFFFFF,
-                    map: this._textures.spriteMapAncientRuins.clone(),
+                    map: ASSETS_CTRL.textures.spriteMapAncientRuins.clone(),
                     side: isGroundLevelMat ? DoubleSide : FrontSide,
                     transparent: !isGroundLevelMat
                 });

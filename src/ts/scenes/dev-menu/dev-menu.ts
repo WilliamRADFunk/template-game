@@ -65,6 +65,7 @@ import { animateCrewMember } from "../ancient-ruins/utils/animate-crew-member";
 import { RAD_90_DEG_LEFT } from "../ancient-ruins/utils/radians-x-degrees-left";
 import { rotateCrewMember } from "../ancient-ruins/utils/rotate-crew-member";
 import { OFFICER_RANK_START, ENLISTED_RANK_START, MAX_OFFICER_RANK } from "../../utils/rank-map";
+import { ASSETS_CTRL } from "../../controls/controllers/assets-controller";
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -360,19 +361,13 @@ export class DevMenu {
     private _textElements: TextMap;
 
     /**
-     * Groups of text texture.
-     */
-    private readonly _textures: { [key: string]: Texture };
-
-    /**
      * Constructor for the Menu class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      * @param menuFont loaded font to use for menu button text.
      * @hidden
      */
-    constructor(scene: SceneType, callbacks: { [key: string]: (arg1?: any, arg2?: any) => void }, textures: { [key: string]: Texture }) {
+    constructor(scene: SceneType, callbacks: { [key: string]: (arg1?: any, arg2?: any) => void }) {
         this._scene = scene.scene;
-        this._textures = textures;
 
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
@@ -1575,12 +1570,12 @@ export class DevMenu {
 //#endregion
 
 //#region Page 2
-        this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, this._textures.engineer2, false);
-        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, this._textures.miner1, false);
-        this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, this._textures.engineer2, false);
-        this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, this._textures.engineer2, false);
-        this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, this._textures.engineer2, false);
-        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, this._textures.science1, false);
+        this._page2profiles.leftBottomMiddleProfile = new LeftBottomMiddleProfile(this._scene, ASSETS_CTRL.textures.engineer2Profile, false);
+        this._page2profiles.leftTopMiddleProfile = new LeftTopMiddleProfile(this._scene, ASSETS_CTRL.textures.miningOfficerProfile1, false);
+        this._page2profiles.leftTopProfile = new LeftTopProfile(this._scene, ASSETS_CTRL.textures.engineer2Profile, false);
+        this._page2profiles.rightBottomMiddleProfile = new RightBottomMiddleProfile(this._scene, ASSETS_CTRL.textures.engineer2Profile, false);
+        this._page2profiles.rightTopMiddleProfile = new RightTopMiddleProfile(this._scene, ASSETS_CTRL.textures.engineer2Profile, false);
+        this._page2profiles.rightTopProfile = new RightTopProfile(this._scene, ASSETS_CTRL.textures.scienceOfficerProfile1, false);
         this._page2profiles.leftBottomMiddleProfile.hide();
         this._page2profiles.leftTopMiddleProfile.hide();
         this._page2profiles.leftTopProfile.hide();
@@ -1674,8 +1669,8 @@ export class DevMenu {
         this._page2buttons.nextPageButton2.hide();
 //#endregion
 //#region Page 3
-        this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, this._textures.engineer2, false);
-        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, this._textures.engineer, false);
+        this._page3profiles.leftBottomProfile3 = new LeftBottomProfile(this._scene, ASSETS_CTRL.textures.engineer2Profile, false);
+        this._page3profiles.rightBottomProfile3 = new RightBottomProfile(this._scene, ASSETS_CTRL.textures.engineerProfile, false);
         this._page3profiles.leftBottomProfile3.hide();
         this._page3profiles.rightBottomProfile3.hide();
 
@@ -1729,7 +1724,7 @@ export class DevMenu {
             const offCoordsX = leadDictionaryValue.spritePositionX[i];
             const offCoordsY = leadDictionaryValue.spritePositionY[i];
             const size = [spriteMapCols, spriteMapRows];
-            const leadMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const leadMat = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, leadMeshes, leadMat, i, 24.4, MIDDLE_COL + 5.2, -7);
             this._page1Meshes[`ancientRuinsLeaderOfficer${i}`] = leadMeshes[i];
         });
@@ -1756,7 +1751,7 @@ export class DevMenu {
             const offCoordsX = medDictionaryValue.spritePositionX[i];
             const offCoordsY = medDictionaryValue.spritePositionY[i];
             const size = [spriteMapCols, spriteMapRows];
-            const medMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const medMat = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, medMeshes, medMat, i, 24.4, MIDDLE_COL + 1, -7);
             this._page1Meshes[`ancientRuinsMedicalOfficer${i}`] = medMeshes[i];
         });
@@ -1783,7 +1778,7 @@ export class DevMenu {
             const offCoordsX = sciDictionaryValue.spritePositionX[i];
             const offCoordsY = sciDictionaryValue.spritePositionY[i];
             const size = [spriteMapCols, spriteMapRows];
-            const sciMat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const sciMat = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, sciMeshes, sciMat, i, 24.4, MIDDLE_COL + 3.1, -7);
             this._page1Meshes[`ancientRuinsScienceOfficer${i}`] = sciMeshes[i];
         });
@@ -1810,7 +1805,7 @@ export class DevMenu {
             const offCoordsX = sec1DictionaryValue.spritePositionX[i];
             const offCoordsY = sec1DictionaryValue.spritePositionY[i];
             const size = [spriteMapCols, spriteMapRows];
-            const sec1Mat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const sec1Mat = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, sec1Meshes, sec1Mat, i, 24.4, MIDDLE_COL + 7.3, -7);
             this._page1Meshes[`ancientRuinsSecurity1Officer${i}`] = sec1Meshes[i];
         });
@@ -1837,7 +1832,7 @@ export class DevMenu {
             const offCoordsX = sec2DictionaryValue.spritePositionX[i];
             const offCoordsY = sec2DictionaryValue.spritePositionY[i];
             const size = [spriteMapCols, spriteMapRows];
-            const sec2Mat = makeMemberMaterial(this._textures, offCoordsX, offCoordsY, size);
+            const sec2Mat = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, sec2Meshes, sec2Mat, i, 24.4, MIDDLE_COL + 9.4, -7);
             this._page1Meshes[`ancientRuinsSecurity2Officer${i}`] = sec2Meshes[i];
         });

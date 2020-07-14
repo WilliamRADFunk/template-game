@@ -36,6 +36,7 @@ import { TextCtrl } from './controllers/text-controller';
 import { LootCtrl } from './controllers/loot-controller';
 import { MiningCtrl } from './controllers/mining-controller';
 import { SettingsCtrl } from '../../controls/controllers/settings-controllers';
+import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
 
 /*
  * Grid Values
@@ -297,11 +298,6 @@ export class LandAndMine {
     private _txtCtrl: TextCtrl;
 
     /**
-     * All of the textures contained in the help screen.
-     */
-    private _textures: { [key: string]: Texture } = {};
-
-    /**
      * Array of wind particles to move during endCycle
      */
     private _windParticles: Mesh[] = [];
@@ -309,19 +305,16 @@ export class LandAndMine {
     /**
      * Constructor for the Land and Mine (Scene) class
      * @param scene                     graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @param textures                  all the needed textures for land and mine.
      * @param planetSpecifications      details about the planet used to operate the scene.
      * @param landerSpecifications      details about the lander used to operate the lander module and its mining crew.
      */
     constructor(
         scene: SceneType,
-        textures: { [key: string]: Texture },
         planetSpecifications: PlanetSpecifications,
         landerSpecifications: LanderSpecifications) {
 
         this._camera = scene.camera as OrthographicCamera;
         this._scene = scene.scene;
-        this._textures = textures;
         this._planetSpecifications = planetSpecifications;
         this._landerSpecifications = landerSpecifications;
         this._mineCollectCount = planetSpecifications.oreQuantity * 20;
@@ -349,7 +342,7 @@ export class LandAndMine {
         window.addEventListener('resize', this._listenerRef, false);
 
         // Create lander module
-        const lander = createLander(this._textures.ship);
+        const lander = createLander(ASSETS_CTRL.textures.lander);
         this._lander = lander;
         this._actors.push(lander);
         this._scene.add(lander.mesh);
@@ -361,7 +354,6 @@ export class LandAndMine {
 
         this._helpCtrl = new HelpCtrl(
             this._scene,
-            this._textures,
             this._planetSpecifications,
             this._landerSpecifications,
             border);
@@ -387,7 +379,6 @@ export class LandAndMine {
         this._miningCtrl = new MiningCtrl(
             this._scene,
             this._camera,
-            textures,
             this._grid,
             this._positionGrid,
             this._lootCtrl,

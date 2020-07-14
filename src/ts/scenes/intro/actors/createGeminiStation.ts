@@ -1,7 +1,5 @@
 import {
-    CircleGeometry,
     DoubleSide,
-    LinearFilter,
     Mesh,
     MeshBasicMaterial,
     MeshLambertMaterial,
@@ -9,13 +7,11 @@ import {
     Object3D,
     PlaneGeometry,
     TextGeometry,
-    TextGeometryParameters,
-    Texture } from "three";
+    TextGeometryParameters } from "three";
 
 import { createActor } from "../../../utils/create-actor";
 
 export function createGeminiStation(
-    stationTexture: Texture,
     lbgGeo: PlaneGeometry,
     lbgMat: MeshPhongMaterial,
     lbGeo: PlaneGeometry,
