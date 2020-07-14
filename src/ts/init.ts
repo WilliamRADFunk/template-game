@@ -1,20 +1,11 @@
 import {
-    AmbientLight,
     Audio,
     AudioListener,
     AudioLoader,
-    DoubleSide,
     Font,
     FontLoader,
-    Mesh,
-    MeshBasicMaterial,
-    OrthographicCamera,
-    PlaneGeometry,
     Raycaster,
-    Scene,
     TextureLoader,
-    WebGLRenderer,
-    Vector2,
     Texture} from 'three';
 
 import { SceneType } from './models/scene-type';
@@ -30,7 +21,8 @@ import { LanderSpecifications } from './models/lander-specifications';
 import * as stats from 'stats.js';
 import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
 import { AncientRuinsSpecifications } from './models/ancient-ruins-specifications';
-import { onWindowResize } from './utils/on-window-resize';
+import { createSceneModule } from './utils/create-scene-module';
+import { getIntersections } from './utils/get-intersections';
 const statsPanel = new stats();
 
 const TEXTURES: { [key: string]: [string, Texture] } = {
@@ -479,104 +471,78 @@ const checkAssetsLoaded = () => {
  * Loads the dev menu with all the mini games and game sections separated as testable/playable games.
  */
 const loadDevMenu = () => {
-    scenes.devMenu.active = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    scenes.devMenu.scene = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.devMenu.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer({ powerPreference: "high-performance" })
-        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
-    // Make it black and size it to window.
-    (scenes.devMenu.renderer as any).setClearColor(0x000000, 0);
-    scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
-    (scenes.devMenu.renderer as any).autoClear = false;
-    // An all around brightish light that hits everything equally.
-    scenes.devMenu.scene.add(new AmbientLight(0xCCCCCC));
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (scenes.devMenu.renderer as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    scenes.devMenu.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	scenes.devMenu.camera.position.set(0, -20, 0);
-    scenes.devMenu.camera.lookAt(scenes.devMenu.scene.position);
-    scenes.devMenu.camera.add(AUDIO_LISTENER);
+    const sceneMod = createSceneModule(scenes.devMenu, AUDIO_LISTENER);
 
-    // Resize window setup.
-    const onWindowResizeRef = () => { onWindowResize(scenes.devMenu.renderer) };
-    onWindowResizeRef();
-    window.addEventListener( 'resize', onWindowResizeRef, false);
+    window.addEventListener( 'resize', sceneMod.onWindowResizeRef, false);
     // Click event listeners that activates certain menu options.
     const activateAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadAncientRuinsScene(ancientRuinsSpec);
         }, 50);
     };
     const activateIntroScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadIntroScene();
         }, 50);
     };
     const activateGameMenu = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadGameMenu();
         }, 50);
     };
     const activateRepairScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadRepairScene();
         }, 50);
     };
     const activateShipLayoutScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadShipLayoutScene();
         }, 50);
     };
     const activateTravelScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadTravelScene();
         }, 50);
     };
     const activateVertexMapScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadVertexMapScene();
         }, 50);
     };
     const activateLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadLandAndMineScene(planetSpec, landerSpec);
         }, 50);
     };
     const activatePlanetRaid = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResizeRef, false);
-        container.removeChild( (scenes.devMenu.renderer as any).domElement );
+        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadPlanetRaidScene();
         }, 50);
@@ -605,21 +571,13 @@ const loadDevMenu = () => {
             spriteMapAncientRuinsCrew: TEXTURES.spriteMapAncientRuinsCrew[1],
         });
     scenes.devMenu.raycaster = raycaster;
-    startDevMenuRendering();
-};
-
-/**
- * Kick off function for rendering the dev menu scene.
- */
-const startDevMenuRendering = () => {
+    
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
         if (scenes.devMenu.active) {
             scenes.devMenu.instance.endCycle();
-            scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
-            requestAnimationFrame( render );
         } else {
             scenes.devMenu.instance.dispose();
             scenes.devMenu.camera = null;
@@ -627,69 +585,36 @@ const startDevMenuRendering = () => {
             scenes.devMenu.raycaster = null;
             scenes.devMenu.renderer = null;
             scenes.devMenu.scene = null;
+            return;
         }
+        scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
+        requestAnimationFrame( render );
     };
     // Kick off the first render loop iteration.
     scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
-	requestAnimationFrame( render );
+    requestAnimationFrame( render );
 };
 
 /**
  * Loads the game menu with the actual gameplay starting point
  */
 const loadGameMenu = () => {
-    scenes.menu.active = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    scenes.menu.scene = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.menu.renderer = ((window as any)['WebGLRenderingContext']) ?
-        new WebGLRenderer({ powerPreference: "high-performance" }) : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
-    // Make it black and size it to window.
-    (scenes.menu.renderer as any).setClearColor(0x000000, 0);
-    scenes.menu.renderer.setSize( WIDTH, HEIGHT );
-    (scenes.menu.renderer as any).autoClear = false;
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (scenes.menu.renderer as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    scenes.menu.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	scenes.menu.camera.position.set(0, -20, 0);
-    scenes.menu.camera.lookAt(scenes.menu.scene.position);
-    scenes.menu.camera.add(AUDIO_LISTENER);
-
-    // Resize window setup.
-    const onWindowResizeRef = () => { onWindowResize(scenes.menu.renderer) };
-    onWindowResizeRef();
-    window.addEventListener( 'resize', onWindowResizeRef, false);
+    const sceneMod = createSceneModule(scenes.menu, AUDIO_LISTENER, true);
 
     // Click event listener that activates certain menu options.
     const raycaster = new Raycaster();
     document.onclick = event => {
-        const mouse = new Vector2();
         event.preventDefault();
-        // Gets accurate click positions using css and raycasting.
-        const position = {
-            left: container.offsetLeft,
-            top: container.offsetTop
-        };
-        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-        if (event.clientX !== undefined) {
-            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-        }
-        raycaster.setFromCamera(mouse, scenes.menu.camera);
-        const thingsTouched = raycaster.intersectObjects(scenes.menu.scene.children);
-        // Detection for player clicked on planet for shield manipulation.
+
+        // Detection for player clicked on menu option.
+        const thingsTouched = getIntersections(event, sceneMod.container, scenes.menu);
         thingsTouched.forEach(el => {
             if (el.object.name === 'Start') {
                 const difficulty = scenes.menu.instance.pressedStart();
                 setTimeout(() => {
                     scenes.menu.active = false;
-                    window.removeEventListener( 'resize', onWindowResizeRef, false);
-                    container.removeChild( (scenes.menu.renderer as any).domElement );
+                    window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                    sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
                     loadLandAndMineScene(
                         {
                             gravity: 0.0001,
@@ -717,8 +642,8 @@ const loadGameMenu = () => {
             } else if (el.object.name === 'Load Code') {
                 setTimeout(() => {
                     scenes.menu.active = false;
-                    window.removeEventListener( 'resize', onWindowResizeRef, false);
-                    container.removeChild( (scenes.menu.renderer as any).domElement );
+                    window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                    sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
                     // loadGame(1);
                 }, 250);
                 SoundinatorSingleton.playBidooo();
@@ -766,16 +691,7 @@ const loadGameMenu = () => {
     };
     scenes.menu.instance = new Menu(scenes.menu, gameFont);
     scenes.menu.raycaster = raycaster;
-    startMenuRendering();
-};
 
-/**
- * Kick off function for rendering the real menu scene.
- */
-const startMenuRendering = () => {
-    /**
-     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
-     */
     const render = () => {
         if (scenes.menu.active) {
             scenes.menu.instance.endCycle();
@@ -798,62 +714,13 @@ const loadMenu = ENVIRONMENT === 'production' ? loadGameMenu : loadDevMenu;
  * Game's intro scene. Only starts when all assets are finished loading.
  */
 const loadIntroScene = () => {
-    scenes.intro.active = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    scenes.intro.scene = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.intro.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer({ powerPreference: "high-performance" })
-        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
-    // Make it black and size it to window.
-    (scenes.intro.renderer as any).setClearColor(0x000000, 0);
-    scenes.intro.renderer.setSize( WIDTH, HEIGHT );
-    (scenes.intro.renderer as any).autoClear = false;
-    // An all around brightish light that hits everything equally.
-    scenes.intro.scene.add(new AmbientLight(0xCCCCCC));
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (scenes.intro.renderer as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    scenes.intro.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	scenes.intro.camera.position.set(0, -20, 0);
-    scenes.intro.camera.lookAt(scenes.intro.scene.position);
-    scenes.intro.camera.add(AUDIO_LISTENER);
-
-    // Resize window setup.
-    const onWindowResizeRef = () => { onWindowResize(scenes.intro.renderer) };
-    onWindowResizeRef();
-    window.addEventListener( 'resize', onWindowResizeRef, false);
-
-    // Create the click collision layer
-    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
-    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
-    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
-    clickBarrier.name = 'Click Barrier';
-    clickBarrier.position.set(0, 0, 0);
-    clickBarrier.rotation.set(1.5708, 0, 0);
-    scenes.intro.scene.add(clickBarrier);
+    const sceneMod = createSceneModule(scenes.intro, AUDIO_LISTENER);
 
     // Click event listener to register user click.
     const raycaster = new Raycaster();
     document.onclick = event => {
-        const mouse = new Vector2();
         event.preventDefault();
-        // Gets accurate click positions using css and raycasting.
-        const position = {
-            left: container.offsetLeft,
-            top: container.offsetTop
-        };
-        const scrollUp = document.getElementsByTagName('body')[0].scrollTop;
-        if (event.clientX !== undefined) {
-            mouse.x = ((event.clientX - position.left) / container.clientWidth) * 2 - 1;
-            mouse.y = - ((event.clientY - position.top + scrollUp) / container.clientHeight) * 2 + 1;
-        }
-        raycaster.setFromCamera(mouse, scenes.intro.camera);
-        const thingsTouched = raycaster.intersectObjects(scenes.intro.scene.children);
+        const thingsTouched = getIntersections(event, sceneMod.container, scenes.intro);
         // Detection for player clicked on pause button
         thingsTouched.forEach(el => {
             if (el.object.name === 'Click Barrier') {
@@ -864,6 +731,8 @@ const loadIntroScene = () => {
             }
         });
     };
+
+    // Create instance of game section.
     const intro = new Intro(
         scenes.intro,
         TEXTURES.ship[1],
@@ -873,6 +742,7 @@ const loadIntroScene = () => {
         TEXTURES.enceladus[1],
         gameFont);
     scenes.intro.raycaster = raycaster;
+
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
@@ -880,8 +750,8 @@ const loadIntroScene = () => {
         if (!scenes.intro.active) {
             intro.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResizeRef, false);
-            container.removeChild( (scenes.intro.renderer as any).domElement );
+            window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+            sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
             // Clear up memory used by intro scene.
             scenes.intro.camera = null;
             scenes.intro.instance = null;
@@ -894,8 +764,8 @@ const loadIntroScene = () => {
                 intro.dispose();
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResizeRef, false);
-                container.removeChild( (scenes.intro.renderer as any).domElement );
+                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
                 // Clear up memory used by intro scene.
                 scenes.intro.camera = null;
                 scenes.intro.instance = null;
@@ -918,44 +788,7 @@ const loadIntroScene = () => {
  * Game's intro scene. Only starts when all assets are finished loading.
  */
 const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
-    scenes.ancientRuins.active = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    scenes.ancientRuins.scene = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.ancientRuins.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer({ powerPreference: "high-performance" })
-        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
-    // Make it black and size it to window.
-    (scenes.ancientRuins.renderer as any).setClearColor(0x000000, 0);
-    scenes.ancientRuins.renderer.setSize( WIDTH, HEIGHT );
-    (scenes.ancientRuins.renderer as any).autoClear = false;
-    // An all around brightish light that hits everything equally.
-    scenes.ancientRuins.scene.add(new AmbientLight(0xCCCCCC));
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (scenes.ancientRuins.renderer as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    scenes.ancientRuins.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	scenes.ancientRuins.camera.position.set(0, -20, 0);
-    scenes.ancientRuins.camera.lookAt(scenes.ancientRuins.scene.position);
-    scenes.ancientRuins.camera.add(AUDIO_LISTENER);
-
-    // Resize window setup.
-    const onWindowResizeRef = () => { onWindowResize(scenes.ancientRuins.renderer) };
-    onWindowResizeRef();
-    window.addEventListener( 'resize', onWindowResizeRef, false);
-
-    // Create the click collision layer
-    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
-    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
-    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
-    clickBarrier.name = 'Click Barrier';
-    clickBarrier.position.set(0, 50, 0);
-    clickBarrier.rotation.set(1.5708, 0, 0);
-    scenes.ancientRuins.scene.add(clickBarrier);
+    const sceneMod = createSceneModule(scenes.ancientRuins, AUDIO_LISTENER);
 
     // Click event listener to register user click.
     const raycaster = new Raycaster();
@@ -974,8 +807,8 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
         if (!scenes.ancientRuins.active) {
             ancientRuins.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResizeRef, false);
-            container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
+            window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+            sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
             // Clear up memory used by ancientRuins scene.
             scenes.ancientRuins.camera = null;
             scenes.ancientRuins.instance = null;
@@ -993,8 +826,8 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
                 scenes.ancientRuins.active = false;
                 window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResizeRef, false);
-                container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
+                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
                 // Clear up memory used by ancientRuins scene.
                 scenes.ancientRuins.camera = null;
                 scenes.ancientRuins.instance = null;
@@ -1021,44 +854,7 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
  * Game's intro scene. Only starts when all assets are finished loading.
  */
 const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
-    scenes.landAndMine.active = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    scenes.landAndMine.scene = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.landAndMine.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer({ powerPreference: "high-performance" })
-        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
-    // Make it black and size it to window.
-    (scenes.landAndMine.renderer as any).setClearColor(0x000000, 0);
-    scenes.landAndMine.renderer.setSize( WIDTH, HEIGHT );
-    (scenes.landAndMine.renderer as any).autoClear = false;
-    // An all around brightish light that hits everything equally.
-    scenes.landAndMine.scene.add(new AmbientLight(0xCCCCCC));
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (scenes.landAndMine.renderer as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    scenes.landAndMine.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	scenes.landAndMine.camera.position.set(0, -20, 0);
-    scenes.landAndMine.camera.lookAt(scenes.landAndMine.scene.position);
-    scenes.landAndMine.camera.add(AUDIO_LISTENER);
-
-    // Resize window setup.
-    const onWindowResizeRef = () => { onWindowResize(scenes.landAndMine.renderer) };
-    onWindowResizeRef();
-    window.addEventListener( 'resize', onWindowResizeRef, false);
-
-    // Create the click collision layer
-    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
-    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
-    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
-    clickBarrier.name = 'Click Barrier';
-    clickBarrier.position.set(0, 50, 0);
-    clickBarrier.rotation.set(1.5708, 0, 0);
-    scenes.landAndMine.scene.add(clickBarrier);
+    const sceneMod = createSceneModule(scenes.landAndMine, AUDIO_LISTENER);
 
     // Click event listener to register user click.
     const raycaster = new Raycaster();
@@ -1097,8 +893,8 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
         if (!scenes.landAndMine.active) {
             landAndMine.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResizeRef, false);
-            container.removeChild( (scenes.landAndMine.renderer as any).domElement );
+            window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+            sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
             // Clear up memory used by landAndMine scene.
             scenes.landAndMine.camera = null;
             scenes.landAndMine.instance = null;
@@ -1124,8 +920,8 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
                 scenes.landAndMine.active = false;
                 window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResizeRef, false);
-                container.removeChild( (scenes.landAndMine.renderer as any).domElement );
+                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
                 // Clear up memory used by landAndMine scene.
                 scenes.landAndMine.camera = null;
                 scenes.landAndMine.instance = null;
@@ -1150,44 +946,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
  * Game's intro scene. Only starts when all assets are finished loading.
  */
 const loadShipLayoutScene = () => {
-    scenes.shipLayout.active = true;
-    // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
-    // Create ThreeJS scene.
-    scenes.shipLayout.scene = new Scene();
-    // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.
-    scenes.shipLayout.renderer = ((window as any)['WebGLRenderingContext'])
-        ? new WebGLRenderer({ powerPreference: "high-performance" })
-        : new WebGLRenderer({ powerPreference: "high-performance" }); // TODO: Create error page for people usiing outdated browsers that don't support WebGL rendering.
-    // Make it black and size it to window.
-    (scenes.shipLayout.renderer as any).setClearColor(0x000000, 0);
-    scenes.shipLayout.renderer.setSize( WIDTH, HEIGHT );
-    (scenes.shipLayout.renderer as any).autoClear = false;
-    // An all around brightish light that hits everything equally.
-    scenes.shipLayout.scene.add(new AmbientLight(0xCCCCCC));
-    // Render to the html container.
-    const container = document.getElementById('mainview');
-	container.appendChild( (scenes.shipLayout.renderer as any).domElement );
-    // Set up player's ability to see the game, and focus center on planet.
-    scenes.shipLayout.camera =  new OrthographicCamera( -6, 6, -6, 6, 0, 100 );
-	scenes.shipLayout.camera.position.set(0, -20, 0);
-    scenes.shipLayout.camera.lookAt(scenes.shipLayout.scene.position);
-    scenes.shipLayout.camera.add(AUDIO_LISTENER);
-
-    // Resize window setup.
-    const onWindowResizeRef = () => { onWindowResize(scenes.shipLayout.renderer) };
-    onWindowResizeRef();
-    window.addEventListener( 'resize', onWindowResizeRef, false);
-
-    // Create the click collision layer
-    const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
-    const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
-    const clickBarrier = new Mesh( clickBarrierGeometry, clickBarrierMaterial );
-    clickBarrier.name = 'Click Barrier';
-    clickBarrier.position.set(0, 50, 0);
-    clickBarrier.rotation.set(1.5708, 0, 0);
-    scenes.shipLayout.scene.add(clickBarrier);
+    const sceneMod = createSceneModule(scenes.shipLayout, AUDIO_LISTENER);
 
     // Click event listener to register user click.
     const raycaster = new Raycaster();
@@ -1204,8 +963,8 @@ const loadShipLayoutScene = () => {
         if (!scenes.shipLayout.active) {
             shipLayout.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResizeRef, false);
-            container.removeChild( (scenes.shipLayout.renderer as any).domElement );
+            window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+            sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
             // Clear up memory used by shipLayout scene.
             scenes.shipLayout.camera = null;
             scenes.shipLayout.instance = null;
@@ -1220,8 +979,8 @@ const loadShipLayoutScene = () => {
                 shipLayout.dispose();
                 scenes.shipLayout.active = false;
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResizeRef, false);
-                container.removeChild( (scenes.shipLayout.renderer as any).domElement );
+                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
                 // Clear up memory used by shipLayout scene.
                 scenes.shipLayout.camera = null;
                 scenes.shipLayout.instance = null;
