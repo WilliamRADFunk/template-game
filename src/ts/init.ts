@@ -30,6 +30,7 @@ import { LanderSpecifications } from './models/lander-specifications';
 import * as stats from 'stats.js';
 import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
 import { AncientRuinsSpecifications } from './models/ancient-ruins-specifications';
+import { onWindowResize } from './utils/on-window-resize';
 const statsPanel = new stats();
 
 const TEXTURES: { [key: string]: [string, Texture] } = {
@@ -502,40 +503,15 @@ const loadDevMenu = () => {
 	scenes.devMenu.camera.position.set(0, -20, 0);
     scenes.devMenu.camera.lookAt(scenes.devMenu.scene.position);
     scenes.devMenu.camera.add(AUDIO_LISTENER);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating scenes.devMenu.camera and scenes.devMenu.renderer.
-     */
-    const onWindowResize = () => {
-        const ldBar = document.getElementsByClassName('ldBar')[0];
-        ldBar.classList.remove('ldBar-fat');
-        ldBar.classList.remove('ldBar-skinny');
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) {
-            HEIGHT = WIDTH;
-            ldBar.classList.add('ldBar-skinny');
-        } else {
-            WIDTH = HEIGHT;
-            ldBar.classList.add('ldBar-fat');
-        }
-
-        scenes.devMenu.renderer.setSize( WIDTH, HEIGHT );
-        const loading = document.getElementById('loading');
-        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        loading.style.width = WIDTH + 'px';
-        loading.style.height = HEIGHT + 'px';
-        const mainview = document.getElementById('mainview');
-        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        mainview.style.width = WIDTH + 'px';
-        mainview.style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
+    // Resize window setup.
+    const onWindowResizeRef = () => { onWindowResize(scenes.devMenu.renderer) };
+    onWindowResizeRef();
+    window.addEventListener( 'resize', onWindowResizeRef, false);
     // Click event listeners that activates certain menu options.
     const activateAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadAncientRuinsScene(ancientRuinsSpec);
@@ -543,7 +519,7 @@ const loadDevMenu = () => {
     };
     const activateIntroScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadIntroScene();
@@ -551,7 +527,7 @@ const loadDevMenu = () => {
     };
     const activateGameMenu = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadGameMenu();
@@ -559,7 +535,7 @@ const loadDevMenu = () => {
     };
     const activateRepairScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadRepairScene();
@@ -567,7 +543,7 @@ const loadDevMenu = () => {
     };
     const activateShipLayoutScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadShipLayoutScene();
@@ -575,7 +551,7 @@ const loadDevMenu = () => {
     };
     const activateTravelScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadTravelScene();
@@ -583,7 +559,7 @@ const loadDevMenu = () => {
     };
     const activateVertexMapScene = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadVertexMapScene();
@@ -591,7 +567,7 @@ const loadDevMenu = () => {
     };
     const activateLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             loadLandAndMineScene(planetSpec, landerSpec);
@@ -599,7 +575,7 @@ const loadDevMenu = () => {
     };
     const activatePlanetRaid = () => {
         scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', onWindowResize, false);
+        window.removeEventListener( 'resize', onWindowResizeRef, false);
         container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
             // loadPlanetRaidScene();
@@ -683,36 +659,12 @@ const loadGameMenu = () => {
 	scenes.menu.camera.position.set(0, -20, 0);
     scenes.menu.camera.lookAt(scenes.menu.scene.position);
     scenes.menu.camera.add(AUDIO_LISTENER);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating scenes.menu.camera and scenes.menu.renderer.
-     */
-    const onWindowResize = () => {
-        const ldBar = document.getElementsByClassName('ldBar')[0];
-        ldBar.classList.remove('ldBar-fat');
-        ldBar.classList.remove('ldBar-skinny');
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) {
-            HEIGHT = WIDTH;
-            ldBar.classList.add('ldBar-skinny');
-        } else {
-            WIDTH = HEIGHT;
-            ldBar.classList.add('ldBar-fat');
-        }
+    // Resize window setup.
+    const onWindowResizeRef = () => { onWindowResize(scenes.menu.renderer) };
+    onWindowResizeRef();
+    window.addEventListener( 'resize', onWindowResizeRef, false);
 
-        scenes.menu.renderer.setSize( WIDTH, HEIGHT );
-        const loading = document.getElementById('loading');
-        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        loading.style.width = WIDTH + 'px';
-        loading.style.height = HEIGHT + 'px';
-        const mainview = document.getElementById('mainview');
-        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        mainview.style.width = WIDTH + 'px';
-        mainview.style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
     // Click event listener that activates certain menu options.
     const raycaster = new Raycaster();
     document.onclick = event => {
@@ -736,7 +688,7 @@ const loadGameMenu = () => {
                 const difficulty = scenes.menu.instance.pressedStart();
                 setTimeout(() => {
                     scenes.menu.active = false;
-                    window.removeEventListener( 'resize', onWindowResize, false);
+                    window.removeEventListener( 'resize', onWindowResizeRef, false);
                     container.removeChild( (scenes.menu.renderer as any).domElement );
                     loadLandAndMineScene(
                         {
@@ -765,7 +717,7 @@ const loadGameMenu = () => {
             } else if (el.object.name === 'Load Code') {
                 setTimeout(() => {
                     scenes.menu.active = false;
-                    window.removeEventListener( 'resize', onWindowResize, false);
+                    window.removeEventListener( 'resize', onWindowResizeRef, false);
                     container.removeChild( (scenes.menu.renderer as any).domElement );
                     // loadGame(1);
                 }, 250);
@@ -870,40 +822,12 @@ const loadIntroScene = () => {
 	scenes.intro.camera.position.set(0, -20, 0);
     scenes.intro.camera.lookAt(scenes.intro.scene.position);
     scenes.intro.camera.add(AUDIO_LISTENER);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating scenes.intro.camera and scenes.intro.renderer.
-     */
-    const onWindowResize = () => {
-        const ldBar = document.getElementsByClassName('ldBar')[0];
-        ldBar.classList.remove('ldBar-fat');
-        ldBar.classList.remove('ldBar-skinny');
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) {
-            HEIGHT = WIDTH;
-            ldBar.classList.add('ldBar-skinny');
-        } else {
-            WIDTH = HEIGHT;
-            ldBar.classList.add('ldBar-fat');
-        }
+    // Resize window setup.
+    const onWindowResizeRef = () => { onWindowResize(scenes.intro.renderer) };
+    onWindowResizeRef();
+    window.addEventListener( 'resize', onWindowResizeRef, false);
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
-        scenes.intro.renderer.setSize( WIDTH, HEIGHT );
-        const loading = document.getElementById('loading');
-        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        loading.style.width = WIDTH + 'px';
-        loading.style.height = HEIGHT + 'px';
-        const mainview = document.getElementById('mainview');
-        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        mainview.style.width = WIDTH + 'px';
-        mainview.style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
     // Create the click collision layer
     const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
     const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
@@ -956,7 +880,7 @@ const loadIntroScene = () => {
         if (!scenes.intro.active) {
             intro.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResize, false);
+            window.removeEventListener( 'resize', onWindowResizeRef, false);
             container.removeChild( (scenes.intro.renderer as any).domElement );
             // Clear up memory used by intro scene.
             scenes.intro.camera = null;
@@ -970,7 +894,7 @@ const loadIntroScene = () => {
                 intro.dispose();
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResize, false);
+                window.removeEventListener( 'resize', onWindowResizeRef, false);
                 container.removeChild( (scenes.intro.renderer as any).domElement );
                 // Clear up memory used by intro scene.
                 scenes.intro.camera = null;
@@ -1018,40 +942,12 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
 	scenes.ancientRuins.camera.position.set(0, -20, 0);
     scenes.ancientRuins.camera.lookAt(scenes.ancientRuins.scene.position);
     scenes.ancientRuins.camera.add(AUDIO_LISTENER);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating scenes.ancientRuins.camera and scenes.ancientRuins.renderer.
-     */
-    const onWindowResize = () => {
-        const ldBar = document.getElementsByClassName('ldBar')[0];
-        ldBar.classList.remove('ldBar-fat');
-        ldBar.classList.remove('ldBar-skinny');
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) {
-            HEIGHT = WIDTH;
-            ldBar.classList.add('ldBar-skinny');
-        } else {
-            WIDTH = HEIGHT;
-            ldBar.classList.add('ldBar-fat');
-        }
+    // Resize window setup.
+    const onWindowResizeRef = () => { onWindowResize(scenes.ancientRuins.renderer) };
+    onWindowResizeRef();
+    window.addEventListener( 'resize', onWindowResizeRef, false);
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
-        scenes.ancientRuins.renderer.setSize( WIDTH, HEIGHT );
-        const loading = document.getElementById('loading');
-        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        loading.style.width = WIDTH + 'px';
-        loading.style.height = HEIGHT + 'px';
-        const mainview = document.getElementById('mainview');
-        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        mainview.style.width = WIDTH + 'px';
-        mainview.style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
     // Create the click collision layer
     const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
     const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
@@ -1078,7 +974,7 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
         if (!scenes.ancientRuins.active) {
             ancientRuins.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResize, false);
+            window.removeEventListener( 'resize', onWindowResizeRef, false);
             container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
             // Clear up memory used by ancientRuins scene.
             scenes.ancientRuins.camera = null;
@@ -1097,7 +993,7 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
                 scenes.ancientRuins.active = false;
                 window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResize, false);
+                window.removeEventListener( 'resize', onWindowResizeRef, false);
                 container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
                 // Clear up memory used by ancientRuins scene.
                 scenes.ancientRuins.camera = null;
@@ -1149,40 +1045,12 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
 	scenes.landAndMine.camera.position.set(0, -20, 0);
     scenes.landAndMine.camera.lookAt(scenes.landAndMine.scene.position);
     scenes.landAndMine.camera.add(AUDIO_LISTENER);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating scenes.landAndMine.camera and scenes.landAndMine.renderer.
-     */
-    const onWindowResize = () => {
-        const ldBar = document.getElementsByClassName('ldBar')[0];
-        ldBar.classList.remove('ldBar-fat');
-        ldBar.classList.remove('ldBar-skinny');
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) {
-            HEIGHT = WIDTH;
-            ldBar.classList.add('ldBar-skinny');
-        } else {
-            WIDTH = HEIGHT;
-            ldBar.classList.add('ldBar-fat');
-        }
+    // Resize window setup.
+    const onWindowResizeRef = () => { onWindowResize(scenes.landAndMine.renderer) };
+    onWindowResizeRef();
+    window.addEventListener( 'resize', onWindowResizeRef, false);
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
-        scenes.landAndMine.renderer.setSize( WIDTH, HEIGHT );
-        const loading = document.getElementById('loading');
-        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        loading.style.width = WIDTH + 'px';
-        loading.style.height = HEIGHT + 'px';
-        const mainview = document.getElementById('mainview');
-        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        mainview.style.width = WIDTH + 'px';
-        mainview.style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
     // Create the click collision layer
     const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
     const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
@@ -1229,7 +1097,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
         if (!scenes.landAndMine.active) {
             landAndMine.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResize, false);
+            window.removeEventListener( 'resize', onWindowResizeRef, false);
             container.removeChild( (scenes.landAndMine.renderer as any).domElement );
             // Clear up memory used by landAndMine scene.
             scenes.landAndMine.camera = null;
@@ -1256,7 +1124,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
                 scenes.landAndMine.active = false;
                 window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResize, false);
+                window.removeEventListener( 'resize', onWindowResizeRef, false);
                 container.removeChild( (scenes.landAndMine.renderer as any).domElement );
                 // Clear up memory used by landAndMine scene.
                 scenes.landAndMine.camera = null;
@@ -1306,40 +1174,12 @@ const loadShipLayoutScene = () => {
 	scenes.shipLayout.camera.position.set(0, -20, 0);
     scenes.shipLayout.camera.lookAt(scenes.shipLayout.scene.position);
     scenes.shipLayout.camera.add(AUDIO_LISTENER);
-    /**
-     * Gracefully handles a change in window size, by recalculating shape and updating scenes.shipLayout.camera and scenes.shipLayout.renderer.
-     */
-    const onWindowResize = () => {
-        const ldBar = document.getElementsByClassName('ldBar')[0];
-        ldBar.classList.remove('ldBar-fat');
-        ldBar.classList.remove('ldBar-skinny');
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) {
-            HEIGHT = WIDTH;
-            ldBar.classList.add('ldBar-skinny');
-        } else {
-            WIDTH = HEIGHT;
-            ldBar.classList.add('ldBar-fat');
-        }
+    // Resize window setup.
+    const onWindowResizeRef = () => { onWindowResize(scenes.shipLayout.renderer) };
+    onWindowResizeRef();
+    window.addEventListener( 'resize', onWindowResizeRef, false);
 
-        WIDTH = window.innerWidth * 0.99;
-        HEIGHT = window.innerHeight * 0.99;
-        if(WIDTH < HEIGHT) HEIGHT = WIDTH;
-        else WIDTH = HEIGHT;
-        scenes.shipLayout.renderer.setSize( WIDTH, HEIGHT );
-        const loading = document.getElementById('loading');
-        loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        loading.style.width = WIDTH + 'px';
-        loading.style.height = HEIGHT + 'px';
-        const mainview = document.getElementById('mainview');
-        mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-        mainview.style.width = WIDTH + 'px';
-        mainview.style.height = HEIGHT + 'px';
-    };
-    onWindowResize();
-    window.addEventListener( 'resize', onWindowResize, false);
     // Create the click collision layer
     const clickBarrierGeometry = new PlaneGeometry( 12, 12, 0, 0 );
     const clickBarrierMaterial = new MeshBasicMaterial( {opacity: 0, transparent: true, side: DoubleSide} );
@@ -1364,7 +1204,7 @@ const loadShipLayoutScene = () => {
         if (!scenes.shipLayout.active) {
             shipLayout.dispose();
             // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', onWindowResize, false);
+            window.removeEventListener( 'resize', onWindowResizeRef, false);
             container.removeChild( (scenes.shipLayout.renderer as any).domElement );
             // Clear up memory used by shipLayout scene.
             scenes.shipLayout.camera = null;
@@ -1380,7 +1220,7 @@ const loadShipLayoutScene = () => {
                 shipLayout.dispose();
                 scenes.shipLayout.active = false;
                 // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', onWindowResize, false);
+                window.removeEventListener( 'resize', onWindowResizeRef, false);
                 container.removeChild( (scenes.shipLayout.renderer as any).domElement );
                 // Clear up memory used by shipLayout scene.
                 scenes.shipLayout.camera = null;
