@@ -33,94 +33,117 @@ export class Menu {
      * Click surface for the Easy button.
      */
     private barrierEasy: Mesh;
+
     /**
      * Click surface for the Hard button.
      */
     private barrierHard: Mesh;
+
     /**
      * Click surface for the Hardcore button.
      */
     private barrierHardcore: Mesh;
+
     /**
      * Click surface for the Help button.
      */
     private barrierHelp: Mesh;
+
     /**
      * Click surface for the Load button.
      */
     private barrierLoad: Mesh;
+
     /**
      * Click surface for the Normal button.
      */
     private barrierNormal: Mesh;
+
     /**
      * Click surface for the Off button.
      */
     private barrierOff: Mesh;
+
     /**
      * Click surface for the On button.
      */
     private barrierOn: Mesh;
+
     /**
      * Click surface for the Start button.
      */
     private barrierStart: Mesh;
+
     /**
      * Controls the background click surface of buttons.
      */
     private clickMaterial: MeshBasicMaterial;
+
     /**
      * Controls the overall rendering of the copyright display
      */
     private copyright: Mesh;
+
     /**
      * Controls size and shape of the copyright text
      */
     private copyrightGeometry: TextGeometry;
+
     /**
      * Easy, Medium, Hard, Hardcore
      */
     private difficultyLevel: number = 3; // Hardcore
+
     /**
      * Controls the overall rendering of the easy button display
      */
     private easy: Mesh;
+
     /**
      * Controls size and shape of the easy button text
      */
     private easyGeometry: TextGeometry;
+
     /**
      * Since most of the text on the menu has same parameters, use one variable.
      */
     private fontDifficultyBtnParams: TextGeometryParameters;
+
     /**
      * Controls the overall rendering of the hard button display
      */
     private hard: Mesh;
+
     /**
      * Controls size and shape of the hard button text
      */
     private hardGeometry: TextGeometry;
+
     /**
      * Controls the overall rendering of the hardcore button display
      */
     private hardcore: Mesh;
+
     /**
      * Controls size and shape of the hardcore button text
      */
     private hardcoreGeometry: TextGeometry;
+
     /**
      * Controls the overall rendering of the help button display
      */
     private help: Mesh;
+
     /**
      * Controls size and shape of the help button text
      */
     private helpGeometry: TextGeometry;
+
     /**
      * Paints the help screen.
      */
     private helpHandler: HelpHandler;
+
     /**
      * Standard ambient light to better see the help menu with.
      */
@@ -135,34 +158,42 @@ export class Menu {
      * Controls the overall rendering of the load button display
      */
     private load: Mesh;
+
     /**
      * Controls size and shape of the load button text
      */
     private loadGeometry: TextGeometry;
+
     /**
      * Paints the load screen.
      */
     private loadHandler: LoadHandler;
+
     /**
      * Controls the overall rendering of the main banner display
      */
     private mainBanner: Mesh;
+
     /**
      * Controls size and shape of the main banner text
      */
     private mainBannerGeometry: TextGeometry;
+
     /**
      * Loaded font for menu text.
      */
     private menuFont: Font;
+
     /**
      * Controls the color of the untouched button display material
      */
     private menuMaterial: MeshLambertMaterial;
+
     /**
      * Controls the color of the selected button display material
      */
     private menuSelectedMaterial: MeshLambertMaterial;
+
     /**
      * Keeps track of menu mode.
      * 0 --> Menu options
@@ -170,58 +201,70 @@ export class Menu {
      * 2 --> Load screen
      */
     private mode: number = 0;
+
     /**
      * Controls the overall rendering of the normal button display
      */
     private normal: Mesh;
+
     /**
      * Controls size and shape of the normal button text
      */
     private normalGeometry: TextGeometry;
+
     /**
      * Controls the overall rendering of the off button display
      */
     private off: Mesh;
+
     /**
      * Controls size and shape of the off button text
      */
     private offGeometry: TextGeometry;
+
     /**
      * Controls the overall rendering of the on button display
      */
     private on: Mesh;
+
     /**
      * Controls size and shape of the on button text
      */
     private onGeometry: TextGeometry;
+
     /**
      * The distant dim light that allows the shimmer effect to happen.
      */
     private pointLight: PointLight;
+
     /**
      * Reference to the scene, used to remove and reinstall text geometries.
      */
     private scene: Scene;
+
     /**
      * Controls the light that give the text its shine.
      */
     private shimmer: PointLight;
+
     /**
      * Controls the overall rendering of the Sound text display
      */
     private sound: Mesh;
+
     /**
      * Controls the overall rendering of the start button display
      */
     private start: Mesh;
+
     /**
      * Controls size and shape of the start button text
      */
     private startGeometry: TextGeometry;
+
     /**
      * Constructor for the Menu class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
-     * @hidden
      */
     constructor(scene: SceneType) {
         this.menuFont = ASSETS_CTRL.gameFont;
@@ -261,6 +304,7 @@ export class Menu {
             transparent: true,
             side: DoubleSide
         });
+
         // Create the start collision layer
         const startBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
         this.barrierStart = new Mesh( startBarrierGeometry, this.clickMaterial );
@@ -268,6 +312,7 @@ export class Menu {
         this.barrierStart.position.set(0, 0, -1);
         this.barrierStart.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierStart);
+
         // Create the easy collision layer
         const easyBarrierGeometry = new PlaneGeometry( 1.4, 0.8, 0, 0 );
         this.barrierEasy = new Mesh( easyBarrierGeometry, this.clickMaterial );
@@ -275,6 +320,7 @@ export class Menu {
         this.barrierEasy.position.set(-3.2, 0, 0);
         this.barrierEasy.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierEasy);
+
         // Create the normal collision layer
         const normalBarrierGeometry = new PlaneGeometry( 1.9, 0.8, 0, 0 );
         this.barrierNormal = new Mesh( normalBarrierGeometry, this.clickMaterial );
@@ -282,6 +328,7 @@ export class Menu {
         this.barrierNormal.position.set(-1.35, 0, 0);
         this.barrierNormal.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierNormal);
+
         // Create the hard collision layer
         const hardBarrierGeometry = new PlaneGeometry( 1.4, 0.8, 0, 0 );
         this.barrierHard = new Mesh( hardBarrierGeometry, this.clickMaterial );
@@ -289,6 +336,7 @@ export class Menu {
         this.barrierHard.position.set(0.5, 0, 0);
         this.barrierHard.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierHard);
+
         // Create the hardcore collision layer
         const hardcoreBarrierGeometry = new PlaneGeometry( 2.6, 0.8, 0, 0 );
         this.barrierHardcore = new Mesh( hardcoreBarrierGeometry, this.clickMaterial );
@@ -296,6 +344,7 @@ export class Menu {
         this.barrierHardcore.position.set(2.7, 0, 0);
         this.barrierHardcore.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierHardcore);
+
         // Create the load collision layer
         const loadBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
         this.barrierLoad = new Mesh( loadBarrierGeometry, this.clickMaterial );
@@ -303,6 +352,7 @@ export class Menu {
         this.barrierLoad.position.set(0, 0, 1);
         this.barrierLoad.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierLoad);
+
         // Create the help collision layer
         const helpBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
         this.barrierHelp = new Mesh( helpBarrierGeometry, this.clickMaterial );
@@ -310,6 +360,7 @@ export class Menu {
         this.barrierHelp.position.set(0, 0, 2);
         this.barrierHelp.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierHelp);
+
         // Create the sound off collision layer
         const offBarrierGeometry = new PlaneGeometry( 1, 0.8, 0, 0 );
         this.barrierOff = new Mesh( offBarrierGeometry, this.clickMaterial );
@@ -317,6 +368,7 @@ export class Menu {
         this.barrierOff.position.set(1.2, 0, 3);
         this.barrierOff.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierOff);
+
         // Create the sound on collision layer
         const onBarrierGeometry = new PlaneGeometry( 0.9, 0.8, 0, 0 );
         this.barrierOn = new Mesh( onBarrierGeometry, this.clickMaterial );
@@ -324,6 +376,7 @@ export class Menu {
         this.barrierOn.position.set(0, 0, 3);
         this.barrierOn.rotation.set(1.5708, 0, 0);
         this.scene.add(this.barrierOn);
+
         // Main Banner button text
         this.mainBannerGeometry = new TextGeometry('Enzmann\'s Odyssey',
             {
@@ -340,6 +393,7 @@ export class Menu {
         this.mainBanner.position.set(-3.85, -0.5, -3);
         this.mainBanner.rotation.x = -1.5708;
         this.scene.add(this.mainBanner);
+
         // Copyright text
         this.copyrightGeometry = new TextGeometry('Copyright 2020 Tenacious Teal Games',
             {
@@ -356,12 +410,14 @@ export class Menu {
         this.copyright.position.set(-5.8, -0.5, 5.8);
         this.copyright.rotation.x = -1.5708;
         this.scene.add(this.copyright);
+
         // Start button text
         this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
         this.start = new Mesh( this.startGeometry, this.menuMaterial );
         this.start.position.set(-0.6, -0.5, -0.8);
         this.start.rotation.x = -1.5708;
         this.scene.add(this.start);
+
         // Easy button text
         this.createDifficultyButtons(0, ((this.difficultyLevel === 0) ? this.menuSelectedMaterial : this.menuMaterial), false);
         // Normal button text
@@ -370,12 +426,14 @@ export class Menu {
         this.createDifficultyButtons(2, ((this.difficultyLevel === 2) ? this.menuSelectedMaterial : this.menuMaterial), false);
         // Hardcore button text
         this.createDifficultyButtons(3, ((this.difficultyLevel === 3) ? this.menuSelectedMaterial : this.menuMaterial), false);
+
         // Load button text
         this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
         this.load = new Mesh( this.loadGeometry, this.menuMaterial );
         this.load.position.set(-0.5, -0.5, 1.2);
         this.load.rotation.x = -1.5708;
         this.scene.add(this.load);
+
         // Help button text
         this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
         this.help = new Mesh( this.helpGeometry, this.menuMaterial );
@@ -392,6 +450,7 @@ export class Menu {
         this.sound.position.set(-2.3, -0.5, 3.2);
         this.sound.rotation.x = -1.5708;
         this.scene.add(this.sound);
+
         // On button text
         this.onGeometry = new TextGeometry('ON', this.fontDifficultyBtnParams);
         this.on = new Mesh(
@@ -400,6 +459,7 @@ export class Menu {
         this.on.position.set(-0.3, -0.5, 3.2);
         this.on.rotation.x = -1.5708;
         this.scene.add(this.on);
+
         // Off button text
         this.offGeometry = new TextGeometry('OFF', this.fontDifficultyBtnParams);
         this.off = new Mesh(
@@ -416,78 +476,71 @@ export class Menu {
             // Detection for player clicked on menu option.
             getIntersections(event, document.getElementById('mainview'), scene).forEach(el => {
                 if (el.object.name === 'Start') {
-                    const difficulty = scene.instance.pressedStart();
+                    const difficulty = this.pressedStart();this.difficultyLevel
                     this.isActive = false;
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Load Code') {
-                    setTimeout(() => {
-                        this.isActive = false;
-                        // window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                        // sceneMod.container.removeChild( (scene.renderer as any).domElement );
-                        // loadGame(1);
-                    }, 250);
                     SOUNDS_CTRL.playBidooo();
+                    this.isActive = false; // TODO: Fix how 
+                    // window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                    // sceneMod.container.removeChild( (scene.renderer as any).domElement );
+                    // loadGame(1);
                     return;
                 } else if (el.object.name === 'Easy') {
-                    scene.instance.changeDifficulty(0);
+                    this.changeDifficulty(0);
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Normal') {
-                    scene.instance.changeDifficulty(1);
+                    this.changeDifficulty(1);
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Hard') {
-                    scene.instance.changeDifficulty(2);
+                    this.changeDifficulty(2);
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Hardcore') {
-                    scene.instance.changeDifficulty(3);
+                    this.changeDifficulty(3);
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Load') {
-                    scene.instance.pressedLoad();
+                    this.pressedLoad();
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Help') {
-                    scene.instance.pressedHelp();
+                    this.pressedHelp();
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'On') {
-                    scene.instance.pressedOn();
+                    this.pressedOn();
                     return;
                 } else if (el.object.name === 'Off') {
-                    scene.instance.pressedOff();
+                    this.pressedOff();
                     return;
                 } else if (el.object.name === 'Return Help') {
-                    scene.instance.returnToMainMenu();
+                    this.returnToMainMenu();
                     SOUNDS_CTRL.playBidooo();
                     return;
                 } else if (el.object.name === 'Return Load') {
-                    scene.instance.returnToMainMenu();
+                    this.returnToMainMenu();
                     SOUNDS_CTRL.playBidooo();
                     return;
                 }
             });
         };
     }
+
     /**
      * Changes difficulty level, and instigates the altering of the button texts associated with that choice.
      * @param diff the selected diffulty choice (0 --> easy, 1 --> normal, 2 --> hard, 3 --> hardcore)
      */
-    changeDifficulty(diff: number): void {
+    private changeDifficulty(diff: number): void {
         if (diff === this.difficultyLevel) return;
         this.createDifficultyButtons(this.difficultyLevel, this.menuMaterial, true);
         this.difficultyLevel = diff;
         this.createDifficultyButtons(this.difficultyLevel, this.menuSelectedMaterial, true);
     }
-    /**
-     * Passes load char onto the loadHandler.
-     * @param char player clicked on a specific char. This is that char 0-F
-     */
-    charEntered(char: string): void {
-        this.loadHandler.charEntered(char);
-    }
+
     /**
      * Called to (re)create difficulty menu button text
      * @param buttonIndex   the selected diffulty choice (0 --> easy, 1 --> normal, 2 --> hard, 3 --> hardcore)
@@ -549,93 +602,10 @@ export class Menu {
     }
 
     /**
-     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
-     */
-    public dispose(): void {
-        document.onmousemove = () => {};
-        document.onclick = () => {};
-        document.oncontextmenu = () => {};
-        document.getElementById('intro-screen-sequence-labels').remove();
-        // window.removeEventListener( 'resize', this.listenerRef, false);
-    }
-
-    /**
-     * Moves the point light from left to right a little every frame.
-     * @returns whether or not the scene has finished. TRUE means the scene is done | FALSE if it isn't.
-     */
-    public endCycle(): boolean {
-        if (!this.isActive) {
-            return true;
-        }
-
-        if (this.mode === 1) {
-            this.shimmer.position.x = 0;
-            this.shimmer.intensity = 0;
-            this.pointLight.intensity = 0;
-            if (!this.helpLight) {
-                this.helpLight = new AmbientLight(0xCCCCCC);
-                this.scene.add(this.helpLight);
-            }
-            this.helpHandler.endCycle();
-        } else {
-            if (this.helpLight) {
-                this.scene.remove(this.helpLight);
-                this.helpLight = null;
-            }
-            if (this.shimmer.position.x > 20) {
-                this.shimmer.position.x = -20;
-            }
-            this.shimmer.position.x += 0.2;
-        }
-        this.loadHandler.endCycle();
-    }
-    /**
-     * Retrieves the currently chosen difficulty level.
-     * @returns the difficulty level currently selected in the menu.
-     */
-    getDifficulty(): number {
-        return this.difficultyLevel;
-    }
-    /**
-     * Gets the game load data fom load code. If load code is invalid, it returns null.
-     * @returns game load data from load code or null to start from a default set.
-     */
-    getGameData(): null {
-        return this.loadHandler.getGameData();
-    }
-
-    /**
-     * Turns visibility for menu items to be unseen.
-     */
-    public hideMenu() {
-        this.shimmer.color.set(0xCCCCCC);
-        this.shimmer.intensity = 3.2;
-        this.shimmer.position.y = -10;
-        this.start.visible = false;
-        this.easy.visible = false;
-        this.normal.visible = false;
-        this.hard.visible = false;
-        this.hardcore.visible = false;
-        this.load.visible = false;
-        this.help.visible = false;
-        this.sound.visible = false;
-        this.on.visible = false;
-        this.off.visible = false;
-        this.barrierEasy.visible = false;
-        this.barrierHard.visible = false;
-        this.barrierHardcore.visible = false;
-        this.barrierHelp.visible = false;
-        this.barrierLoad.visible = false;
-        this.barrierNormal.visible = false;
-        this.barrierOff.visible = false;
-        this.barrierOn.visible = false;
-        this.barrierStart.visible = false;
-    }
-    /**
      * Transitions to help screen.
      * Changes the help menu button text when clicked to signal to user that their click worked.
      */
-    pressedHelp(): void {
+    private pressedHelp(): void {
         this.barrierHelp.visible = false;
         this.scene.remove(this.help);
         // Selected help button text
@@ -650,11 +620,12 @@ export class Menu {
             this.helpHandler.activate();
         }, 250);
     }
+
     /**
      * Changes the load menu button text when clicked to signal to user that their click worked (if not hardcore difficulty).
      * @returns TRUE --> valid click, move onto load menu | FALSE --> harcore mode means load is inactive.
      */
-    pressedLoad(): void {
+    private pressedLoad(): void {
         this.scene.remove(this.load);
         // Selected load button text
         this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
@@ -668,6 +639,7 @@ export class Menu {
             this.loadHandler.activate();
         }, 250);
     }
+
     /**
      * Turns sound off.
      * Changes the off menu button text when clicked to signal to user that their click worked.
@@ -712,9 +684,8 @@ export class Menu {
 
     /**
      * Changes the start menu button text when clicked to signal to user that their click worked.
-     * @returns difficulty level chosen before start was pressed (to be used in game difficulty checks)
      */
-    private pressedStart(): number {
+    private pressedStart(): void {
         this.scene.remove(this.start);
         // Selected start button text
         this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
@@ -722,7 +693,6 @@ export class Menu {
         this.start.position.set(-0.6, -0.5, -0.8);
         this.start.rotation.x = -1.5708;
         this.scene.add(this.start);
-        return this.difficultyLevel;
     }
 
     /**
@@ -786,5 +756,91 @@ export class Menu {
         this.barrierOff.visible = true;
         this.barrierOn.visible = true;
         this.barrierStart.visible = true;
+    }
+
+    /**
+     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
+     */
+    public dispose(): void {
+        document.onmousemove = () => {};
+        document.onclick = () => {};
+        document.oncontextmenu = () => {};
+        document.getElementById('intro-screen-sequence-labels').remove();
+        // window.removeEventListener( 'resize', this.listenerRef, false); TODO: Fix windor resize refs for menu
+    }
+
+    /**
+     * Moves the point light from left to right a little every frame.
+     * @returns whether or not the scene has finished. TRUE means the scene is done | FALSE if it isn't.
+     */
+    public endCycle(): boolean {
+        if (!this.isActive) {
+            return true;
+        }
+
+        if (this.mode === 1) {
+            this.shimmer.position.x = 0;
+            this.shimmer.intensity = 0;
+            this.pointLight.intensity = 0;
+            if (!this.helpLight) {
+                this.helpLight = new AmbientLight(0xCCCCCC);
+                this.scene.add(this.helpLight);
+            }
+            this.helpHandler.endCycle();
+        } else {
+            if (this.helpLight) {
+                this.scene.remove(this.helpLight);
+                this.helpLight = null;
+            }
+            if (this.shimmer.position.x > 20) {
+                this.shimmer.position.x = -20;
+            }
+            this.shimmer.position.x += 0.2;
+        }
+        this.loadHandler.endCycle();
+    }
+
+    /**
+     * Turns visibility for menu items to be unseen.
+     */
+    public hideMenu() {
+        this.shimmer.color.set(0xCCCCCC);
+        this.shimmer.intensity = 3.2;
+        this.shimmer.position.y = -10;
+        this.start.visible = false;
+        this.easy.visible = false;
+        this.normal.visible = false;
+        this.hard.visible = false;
+        this.hardcore.visible = false;
+        this.load.visible = false;
+        this.help.visible = false;
+        this.sound.visible = false;
+        this.on.visible = false;
+        this.off.visible = false;
+        this.barrierEasy.visible = false;
+        this.barrierHard.visible = false;
+        this.barrierHardcore.visible = false;
+        this.barrierHelp.visible = false;
+        this.barrierLoad.visible = false;
+        this.barrierNormal.visible = false;
+        this.barrierOff.visible = false;
+        this.barrierOn.visible = false;
+        this.barrierStart.visible = false;
+    }
+
+    /**
+     * Retrieves the currently chosen difficulty level.
+     * @returns the difficulty level currently selected in the menu.
+     */
+    public getDifficulty(): number {
+        return this.difficultyLevel;
+    }
+
+    /**
+     * Gets the game load data fom load code. If load code is invalid, it returns null.
+     * @returns game load data from load code or null to start from a default set.
+     */
+    public getGameData(): null {
+        return this.loadHandler.getGameData();
     }
 }
