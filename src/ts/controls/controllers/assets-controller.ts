@@ -312,6 +312,10 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     spriteMapAncientRuinsCrew: ['assets/images/sprite-map-ancient-ruins-astronauts.png', null]
 };
 
+/**
+ * @class AssetsCtrl
+ * The Assets Controller class for tracking the loading of assets, and making them globally available.
+ */
 export class AssetsCtrl {
     /**
      * Tracks number of assets loaded.
@@ -408,6 +412,9 @@ export class AssetsCtrl {
         });
     };
 
+    /**
+     * Converts the TEXTURES static maps completed texture values into easier to read map.
+     */
     private _setTextureMap(): void {
         Object.entries(TEXTURES).forEach(entry => {
             this.textures[entry[0]] = entry[1][1];
@@ -424,4 +431,7 @@ export class AssetsCtrl {
     }
 }
 
+/**
+ * Singleton instance for Asset Controller class.
+ */
 export const ASSETS_CTRL = new AssetsCtrl();

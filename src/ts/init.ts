@@ -17,6 +17,7 @@ import { createSceneModule } from './utils/create-scene-module';
 import { getIntersections } from './utils/get-intersections';
 import { ASSETS_CTRL } from './controls/controllers/assets-controller';
 import { adjustWindowDimensions } from './utils/on-window-resize';
+import { disposeScene } from './utils/dispose-scene';
 const statsPanel = new stats();
 
 const scenes: { [ key: string ]: SceneType } = {
@@ -174,11 +175,8 @@ const loadDevMenu = () => {
             scenes.devMenu.instance.endCycle();
         } else {
             scenes.devMenu.instance.dispose();
-            scenes.devMenu.camera = null;
-            scenes.devMenu.instance = null;
-            scenes.devMenu.raycaster = null;
-            scenes.devMenu.renderer = null;
-            scenes.devMenu.scene = null;
+            // Clear up memory used by dev menu scene.
+            disposeScene(scenes.devMenu);
             return;
         }
         scenes.devMenu.renderer.render( scenes.devMenu.scene, scenes.devMenu.camera );
@@ -339,11 +337,7 @@ const loadIntroScene = () => {
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
             // Clear up memory used by intro scene.
-            scenes.intro.camera = null;
-            scenes.intro.instance = null;
-            scenes.intro.raycaster = null;
-            scenes.intro.renderer = null;
-            scenes.intro.scene = null;
+            disposeScene(scenes.intro);
             return;
         } else {
             if (scenes.intro.instance.endCycle()) {
@@ -353,11 +347,7 @@ const loadIntroScene = () => {
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
                 sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
                 // Clear up memory used by intro scene.
-                scenes.intro.camera = null;
-                scenes.intro.instance = null;
-                scenes.intro.raycaster = null;
-                scenes.intro.renderer = null;
-                scenes.intro.scene = null;
+            disposeScene(scenes.intro);
                 loadMenu();
                 return;
             }
@@ -388,11 +378,7 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
             // Clear up memory used by ancientRuins scene.
-            scenes.ancientRuins.camera = null;
-            scenes.ancientRuins.instance = null;
-            scenes.ancientRuins.raycaster = null;
-            scenes.ancientRuins.renderer = null;
-            scenes.ancientRuins.scene = null;
+            disposeScene(scenes.ancientRuins);
             statsPanel.end();
             return;
         } else {
@@ -407,11 +393,7 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
                 sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
                 // Clear up memory used by ancientRuins scene.
-                scenes.ancientRuins.camera = null;
-                scenes.ancientRuins.instance = null;
-                scenes.ancientRuins.raycaster = null;
-                scenes.ancientRuins.renderer = null;
-                scenes.ancientRuins.scene = null;
+                disposeScene(scenes.ancientRuins);
                 statsPanel.end();
                 setTimeout(() => {
                     loadMenu();
@@ -446,11 +428,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
             // Clear up memory used by landAndMine scene.
-            scenes.landAndMine.camera = null;
-            scenes.landAndMine.instance = null;
-            scenes.landAndMine.raycaster = null;
-            scenes.landAndMine.renderer = null;
-            scenes.landAndMine.scene = null;
+            disposeScene(scenes.landAndMine);
             return;
         } else {
             statsPanel.begin();
@@ -473,11 +451,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
                 sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
                 // Clear up memory used by landAndMine scene.
-                scenes.landAndMine.camera = null;
-                scenes.landAndMine.instance = null;
-                scenes.landAndMine.raycaster = null;
-                scenes.landAndMine.renderer = null;
-                scenes.landAndMine.scene = null;
+                disposeScene(scenes.landAndMine);
                 setTimeout(() => {
                     loadMenu();
                 }, 10);
@@ -510,11 +484,7 @@ const loadShipLayoutScene = () => {
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
             // Clear up memory used by shipLayout scene.
-            scenes.shipLayout.camera = null;
-            scenes.shipLayout.instance = null;
-            scenes.shipLayout.raycaster = null;
-            scenes.shipLayout.renderer = null;
-            scenes.shipLayout.scene = null;
+            disposeScene(scenes.shipLayout);
             return;
         } else {
             const layout = scenes.shipLayout.instance.endCycle();
@@ -526,11 +496,7 @@ const loadShipLayoutScene = () => {
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
                 sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
                 // Clear up memory used by shipLayout scene.
-                scenes.shipLayout.camera = null;
-                scenes.shipLayout.instance = null;
-                scenes.shipLayout.raycaster = null;
-                scenes.shipLayout.renderer = null;
-                scenes.shipLayout.scene = null;
+                disposeScene(scenes.shipLayout);
                 setTimeout(() => {
                     loadMenu();
                 }, 10);

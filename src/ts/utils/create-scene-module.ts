@@ -13,7 +13,13 @@ import { SceneType } from "../models/scene-type";
 import { onWindowResize } from "./on-window-resize";
 import { SOUNDS_CTRL } from "../controls/controllers/sounds-controller";
 
-export function createSceneModule(scene: SceneType, excludeAmbientLight?: boolean) {
+/**
+ * Creates the initial setup for any game scene.
+ * @param scene the scene type object that contains the no longer needed ThreeJS instances.
+ * @param excludeAmbientLight flag to discern whether or not an ambient light should be added at this point.
+ * @returns object with container reference element and the callback used for on window resizing.
+ */
+export function createSceneModule(scene: SceneType, excludeAmbientLight?: boolean): { container: HTMLElement; onWindowResizeRef: () => void; } {
     scene.active = true;
     // Establish initial window size.
     let WIDTH: number = window.innerWidth * 0.99;

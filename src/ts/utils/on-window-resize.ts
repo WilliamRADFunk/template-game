@@ -1,5 +1,9 @@
 import { Renderer } from "three";
 
+/**
+ * Calculates the width and height for game area and loading bar views.
+ * @returns object with the calcualted width and height.
+ */
 export function adjustWindowDimensions(): { WIDTH: number; HEIGHT: number; } {
     const ldBar = document.getElementsByClassName('ldBar')[0];
     ldBar.classList.remove('ldBar-fat');
