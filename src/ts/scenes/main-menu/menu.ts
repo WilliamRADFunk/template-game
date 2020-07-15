@@ -16,6 +16,7 @@ import { LoadHandler } from '../load-screen/load-handler';
 import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { SceneType } from '../../models/scene-type';
 import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
+import { getIntersections } from '../../utils/get-intersections';
 
 // const backgroundColor = 0xFF0044;
 const backgroundColor: number = null;
@@ -124,6 +125,12 @@ export class Menu {
      * Standard ambient light to better see the help menu with.
      */
     private helpLight: AmbientLight;
+
+    /**
+     * Flag to signal the scene is no longer active. Primarily used for a click event to useful during endCycle.
+     */
+    private isActive: boolean = true;
+
     /**
      * Controls the overall rendering of the load button display
      */
@@ -401,6 +408,68 @@ export class Menu {
         this.off.position.set(0.85, -0.5, 3.2);
         this.off.rotation.x = -1.5708;
         this.scene.add(this.off);
+
+        // Click event listener that activates certain menu options.
+        document.onclick = event => {
+            event.preventDefault();
+
+            // Detection for player clicked on menu option.
+            getIntersections(event, document.getElementById('mainview'), scene).forEach(el => {
+                if (el.object.name === 'Start') {
+                    const difficulty = scene.instance.pressedStart();
+                    this.isActive = false;
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Load Code') {
+                    setTimeout(() => {
+                        this.isActive = false;
+                        // window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                        // sceneMod.container.removeChild( (scene.renderer as any).domElement );
+                        // loadGame(1);
+                    }, 250);
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Easy') {
+                    scene.instance.changeDifficulty(0);
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Normal') {
+                    scene.instance.changeDifficulty(1);
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Hard') {
+                    scene.instance.changeDifficulty(2);
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Hardcore') {
+                    scene.instance.changeDifficulty(3);
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Load') {
+                    scene.instance.pressedLoad();
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Help') {
+                    scene.instance.pressedHelp();
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'On') {
+                    scene.instance.pressedOn();
+                    return;
+                } else if (el.object.name === 'Off') {
+                    scene.instance.pressedOff();
+                    return;
+                } else if (el.object.name === 'Return Help') {
+                    scene.instance.returnToMainMenu();
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                } else if (el.object.name === 'Return Load') {
+                    scene.instance.returnToMainMenu();
+                    SOUNDS_CTRL.playBidooo();
+                    return;
+                }
+            });
+        };
     }
     /**
      * Changes difficulty level, and instigates the altering of the button texts associated with that choice.
@@ -478,10 +547,27 @@ export class Menu {
             default: {}
         }
     }
+
+    /**
+     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
+     */
+    public dispose(): void {
+        document.onmousemove = () => {};
+        document.onclick = () => {};
+        document.oncontextmenu = () => {};
+        document.getElementById('intro-screen-sequence-labels').remove();
+        // window.removeEventListener( 'resize', this.listenerRef, false);
+    }
+
     /**
      * Moves the point light from left to right a little every frame.
+     * @returns whether or not the scene has finished. TRUE means the scene is done | FALSE if it isn't.
      */
-    endCycle(): void {
+    public endCycle(): boolean {
+        if (!this.isActive) {
+            return true;
+        }
+
         if (this.mode === 1) {
             this.shimmer.position.x = 0;
             this.shimmer.intensity = 0;
@@ -517,10 +603,11 @@ export class Menu {
     getGameData(): null {
         return this.loadHandler.getGameData();
     }
+
     /**
      * Turns visibility for menu items to be unseen.
      */
-    hideMenu() {
+    public hideMenu() {
         this.shimmer.color.set(0xCCCCCC);
         this.shimmer.intensity = 3.2;
         this.shimmer.position.y = -10;
@@ -585,7 +672,7 @@ export class Menu {
      * Turns sound off.
      * Changes the off menu button text when clicked to signal to user that their click worked.
      */
-    pressedOff(): void {
+    private pressedOff(): void {
         this.scene.remove(this.off);
         this.scene.remove(this.on);
         // Selected off button text
@@ -601,11 +688,12 @@ export class Menu {
         SOUNDS_CTRL.playBidooo();
         SOUNDS_CTRL.toggleMute(true);
     }
+
     /**
      * Turns sound on.
      * Changes the on menu button text when clicked to signal to user that their click worked.
      */
-    pressedOn(): void {
+    private pressedOn(): void {
         this.scene.remove(this.off);
         this.scene.remove(this.on);
         // Selected off button text
@@ -621,11 +709,12 @@ export class Menu {
         SOUNDS_CTRL.toggleMute(false);
         SOUNDS_CTRL.playBidooo();
     }
+
     /**
      * Changes the start menu button text when clicked to signal to user that their click worked.
      * @returns difficulty level chosen before start was pressed (to be used in game difficulty checks)
      */
-    pressedStart(): number {
+    private pressedStart(): number {
         this.scene.remove(this.start);
         // Selected start button text
         this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
@@ -635,10 +724,11 @@ export class Menu {
         this.scene.add(this.start);
         return this.difficultyLevel;
     }
+
     /**
      * Reactivates main menu options.
      */
-    returnToMainMenu(): void {
+    private returnToMainMenu(): void {
         if (this.mode === 2) {
             this.scene.remove(this.load);
             // Selected load button text
@@ -669,10 +759,11 @@ export class Menu {
 
         this.createDifficultyButtons(this.difficultyLevel, this.menuSelectedMaterial, true);
     }
+
     /**
      * Turns visibility for menu items to be seen.
      */
-    showMenu() {
+    private showMenu() {
         this.shimmer.color.set(0x66FF66);
         this.shimmer.intensity = 2;
         this.shimmer.position.y = 2;

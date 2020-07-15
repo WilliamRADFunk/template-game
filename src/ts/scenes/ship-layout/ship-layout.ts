@@ -3,8 +3,7 @@ import {
     Mesh,
     MeshBasicMaterial,
     PlaneGeometry,
-    Scene,
-    Texture } from 'three';
+    Scene } from 'three';
 
 import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { Actor } from '../../models/actor';

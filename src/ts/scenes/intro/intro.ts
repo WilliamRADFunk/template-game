@@ -29,6 +29,7 @@ import { createGeminiStation } from './actors/createGeminiStation';
 import { createEntryEffect } from './actors/create-entry-effect';
 import { SceneType } from '../../models/scene-type';
 import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
+import { getIntersections } from '../../utils/get-intersections';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -65,10 +66,16 @@ export class Intro {
      * Current frame
      */
     private currentFrame: number = 0;
+
     /**
      * Current scene in the sequence.
      */
     private currentSequenceIndex: number = 0;
+
+    /**
+     * Flag to signal the scene is no longer active. Primarily used for a click event to useful during endCycle.
+     */
+    private isActive: boolean = true;
 
     /**
      * Reference to onWindowResize so that it can be removed later.
@@ -138,7 +145,20 @@ export class Intro {
         window.addEventListener('resize', this.listenerRef, false);
 
         this.createStars();
-		this.createActors();
+        this.createActors();
+        
+        // Click event listener to register user click.
+        document.onclick = event => {
+            event.preventDefault();
+            // Detection for player clicked on pause button
+            getIntersections(event, document.getElementById('mainview'), scene).forEach(el => {
+                if (el.object.name === 'Click Barrier') {
+                    SOUNDS_CTRL.playBidooo();
+                    this.isActive = false;
+                    return;
+                }
+            });
+        };
     }
     /**
      * Calculates the next point in the ship's path.
@@ -514,6 +534,7 @@ export class Intro {
 
     /**
      * Spins planet at its set rate.
+     * @param actor portion of the into scene to rotate.
      */
     private rotate(actor: Actor): void {
         const twoPi = 2 * Math.PI;
@@ -524,6 +545,15 @@ export class Intro {
         actor.mesh.rotation.set(0, actor.currentRotation, 0);
     }
 
+    /**
+     * Calculates total distance to travel between two points and calculates first step.
+     * @param actorIndex index of actor in the actor array.
+     * @param x1 starting x coordinate
+     * @param z1 starting z coordinate
+     * @param x2 destination x coordinate
+     * @param z2 destination z coordinate
+     * @param speed amount of space to cover per frame.
+     */
     private setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number, speed: number): void {
         const actor = this.actors[actorIndex];
         actor.moveSpeed = speed;
@@ -540,10 +570,26 @@ export class Intro {
     }
 
     /**
-     * At the end of each loop iteration, move the asteroid a little.
-     * @returns whether or not the asteroid is done, and its points calculated.
+     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
      */
-    endCycle(): boolean {
+    public dispose(): void {
+        document.onmousemove = () => {};
+        document.onclick = () => {};
+        document.oncontextmenu = () => {};
+        document.getElementById('intro-screen-sequence-labels').remove();
+        window.removeEventListener( 'resize', this.listenerRef, false);
+    }
+
+    /**
+     * At the end of each loop iteration, move the scene by one frame.
+     * @returns whether or not the intro is done. TRUE intro is finished | FALSE it is not finished.
+     */
+    public endCycle(): boolean {
+        // Through user action, the scene has ended.
+        if (!this.isActive) {
+            return true;
+        }
+    
         this.currentFrame++;
         if (this.sequences[this.currentSequenceIndex].endingFrame <= this.currentFrame) {
             this.currentSequenceIndex++;
@@ -601,16 +647,5 @@ export class Intro {
             });
         }
         return false;
-    }
-
-    /**
-     * Removes any attached DOM elements, event listeners, or anything separate from ThreeJS
-     */
-    public dispose(): void {
-        document.onmousemove = () => {};
-        document.onclick = () => {};
-        document.oncontextmenu = () => {};
-        document.getElementById('intro-screen-sequence-labels').remove();
-        window.removeEventListener( 'resize', this.listenerRef, false);
     }
 }

@@ -195,100 +195,40 @@ const loadGameMenu = () => {
     // Create instance of game section.
     scenes.menu.instance = new Menu(scenes.menu);
 
-    // Click event listener that activates certain menu options.
-    document.onclick = event => {
-        event.preventDefault();
-
-        // Detection for player clicked on menu option.
-        const thingsTouched = getIntersections(event, sceneMod.container, scenes.menu);
-        thingsTouched.forEach(el => {
-            if (el.object.name === 'Start') {
-                const difficulty = scenes.menu.instance.pressedStart();
-                setTimeout(() => {
-                    scenes.menu.active = false;
-                    window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                    sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
-                    loadLandAndMineScene(
-                        {
-                            gravity: 0.0001,
-                            hasWater: true,
-                            isFrozen: false,
-                            isLife: true,
-                            ore: OreTypes.Gold,
-                            oreQuantity: OreQuantity.Average,
-                            peakElevation: 3,
-                            planetBase: PlanetLandTypes.Red,
-                            skyBase: SkyTypes.Blue,
-                            wind: 0
-                        },
-                        {
-                            drillLength: 5,
-                            fuelBurn: 0.05,
-                            horizontalCrashMargin: 0.001,
-                            oxygenBurn: 0.02,
-                            verticalCrashMargin: 0.01
-                        }
-                    );
-                }, 750);
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Load Code') {
-                setTimeout(() => {
-                    scenes.menu.active = false;
-                    window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                    sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
-                    // loadGame(1);
-                }, 250);
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Easy') {
-                scenes.menu.instance.changeDifficulty(0);
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Normal') {
-                scenes.menu.instance.changeDifficulty(1);
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Hard') {
-                scenes.menu.instance.changeDifficulty(2);
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Hardcore') {
-                scenes.menu.instance.changeDifficulty(3);
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Load') {
-                scenes.menu.instance.pressedLoad();
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Help') {
-                scenes.menu.instance.pressedHelp();
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'On') {
-                scenes.menu.instance.pressedOn();
-                return;
-            } else if (el.object.name === 'Off') {
-                scenes.menu.instance.pressedOff();
-                return;
-            } else if (el.object.name === 'Return Help') {
-                scenes.menu.instance.returnToMainMenu();
-                SOUNDS_CTRL.playBidooo();
-                return;
-            } else if (el.object.name === 'Return Load') {
-                scenes.menu.instance.returnToMainMenu();
-                SOUNDS_CTRL.playBidooo();
-                return;
-            }
-        });
-    };
-
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        if (scenes.menu.active) {
-            scenes.menu.instance.endCycle();
+        if (scenes.menu.instance.endCycle()) {
+            // Clears up memory used by menu scene.
+            disposeScene(scenes.menu);
+            setTimeout(() => {
+                scenes.menu.active = false;
+                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
+                sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
+                loadLandAndMineScene(
+                    {
+                        gravity: 0.0001,
+                        hasWater: true,
+                        isFrozen: false,
+                        isLife: true,
+                        ore: OreTypes.Gold,
+                        oreQuantity: OreQuantity.Average,
+                        peakElevation: 3,
+                        planetBase: PlanetLandTypes.Red,
+                        skyBase: SkyTypes.Blue,
+                        wind: 0
+                    },
+                    {
+                        drillLength: 5,
+                        fuelBurn: 0.05,
+                        horizontalCrashMargin: 0.001,
+                        oxygenBurn: 0.02,
+                        verticalCrashMargin: 0.01
+                    }
+                );
+            }, 750);
+        } else {
             scenes.menu.renderer.render( scenes.menu.scene, scenes.menu.camera );
             requestAnimationFrame( render );
         }
@@ -312,45 +252,20 @@ const loadIntroScene = () => {
     // Create instance of game section.
     scenes.intro.instance = new Intro(scenes.intro);
 
-    // Click event listener to register user click.
-    document.onclick = event => {
-        event.preventDefault();
-        const thingsTouched = getIntersections(event, sceneMod.container, scenes.intro);
-        // Detection for player clicked on pause button
-        thingsTouched.forEach(el => {
-            if (el.object.name === 'Click Barrier') {
-                SOUNDS_CTRL.playBidooo();
-                scenes.intro.active = false;
-                loadMenu();
-                return;
-            }
-        });
-    };
-
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        if (!scenes.intro.active) {
+        if (scenes.intro.instance.endCycle()) {
             scenes.intro.instance.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
             // Clear up memory used by intro scene.
             disposeScene(scenes.intro);
+            // Always launch menu after intro is complete.
+            loadMenu();
             return;
-        } else {
-            if (scenes.intro.instance.endCycle()) {
-                scenes.intro.instance.dispose();
-                scenes.intro.active = false;
-                // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
-                // Clear up memory used by intro scene.
-            disposeScene(scenes.intro);
-                loadMenu();
-                return;
-            }
         }
         scenes.intro.renderer.render( scenes.intro.scene, scenes.intro.camera );
         requestAnimationFrame( render );
