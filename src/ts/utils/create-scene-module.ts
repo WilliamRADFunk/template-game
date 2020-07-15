@@ -5,6 +5,7 @@ import {
     MeshBasicMaterial,
     OrthographicCamera,
     PlaneGeometry,
+    Raycaster,
     Scene,
     WebGLRenderer } from "three";
 
@@ -51,6 +52,8 @@ export function createSceneModule(scene: SceneType, excludeAmbientLight?: boolea
     clickBarrier.position.set(0, 0, 0);
     clickBarrier.rotation.set(1.5708, 0, 0);
     scene.scene.add(clickBarrier);
+
+    scene.raycaster = new Raycaster();
 
     return {
         container,

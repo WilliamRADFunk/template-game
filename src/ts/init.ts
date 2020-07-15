@@ -1,12 +1,4 @@
-import {
-    Audio,
-    AudioListener,
-    AudioLoader,
-    Font,
-    FontLoader,
-    Raycaster,
-    TextureLoader,
-    Texture} from 'three';
+import { Raycaster } from 'three';
 
 import { SceneType } from './models/scene-type';
 import { SOUNDS_CTRL } from './controls/controllers/sounds-controller';
@@ -24,6 +16,7 @@ import { AncientRuinsSpecifications } from './models/ancient-ruins-specification
 import { createSceneModule } from './utils/create-scene-module';
 import { getIntersections } from './utils/get-intersections';
 import { ASSETS_CTRL } from './controls/controllers/assets-controller';
+import { adjustWindowDimensions } from './utils/on-window-resize';
 const statsPanel = new stats();
 
 const scenes: { [ key: string ]: SceneType } = {
@@ -157,7 +150,8 @@ const loadDevMenu = () => {
             // loadPlanetRaidScene();
         }, 50);
     };
-    const raycaster = new Raycaster();
+    
+    // Create instance of game section.
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
         {
@@ -171,7 +165,6 @@ const loadDevMenu = () => {
             activateTravelScene,
             activateVertexMapScene
         });
-    scenes.devMenu.raycaster = raycaster;
     
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
@@ -201,9 +194,10 @@ const loadDevMenu = () => {
  */
 const loadGameMenu = () => {
     const sceneMod = createSceneModule(scenes.menu, true);
+    // Create instance of game section.
+    scenes.menu.instance = new Menu(scenes.menu);
 
     // Click event listener that activates certain menu options.
-    const raycaster = new Raycaster();
     document.onclick = event => {
         event.preventDefault();
 
@@ -290,9 +284,10 @@ const loadGameMenu = () => {
             }
         });
     };
-    scenes.menu.instance = new Menu(scenes.menu);
-    scenes.menu.raycaster = raycaster;
 
+    /**
+     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
+     */
     const render = () => {
         if (scenes.menu.active) {
             scenes.menu.instance.endCycle();
@@ -316,9 +311,10 @@ const loadMenu = ENVIRONMENT === 'production' ? loadGameMenu : loadDevMenu;
  */
 const loadIntroScene = () => {
     const sceneMod = createSceneModule(scenes.intro);
+    // Create instance of game section.
+    scenes.intro.instance = new Intro(scenes.intro);
 
     // Click event listener to register user click.
-    const raycaster = new Raycaster();
     document.onclick = event => {
         event.preventDefault();
         const thingsTouched = getIntersections(event, sceneMod.container, scenes.intro);
@@ -333,16 +329,12 @@ const loadIntroScene = () => {
         });
     };
 
-    // Create instance of game section.
-    const intro = new Intro(scenes.intro);
-    scenes.intro.raycaster = raycaster;
-
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
         if (!scenes.intro.active) {
-            intro.dispose();
+            scenes.intro.instance.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.intro.renderer as any).domElement );
@@ -354,8 +346,8 @@ const loadIntroScene = () => {
             scenes.intro.scene = null;
             return;
         } else {
-            if (intro.endCycle()) {
-                intro.dispose();
+            if (scenes.intro.instance.endCycle()) {
+                scenes.intro.instance.dispose();
                 scenes.intro.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
@@ -383,17 +375,15 @@ const loadIntroScene = () => {
  */
 const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
     const sceneMod = createSceneModule(scenes.ancientRuins);
+    // Create instance of game section.
+    scenes.ancientRuins.instance = new AncientRuins(scenes.ancientRuins, ancientRuinsSpec);
 
-    // Click event listener to register user click.
-    const raycaster = new Raycaster();
-    const ancientRuins = new AncientRuins(scenes.ancientRuins, ancientRuinsSpec);
-    scenes.ancientRuins.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
         if (!scenes.ancientRuins.active) {
-            ancientRuins.dispose();
+            scenes.ancientRuins.instance.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
@@ -407,10 +397,10 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
             return;
         } else {
             statsPanel.update();
-            const output: any = ancientRuins.endCycle();
+            const output: any = scenes.ancientRuins.instance.endCycle();
             if (output) {
                 console.log('Output', output);
-                ancientRuins.dispose();
+                scenes.ancientRuins.instance.dispose();
                 scenes.ancientRuins.active = false;
                 window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
@@ -443,17 +433,15 @@ const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => 
  */
 const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
     const sceneMod = createSceneModule(scenes.landAndMine);
+    // Create instance of game section.
+    scenes.landAndMine.instance = new LandAndMine(scenes.landAndMine, planetSpec, landerSpec);
 
-    // Click event listener to register user click.
-    const raycaster = new Raycaster();
-    const landAndMine = new LandAndMine(scenes.landAndMine, planetSpec, landerSpec);
-    scenes.landAndMine.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
         if (!scenes.landAndMine.active) {
-            landAndMine.dispose();
+            scenes.landAndMine.instance.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
@@ -466,7 +454,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
             return;
         } else {
             statsPanel.begin();
-            const layout: { [key: number]: number } = landAndMine.endCycle();
+            const layout: { [key: number]: number } = scenes.landAndMine.instance.endCycle();
             statsPanel.end();
             if (layout) {
                 let output = `Loot received:
@@ -478,7 +466,7 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
                     output += `,
                     ${OreTypes[Number(key)]} = ${layout[Number(key)]}`;
                 });
-                landAndMine.dispose();
+                scenes.landAndMine.instance.dispose();
                 scenes.landAndMine.active = false;
                 window.alert(output);
                 // Remove renderer from the html container, and remove event listeners.
@@ -509,17 +497,15 @@ const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: Land
  */
 const loadShipLayoutScene = () => {
     const sceneMod = createSceneModule(scenes.shipLayout);
+    // Create instance of game section.
+    scenes.shipLayout.instance = new ShipLayout(scenes.shipLayout);
 
-    // Click event listener to register user click.
-    const raycaster = new Raycaster();
-    const shipLayout = new ShipLayout(scenes.shipLayout);
-    scenes.shipLayout.raycaster = raycaster;
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
         if (!scenes.shipLayout.active) {
-            shipLayout.dispose();
+            scenes.shipLayout.instance.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
             sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
@@ -531,10 +517,10 @@ const loadShipLayoutScene = () => {
             scenes.shipLayout.scene = null;
             return;
         } else {
-            const layout = shipLayout.endCycle();
+            const layout = scenes.shipLayout.instance.endCycle();
             if (layout) {
                 console.log("Chosen Layout: ", layout);
-                shipLayout.dispose();
+                scenes.shipLayout.instance.dispose();
                 scenes.shipLayout.active = false;
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
@@ -563,24 +549,7 @@ const loadShipLayoutScene = () => {
  * Called by DOM when page is finished loading. Now load assets, then the game.
  */
 export default () => {
-    const ldBar = document.getElementsByClassName('ldBar')[0];
-    ldBar.classList.remove('ldBar-fat');
-    ldBar.classList.remove('ldBar-skinny');
-
-    let WIDTH = window.innerWidth * 0.99;
-    let HEIGHT = window.innerHeight * 0.99;
-    if(WIDTH < HEIGHT) {
-        HEIGHT = WIDTH;
-        ldBar.classList.add('ldBar-skinny');
-    } else {
-        WIDTH = HEIGHT;
-        ldBar.classList.add('ldBar-fat');
-    }
-
-    const loading = document.getElementById('loading');
-    loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
-    loading.style.width = WIDTH + 'px';
-    loading.style.height = HEIGHT + 'px';
+    adjustWindowDimensions();
 
     ASSETS_CTRL.init(loadDevMenu);
 }

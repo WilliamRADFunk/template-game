@@ -1,10 +1,6 @@
 import { Renderer } from "three";
 
-/**
- * Gracefully handles a change in window size, by recalculating shape and updating threejs renderer.
- * @param renderer ThreeJs renderer reference.
- */
-export function onWindowResize(renderer: Renderer): void {
+export function adjustWindowDimensions(): { WIDTH: number; HEIGHT: number; } {
     const ldBar = document.getElementsByClassName('ldBar')[0];
     ldBar.classList.remove('ldBar-fat');
     ldBar.classList.remove('ldBar-skinny');
@@ -23,7 +19,7 @@ export function onWindowResize(renderer: Renderer): void {
     HEIGHT = window.innerHeight * 0.99;
     if(WIDTH < HEIGHT) HEIGHT = WIDTH;
     else WIDTH = HEIGHT;
-    renderer.setSize( WIDTH, HEIGHT );
+    
     const loading = document.getElementById('loading');
     loading.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
     loading.style.width = WIDTH + 'px';
@@ -32,4 +28,15 @@ export function onWindowResize(renderer: Renderer): void {
     mainview.style.left = (((window.innerWidth * 0.99) - WIDTH) / 2) + 'px';
     mainview.style.width = WIDTH + 'px';
     mainview.style.height = HEIGHT + 'px';
+
+    return { WIDTH, HEIGHT };
+}
+
+/**
+ * Gracefully handles a change in window size, by recalculating shape and updating threejs renderer.
+ * @param renderer ThreeJs renderer reference.
+ */
+export function onWindowResize(renderer: Renderer): void {
+    const { WIDTH, HEIGHT } = adjustWindowDimensions();
+    renderer.setSize( WIDTH, HEIGHT );
 }
