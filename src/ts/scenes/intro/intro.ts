@@ -1,12 +1,10 @@
 import {
-    Mesh,
-    MeshPhongMaterial,
-    Scene,
-    Texture,
-    PlaneGeometry,
-    MeshBasicMaterial,
     DoubleSide,
-    Font } from 'three';
+    Mesh,
+    MeshBasicMaterial,
+    MeshPhongMaterial,
+    PlaneGeometry,
+    Scene } from 'three';
 
 import { SOUNDS_CTRL } from '../../controls/controllers/sounds-controller';
 import { Actor } from '../../models/actor';
@@ -42,7 +40,7 @@ export class Intro {
     /**
      * List of actors in the scene.
      */
-    private actors: Actor[] = [
+    private _actors: Actor[] = [
         // 0: earth,
         // 1: mars,
         // 2: asteroid,
@@ -65,30 +63,32 @@ export class Intro {
     /**
      * Current frame
      */
-    private currentFrame: number = 0;
+    private _currentFrame: number = 0;
 
     /**
      * Current scene in the sequence.
      */
-    private currentSequenceIndex: number = 0;
+    private _currentSequenceIndex: number = 0;
 
     /**
      * Flag to signal the scene is no longer active. Primarily used for a click event to useful during endCycle.
      */
-    private isActive: boolean = true;
+    private _isActive: boolean = true;
 
     /**
-     * Reference to onWindowResize so that it can be removed later.
+     * Reference to _onWindowResize so that it can be removed later.
      */
-    private listenerRef: () => void;
+    private _listenerRef: () => void;
+
     /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
-    private scene: Scene;
+    private _scene: Scene;
+
     /**
      * Tracks series of events that make up the intro scene.
      */
-    private sequences: Sequence[] = [
+    private _sequences: Sequence[] = [
         SEQUENCE01, // Colonize Mars
         SEQUENCE02, // Mine Asteroid Belt
         SEQUENCE03, // Colonize Enceladus
@@ -96,12 +96,20 @@ export class Intro {
         SEQUENCE05, // Warp Drive
     ];
 
-    private stars: Mesh[] = [];
-    private starsInMotion: boolean = false;
+    /**
+     * Stationary pin-pricks of light in the background.
+     */
+    private _stars: Mesh[] = [];
+
+    /**
+     * Moving pin-pricks of light in the background.
+     */
+    private _starsInMotion: boolean = false;
+
     /**
      * Text of the intro screen.
      */
-    private text: FadableText = {
+    private _text: FadableText = {
         counter: 1,
         element: null,
         holdCount: 0,
@@ -109,7 +117,11 @@ export class Intro {
         isHolding: false,
         sentence: ''
     };
-    private warblePositions: [number, number][] = [
+
+    /**
+     * Positions mods to adjust objects quickly to give shaking sensation.
+     */
+    private _warblePositions: [number, number][] = [
         [0.01, 0.01],
         [-0.01, -0.01],
         [0.01, -0.01],
@@ -127,53 +139,64 @@ export class Intro {
         [0.01, -0.01],
         [-0.01, 0.01]
     ];
-    private warpedStars: Mesh[] = [];
-    private warpedStarsInMotion: boolean = false;
+
+    /**
+     * Stationary stars stretched out into lines to simulate light speeds.
+     */
+    private _warpedStars: Mesh[] = [];
+
+    /**
+     * Stars stretched out into lines to simulate light speeds and moving from right to left.
+     */
+    private _warpedStarsInMotion: boolean = false;
+
     /**
      * Constructor for the Intro (Scene) class
-     * @param scene         graphic rendering scene object. Used each iteration to redraw things contained in scene.
+     * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      */
     constructor(scene: SceneType) {
-        this.scene = scene.scene;
+        this._scene = scene.scene;
 
         document.oncontextmenu = event => {
             return false;
         };
 
-        this.onWindowResize();
-        this.listenerRef = this.onWindowResize.bind(this);
-        window.addEventListener('resize', this.listenerRef, false);
+        this._onWindowResize();
+        this._listenerRef = this._onWindowResize.bind(this);
+        window.addEventListener('resize', this._listenerRef, false);
 
-        this.createStars();
-        this.createActors();
+        this._createStars();
+        this._createActors();
         
         // Click event listener to register user click.
         document.onclick = event => {
             event.preventDefault();
             // Detection for player clicked on pause button
-            getIntersections(event, document.getElementById('mainview'), scene).forEach(el => {
-                if (el.object.name === 'Click Barrier') {
+            getIntersections(event, document.getElementById('mainview'), scene)
+                .filter(el => el.object.name === 'Click Barrier')
+                .forEach(el => {
                     SOUNDS_CTRL.playBidooo();
-                    this.isActive = false;
-                    return;
-                }
-            });
+                    this._isActive = false;
+                });
         };
     }
+
     /**
      * Calculates the next point in the ship's path.
+     * @param actor the actor about to be moved to the next point on its trajectory.
      */
-    private calculateNextPoint(actor: Actor): void {
+    private _calculateNextPoint(actor: Actor): void {
         actor.distanceTraveled += actor.moveSpeed;
         // (xt, yt) = ( ( (1 − t) * x0 + t * x1 ), ( (1 − t) * y0 + t * y1) )
         const t = actor.distanceTraveled / actor.totalDistance;
         actor.currentPoint[0] = ((1 - t) * actor.originalStartingPoint[0]) + (t * actor.endingPoint[0]);
         actor.currentPoint[1] = ((1 - t) * actor.originalStartingPoint[1]) + (t * actor.endingPoint[1]);
     }
+
     /**
      * Creates items to be moved around in scene.
      */
-    private createActors(): void {
+    private _createActors(): void {
         const headerParams = {
             font: ASSETS_CTRL.gameFont,
             size: 0.25,
@@ -206,8 +229,8 @@ export class Intro {
             labelBackGeometry,
             labelBackMaterial,
             headerParams);
-        this.scene.add(earth.mesh);
-        this.actors.push(earth);
+        this._scene.add(earth.mesh);
+        this._actors.push(earth);
 
         const mars = createMars(
             labelBackGlowGeometry,
@@ -215,8 +238,8 @@ export class Intro {
             labelBackGeometry,
             labelBackMaterial,
             headerParams);
-        this.scene.add(mars.mesh);
-        this.actors.push(mars);
+        this._scene.add(mars.mesh);
+        this._actors.push(mars);
 
         const asteroid = createAsteroid(
             labelBackGlowGeometry,
@@ -224,8 +247,8 @@ export class Intro {
             labelBackGeometry,
             labelBackMaterial,
             headerParams);
-        this.scene.add(asteroid.mesh);
-        this.actors.push(asteroid);
+        this._scene.add(asteroid.mesh);
+        this._actors.push(asteroid);
 
         const enceladus = createEnceladus(
             labelBackGlowGeometry,
@@ -233,10 +256,10 @@ export class Intro {
             labelBackGeometry,
             labelBackMaterial,
             headerParams);
-        this.scene.add(enceladus.mesh);
-        this.actors.push(enceladus);
+        this._scene.add(enceladus.mesh);
+        this._actors.push(enceladus);
 
-        this.actors.push(...createSolarSystem(
+        this._actors.push(...createSolarSystem(
             ASSETS_CTRL.gameFont,
             labelBackGlowGeometry,
             labelBackMaterialGlow,
@@ -244,7 +267,7 @@ export class Intro {
             labelBackMaterial,
             headerParams
         ).filter(x => {
-            this.scene.add(x.mesh);
+            this._scene.add(x.mesh);
             return true;
         }));
 
@@ -254,19 +277,22 @@ export class Intro {
             labelBackGeometry,
             labelBackMaterial,
             headerParams);
-        this.scene.add(station.mesh);
-        this.actors.push(station);
+        this._scene.add(station.mesh);
+        this._actors.push(station);
 
         const entryEffect = createEntryEffect();
-        this.scene.add(entryEffect.mesh);
-        this.actors.push(entryEffect);
+        this._scene.add(entryEffect.mesh);
+        this._actors.push(entryEffect);
 
         const ship = createShip1();
-        this.scene.add(ship.mesh);
-        this.actors.push(ship);
+        this._scene.add(ship.mesh);
+        this._actors.push(ship);
     }
 
-    private createStars(): void {
+    /**
+     * Creates the location, size, and mesh for each of the stars in the background.
+     */
+    private _createStars(): void {
         const material = new MeshBasicMaterial( {color: 0xFFFFFF, opacity: 1, transparent: false, side: DoubleSide} );
         for (let i = 0; i < 500; i++) {
             const mag = (Math.floor(Math.random() * 3) + 1) / 100;
@@ -279,28 +305,32 @@ export class Intro {
             mesh.position.set((isXNeg * xCoord), 5, (isZNeg * zCoord));
             mesh.rotation.set(1.5708, 0, 0);
             mesh.name = `Star-${i}`;
-            this.scene.add(mesh);
-            this.stars[i] = mesh;
+            this._scene.add(mesh);
+            this._stars[i] = mesh;
         }
 
-        for (let j = 0; j < this.stars.length / 2; j++) {
+        for (let j = 0; j < this._stars.length / 2; j++) {
             const mag = Math.random() + 0.2;
             const warpedGeometry = new PlaneGeometry(mag, 0.02, 1, 1);
             const mesh = new Mesh( warpedGeometry, material );
-            mesh.position.set(this.stars[j].position.x, 5, this.stars[j].position.z);
+            mesh.position.set(this._stars[j].position.x, 5, this._stars[j].position.z);
             mesh.rotation.set(1.5708, 0, 0);
             mesh.name = `Warped-Star-${j}`;
-            this.scene.add(mesh);
+            this._scene.add(mesh);
             mesh.visible = false;
-            this.warpedStars[j] = mesh;
+            this._warpedStars[j] = mesh;
         }
     }
 
-    private handleActorEvents(actor: Actor): void {
+    /**
+     * Handles all the actions actor is meant to take during the current frame in the scene.
+     * @param actor the actor to be manipulated this frame.
+     */
+    private _handleActorEvents(actor: Actor): void {
         const actorEvent = actor.action;
         switch(actorEvent.type) {
             case 'Moving': {
-                this.calculateNextPoint(actor);
+                this._calculateNextPoint(actor);
                 actor.mesh.position.set(actor.currentPoint[0], actor.mesh.position.y, actor.currentPoint[1]);
                 if (Math.abs(actor.currentPoint[0] - actor.endingPoint[0]) <= 0.03 && Math.abs(actor.currentPoint[1] - actor.endingPoint[1]) <= 0.03) {
                     actor.mesh.position.set(actor.endingPoint[0], actor.mesh.position.y, actor.endingPoint[1]);
@@ -309,9 +339,9 @@ export class Intro {
                 break;
             }
             case 'Move & Rotate': {
-                this.calculateNextPoint(actor);
+                this._calculateNextPoint(actor);
                 actor.mesh.position.set(actor.currentPoint[0], actor.mesh.position.y, actor.currentPoint[1]);
-                this.rotate(actor);
+                this._rotate(actor);
                 if (Math.abs(actor.currentPoint[0] - actor.endingPoint[0]) <= 0.03 && Math.abs(actor.currentPoint[1] - actor.endingPoint[1]) <= 0.03) {
                     actor.mesh.position.set(actor.endingPoint[0], actor.mesh.position.y, actor.endingPoint[1]);
                     actor.inMotion = false;
@@ -333,7 +363,7 @@ export class Intro {
                 break;
             }
             case 'Rotate': {
-                this.rotate(actor);
+                this._rotate(actor);
                 break;
             }
             case 'Warble': {
@@ -351,151 +381,159 @@ export class Intro {
         }
     }
 
-    private initiateActorEvents(actorEvent: ActorEvent): void {
+    /**
+     * Starts the actor off on an event with initilzation for the handler to use.
+     * @param actorEvent the event to be applied to the actor.
+     */
+    private _initiateActorEvents(actorEvent: ActorEvent): void {
         switch(actorEvent.type) {
             case 'Moving': {
-                this.setDestination(
+                this._setDestination(
                     actorEvent.actorIndex,
                     actorEvent.startPoint[0],
                     actorEvent.startPoint[1],
                     actorEvent.endPoint[0],
                     actorEvent.endPoint[1],
                     actorEvent.moveSpeed);
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.action = actorEvent;
                 break;
             }
             case 'Move & Rotate': {
-                this.setDestination(
+                this._setDestination(
                     actorEvent.actorIndex,
                     actorEvent.startPoint[0],
                     actorEvent.startPoint[1],
                     actorEvent.endPoint[0],
                     actorEvent.endPoint[1],
                     actorEvent.moveSpeed);
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.moveSpeed = actorEvent.moveSpeed;
                 actor.rotateSpeed = actorEvent.rotateSpeed;
                 actor.action = actorEvent;
                 break;
             }
             case 'Grow': {
-                this.setDestination(
+                this._setDestination(
                     actorEvent.actorIndex,
                     actorEvent.startPoint[0],
                     actorEvent.startPoint[1],
                     actorEvent.endPoint[0],
                     actorEvent.endPoint[1],
                     actorEvent.moveSpeed);
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.mesh.scale.set(0, 0, 0);
                 actor.action = actorEvent;
                 break;
             }
             case 'Shrink': {
-                this.setDestination(
+                this._setDestination(
                     actorEvent.actorIndex,
                     actorEvent.startPoint[0],
                     actorEvent.startPoint[1],
                     actorEvent.endPoint[0],
                     actorEvent.endPoint[1],
                     actorEvent.moveSpeed);
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.mesh.scale.set(1, 1, 1);
                 actor.action = actorEvent;
                 break;
             }
             case 'Rotate': {
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.rotateSpeed = actorEvent.rotateSpeed;
                 actor.inMotion = true;
                 actor.action = actorEvent;
                 break;
             }
             case 'Warble': {
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.inMotion = true;
-                actorEvent.warbleArray = this.warblePositions.slice();
+                actorEvent.warbleArray = this._warblePositions.slice();
                 actor.action = actorEvent;
                 break;
             }
             case 'Flaming': {
-                const actor = this.actors[actorEvent.actorIndex];
+                const actor = this._actors[actorEvent.actorIndex];
                 actor.inMotion = true;
                 actor.mesh.visible = true;
                 actor.action = actorEvent;
                 break;
             }
             case 'Stars Moving': {
-                this.starsInMotion = true;
+                this._starsInMotion = true;
                 break;
             }
             case 'Stars Stopping': {
-                this.starsInMotion = false;
+                this._starsInMotion = false;
                 break;
             }
             case 'Warped Stars Moving': {
-                this.warpedStarsInMotion = true;
-                this.warpedStars.forEach(warpedStar => {
+                this._warpedStarsInMotion = true;
+                this._warpedStars.forEach(warpedStar => {
                     warpedStar.visible = true;
                 });
                 break;
             }
             case 'Warped Stars Stopping': {
-                this.warpedStars.forEach(warpedStar => {
+                this._warpedStars.forEach(warpedStar => {
                     warpedStar.visible = false;
                 });
-                this.warpedStarsInMotion = false;
+                this._warpedStarsInMotion = false;
                 break;
             }
         }
 
     }
 
-    private handleTextEvents(textEvent: TextEvent): void {
+    /**
+     * Adjusts the bottom left label text for a new event.
+     * @param textEvent the change to be applied to the bottom left text labels.
+     */
+    private _handleTextEvents(textEvent: TextEvent): void {
         if (textEvent) {
-            this.text.sentence = textEvent.sentence;
-            this.text.isFadeIn = true;
-            this.text.isHolding = false;
-            this.text.holdCount = textEvent.holdCount;
-            this.text.counter = 0;
-            this.makeText();
-            this.onWindowResize();
+            this._text.sentence = textEvent.sentence;
+            this._text.isFadeIn = true;
+            this._text.isHolding = false;
+            this._text.holdCount = textEvent.holdCount;
+            this._text.counter = 0;
+            this._makeText();
+            this._onWindowResize();
         }
     }
 
     /**
      * Builds the text and graphics for the text dialogue at bottom of screen.
      */
-    private makeText(): void {
+    private _makeText(): void {
         const textElement = document.getElementById('intro-screen-sequence-labels');
         if (!textElement) {
-            this.onWindowResize();
+            this._onWindowResize();
         }
-        if (this.text.isFadeIn && this.text.counter > 180) {
-            this.text.isFadeIn = false;
-            this.text.isHolding = true;
-            this.text.counter = 1;
-        } else if (this.text.isHolding && this.text.counter > this.text.holdCount) {
-            this.text.isFadeIn = false;
-            this.text.isHolding = false;
-            this.text.counter = 1;
+        if (this._text.isFadeIn && this._text.counter > 180) {
+            this._text.isFadeIn = false;
+            this._text.isHolding = true;
+            this._text.counter = 1;
+        } else if (this._text.isHolding && this._text.counter > this._text.holdCount) {
+            this._text.isFadeIn = false;
+            this._text.isHolding = false;
+            this._text.counter = 1;
         }
 
-        if (this.text.isFadeIn) {
-            this.text.element.style.opacity = (this.text.counter / 180) + '';
-        } else if (this.text.isHolding) {
+        if (this._text.isFadeIn) {
+            this._text.element.style.opacity = (this._text.counter / 180) + '';
+        } else if (this._text.isHolding) {
             // Do nothing
-        } else if (this.text.counter < 181) {
-            this.text.element.style.opacity = (180 - this.text.counter) / 180 + '';
+        } else if (this._text.counter < 181) {
+            this._text.element.style.opacity = (180 - this._text.counter) / 180 + '';
         } else {
             return;
         }
 
-        this.text.counter++;
+        this._text.counter++;
     }
 
-    private onWindowResize(): void {
+    private _onWindowResize(): void {
         const textElement = document.getElementById('intro-screen-sequence-labels');
         if (textElement) {
             textElement.remove();
@@ -512,31 +550,31 @@ export class Intro {
         const width = WIDTH;
         const height = HEIGHT;
 
-        this.text.element = document.createElement('div');
-        this.text.element.id = 'intro-screen-sequence-labels';
-        this.text.element.style.fontFamily = 'Luckiest Guy';
-        this.text.element.style.color = '#FFD700';
-        this.text.element.style.position = 'absolute';
-        this.text.element.style.maxWidth = `${0.90 * width}px`;
-        this.text.element.style.width = `${0.90 * width}px`;
-        this.text.element.style.maxHeight = `${0.04 * height}px`;
-        this.text.element.style.height = `${0.04 * height}px`;
-        this.text.element.style.backgroundColor = 'transparent';
-        this.text.element.innerHTML = this.text.sentence;
-        this.text.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
-        this.text.element.style.left = `${left + (0.02 * width)}px`;
-        this.text.element.style.overflowY = 'hidden';
-        this.text.element.style.textAlign = 'left';
-        this.text.element.style.fontSize = `${0.03 * width}px`;
-        this.text.element.style.border = border;
-        document.body.appendChild(this.text.element);
+        this._text.element = document.createElement('div');
+        this._text.element.id = 'intro-screen-sequence-labels';
+        this._text.element.style.fontFamily = 'Luckiest Guy';
+        this._text.element.style.color = '#FFD700';
+        this._text.element.style.position = 'absolute';
+        this._text.element.style.maxWidth = `${0.90 * width}px`;
+        this._text.element.style.width = `${0.90 * width}px`;
+        this._text.element.style.maxHeight = `${0.04 * height}px`;
+        this._text.element.style.height = `${0.04 * height}px`;
+        this._text.element.style.backgroundColor = 'transparent';
+        this._text.element.innerHTML = this._text.sentence;
+        this._text.element.style.bottom = `${(window.innerHeight * 0.99 - height) + (0.02 * height)}px`;
+        this._text.element.style.left = `${left + (0.02 * width)}px`;
+        this._text.element.style.overflowY = 'hidden';
+        this._text.element.style.textAlign = 'left';
+        this._text.element.style.fontSize = `${0.03 * width}px`;
+        this._text.element.style.border = border;
+        document.body.appendChild(this._text.element);
     };
 
     /**
      * Spins planet at its set rate.
      * @param actor portion of the into scene to rotate.
      */
-    private rotate(actor: Actor): void {
+    private _rotate(actor: Actor): void {
         const twoPi = 2 * Math.PI;
         actor.currentRotation += actor.rotateSpeed;
         if (actor.currentRotation >= twoPi) {
@@ -554,8 +592,8 @@ export class Intro {
      * @param z2 destination z coordinate
      * @param speed amount of space to cover per frame.
      */
-    private setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number, speed: number): void {
-        const actor = this.actors[actorIndex];
+    private _setDestination(actorIndex: number, x1: number, z1: number, x2: number, z2: number, speed: number): void {
+        const actor = this._actors[actorIndex];
         actor.moveSpeed = speed;
         actor.originalStartingPoint[0] = x1;
         actor.currentPoint[0] = x1;
@@ -565,7 +603,7 @@ export class Intro {
         actor.totalDistance = Math.sqrt(((x2 - x1) * (x2 - x1)) + ((z2 - z1) * (z2 - z1)));
         actor.distanceTraveled = 0;
         // Calculates the first (second vertices) point.
-        this.calculateNextPoint(actor);
+        this._calculateNextPoint(actor);
         actor.inMotion = true;
     }
 
@@ -577,7 +615,7 @@ export class Intro {
         document.onclick = () => {};
         document.oncontextmenu = () => {};
         document.getElementById('intro-screen-sequence-labels').remove();
-        window.removeEventListener( 'resize', this.listenerRef, false);
+        window.removeEventListener( 'resize', this._listenerRef, false);
     }
 
     /**
@@ -586,37 +624,37 @@ export class Intro {
      */
     public endCycle(): boolean {
         // Through user action, the scene has ended.
-        if (!this.isActive) {
+        if (!this._isActive) {
             return true;
         }
     
-        this.currentFrame++;
-        if (this.sequences[this.currentSequenceIndex].endingFrame <= this.currentFrame) {
-            this.currentSequenceIndex++;
-            this.actors.forEach(actor => {
+        this._currentFrame++;
+        if (this._sequences[this._currentSequenceIndex].endingFrame <= this._currentFrame) {
+            this._currentSequenceIndex++;
+            this._actors.forEach(actor => {
                 actor.inMotion = false;
             });
-            this.currentFrame = 0;
+            this._currentFrame = 0;
         }
-        if (this.currentSequenceIndex < this.sequences.length) {
-            const sequence = this.sequences[this.currentSequenceIndex];
+        if (this._currentSequenceIndex < this._sequences.length) {
+            const sequence = this._sequences[this._currentSequenceIndex];
 
-            sequence.actorEvents.filter(event => event.startingFrame === this.currentFrame).forEach(actorEvent => {
-                this.initiateActorEvents(actorEvent);
+            sequence.actorEvents.filter(event => event.startingFrame === this._currentFrame).forEach(actorEvent => {
+                this._initiateActorEvents(actorEvent);
             });
 
-            const textEvent = sequence.textEvents.find(event => event.startingFrame === this.currentFrame);
-            this.handleTextEvents(textEvent);
+            const textEvent = sequence.textEvents.find(event => event.startingFrame === this._currentFrame);
+            this._handleTextEvents(textEvent);
         } else {
             return true;
         }
-        this.makeText();
-        this.actors.filter(x => x.inMotion).forEach(actor => {
-            this.handleActorEvents(actor)
+        this._makeText();
+        this._actors.filter(x => x.inMotion).forEach(actor => {
+            this._handleActorEvents(actor)
         });
-        if (this.starsInMotion) {
-            const length = this.stars.length;
-            this.stars.forEach((star, index) => {
+        if (this._starsInMotion) {
+            const length = this._stars.length;
+            this._stars.forEach((star, index) => {
                 const percentile = Math.floor((index / length) * 100);
                 if (percentile < 70) {
                     // Stationary
@@ -630,9 +668,9 @@ export class Intro {
                 }
             });
         }
-        if (this.warpedStarsInMotion) {
-            const length = this.warpedStars.length;
-            this.warpedStars.forEach((warpedStar, index) => {
+        if (this._warpedStarsInMotion) {
+            const length = this._warpedStars.length;
+            this._warpedStars.forEach((warpedStar, index) => {
                 const percentile = Math.floor((index / length) * 100);
                 if (percentile < 70) {
                     // Stationary
