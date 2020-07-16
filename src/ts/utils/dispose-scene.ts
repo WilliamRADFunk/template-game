@@ -5,6 +5,7 @@ import { SceneType } from "../models/scene-type";
  * @param scene the scene type object that contains the no longer needed ThreeJS instances.
  */ 
 export function disposeScene(scene: SceneType): void {
+    scene.active = false;
     scene.camera = null;
     scene.instance = null;
     scene.raycaster = null;

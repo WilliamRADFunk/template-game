@@ -1,23 +1,25 @@
-import { Raycaster } from 'three';
-
-import { SceneType } from './models/scene-type';
-import { SOUNDS_CTRL } from './controls/controllers/sounds-controller';
-import { Menu } from './scenes/main-menu/menu';
-import { Intro } from './scenes/intro/intro';
-import { ShipLayout } from './scenes/ship-layout/ship-layout';
-import { DevMenu } from './scenes/dev-menu/dev-menu';
-import { ENVIRONMENT } from './environment';
-import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
-import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandTypes, SkyTypes } from './models/planet-specifications';
-import { LanderSpecifications } from './models/lander-specifications';
-import * as stats from 'stats.js';
-import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
-import { AncientRuinsSpecifications } from './models/ancient-ruins-specifications';
-import { createSceneModule } from './utils/create-scene-module';
-import { getIntersections } from './utils/get-intersections';
 import { ASSETS_CTRL } from './controls/controllers/assets-controller';
-import { adjustWindowDimensions } from './utils/on-window-resize';
+
+import { AncientRuinsSpecifications } from './models/ancient-ruins-specifications';
+import { LanderSpecifications } from './models/lander-specifications';
+import { SceneType } from './models/scene-type';
+
+import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
+import { DevMenu } from './scenes/dev-menu/dev-menu';
+import { Intro } from './scenes/intro/intro';
+import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
+import { Menu } from './scenes/main-menu/menu';
+import { ShipLayout } from './scenes/ship-layout/ship-layout';
+
+import { ENVIRONMENT } from './environment';
+import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandTypes, SkyTypes } from './models/planet-specifications';
+
+import * as stats from 'stats.js';
+
+import { createSceneModule } from './utils/create-scene-module';
 import { disposeScene } from './utils/dispose-scene';
+import { adjustWindowDimensions } from './utils/on-window-resize';
+
 const statsPanel = new stats();
 
 const scenes: { [ key: string ]: SceneType } = {
@@ -200,12 +202,14 @@ const loadGameMenu = () => {
      */
     const render = () => {
         if (scenes.menu.instance.endCycle()) {
-            // Clears up memory used by menu scene.
-            disposeScene(scenes.menu);
             setTimeout(() => {
-                scenes.menu.active = false;
+                scenes.menu.instance.dispose();
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
                 sceneMod.container.removeChild( (scenes.menu.renderer as any).domElement );
+                // Clears up memory used by menu scene.
+                disposeScene(scenes.menu);
+
+                // TODO: Load ship lost in wormhole scene. For now, launch most recently completed mini-section.
                 loadLandAndMineScene(
                     {
                         gravity: 0.0001,
@@ -432,5 +436,5 @@ const loadShipLayoutScene = () => {
 export default () => {
     adjustWindowDimensions();
 
-    ASSETS_CTRL.init(loadDevMenu);
+    ASSETS_CTRL.init(loadDevMenu); // TODO: Add ability to read game load code from url query param.
 }

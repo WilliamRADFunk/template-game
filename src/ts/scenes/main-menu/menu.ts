@@ -32,167 +32,167 @@ export class Menu {
     /**
      * Click surface for the Easy button.
      */
-    private barrierEasy: Mesh;
+    private _barrierEasy: Mesh;
 
     /**
      * Click surface for the Hard button.
      */
-    private barrierHard: Mesh;
+    private _barrierHard: Mesh;
 
     /**
      * Click surface for the Hardcore button.
      */
-    private barrierHardcore: Mesh;
+    private _barrierHardcore: Mesh;
 
     /**
      * Click surface for the Help button.
      */
-    private barrierHelp: Mesh;
+    private _barrierHelp: Mesh;
 
     /**
      * Click surface for the Load button.
      */
-    private barrierLoad: Mesh;
+    private _barrierLoad: Mesh;
 
     /**
      * Click surface for the Normal button.
      */
-    private barrierNormal: Mesh;
+    private _barrierNormal: Mesh;
 
     /**
      * Click surface for the Off button.
      */
-    private barrierOff: Mesh;
+    private _barrierOff: Mesh;
 
     /**
      * Click surface for the On button.
      */
-    private barrierOn: Mesh;
+    private _barrierOn: Mesh;
 
     /**
      * Click surface for the Start button.
      */
-    private barrierStart: Mesh;
+    private _barrierStart: Mesh;
 
     /**
      * Controls the background click surface of buttons.
      */
-    private clickMaterial: MeshBasicMaterial;
+    private _clickMaterial: MeshBasicMaterial;
 
     /**
      * Controls the overall rendering of the copyright display
      */
-    private copyright: Mesh;
+    private _copyright: Mesh;
 
     /**
      * Controls size and shape of the copyright text
      */
-    private copyrightGeometry: TextGeometry;
+    private _copyrightGeometry: TextGeometry;
 
     /**
      * Easy, Medium, Hard, Hardcore
      */
-    private difficultyLevel: number = 3; // Hardcore
+    private _difficultyLevel: number = 3; // Hardcore
 
     /**
      * Controls the overall rendering of the easy button display
      */
-    private easy: Mesh;
+    private _easy: Mesh;
 
     /**
      * Controls size and shape of the easy button text
      */
-    private easyGeometry: TextGeometry;
+    private _easyGeometry: TextGeometry;
 
     /**
      * Since most of the text on the menu has same parameters, use one variable.
      */
-    private fontDifficultyBtnParams: TextGeometryParameters;
+    private _fontDifficultyBtnParams: TextGeometryParameters;
 
     /**
      * Controls the overall rendering of the hard button display
      */
-    private hard: Mesh;
+    private _hard: Mesh;
 
     /**
      * Controls size and shape of the hard button text
      */
-    private hardGeometry: TextGeometry;
+    private _hardGeometry: TextGeometry;
 
     /**
      * Controls the overall rendering of the hardcore button display
      */
-    private hardcore: Mesh;
+    private _hardcore: Mesh;
 
     /**
      * Controls size and shape of the hardcore button text
      */
-    private hardcoreGeometry: TextGeometry;
+    private _hardcoreGeometry: TextGeometry;
 
     /**
      * Controls the overall rendering of the help button display
      */
-    private help: Mesh;
+    private _help: Mesh;
 
     /**
      * Controls size and shape of the help button text
      */
-    private helpGeometry: TextGeometry;
+    private _helpGeometry: TextGeometry;
 
     /**
      * Paints the help screen.
      */
-    private helpHandler: HelpHandler;
+    private _helpHandler: HelpHandler;
 
     /**
      * Standard ambient light to better see the help menu with.
      */
-    private helpLight: AmbientLight;
+    private _helpLight: AmbientLight;
 
     /**
      * Flag to signal the scene is no longer active. Primarily used for a click event to useful during endCycle.
      */
-    private isActive: boolean = true;
+    private _isActive: boolean = true;
 
     /**
      * Controls the overall rendering of the load button display
      */
-    private load: Mesh;
+    private _load: Mesh;
 
     /**
      * Controls size and shape of the load button text
      */
-    private loadGeometry: TextGeometry;
+    private _loadGeometry: TextGeometry;
 
     /**
      * Paints the load screen.
      */
-    private loadHandler: LoadHandler;
+    private _loadHandler: LoadHandler;
 
     /**
      * Controls the overall rendering of the main banner display
      */
-    private mainBanner: Mesh;
+    private _mainBanner: Mesh;
 
     /**
      * Controls size and shape of the main banner text
      */
-    private mainBannerGeometry: TextGeometry;
+    private _mainBannerGeometry: TextGeometry;
 
     /**
      * Loaded font for menu text.
      */
-    private menuFont: Font;
+    private _menuFont: Font;
 
     /**
      * Controls the color of the untouched button display material
      */
-    private menuMaterial: MeshLambertMaterial;
+    private _menuMaterial: MeshLambertMaterial;
 
     /**
      * Controls the color of the selected button display material
      */
-    private menuSelectedMaterial: MeshLambertMaterial;
+    private _menuSelectedMaterial: MeshLambertMaterial;
 
     /**
      * Keeps track of menu mode.
@@ -200,77 +200,77 @@ export class Menu {
      * 1 --> Help screen
      * 2 --> Load screen
      */
-    private mode: number = 0;
+    private _mode: number = 0;
 
     /**
      * Controls the overall rendering of the normal button display
      */
-    private normal: Mesh;
+    private _normal: Mesh;
 
     /**
      * Controls size and shape of the normal button text
      */
-    private normalGeometry: TextGeometry;
+    private _normalGeometry: TextGeometry;
 
     /**
      * Controls the overall rendering of the off button display
      */
-    private off: Mesh;
+    private _off: Mesh;
 
     /**
      * Controls size and shape of the off button text
      */
-    private offGeometry: TextGeometry;
+    private _offGeometry: TextGeometry;
 
     /**
      * Controls the overall rendering of the on button display
      */
-    private on: Mesh;
+    private _on: Mesh;
 
     /**
      * Controls size and shape of the on button text
      */
-    private onGeometry: TextGeometry;
+    private _onGeometry: TextGeometry;
 
     /**
      * The distant dim light that allows the shimmer effect to happen.
      */
-    private pointLight: PointLight;
+    private _pointLight: PointLight;
 
     /**
      * Reference to the scene, used to remove and reinstall text geometries.
      */
-    private scene: Scene;
+    private _scene: Scene;
 
     /**
      * Controls the light that give the text its shine.
      */
-    private shimmer: PointLight;
+    private _shimmer: PointLight;
 
     /**
      * Controls the overall rendering of the Sound text display
      */
-    private sound: Mesh;
+    private _sound: Mesh;
 
     /**
      * Controls the overall rendering of the start button display
      */
-    private start: Mesh;
+    private _start: Mesh;
 
     /**
      * Controls size and shape of the start button text
      */
-    private startGeometry: TextGeometry;
+    private _startGeometry: TextGeometry;
 
     /**
      * Constructor for the Menu class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      */
     constructor(scene: SceneType) {
-        this.menuFont = ASSETS_CTRL.gameFont;
-        this.scene = scene.scene;
-        this.fontDifficultyBtnParams = {
-            font: this.menuFont,
+        this._menuFont = ASSETS_CTRL.gameFont;
+        this._scene = scene.scene;
+        this._fontDifficultyBtnParams = {
+            font: this._menuFont,
             size: 0.3,
             height: 0.2,
             curveSegments: 12,
@@ -280,25 +280,25 @@ export class Menu {
             bevelSegments: 3
         };
 
-        this.shimmer = new PointLight(0x66FF66, 2);
-        this.shimmer.position.set(-20, 2, 0);
-        this.scene.add(this.shimmer);
+        this._shimmer = new PointLight(0x66FF66, 2);
+        this._shimmer.position.set(-20, 2, 0);
+        this._scene.add(this._shimmer);
 
-        this.pointLight = new PointLight(0x66FF66, 1);
-        this.pointLight.position.set(15, 2, 0);
-        this.scene.add(this.pointLight);
+        this._pointLight = new PointLight(0x66FF66, 1);
+        this._pointLight.position.set(15, 2, 0);
+        this._scene.add(this._pointLight);
 
-        this.menuMaterial = new MeshLambertMaterial({
+        this._menuMaterial = new MeshLambertMaterial({
             color: 0x0066FF,
             opacity: 1,
             transparent: true
         });
-        this.menuSelectedMaterial = new MeshLambertMaterial({
+        this._menuSelectedMaterial = new MeshLambertMaterial({
             color: 0xFFCC00,
             opacity: 1,
             transparent: true
         });
-        this.clickMaterial = new MeshBasicMaterial({
+        this._clickMaterial = new MeshBasicMaterial({
             color: backgroundColor,
             opacity: backgroundOpacity,
             transparent: true,
@@ -307,80 +307,80 @@ export class Menu {
 
         // Create the start collision layer
         const startBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
-        this.barrierStart = new Mesh( startBarrierGeometry, this.clickMaterial );
-        this.barrierStart.name = 'Start';
-        this.barrierStart.position.set(0, 0, -1);
-        this.barrierStart.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierStart);
+        this._barrierStart = new Mesh( startBarrierGeometry, this._clickMaterial );
+        this._barrierStart.name = 'Start';
+        this._barrierStart.position.set(0, 0, -1);
+        this._barrierStart.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierStart);
 
         // Create the easy collision layer
         const easyBarrierGeometry = new PlaneGeometry( 1.4, 0.8, 0, 0 );
-        this.barrierEasy = new Mesh( easyBarrierGeometry, this.clickMaterial );
-        this.barrierEasy.name = 'Easy';
-        this.barrierEasy.position.set(-3.2, 0, 0);
-        this.barrierEasy.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierEasy);
+        this._barrierEasy = new Mesh( easyBarrierGeometry, this._clickMaterial );
+        this._barrierEasy.name = 'Easy';
+        this._barrierEasy.position.set(-3.2, 0, 0);
+        this._barrierEasy.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierEasy);
 
         // Create the normal collision layer
         const normalBarrierGeometry = new PlaneGeometry( 1.9, 0.8, 0, 0 );
-        this.barrierNormal = new Mesh( normalBarrierGeometry, this.clickMaterial );
-        this.barrierNormal.name = 'Normal';
-        this.barrierNormal.position.set(-1.35, 0, 0);
-        this.barrierNormal.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierNormal);
+        this._barrierNormal = new Mesh( normalBarrierGeometry, this._clickMaterial );
+        this._barrierNormal.name = 'Normal';
+        this._barrierNormal.position.set(-1.35, 0, 0);
+        this._barrierNormal.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierNormal);
 
         // Create the hard collision layer
         const hardBarrierGeometry = new PlaneGeometry( 1.4, 0.8, 0, 0 );
-        this.barrierHard = new Mesh( hardBarrierGeometry, this.clickMaterial );
-        this.barrierHard.name = 'Hard';
-        this.barrierHard.position.set(0.5, 0, 0);
-        this.barrierHard.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierHard);
+        this._barrierHard = new Mesh( hardBarrierGeometry, this._clickMaterial );
+        this._barrierHard.name = 'Hard';
+        this._barrierHard.position.set(0.5, 0, 0);
+        this._barrierHard.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierHard);
 
         // Create the hardcore collision layer
         const hardcoreBarrierGeometry = new PlaneGeometry( 2.6, 0.8, 0, 0 );
-        this.barrierHardcore = new Mesh( hardcoreBarrierGeometry, this.clickMaterial );
-        this.barrierHardcore.name = 'Hardcore';
-        this.barrierHardcore.position.set(2.7, 0, 0);
-        this.barrierHardcore.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierHardcore);
+        this._barrierHardcore = new Mesh( hardcoreBarrierGeometry, this._clickMaterial );
+        this._barrierHardcore.name = 'Hardcore';
+        this._barrierHardcore.position.set(2.7, 0, 0);
+        this._barrierHardcore.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierHardcore);
 
         // Create the load collision layer
         const loadBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
-        this.barrierLoad = new Mesh( loadBarrierGeometry, this.clickMaterial );
-        this.barrierLoad.name = 'Load';
-        this.barrierLoad.position.set(0, 0, 1);
-        this.barrierLoad.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierLoad);
+        this._barrierLoad = new Mesh( loadBarrierGeometry, this._clickMaterial );
+        this._barrierLoad.name = 'Load';
+        this._barrierLoad.position.set(0, 0, 1);
+        this._barrierLoad.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierLoad);
 
         // Create the help collision layer
         const helpBarrierGeometry = new PlaneGeometry( 1.5, 0.8, 0, 0 );
-        this.barrierHelp = new Mesh( helpBarrierGeometry, this.clickMaterial );
-        this.barrierHelp.name = 'Help';
-        this.barrierHelp.position.set(0, 0, 2);
-        this.barrierHelp.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierHelp);
+        this._barrierHelp = new Mesh( helpBarrierGeometry, this._clickMaterial );
+        this._barrierHelp.name = 'Help';
+        this._barrierHelp.position.set(0, 0, 2);
+        this._barrierHelp.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierHelp);
 
         // Create the sound off collision layer
         const offBarrierGeometry = new PlaneGeometry( 1, 0.8, 0, 0 );
-        this.barrierOff = new Mesh( offBarrierGeometry, this.clickMaterial );
-        this.barrierOff.name = 'Off';
-        this.barrierOff.position.set(1.2, 0, 3);
-        this.barrierOff.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierOff);
+        this._barrierOff = new Mesh( offBarrierGeometry, this._clickMaterial );
+        this._barrierOff.name = 'Off';
+        this._barrierOff.position.set(1.2, 0, 3);
+        this._barrierOff.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierOff);
 
         // Create the sound on collision layer
         const onBarrierGeometry = new PlaneGeometry( 0.9, 0.8, 0, 0 );
-        this.barrierOn = new Mesh( onBarrierGeometry, this.clickMaterial );
-        this.barrierOn.name = 'On';
-        this.barrierOn.position.set(0, 0, 3);
-        this.barrierOn.rotation.set(1.5708, 0, 0);
-        this.scene.add(this.barrierOn);
+        this._barrierOn = new Mesh( onBarrierGeometry, this._clickMaterial );
+        this._barrierOn.name = 'On';
+        this._barrierOn.position.set(0, 0, 3);
+        this._barrierOn.rotation.set(1.5708, 0, 0);
+        this._scene.add(this._barrierOn);
 
         // Main Banner button text
-        this.mainBannerGeometry = new TextGeometry('Enzmann\'s Odyssey',
+        this._mainBannerGeometry = new TextGeometry('Enzmann\'s Odyssey',
             {
-                font: this.menuFont,
+                font: this._menuFont,
                 size: 0.6,
                 height: 0.2,
                 curveSegments: 12,
@@ -389,15 +389,15 @@ export class Menu {
                 bevelSize: 0.5,
                 bevelSegments: 3
             });
-        this.mainBanner = new Mesh( this.mainBannerGeometry, this.menuSelectedMaterial );
-        this.mainBanner.position.set(-3.85, -0.5, -3);
-        this.mainBanner.rotation.x = -1.5708;
-        this.scene.add(this.mainBanner);
+        this._mainBanner = new Mesh( this._mainBannerGeometry, this._menuSelectedMaterial );
+        this._mainBanner.position.set(-3.85, -0.5, -3);
+        this._mainBanner.rotation.x = -1.5708;
+        this._scene.add(this._mainBanner);
 
         // Copyright text
-        this.copyrightGeometry = new TextGeometry('Copyright 2020 Tenacious Teal Games',
+        this._copyrightGeometry = new TextGeometry('Copyright 2020 Tenacious Teal Games',
             {
-                font: this.menuFont,
+                font: this._menuFont,
                 size: 0.2,
                 height: 0.2,
                 curveSegments: 12,
@@ -406,127 +406,132 @@ export class Menu {
                 bevelSize: 0.5,
                 bevelSegments: 3
             });
-        this.copyright = new Mesh( this.copyrightGeometry, this.menuMaterial );
-        this.copyright.position.set(-5.8, -0.5, 5.8);
-        this.copyright.rotation.x = -1.5708;
-        this.scene.add(this.copyright);
+        this._copyright = new Mesh( this._copyrightGeometry, this._menuMaterial );
+        this._copyright.position.set(-5.8, -0.5, 5.8);
+        this._copyright.rotation.x = -1.5708;
+        this._scene.add(this._copyright);
 
         // Start button text
-        this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
-        this.start = new Mesh( this.startGeometry, this.menuMaterial );
-        this.start.position.set(-0.6, -0.5, -0.8);
-        this.start.rotation.x = -1.5708;
-        this.scene.add(this.start);
+        this._startGeometry = new TextGeometry('Start', this._fontDifficultyBtnParams);
+        this._start = new Mesh( this._startGeometry, this._menuMaterial );
+        this._start.position.set(-0.6, -0.5, -0.8);
+        this._start.rotation.x = -1.5708;
+        this._scene.add(this._start);
 
         // Easy button text
-        this.createDifficultyButtons(0, ((this.difficultyLevel === 0) ? this.menuSelectedMaterial : this.menuMaterial), false);
+        this._createDifficultyButtons(0, ((this._difficultyLevel === 0) ? this._menuSelectedMaterial : this._menuMaterial), false);
         // Normal button text
-        this.createDifficultyButtons(1, ((this.difficultyLevel === 1) ? this.menuSelectedMaterial : this.menuMaterial), false);
+        this._createDifficultyButtons(1, ((this._difficultyLevel === 1) ? this._menuSelectedMaterial : this._menuMaterial), false);
         // Hard button text
-        this.createDifficultyButtons(2, ((this.difficultyLevel === 2) ? this.menuSelectedMaterial : this.menuMaterial), false);
+        this._createDifficultyButtons(2, ((this._difficultyLevel === 2) ? this._menuSelectedMaterial : this._menuMaterial), false);
         // Hardcore button text
-        this.createDifficultyButtons(3, ((this.difficultyLevel === 3) ? this.menuSelectedMaterial : this.menuMaterial), false);
+        this._createDifficultyButtons(3, ((this._difficultyLevel === 3) ? this._menuSelectedMaterial : this._menuMaterial), false);
 
         // Load button text
-        this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
-        this.load = new Mesh( this.loadGeometry, this.menuMaterial );
-        this.load.position.set(-0.5, -0.5, 1.2);
-        this.load.rotation.x = -1.5708;
-        this.scene.add(this.load);
+        this._loadGeometry = new TextGeometry('Load', this._fontDifficultyBtnParams);
+        this._load = new Mesh( this._loadGeometry, this._menuMaterial );
+        this._load.position.set(-0.5, -0.5, 1.2);
+        this._load.rotation.x = -1.5708;
+        this._scene.add(this._load);
 
         // Help button text
-        this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
-        this.help = new Mesh( this.helpGeometry, this.menuMaterial );
-        this.help.position.set(-0.5, -0.5, 2.2);
-        this.help.rotation.x = -1.5708;
-        this.scene.add(this.help);
+        this._helpGeometry = new TextGeometry('Help', this._fontDifficultyBtnParams);
+        this._help = new Mesh( this._helpGeometry, this._menuMaterial );
+        this._help.position.set(-0.5, -0.5, 2.2);
+        this._help.rotation.x = -1.5708;
+        this._scene.add(this._help);
 
-        this.helpHandler = new HelpHandler(this.scene, this.menuFont);
-        this.loadHandler = new LoadHandler(this.scene, this.menuFont);
+        this._helpHandler = new HelpHandler(this._scene, this._menuFont);
+        this._loadHandler = new LoadHandler(this._scene, this._menuFont);
 
         // Sound text
-        const soundGeometry = new TextGeometry('Sound: ', this.fontDifficultyBtnParams);
-        this.sound = new Mesh( soundGeometry, this.menuMaterial );
-        this.sound.position.set(-2.3, -0.5, 3.2);
-        this.sound.rotation.x = -1.5708;
-        this.scene.add(this.sound);
+        const soundGeometry = new TextGeometry('Sound: ', this._fontDifficultyBtnParams);
+        this._sound = new Mesh( soundGeometry, this._menuMaterial );
+        this._sound.position.set(-2.3, -0.5, 3.2);
+        this._sound.rotation.x = -1.5708;
+        this._scene.add(this._sound);
 
         // On button text
-        this.onGeometry = new TextGeometry('ON', this.fontDifficultyBtnParams);
-        this.on = new Mesh(
-            this.onGeometry,
-            SOUNDS_CTRL.getMute() ? this.menuMaterial : this.menuSelectedMaterial);
-        this.on.position.set(-0.3, -0.5, 3.2);
-        this.on.rotation.x = -1.5708;
-        this.scene.add(this.on);
+        this._onGeometry = new TextGeometry('ON', this._fontDifficultyBtnParams);
+        this._on = new Mesh(
+            this._onGeometry,
+            SOUNDS_CTRL.getMute() ? this._menuMaterial : this._menuSelectedMaterial);
+        this._on.position.set(-0.3, -0.5, 3.2);
+        this._on.rotation.x = -1.5708;
+        this._scene.add(this._on);
 
         // Off button text
-        this.offGeometry = new TextGeometry('OFF', this.fontDifficultyBtnParams);
-        this.off = new Mesh(
-            this.offGeometry,
-            SOUNDS_CTRL.getMute() ? this.menuSelectedMaterial : this.menuMaterial);
-        this.off.position.set(0.85, -0.5, 3.2);
-        this.off.rotation.x = -1.5708;
-        this.scene.add(this.off);
+        this._offGeometry = new TextGeometry('OFF', this._fontDifficultyBtnParams);
+        this._off = new Mesh(
+            this._offGeometry,
+            SOUNDS_CTRL.getMute() ? this._menuSelectedMaterial : this._menuMaterial);
+        this._off.position.set(0.85, -0.5, 3.2);
+        this._off.rotation.x = -1.5708;
+        this._scene.add(this._off);
 
         // Click event listener that activates certain menu options.
         document.onclick = event => {
             event.preventDefault();
 
             // Detection for player clicked on menu option.
-            getIntersections(event, document.getElementById('mainview'), scene).forEach(el => {
-                if (el.object.name === 'Start') {
-                    const difficulty = this.pressedStart();this.difficultyLevel
-                    this.isActive = false;
+            const intersecs = getIntersections(event, document.getElementById('mainview'), scene)
+            for (let i = 0; i < intersecs.length; i++) {
+                const name = intersecs[i].object.name;
+                if (name === 'Start') {
+                    this._pressedStart();
+                    this._isActive = false;
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Load Code') {
+                    // TODO: Fill game data with empty set + chosen difficulty setting.
+                    break;
+                } else if (name === 'Load Code') {
                     SOUNDS_CTRL.playBidooo();
-                    this.isActive = false; // TODO: Fix how 
-                    // window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                    // sceneMod.container.removeChild( (scene.renderer as any).domElement );
-                    // loadGame(1);
-                    return;
-                } else if (el.object.name === 'Easy') {
-                    this.changeDifficulty(0);
+                    this._isActive = false;
+                    // TODO: Fill game data with decrypted load code.
+                    break;
+                } else if (name === 'Easy') {
+                    this._changeDifficulty(0);
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Normal') {
-                    this.changeDifficulty(1);
+                    break;
+                } else if (name === 'Normal') {
+                    this._changeDifficulty(1);
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Hard') {
-                    this.changeDifficulty(2);
+                    break;
+                } else if (name === 'Hard') {
+                    this._changeDifficulty(2);
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Hardcore') {
-                    this.changeDifficulty(3);
+                    break;
+                } else if (name === 'Hardcore') {
+                    this._changeDifficulty(3);
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Load') {
-                    this.pressedLoad();
+                    break;
+                } else if (name === 'Load') {
+                    this._pressedLoad();
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Help') {
-                    this.pressedHelp();
+                    break;
+                } else if (name === 'Help') {
+                    this._pressedHelp();
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'On') {
-                    this.pressedOn();
-                    return;
-                } else if (el.object.name === 'Off') {
-                    this.pressedOff();
-                    return;
-                } else if (el.object.name === 'Return Help') {
-                    this.returnToMainMenu();
+                    break;
+                } else if (name === 'On') {
+                    this._pressedOn();
+                    break;
+                } else if (name === 'Off') {
+                    this._pressedOff();
+                    break;
+                } else if (name === 'Return Help') {
+                    this._returnToMainMenu();
                     SOUNDS_CTRL.playBidooo();
-                    return;
-                } else if (el.object.name === 'Return Load') {
-                    this.returnToMainMenu();
+                    break;
+                } else if (name === 'Return Load') {
+                    this._returnToMainMenu();
                     SOUNDS_CTRL.playBidooo();
-                    return;
+                    break;
+                } else if (name.length === 1) {
+                    this._charEntered(name);
+                    SOUNDS_CTRL.playBidooo();
+                    break;
                 }
-            });
+            };
         };
     }
 
@@ -534,11 +539,19 @@ export class Menu {
      * Changes difficulty level, and instigates the altering of the button texts associated with that choice.
      * @param diff the selected diffulty choice (0 --> easy, 1 --> normal, 2 --> hard, 3 --> hardcore)
      */
-    private changeDifficulty(diff: number): void {
-        if (diff === this.difficultyLevel) return;
-        this.createDifficultyButtons(this.difficultyLevel, this.menuMaterial, true);
-        this.difficultyLevel = diff;
-        this.createDifficultyButtons(this.difficultyLevel, this.menuSelectedMaterial, true);
+    private _changeDifficulty(diff: number): void {
+        if (diff === this._difficultyLevel) return;
+        this._createDifficultyButtons(this._difficultyLevel, this._menuMaterial, true);
+        this._difficultyLevel = diff;
+        this._createDifficultyButtons(this._difficultyLevel, this._menuSelectedMaterial, true);
+    }
+
+    /**
+     * Passes load char onto the loadHandler.
+     * @param char player clicked on a specific char. This is that char 0-F
+     */
+    private _charEntered(char: string): void {
+        this._loadHandler.charEntered(char);
     }
 
     /**
@@ -547,54 +560,54 @@ export class Menu {
      * @param material      the material (color mostly) to use in new text mesh
      * @param removeFirst   to determine if text mesh should first be removed from scene (TRUE --> remove | FALSE --> no remove)
      */
-    private createDifficultyButtons(buttonIndex: number, material: MeshLambertMaterial, removeFirst: boolean): void {
+    private _createDifficultyButtons(buttonIndex: number, material: MeshLambertMaterial, removeFirst: boolean): void {
         switch(buttonIndex) {
             case 0: {
                 if (removeFirst) {
-                    this.scene.remove(this.easy);
+                    this._scene.remove(this._easy);
                 }
                 // Selected easy button text
-                this.easyGeometry = new TextGeometry('Easy', this.fontDifficultyBtnParams);
-                this.easy = new Mesh( this.easyGeometry, material );
-                this.easy.position.set(-3.65, -0.5, 0.20);
-                this.easy.rotation.x = -1.5708;
-                this.scene.add(this.easy);
+                this._easyGeometry = new TextGeometry('Easy', this._fontDifficultyBtnParams);
+                this._easy = new Mesh( this._easyGeometry, material );
+                this._easy.position.set(-3.65, -0.5, 0.20);
+                this._easy.rotation.x = -1.5708;
+                this._scene.add(this._easy);
                 break;
             }
             case 1: {
                 if (removeFirst) {
-                    this.scene.remove(this.normal);
+                    this._scene.remove(this._normal);
                 }
                 // Selected normal button text
-                this.normalGeometry = new TextGeometry('Normal', this.fontDifficultyBtnParams);
-                this.normal = new Mesh( this.normalGeometry, material );
-                this.normal.position.set(-2.15, -0.5, 0.20);
-                this.normal.rotation.x = -1.5708;
-                this.scene.add(this.normal);
+                this._normalGeometry = new TextGeometry('Normal', this._fontDifficultyBtnParams);
+                this._normal = new Mesh( this._normalGeometry, material );
+                this._normal.position.set(-2.15, -0.5, 0.20);
+                this._normal.rotation.x = -1.5708;
+                this._scene.add(this._normal);
                 break;
             }
             case 2: {
                 if (removeFirst) {
-                    this.scene.remove(this.hard);
+                    this._scene.remove(this._hard);
                 }
                 // Selected hard button text
-                this.hardGeometry = new TextGeometry('Hard', this.fontDifficultyBtnParams);
-                this.hard = new Mesh( this.hardGeometry, material );
-                this.hard.position.set(0, -0.5, 0.20);
-                this.hard.rotation.x = -1.5708;
-                this.scene.add(this.hard);
+                this._hardGeometry = new TextGeometry('Hard', this._fontDifficultyBtnParams);
+                this._hard = new Mesh( this._hardGeometry, material );
+                this._hard.position.set(0, -0.5, 0.20);
+                this._hard.rotation.x = -1.5708;
+                this._scene.add(this._hard);
                 break;
             }
             case 3: {
                 if (removeFirst) {
-                    this.scene.remove(this.hardcore);
+                    this._scene.remove(this._hardcore);
                 }
                 //  Selected hardcore button text
-                this.hardcoreGeometry = new TextGeometry('Hardcore', this.fontDifficultyBtnParams);
-                this.hardcore = new Mesh( this.hardcoreGeometry, material );
-                this.hardcore.position.set(1.7, -0.5, 0.20);
-                this.hardcore.rotation.x = -1.5708;
-                this.scene.add(this.hardcore);
+                this._hardcoreGeometry = new TextGeometry('Hardcore', this._fontDifficultyBtnParams);
+                this._hardcore = new Mesh( this._hardcoreGeometry, material );
+                this._hardcore.position.set(1.7, -0.5, 0.20);
+                this._hardcore.rotation.x = -1.5708;
+                this._scene.add(this._hardcore);
                 break;
             }
             default: {}
@@ -605,19 +618,19 @@ export class Menu {
      * Transitions to help screen.
      * Changes the help menu button text when clicked to signal to user that their click worked.
      */
-    private pressedHelp(): void {
-        this.barrierHelp.visible = false;
-        this.scene.remove(this.help);
+    private _pressedHelp(): void {
+        this._barrierHelp.visible = false;
+        this._scene.remove(this._help);
         // Selected help button text
-        this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
-        this.help = new Mesh( this.helpGeometry, this.menuSelectedMaterial );
-        this.help.position.set(-0.5, -0.5, 2.2);
-        this.help.rotation.x = -1.5708;
-        this.scene.add(this.help);
+        this._helpGeometry = new TextGeometry('Help', this._fontDifficultyBtnParams);
+        this._help = new Mesh( this._helpGeometry, this._menuSelectedMaterial );
+        this._help.position.set(-0.5, -0.5, 2.2);
+        this._help.rotation.x = -1.5708;
+        this._scene.add(this._help);
         setTimeout(() => {
-            this.mode = 1;
+            this._mode = 1;
             this.hideMenu();
-            this.helpHandler.activate();
+            this._helpHandler.activate();
         }, 250);
     }
 
@@ -625,18 +638,18 @@ export class Menu {
      * Changes the load menu button text when clicked to signal to user that their click worked (if not hardcore difficulty).
      * @returns TRUE --> valid click, move onto load menu | FALSE --> harcore mode means load is inactive.
      */
-    private pressedLoad(): void {
-        this.scene.remove(this.load);
+    private _pressedLoad(): void {
+        this._scene.remove(this._load);
         // Selected load button text
-        this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
-        this.load = new Mesh( this.loadGeometry, this.menuSelectedMaterial );
-        this.load.position.set(-0.5, -0.5, 1.2);
-        this.load.rotation.x = -1.5708;
-        this.scene.add(this.load);
+        this._loadGeometry = new TextGeometry('Load', this._fontDifficultyBtnParams);
+        this._load = new Mesh( this._loadGeometry, this._menuSelectedMaterial );
+        this._load.position.set(-0.5, -0.5, 1.2);
+        this._load.rotation.x = -1.5708;
+        this._scene.add(this._load);
         setTimeout(() => {
-            this.mode = 2;
+            this._mode = 2;
             this.hideMenu();
-            this.loadHandler.activate();
+            this._loadHandler.activate();
         }, 250);
     }
 
@@ -644,19 +657,19 @@ export class Menu {
      * Turns sound off.
      * Changes the off menu button text when clicked to signal to user that their click worked.
      */
-    private pressedOff(): void {
-        this.scene.remove(this.off);
-        this.scene.remove(this.on);
+    private _pressedOff(): void {
+        this._scene.remove(this._off);
+        this._scene.remove(this._on);
         // Selected off button text
-        this.off = new Mesh( this.offGeometry, this.menuSelectedMaterial );
-        this.off.position.set(0.85, -0.5, 3.2);
-        this.off.rotation.x = -1.5708;
-        this.scene.add(this.off);
+        this._off = new Mesh( this._offGeometry, this._menuSelectedMaterial );
+        this._off.position.set(0.85, -0.5, 3.2);
+        this._off.rotation.x = -1.5708;
+        this._scene.add(this._off);
         // Selected on button text
-        this.on = new Mesh( this.onGeometry, this.menuMaterial );
-        this.on.position.set(-0.3, -0.5, 3.2);
-        this.on.rotation.x = -1.5708;
-        this.scene.add(this.on);
+        this._on = new Mesh( this._onGeometry, this._menuMaterial );
+        this._on.position.set(-0.3, -0.5, 3.2);
+        this._on.rotation.x = -1.5708;
+        this._scene.add(this._on);
         SOUNDS_CTRL.playBidooo();
         SOUNDS_CTRL.toggleMute(true);
     }
@@ -665,19 +678,19 @@ export class Menu {
      * Turns sound on.
      * Changes the on menu button text when clicked to signal to user that their click worked.
      */
-    private pressedOn(): void {
-        this.scene.remove(this.off);
-        this.scene.remove(this.on);
+    private _pressedOn(): void {
+        this._scene.remove(this._off);
+        this._scene.remove(this._on);
         // Selected off button text
-        this.off = new Mesh( this.offGeometry, this.menuMaterial );
-        this.off.position.set(0.8, -0.5, 3.2);
-        this.off.rotation.x = -1.5708;
-        this.scene.add(this.off);
+        this._off = new Mesh( this._offGeometry, this._menuMaterial );
+        this._off.position.set(0.8, -0.5, 3.2);
+        this._off.rotation.x = -1.5708;
+        this._scene.add(this._off);
         // Selected on button text
-        this.on = new Mesh( this.onGeometry, this.menuSelectedMaterial );
-        this.on.position.set(-0.3, -0.5, 3.2);
-        this.on.rotation.x = -1.5708;
-        this.scene.add(this.on);
+        this._on = new Mesh( this._onGeometry, this._menuSelectedMaterial );
+        this._on.position.set(-0.3, -0.5, 3.2);
+        this._on.rotation.x = -1.5708;
+        this._scene.add(this._on);
         SOUNDS_CTRL.toggleMute(false);
         SOUNDS_CTRL.playBidooo();
     }
@@ -685,77 +698,77 @@ export class Menu {
     /**
      * Changes the start menu button text when clicked to signal to user that their click worked.
      */
-    private pressedStart(): void {
-        this.scene.remove(this.start);
+    private _pressedStart(): void {
+        this._scene.remove(this._start);
         // Selected start button text
-        this.startGeometry = new TextGeometry('Start', this.fontDifficultyBtnParams);
-        this.start = new Mesh( this.startGeometry, this.menuSelectedMaterial );
-        this.start.position.set(-0.6, -0.5, -0.8);
-        this.start.rotation.x = -1.5708;
-        this.scene.add(this.start);
+        this._startGeometry = new TextGeometry('Start', this._fontDifficultyBtnParams);
+        this._start = new Mesh( this._startGeometry, this._menuSelectedMaterial );
+        this._start.position.set(-0.6, -0.5, -0.8);
+        this._start.rotation.x = -1.5708;
+        this._scene.add(this._start);
     }
 
     /**
      * Reactivates main menu options.
      */
-    private returnToMainMenu(): void {
-        if (this.mode === 2) {
-            this.scene.remove(this.load);
+    private _returnToMainMenu(): void {
+        if (this._mode === 2) {
+            this._scene.remove(this._load);
             // Selected load button text
-            this.loadGeometry = new TextGeometry('Load', this.fontDifficultyBtnParams);
-            this.load = new Mesh( this.loadGeometry, this.menuMaterial );
-            this.load.position.set(-0.5, -0.5, 1.2);
-            this.load.rotation.x = -1.5708;
-            this.scene.add(this.load);
-            this.mode = 0;
-            this.showMenu();
-            this.loadHandler.deactivate();
-        } else if (this.mode === 1) {
-            this.scene.remove(this.help);
+            this._loadGeometry = new TextGeometry('Load', this._fontDifficultyBtnParams);
+            this._load = new Mesh( this._loadGeometry, this._menuMaterial );
+            this._load.position.set(-0.5, -0.5, 1.2);
+            this._load.rotation.x = -1.5708;
+            this._scene.add(this._load);
+            this._mode = 0;
+            this._showMenu();
+            this._loadHandler.deactivate();
+        } else if (this._mode === 1) {
+            this._scene.remove(this._help);
             // Selected help button text
-            this.helpGeometry = new TextGeometry('Help', this.fontDifficultyBtnParams);
-            this.help = new Mesh( this.helpGeometry, this.menuMaterial );
-            this.help.position.set(-0.5, -0.5, 2.2);
-            this.help.rotation.x = -1.5708;
-            this.scene.add(this.help);
-            this.mode = 0;
-            this.showMenu();
-            this.helpHandler.deactivate();
+            this._helpGeometry = new TextGeometry('Help', this._fontDifficultyBtnParams);
+            this._help = new Mesh( this._helpGeometry, this._menuMaterial );
+            this._help.position.set(-0.5, -0.5, 2.2);
+            this._help.rotation.x = -1.5708;
+            this._scene.add(this._help);
+            this._mode = 0;
+            this._showMenu();
+            this._helpHandler.deactivate();
         }
-        this.createDifficultyButtons(0, this.menuMaterial, true);
-        this.createDifficultyButtons(1, this.menuMaterial, true);
-        this.createDifficultyButtons(2, this.menuMaterial, true);
-        this.createDifficultyButtons(3, this.menuMaterial, true);
+        this._createDifficultyButtons(0, this._menuMaterial, true);
+        this._createDifficultyButtons(1, this._menuMaterial, true);
+        this._createDifficultyButtons(2, this._menuMaterial, true);
+        this._createDifficultyButtons(3, this._menuMaterial, true);
 
-        this.createDifficultyButtons(this.difficultyLevel, this.menuSelectedMaterial, true);
+        this._createDifficultyButtons(this._difficultyLevel, this._menuSelectedMaterial, true);
     }
 
     /**
      * Turns visibility for menu items to be seen.
      */
-    private showMenu() {
-        this.shimmer.color.set(0x66FF66);
-        this.shimmer.intensity = 2;
-        this.shimmer.position.y = 2;
-        this.start.visible = true;
-        this.easy.visible = true;
-        this.normal.visible = true;
-        this.hard.visible = true;
-        this.hardcore.visible = true;
-        this.load.visible = true;
-        this.help.visible = true;
-        this.sound.visible = true;
-        this.on.visible = true;
-        this.off.visible = true;
-        this.barrierEasy.visible = true;
-        this.barrierHard.visible = true;
-        this.barrierHardcore.visible = true;
-        this.barrierHelp.visible = true;
-        this.barrierLoad.visible = true;
-        this.barrierNormal.visible = true;
-        this.barrierOff.visible = true;
-        this.barrierOn.visible = true;
-        this.barrierStart.visible = true;
+    private _showMenu() {
+        this._shimmer.color.set(0x66FF66);
+        this._shimmer.intensity = 2;
+        this._shimmer.position.y = 2;
+        this._start.visible = true;
+        this._easy.visible = true;
+        this._normal.visible = true;
+        this._hard.visible = true;
+        this._hardcore.visible = true;
+        this._load.visible = true;
+        this._help.visible = true;
+        this._sound.visible = true;
+        this._on.visible = true;
+        this._off.visible = true;
+        this._barrierEasy.visible = true;
+        this._barrierHard.visible = true;
+        this._barrierHardcore.visible = true;
+        this._barrierHelp.visible = true;
+        this._barrierLoad.visible = true;
+        this._barrierNormal.visible = true;
+        this._barrierOff.visible = true;
+        this._barrierOn.visible = true;
+        this._barrierStart.visible = true;
     }
 
     /**
@@ -765,8 +778,6 @@ export class Menu {
         document.onmousemove = () => {};
         document.onclick = () => {};
         document.oncontextmenu = () => {};
-        document.getElementById('intro-screen-sequence-labels').remove();
-        // window.removeEventListener( 'resize', this.listenerRef, false); TODO: Fix windor resize refs for menu
     }
 
     /**
@@ -774,58 +785,58 @@ export class Menu {
      * @returns whether or not the scene has finished. TRUE means the scene is done | FALSE if it isn't.
      */
     public endCycle(): boolean {
-        if (!this.isActive) {
+        if (!this._isActive) {
             return true;
         }
 
-        if (this.mode === 1) {
-            this.shimmer.position.x = 0;
-            this.shimmer.intensity = 0;
-            this.pointLight.intensity = 0;
-            if (!this.helpLight) {
-                this.helpLight = new AmbientLight(0xCCCCCC);
-                this.scene.add(this.helpLight);
+        if (this._mode === 1) {
+            this._shimmer.position.x = 0;
+            this._shimmer.intensity = 0;
+            this._pointLight.intensity = 0;
+            if (!this._helpLight) {
+                this._helpLight = new AmbientLight(0xCCCCCC);
+                this._scene.add(this._helpLight);
             }
-            this.helpHandler.endCycle();
+            this._helpHandler.endCycle();
         } else {
-            if (this.helpLight) {
-                this.scene.remove(this.helpLight);
-                this.helpLight = null;
+            if (this._helpLight) {
+                this._scene.remove(this._helpLight);
+                this._helpLight = null;
             }
-            if (this.shimmer.position.x > 20) {
-                this.shimmer.position.x = -20;
+            if (this._shimmer.position.x > 20) {
+                this._shimmer.position.x = -20;
             }
-            this.shimmer.position.x += 0.2;
+            this._shimmer.position.x += 0.2;
         }
-        this.loadHandler.endCycle();
+        this._loadHandler.endCycle();
     }
 
     /**
      * Turns visibility for menu items to be unseen.
      */
     public hideMenu() {
-        this.shimmer.color.set(0xCCCCCC);
-        this.shimmer.intensity = 3.2;
-        this.shimmer.position.y = -10;
-        this.start.visible = false;
-        this.easy.visible = false;
-        this.normal.visible = false;
-        this.hard.visible = false;
-        this.hardcore.visible = false;
-        this.load.visible = false;
-        this.help.visible = false;
-        this.sound.visible = false;
-        this.on.visible = false;
-        this.off.visible = false;
-        this.barrierEasy.visible = false;
-        this.barrierHard.visible = false;
-        this.barrierHardcore.visible = false;
-        this.barrierHelp.visible = false;
-        this.barrierLoad.visible = false;
-        this.barrierNormal.visible = false;
-        this.barrierOff.visible = false;
-        this.barrierOn.visible = false;
-        this.barrierStart.visible = false;
+        this._shimmer.color.set(0xCCCCCC);
+        this._shimmer.intensity = 3.2;
+        this._shimmer.position.y = -10;
+        this._start.visible = false;
+        this._easy.visible = false;
+        this._normal.visible = false;
+        this._hard.visible = false;
+        this._hardcore.visible = false;
+        this._load.visible = false;
+        this._help.visible = false;
+        this._sound.visible = false;
+        this._on.visible = false;
+        this._off.visible = false;
+        this._barrierEasy.visible = false;
+        this._barrierHard.visible = false;
+        this._barrierHardcore.visible = false;
+        this._barrierHelp.visible = false;
+        this._barrierLoad.visible = false;
+        this._barrierNormal.visible = false;
+        this._barrierOff.visible = false;
+        this._barrierOn.visible = false;
+        this._barrierStart.visible = false;
     }
 
     /**
@@ -833,7 +844,7 @@ export class Menu {
      * @returns the difficulty level currently selected in the menu.
      */
     public getDifficulty(): number {
-        return this.difficultyLevel;
+        return this._difficultyLevel;
     }
 
     /**
@@ -841,6 +852,6 @@ export class Menu {
      * @returns game load data from load code or null to start from a default set.
      */
     public getGameData(): null {
-        return this.loadHandler.getGameData();
+        return this._loadHandler.getGameData();
     }
 }
