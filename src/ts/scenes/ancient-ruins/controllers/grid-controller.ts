@@ -284,6 +284,10 @@ export class GridCtrl {
      * @returns an empty promise to make function async
      */
     private async _createGroundLevelMeshes(): Promise<void> {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.setAttribute('width', '1920');
+        canvas.setAttribute('height', '1920');
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
