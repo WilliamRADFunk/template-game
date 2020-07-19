@@ -425,6 +425,7 @@ export class GridCtrl {
 
     /**
      * Places a square graphic above the ground but below away team that "scorches" the ground to designate landing zone.
+     * @param center horizontal,vertical coordinate of the center landing zone tile.
      */
     private _createLandingZoneShadow(center: number[]): void {
         if (center) {
