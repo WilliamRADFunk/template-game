@@ -321,6 +321,7 @@ export class GridCtrl {
 
     /**
      * Finds a place along the edge of one of the four sides of the map to place the away team.
+     * @returns positions of landing zone tiles on the side of the map that was chosen.
      */
     private _createLandingZone(): number[] {
         const bottomRowColModVals = [ [0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2] ];
