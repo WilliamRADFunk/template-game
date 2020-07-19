@@ -281,7 +281,7 @@ export class GridCtrl {
 
     /**
      * Uses the tile grid to make meshes that match tile values.
-     * @returns an empty promise to make function async
+     * @returns an empty promise to make function async.
      */
     private async _createGroundLevelMeshes(): Promise<void> {
         const canvas = document.createElement('canvas');
