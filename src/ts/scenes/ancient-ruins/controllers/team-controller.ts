@@ -13,6 +13,7 @@ import { gridDictionary } from "../utils/tile-values";
 import { formatString } from "../../../utils/format-string";
 import { RankAbbreviationsMap } from "../../../utils/rank-map";
 import { TileCtrl } from "./tile-controller";
+import { animateCrewMember } from "../utils/animate-crew-member";
 
 export class TeamCtrl {
     /**
@@ -56,17 +57,6 @@ export class TeamCtrl {
     private _teamLeader: TeamMember;
 
     /**
-     * Team Leader
-     */
-    private _theTeam: TeamMember[] = [
-        this._redShirt1,
-        this._redShirt2,
-        this._medicalOfficer,
-        this._scienceOfficer,
-        this._teamLeader
-    ];
-
-    /**
      * Reference to this scene's tile controller.
      */
     private _tileCtrl: TileCtrl;
@@ -75,11 +65,6 @@ export class TeamCtrl {
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
-
-    /**
-     * All of the textures contained in this scene.
-     */
-    private _textures: { [key: string]: Texture } = {};
 
     /**
      * Constructor for the Team Controller class.
@@ -268,14 +253,27 @@ export class TeamCtrl {
     }
 
     /**
+     * Rotates the crew members graphics in the desired direction.
+     * @param index crew member index to have its direction altered.
+     * @param newDir new direction to have crew member face.
+     */
+    public changeCrewDirection(index: number, newDir: TeamMemberDirection): void {
+        this._ancientRuinsSpec.crew[index].currDirection = newDir;
+        rotateCrewMember(this._ancientRuinsSpec.crew[index]);
+    }
+
+    /**
      * At the end of each loop iteration, check for team-specific animations.
      */
     public endCycle(): void {
-
+        this._ancientRuinsSpec.crew.filter(member => member.isMoving).forEach(member => {
+            animateCrewMember(member);
+        });
     }
 
     /**
      * Hides one or all of the crew member meshes. Usually for landing and taking off sequences.
+     * @param index optionally selected individual member of the team to hide.
      */
     public hideTeam(index?: number): void {
         if (undefined !== index && index !== null) {
@@ -296,6 +294,19 @@ export class TeamCtrl {
     }
 
     /**
+     * 
+     * @param index index of selected individual member of the team to move.
+     * @param x amount to move crew member along the x-axis.
+     * @param z amount to move crew member along the z-axis.
+     */
+    public moveCrewMember(index: number, x: number, z: number): void {
+        const layer = this._ancientRuinsSpec.crew[index].animationMeshes[0].position.y;
+        this._ancientRuinsSpec.crew.forEach(member => {
+            member.animationMeshes.forEach(mesh => mesh.position.set(x, layer, z));
+        });
+    }
+
+    /**
      * Uses the row/col combo to find crew member, and switch them to active.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
@@ -313,6 +324,7 @@ export class TeamCtrl {
 
     /**
      * Shows one or all of the crew member meshes. Usually for landing and taking off sequences.
+     * @param index optionally selected individual member of the team to show.
      */
     public showTeam(index?: number): void {
         if (undefined !== index && index !== null) {
