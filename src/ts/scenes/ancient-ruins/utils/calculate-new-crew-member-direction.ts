@@ -8,8 +8,8 @@ import { TeamMemberDirection } from "../../../models/ancient-ruins-specification
  */
 export function calculateNewCrewMemberDirection(horizontalDifference: number, verticalDifference: number): TeamMemberDirection {
     // vertical difference * 10 + horrizontal difference = unique number for each of 8 possible directions without all the if-elses.
-    const dirrCode = (verticalDifference * 10) + horizontalDifference;
-    switch(dirrCode) {
+    const dirCode = (verticalDifference * 10) + horizontalDifference;
+    switch(dirCode) {
         case 10: {
             return TeamMemberDirection.Up;
         }
@@ -33,6 +33,9 @@ export function calculateNewCrewMemberDirection(horizontalDifference: number, ve
         }
         case 9: {
             return TeamMemberDirection.Up_Left;
+        }
+        default: {
+            console.log('calculateNewCrewMemberDirection: Impossible dirrection key', dirCode, verticalDifference, horizontalDifference);
         }
     }
 }

@@ -21,12 +21,16 @@ import { GridCtrlFactory } from "./utils/grid-controller-factory";
 import { PathFindingCtrl } from "./controllers/path-finding-controller";
 import { calculateNewCrewMemberDirection } from "./utils/calculate-new-crew-member-direction";
 import { rotateCrewMember } from "./utils/rotate-crew-member";
+import { RankAbbreviationsMap } from "../../utils/rank-map";
+import { formatString } from "../../utils/format-string";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
  */
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
+
+const walkingSpeed = 0.002;
 
 /**
  * The game state mode enum for this scene.
@@ -247,28 +251,31 @@ export class AncientRuins {
     private _calculateCrewMemberNextMove(member: TeamMember): [number, number] {
         switch(member.currDirection) {
             case TeamMemberDirection.Down: {
-                return [0, -0.001];
+                return [0, walkingSpeed];
             }
             case TeamMemberDirection.Down_Left: {
-                return [-0.001, -0.001];
+                return [-walkingSpeed, walkingSpeed];
             }
             case TeamMemberDirection.Down_Right: {
-                return [0.001, -0.001];
+                return [walkingSpeed, walkingSpeed];
             }
             case TeamMemberDirection.Left: {
-                return [-0.001, 0];
+                return [-walkingSpeed, 0];
             }
             case TeamMemberDirection.Right: {
-                return [0.001, 0];
+                return [walkingSpeed, 0];
             }
             case TeamMemberDirection.Up: {
-                return [0, 0.001];
+                return [0, -walkingSpeed];
             }
             case TeamMemberDirection.Up_Left: {
-                return [-0.001, 0.001];
+                return [-walkingSpeed, -walkingSpeed];
             }
             case TeamMemberDirection.Up_Right: {
-                return [0.001, 0.001];
+                return [walkingSpeed, -walkingSpeed];
+            }
+            default: {
+                console.log('_calculateCrewMemberNextMove: Impossible direction', member, member.currDirection);
             }
         }
     }
@@ -297,16 +304,15 @@ export class AncientRuins {
      * @returns whether or not crew member has arrived at next tile. TRUE has arrived | FALSE has not arrived.
      */
     private _hasCrewMemberArrivedAtCell(member: TeamMember): boolean {
-        const currCoords = member.position;
+        const currPos = member.animationMeshes[0].position;
         const tileCoords = member.path[1];
-        const currPos = [getZPos(currCoords[1]), getXPos(currCoords[0])];
-        const tilePos = [getZPos(tileCoords[1]), getXPos(tileCoords[0])];
 
-        const zDist = tilePos[1] - currPos[1];
-        const xDist = tilePos[0] - currPos[0];
+        const zDist = getZPos(tileCoords[0]) - currPos.z;
+        const xDist = getXPos(tileCoords[1]) - currPos.x;
 
-        const dist = Math.sqrt((zDist * zDist) / (xDist * xDist));
-        if (dist <= 0.002) {
+        const dist = Math.sqrt((zDist * zDist) + (xDist * xDist));
+
+        if (dist <= walkingSpeed + 0.001) {
             return true;
         }
         return false;
@@ -334,7 +340,8 @@ export class AncientRuins {
                 const tileName = el && el.object && el.object.name;
                 const tileSplit = tileName.split('-');
                 if (tileSplit.length === 3) {
-                    const currTeamMemberTile = this._ancientRuinsSpec.crew[currTeamMember].position;
+                    const currMember = this._ancientRuinsSpec.crew[currTeamMember];
+                    const currTeamMemberTile = currMember.position;
                     console.log(`Move ${
                         this._gridCtrl.getTileDescription(Number(currTeamMemberTile[0]), Number(currTeamMemberTile[1]), 2)} to tile ${
                         Number(tileSplit[1])}, ${
@@ -345,16 +352,33 @@ export class AncientRuins {
                         currTeamMemberTile[1],
                         Number(tileSplit[1]), Number(tileSplit[2]));
                     
-                    if (shortestPath.length >= 3) {
-                        this._ancientRuinsSpec.crew[currTeamMember].isMoving = true;
-                        this._ancientRuinsSpec.crew[currTeamMember].path = shortestPath;
+                    if (shortestPath.length >= 2) {
+                        currMember.isMoving = true;
+                        currMember.path = shortestPath;
+
+                        // Player has a new tile to head towards. Calculate direction to face.
+                        const vertDir = currMember.path[1][0] - currMember.position[0];
+                        const horrDir = currMember.path[1][1] - currMember.position[1];
+
+                        currMember.currDirection = calculateNewCrewMemberDirection(horrDir, vertDir);
+                        rotateCrewMember(currMember);
+
+                        const desc = `
+                            <table>
+                                <tr>
+                                    <td style="padding-bottom: 3px;">${formatString(this._tileCtrl.getGridDicDescription(currMember.tileValue), `(${RankAbbreviationsMap[currMember.rank]})`, currMember.name)} is moving...</td>
+                                </tr>
+                            </table>
+                        `;
+                        this._descText.update(desc);
+
+                        console.log(`Starting Tile: [${Number(currTeamMemberTile[0])}, ${Number(currTeamMemberTile[1])}]`,
+                            `Target Tile: [${Number(tileSplit[1])}, ${Number(tileSplit[2])}]`,
+                            'Shortest Path: ', shortestPath,
+                            'Current Direction', this._ancientRuinsSpec.crew[currTeamMember].currDirection);
                     } else {
                         // TODO: User notification that the tile they chose can't be reached.
                     }
-                    
-                    console.log(`Starting Tile: [${Number(currTeamMemberTile[0])}, ${Number(currTeamMemberTile[1])}]`,
-                        `Target Tile: [${Number(tileSplit[1])}, ${Number(tileSplit[2])}]`,
-                        'Shortest Path: ', shortestPath);
                 }
             });
             return false;
@@ -582,16 +606,17 @@ export class AncientRuins {
             .forEach((member, index) => {
                 // Crew member has arrived at next cell in its path. Update position and shed last tile in path.
                 if (this._hasCrewMemberArrivedAtCell(member)) {
+                    this._gridCtrl.updateCrewInGrid(member.path[0][0], member.path[0][1], -1);
                     member.path.shift();
                     member.position = member.path[0].slice() as [number, number];
+                    this._gridCtrl.updateCrewInGrid(member.path[0][0], member.path[0][1], member);
                     const xPos = getXPos(member.position[1]);
-                    const layer = member.animationMeshes[0].position.y;
-                    const zPos = getXPos(member.position[0]);
-                    member.animationMeshes.forEach(mesh => mesh.position.set(xPos, layer, zPos));
+                    const zPos = getZPos(member.position[0]);
+                    this._teamCtrl.teleportCrewMember(member, xPos, zPos);
                 // Still in between tiles, move a little closer to next tile.
                 } else {
                     const nextMove = this._calculateCrewMemberNextMove(member);
-                    this._teamCtrl.moveCrewMember(index, nextMove[0], nextMove[1]);
+                    this._teamCtrl.moveCrewMember(member, nextMove[0], nextMove[1]);
                     return;
                 }
 
@@ -599,12 +624,20 @@ export class AncientRuins {
                 if (member.path.length === 1) {
                     member.path.shift();
                     member.isMoving = false;
+                    const desc = `
+                            <table>
+                                <tr>
+                                    <td style="padding-bottom: 3px;">${formatString(this._tileCtrl.getGridDicDescription(member.tileValue), `(${RankAbbreviationsMap[member.rank]})`, member.name)} has arrived.</td>
+                                </tr>
+                            </table>
+                        `;
+                        this._descText.update(desc);
                     return;
                 }
 
                 // Player has a new tile to head towards. Calculate direction to face.
-                const vertDir = member.path[0][1] - member.position[1];
-                const horrDir = member.path[0][0] - member.position[0];
+                const vertDir = member.path[1][0] - member.position[0];
+                const horrDir = member.path[1][1] - member.position[1];
 
                 member.currDirection = calculateNewCrewMemberDirection(horrDir, vertDir);
                 rotateCrewMember(member);

@@ -17,7 +17,8 @@ import {
     TreeLeafColor,
     TreeTrunkColor,
     WaterBiome,
-    WaterColor } from "../../../models/ancient-ruins-specifications";
+    WaterColor, 
+    TeamMember} from "../../../models/ancient-ruins-specifications";
 import { TileCtrl } from "./tile-controller";
 import { RandomWithBounds } from "../../../utils/random-with-bounds";
 import { LayerYPos } from "../utils/layer-y-values";
@@ -1814,17 +1815,18 @@ export class GridCtrl {
      * Updates a grid tile with crew value.
      * @param row row coordinate in the terrain grid
      * @param col col coordinate in the terrain grid
-     * @param crewMember crew member index with which to update the grid tile value.
+     * @param crewMember crew member index or crew member reference with which to update the grid tile value.
      * @returns the value of the tile after changed with crew member.
      */
-    public updateCrewInGrid(row: number, col: number, crewMember: number): number {
+    public updateCrewInGrid(row: number, col: number, crewMember: number | TeamMember): number {
         // If -1 then the crewMember has left the tile, and it needs to be reset.
         if (crewMember === -1 && isInBounds(row, col)) {
             this._grid[row][col][2] = 0;
             return 0;
         }
 
-        const tileVal: number = this._tileCtrl.getCrewValue(crewMember);
+        const tileVal: number = (typeof crewMember !== 'number') ? crewMember.tileValue : this._ancientRuinsSpec.crew[crewMember].tileValue;
+        console.log('updateCrewInGrid', crewMember, tileVal);
         if (isInBounds(row, col) && (!isBlocking(this._grid[row][col][2]) || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
             this._grid[row][col][2] = tileVal;
 

@@ -167,14 +167,13 @@ export class TeamCtrl {
             const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._redShirt1.animationMeshes, material, val, crewPosition[0][0], crewPosition[0][1]);
             this._redShirt1.position = [crewPosition[0][0], crewPosition[0][1]];
-
-            // Updates grid with team member value
-            const tileVal = this._gridCtrl.updateCrewInGrid(this._redShirt1.position[0], this._redShirt1.position[1], 0);
-            gridDictionary[tileVal].gameDescription = formatString(
-                gridDictionary[tileVal].gameDescription,
-                `(${RankAbbreviationsMap[this._redShirt1.rank]})`,
-                this._redShirt1.name);
         });
+        // Updates grid with team member value
+        let tileVal = this._gridCtrl.updateCrewInGrid(this._redShirt1.position[0], this._redShirt1.position[1], 0);
+        gridDictionary[tileVal].gameDescription = formatString(
+            gridDictionary[tileVal].gameDescription,
+            `(${RankAbbreviationsMap[this._redShirt1.rank]})`,
+            this._redShirt1.name);
 
         const redShirt2CrewDictionaryValue = findMemberValue(this._redShirt2.appearance, ShirtColor.Red);
         [0, 1, 2].forEach((val: number) => {
@@ -184,14 +183,13 @@ export class TeamCtrl {
             const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._redShirt2.animationMeshes, material, val, crewPosition[1][0], crewPosition[1][1]);
             this._redShirt2.position = [crewPosition[1][0], crewPosition[1][1]];
-
-            // Updates grid with team member value
-            const tileVal = this._gridCtrl.updateCrewInGrid(this._redShirt2.position[0], this._redShirt2.position[1], 1);
-            gridDictionary[tileVal].gameDescription = formatString(
-                gridDictionary[tileVal].gameDescription,
-                `(${RankAbbreviationsMap[this._redShirt2.rank]})`,
-                this._redShirt2.name);
         });
+        // Updates grid with team member value
+        tileVal = this._gridCtrl.updateCrewInGrid(this._redShirt2.position[0], this._redShirt2.position[1], 1);
+        gridDictionary[tileVal].gameDescription = formatString(
+            gridDictionary[tileVal].gameDescription,
+            `(${RankAbbreviationsMap[this._redShirt2.rank]})`,
+            this._redShirt2.name);
 
         const medicalOfficerCrewDictionaryValue = findMemberValue(this._medicalOfficer.appearance, ShirtColor.Blue);
         [0, 1, 2].forEach((val: number) => {
@@ -201,14 +199,13 @@ export class TeamCtrl {
             const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._medicalOfficer.animationMeshes, material, val, crewPosition[2][0], crewPosition[2][1]);
             this._medicalOfficer.position = [crewPosition[2][0], crewPosition[2][1]];
-
-            // Updates grid with team member value
-            const tileVal = this._gridCtrl.updateCrewInGrid(this._medicalOfficer.position[0], this._medicalOfficer.position[1], 2);
-            gridDictionary[tileVal].gameDescription = formatString(
-                gridDictionary[tileVal].gameDescription,
-                `(${RankAbbreviationsMap[this._medicalOfficer.rank]})`,
-                this._medicalOfficer.name);
         });
+        // Updates grid with team member value
+        tileVal = this._gridCtrl.updateCrewInGrid(this._medicalOfficer.position[0], this._medicalOfficer.position[1], 2);
+        gridDictionary[tileVal].gameDescription = formatString(
+            gridDictionary[tileVal].gameDescription,
+            `(${RankAbbreviationsMap[this._medicalOfficer.rank]})`,
+            this._medicalOfficer.name);
 
         const scienceOfficerCrewDictionaryValue = findMemberValue(this._scienceOfficer.appearance, ShirtColor.Blue);
         [0, 1, 2].forEach((val: number) => {
@@ -218,14 +215,13 @@ export class TeamCtrl {
             const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._scienceOfficer.animationMeshes, material, val, crewPosition[3][0], crewPosition[3][1]);
             this._scienceOfficer.position = [crewPosition[3][0], crewPosition[3][1]];
-
-            // Updates grid with team member value
-            const tileVal = this._gridCtrl.updateCrewInGrid(this._scienceOfficer.position[0], this._scienceOfficer.position[1], 3);
-            gridDictionary[tileVal].gameDescription = formatString(
-                gridDictionary[tileVal].gameDescription,
-                `(${RankAbbreviationsMap[this._scienceOfficer.rank]})`,
-                this._scienceOfficer.name);
         });
+        // Updates grid with team member value
+        tileVal = this._gridCtrl.updateCrewInGrid(this._scienceOfficer.position[0], this._scienceOfficer.position[1], 3);
+        gridDictionary[tileVal].gameDescription = formatString(
+            gridDictionary[tileVal].gameDescription,
+            `(${RankAbbreviationsMap[this._scienceOfficer.rank]})`,
+            this._scienceOfficer.name);
 
         const teamLeaderCrewDictionaryValue = findMemberValue(this._teamLeader.appearance, ShirtColor.Yellow);
         [0, 1, 2].forEach((val: number) => {
@@ -235,14 +231,13 @@ export class TeamCtrl {
             const material = makeMemberMaterial(offCoordsX, offCoordsY, size);
             makeMember(this._scene, this._teamLeader.animationMeshes, material, val, crewPosition[4][0], crewPosition[4][1]);
             this._teamLeader.position = [crewPosition[4][0], crewPosition[4][1]];
-
-            // Updates grid with team member value
-            const tileVal = this._gridCtrl.updateCrewInGrid(this._teamLeader.position[0], this._teamLeader.position[1], 4);
-            gridDictionary[tileVal].gameDescription = formatString(
-                gridDictionary[tileVal].gameDescription,
-                `(${RankAbbreviationsMap[this._teamLeader.rank]})`,
-                this._teamLeader.name);
         });
+        // Updates grid with team member value
+        tileVal = this._gridCtrl.updateCrewInGrid(this._teamLeader.position[0], this._teamLeader.position[1], 4);
+        gridDictionary[tileVal].gameDescription = formatString(
+            gridDictionary[tileVal].gameDescription,
+            `(${RankAbbreviationsMap[this._teamLeader.rank]})`,
+            this._teamLeader.name);
     }
 
     /**
@@ -295,14 +290,14 @@ export class TeamCtrl {
 
     /**
      * 
-     * @param index index of selected individual member of the team to move.
+     * @param member selected individual member of the team to move.
      * @param x amount to move crew member along the x-axis.
      * @param z amount to move crew member along the z-axis.
      */
-    public moveCrewMember(index: number, x: number, z: number): void {
-        const layer = this._ancientRuinsSpec.crew[index].animationMeshes[0].position.y;
-        this._ancientRuinsSpec.crew.forEach(member => {
-            member.animationMeshes.forEach(mesh => mesh.position.set(x, layer, z));
+    public moveCrewMember(member: TeamMember, x: number, z: number): void {
+        member.animationMeshes.forEach(mesh => {
+            mesh.position.x += x;
+            mesh.position.z += z;
         });
     }
 
@@ -333,6 +328,19 @@ export class TeamCtrl {
         }
         this._ancientRuinsSpec.crew.forEach(member => {
             member.animationMeshes[0].visible = true;
+        });
+    }
+
+    /**
+     * Teleports crew member to provided x and z coord. Differs from moveCrewMember because this isn't incremental.
+     * @param member selected individual member of the team to move.
+     * @param x coordinate to move crew member on the x-axis.
+     * @param z coordinate to move crew member on the z-axis.
+     */
+    public teleportCrewMember(member: TeamMember, x: number, z: number): void {
+        const layer = member.animationMeshes[0].position.y
+        member.animationMeshes.forEach(mesh => {
+            mesh.position.set(x, layer, z);
         });
     }
 }
