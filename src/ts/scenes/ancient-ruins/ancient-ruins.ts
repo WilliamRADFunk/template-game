@@ -30,7 +30,7 @@ import { formatString } from "../../utils/format-string";
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
-const walkingSpeed = 0.002;
+const walkingSpeed = 0.003;
 
 /**
  * The game state mode enum for this scene.
@@ -336,12 +336,45 @@ export class AncientRuins {
                 return false;
             }
             // ThreeJS object intersections.
-            getIntersections(event, container, sceneType).forEach(el => {
+            const intersects = getIntersections(event, container, sceneType)
+            for (let i = 0; i < intersects.length; i++) {
+                const el = intersects[i];
                 const tileName = el && el.object && el.object.name;
                 const tileSplit = tileName.split('-');
                 if (tileSplit.length === 3) {
                     const currMember = this._ancientRuinsSpec.crew[currTeamMember];
                     const currTeamMemberTile = currMember.position;
+
+                    // If crew member was already on the move, teleport them to last tile, and halt them, before recalculating.
+                    if (currMember.isMoving) {
+                        currMember.isMoving = false;
+                        // Calculate which is closer: previous cell, or next cell.
+                        const currX = currMember.animationMeshes[0].position.x;
+                        const currZ = currMember.animationMeshes[0].position.z;
+                        const prevX = getXPos(currTeamMemberTile[1]);
+                        const prevZ = getZPos(currTeamMemberTile[0]);
+                        const prevXDiff = prevX - currX;
+                        const prevZDiff = prevZ - currZ;
+                        const nextTile = (currMember.path[0][0] === currTeamMemberTile[0] && currMember.path[0][1] === currTeamMemberTile[1])
+                            ? currMember.path[1] : currMember.path[0];
+                        const nextX = getXPos(nextTile[1]);
+                        const nextZ = getZPos(nextTile[0]);
+                        const nextXDiff = nextX - currX;
+                        const nextZDiff = nextZ - currZ;
+                        const prevDist = Math.sqrt((prevXDiff * prevXDiff) + (prevZDiff * prevZDiff));
+                        const nextDist = Math.sqrt((nextXDiff * nextXDiff) + (nextZDiff * nextZDiff));
+                        this._gridCtrl.updateCrewInGrid(currTeamMemberTile[0], currTeamMemberTile[1], -1);
+                        if (prevDist < nextDist) {
+                            this._teamCtrl.teleportCrewMember(currMember, prevX, prevZ);
+                            this._gridCtrl.updateCrewInGrid(currTeamMemberTile[0], currTeamMemberTile[1], currMember);
+                        } else {
+                            this._teamCtrl.teleportCrewMember(currMember, nextX, nextZ);
+                            this._gridCtrl.updateCrewInGrid(nextTile[0], nextTile[1], currMember);
+                            currMember.position = nextTile.slice() as [number, number];
+                        }
+                        currMember.path.length = 0;
+                    }
+
                     console.log(`Move ${
                         this._gridCtrl.getTileDescription(Number(currTeamMemberTile[0]), Number(currTeamMemberTile[1]), 2)} to tile ${
                         Number(tileSplit[1])}, ${
@@ -357,8 +390,8 @@ export class AncientRuins {
                         currMember.path = shortestPath;
 
                         // Player has a new tile to head towards. Calculate direction to face.
-                        const vertDir = currMember.path[1][0] - currMember.position[0];
-                        const horrDir = currMember.path[1][1] - currMember.position[1];
+                        const vertDir = currMember.path[1][0] - currTeamMemberTile[0];
+                        const horrDir = currMember.path[1][1] - currTeamMemberTile[1];
 
                         currMember.currDirection = calculateNewCrewMemberDirection(horrDir, vertDir);
                         rotateCrewMember(currMember);
@@ -379,10 +412,12 @@ export class AncientRuins {
                     } else {
                         // TODO: User notification that the tile they chose can't be reached.
                     }
+                    return;
                 }
-            });
+            };
             return false;
         };
+
         document.onclick = event => {
             event.preventDefault();
             // If no crew member active, or in intro sequence, do nothing.
@@ -438,9 +473,8 @@ export class AncientRuins {
                 }
             });
         };
-        document.onmousemove = event => {
 
-        };
+        document.onmousemove = event => { };
 
         // Get window dimmensions
         let width = window.innerWidth * 0.99;
@@ -622,6 +656,7 @@ export class AncientRuins {
 
                 // Crew member has arrived at the intended destination. Stop moving.
                 if (member.path.length === 1) {
+                    member.position = member.path.shift();
                     member.path.shift();
                     member.isMoving = false;
                     const desc = `

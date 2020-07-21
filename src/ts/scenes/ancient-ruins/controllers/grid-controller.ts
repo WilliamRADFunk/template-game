@@ -37,7 +37,11 @@ let landingFrameCounter = -1;
 let overheadMeshOpacityFrameCounter = 0;
 const overheadMeshOpacityFrameCounterReset = 30;
 
-const overheadRowColModVals = [ [0, 0], [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1] ];
+const overheadRowColModVals = [
+    [0, 0],
+    [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1],
+    [2, 0], [2, 1], [0, 2], [-1, 2], [-2, 0], [-2, -1], [0, -2], [1, -2], [-2, 1], [-1, -2], [2, -1], [1, 2]
+];
 
 function shuffle(arr: any[]): any[] {
     for(let i = arr.length - 1; i > 0; i--){
@@ -170,7 +174,7 @@ export class GridCtrl {
                 if (!isInBounds(row, col)) continue;
                 
                 if (this._grid[row][col][4]) {
-                    (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.9;
+                    (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.95;
                 } else {
                     (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0;
                 }
@@ -1826,7 +1830,6 @@ export class GridCtrl {
         }
 
         const tileVal: number = (typeof crewMember !== 'number') ? crewMember.tileValue : this._ancientRuinsSpec.crew[crewMember].tileValue;
-        console.log('updateCrewInGrid', crewMember, tileVal);
         if (isInBounds(row, col) && (!isBlocking(this._grid[row][col][2]) || this._grid[row][col][2] < this._tileCtrl.getLandingZoneValue())) {
             this._grid[row][col][2] = tileVal;
 
