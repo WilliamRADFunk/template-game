@@ -123,7 +123,6 @@ export class PathFindingCtrl {
     private _getShortestPath(nextRow: number, nextCol: number, targetRow: number, targetCol: number, testPath: number[], targetCell: number): boolean {
         const nextCell = this._convertRowColToCell(nextRow, nextCol);
         testPath.push(nextCell);
-        console.log(`_getShortestPath (${nextRow}, ${nextCol}): path length = `, testPath.length);
 
         // If potential path reaches 30 or more tiles, it's already too long. Bail out early (too long).
         if (testPath.length >= 30) {
@@ -233,7 +232,6 @@ export class PathFindingCtrl {
         for (let x = 0; x < closenessScores.length; x++) {
             const tile = closenessScores[x];
             const nextCell = this._convertRowColToCell(tile[0], tile[1]);
-            console.log('Base tile', `${tile[0]}, ${tile[1]}, ${tile[2]}`);
 
             // If adjacent cell is the target cell, add it and bail.
             if (nextCell === targetCell) {

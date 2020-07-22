@@ -343,7 +343,7 @@ export class AncientRuins {
                 const tileSplit = tileName.split('-');
                 if (tileSplit.length === 3) {
                     const currMember = this._ancientRuinsSpec.crew[currTeamMember];
-                    const currTeamMemberTile = currMember.position;
+                    let currTeamMemberTile = currMember.position;
 
                     // If crew member was already on the move, teleport them to last tile, and halt them, before recalculating.
                     if (currMember.isMoving) {
@@ -373,12 +373,10 @@ export class AncientRuins {
                             currMember.position = nextTile.slice() as [number, number];
                         }
                         currMember.path.length = 0;
+                        currTeamMemberTile = currMember.position;
                     }
 
-                    console.log(`Move ${
-                        this._gridCtrl.getTileDescription(Number(currTeamMemberTile[0]), Number(currTeamMemberTile[1]), 2)} to tile ${
-                        Number(tileSplit[1])}, ${
-                        Number(tileSplit[2])}`);
+                    console.log(`Move from ${currTeamMemberTile[0]}, ${currTeamMemberTile[1]} to tile ${tileSplit[1]}, ${tileSplit[2]}`);
                     
                     const shortestPath = this._pathFindingCtrl.getShortestPath(
                         currTeamMemberTile[0],
@@ -405,10 +403,7 @@ export class AncientRuins {
                         `;
                         this._descText.update(desc);
 
-                        console.log(`Starting Tile: [${Number(currTeamMemberTile[0])}, ${Number(currTeamMemberTile[1])}]`,
-                            `Target Tile: [${Number(tileSplit[1])}, ${Number(tileSplit[2])}]`,
-                            'Shortest Path: ', shortestPath,
-                            'Current Direction', this._ancientRuinsSpec.crew[currTeamMember].currDirection);
+                        console.log('Shortest Path: ', shortestPath);
                     } else {
                         // TODO: User notification that the tile they chose can't be reached.
                     }
@@ -652,6 +647,10 @@ export class AncientRuins {
                     const nextMove = this._calculateCrewMemberNextMove(member);
                     this._teamCtrl.moveCrewMember(member, nextMove[0], nextMove[1]);
                     return;
+                }
+
+                if (!member.path.length) {
+                    console.error('This never should have happened!!!', member);
                 }
 
                 // Crew member has arrived at the intended destination. Stop moving.
