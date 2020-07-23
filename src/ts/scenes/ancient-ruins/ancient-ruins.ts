@@ -341,7 +341,7 @@ export class AncientRuins {
                 const el = intersects[i];
                 const tileName = el && el.object && el.object.name;
                 const tileSplit = tileName.split('-');
-                if (tileSplit.length === 3) {
+                if (tileSplit.length === 3 && tileSplit[0] === 'tile') {
                     const currMember = this._ancientRuinsSpec.crew[currTeamMember];
                     let currTeamMemberTile = currMember.position;
 
@@ -405,7 +405,7 @@ export class AncientRuins {
                     } else {
                         // TODO: User notification that the tile they chose can't be reached.
                     }
-                    return;
+                    return false;
                 }
             };
             return false;

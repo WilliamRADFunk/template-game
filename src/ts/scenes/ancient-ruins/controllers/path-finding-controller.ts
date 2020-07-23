@@ -4,6 +4,8 @@ import { isInBounds } from "../utils/is-in-bounds";
 
 const adjacencyMods: [number, number][] = [ [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1] ];
 
+let pathFindMemo: { [key: number]: number } = {};
+
 export class PathFindingCtrl {
     /**
      * Reference to this scene's grid controller.
@@ -124,8 +126,9 @@ export class PathFindingCtrl {
         const nextCell = this._convertRowColToCell(nextRow, nextCol);
         testPath.push(nextCell);
 
-        // If potential path reaches 30 or more tiles, it's already too long. Bail out early (too long).
-        if (testPath.length >= 30) {
+        // If potential path reaches 50 or more tiles, it's already too long. Bail out early (too long).
+        if (testPath.length >= 65) {
+            console.log('Path too long. Bail out early.');
             return false;
         }
 
@@ -161,6 +164,11 @@ export class PathFindingCtrl {
             const tile = closenessScores[x];
             const nextNextCell = this._convertRowColToCell(tile[0], tile[1]);
 
+            // If -1 in the memoization table, then we've already looked at this cell and found it to be a failure.
+            if (pathFindMemo[nextNextCell] === -1 || pathFindMemo[nextNextCell] < (testPath.length + 1)) {
+                continue;
+            }
+
             // Avoid revisiting a tile that's already in possible path, otherwise infinite looping can happen.
             if (this._checkForCycle(testPath, nextNextCell)) {
                 continue;
@@ -169,6 +177,7 @@ export class PathFindingCtrl {
             // If adjacent cell is the target cell, add it and bail.
             if (nextNextCell === targetCell) {
                 testPath.push(nextNextCell);
+                pathFindMemo[nextNextCell] = testPath.length;
                 return true;
             }
 
@@ -176,8 +185,10 @@ export class PathFindingCtrl {
             if (this._getShortestPath(tile[0], tile[1], targetRow, targetCol, testPath, targetCell)) {
                 return true;
             }
+
             // If path proves false, pop the last cell to prepare for the next iteration.
-            testPath.pop();
+            pathFindMemo[testPath.pop()] = -1;
+
         }
         // All neighboring options proved to be cyclical. Bail out (cycle).
         return false;
@@ -192,6 +203,9 @@ export class PathFindingCtrl {
      * @returns path of [row, col] values that lead to target cell. Empty means not a valid path
      */
     public getShortestPath(row1: number, col1: number, row2: number, col2: number): [number, number][] {
+        // Rest Memoization table.
+        pathFindMemo = {};
+
         // If tile clicked is under the fog of war, player can't use that as point to walk to.
         if (this._gridCtrl.getTileValue(row2, col2, 4)) {
             return [];
