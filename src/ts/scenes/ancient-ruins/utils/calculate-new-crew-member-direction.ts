@@ -35,7 +35,7 @@ export function calculateNewCrewMemberDirection(horizontalDifference: number, ve
             return TeamMemberDirection.Up_Left;
         }
         default: {
-            console.log('calculateNewCrewMemberDirection: Impossible dirrection key', dirCode, verticalDifference, horizontalDifference);
+            console.error('calculateNewCrewMemberDirection: Impossible dirrection key', dirCode, verticalDifference, horizontalDifference);
         }
     }
 }

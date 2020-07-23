@@ -275,7 +275,7 @@ export class AncientRuins {
                 return [walkingSpeed, -walkingSpeed];
             }
             default: {
-                console.log('_calculateCrewMemberNextMove: Impossible direction', member, member.currDirection);
+                console.error('_calculateCrewMemberNextMove: Impossible direction', member, member.currDirection);
             }
         }
     }
@@ -375,8 +375,6 @@ export class AncientRuins {
                         currMember.path.length = 0;
                         currTeamMemberTile = currMember.position;
                     }
-
-                    console.log(`Move from ${currTeamMemberTile[0]}, ${currTeamMemberTile[1]} to tile ${tileSplit[1]}, ${tileSplit[2]}`);
                     
                     const shortestPath = this._pathFindingCtrl.getShortestPath(
                         currTeamMemberTile[0],
@@ -461,8 +459,8 @@ export class AncientRuins {
                         </table>
                     `;
                     this._descText.update(desc);
-
-                    if (tileSplit[0] === 'crew') {
+                    
+                    if (tileSplit[0] === 'tile') {
                         this._teamCtrl.selectCrewMember(Number(tileSplit[1]), Number(tileSplit[2]));
                     }
                 }

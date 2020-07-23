@@ -407,7 +407,7 @@ export class AssetsCtrl {
                     this._checkAssetsLoaded();
                 },
                 (xhr: { loaded: number; total: number;}) => { },
-                (error: ErrorEvent) => console.log(`Failed to load (${soundLoader.path.split('/').pop()}) sound file`, error.message)
+                (error: ErrorEvent) => console.error(`Failed to load (${soundLoader.path.split('/').pop()}) sound file`, error.message)
             );
         });
     };

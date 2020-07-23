@@ -146,7 +146,6 @@ export class ControlPanel {
     }
 
     private _onExitHelpClicked(): void {
-        console.log('Control Panel: Exit Help Button Clicked');
         SOUNDS_CTRL.resumeSound();
 
         this._buttons.exitHelpButton.hide();
@@ -164,7 +163,6 @@ export class ControlPanel {
     }
 
     private _onExitSettingsClicked(): void {
-        console.log('Control Panel: Exit Settings Button Clicked');
         SOUNDS_CTRL.resumeSound();
 
         this._buttons.exitSettingsButton.hide();
@@ -182,7 +180,6 @@ export class ControlPanel {
     }
 
     private _onHelpClicked(): void {
-        console.log('Control Panel: Help Button Clicked');
         SOUNDS_CTRL.pauseSound();
 
         this._buttons.helpButton.hide();
@@ -199,7 +196,6 @@ export class ControlPanel {
     }
 
     private _onPauseClicked(): void {
-        console.log('Control Panel: Pause Button Clicked');
         SOUNDS_CTRL.pauseSound();
 
         this._buttons.pauseButton.hide();
@@ -212,7 +208,6 @@ export class ControlPanel {
     }
 
     private _onPlayClicked(): void {
-        console.log('Control Panel: Play Button Clicked');
         SOUNDS_CTRL.resumeSound();
 
         this._buttons.playButton.hide();
@@ -223,7 +218,6 @@ export class ControlPanel {
     }
 
     private _onSettingsClicked(): void {
-        console.log('Control Panel: Settings Button Clicked');
         SOUNDS_CTRL.pauseSound();
 
         this._buttons.exitSettingsButton.show();
@@ -240,7 +234,6 @@ export class ControlPanel {
     }
 
     private _onSoundOffClicked(): void {
-        console.log('Control Panel: Sound Off Button Clicked');
         SOUNDS_CTRL.resumeSound();
 
         this._buttons.soundOffButton.hide();
@@ -248,7 +241,6 @@ export class ControlPanel {
     }
 
     private _onSoundOnClicked(): void {
-        console.log('Control Panel: Sound On Button Clicked');
         SOUNDS_CTRL.pauseSound();
 
         this._buttons.soundOnButton.hide();
