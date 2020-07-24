@@ -5,7 +5,7 @@ import { Renderer } from "three";
  * @returns object with the calcualted width and height.
  */
 export function adjustWindowDimensions(): { WIDTH: number; HEIGHT: number; } {
-    const ldBar = document.getElementsByClassName('ldBar')[0];
+    const ldBar = document.getElementById('loading').getElementsByClassName('ldBar')[0];
     ldBar.classList.remove('ldBar-fat');
     ldBar.classList.remove('ldBar-skinny');
 
