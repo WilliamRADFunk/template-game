@@ -239,6 +239,8 @@ export class AncientRuins {
         // Loading finished. Switch screens and state.
         .then(() => {
             this._loadingCtrl.gameMode();
+            (document.getElementById('energy').getElementsByClassName('ldBar')[0] as any).ldBar.set(100);
+            document.getElementById('energy').classList.remove('hidden');
             this._state = AncientRuinsState.landing_start;
         });
     }
@@ -548,20 +550,6 @@ export class AncientRuins {
             });
             return prevState;
         };
-
-        const energyMeterWrapper = document.createElement('div');
-        energyMeterWrapper.setAttribute('id', 'energy');
-        energyMeterWrapper.setAttribute('position', 'absolute');
-        energyMeterWrapper.setAttribute('top', '0');
-        const energyMeter = document.createElement('div');
-        energyMeter.setAttribute('data-preset', 'energy');
-        energyMeter.setAttribute('data-value', '100');
-        energyMeter.classList.add('ldBar');
-        energyMeter.classList.add('label-center');
-        energyMeter.style.height ='20px';
-        energyMeter.style.width ='50px';
-        energyMeterWrapper.appendChild(energyMeter);
-        document.body.appendChild(energyMeterWrapper);
 
         this._controlPanel = new ControlPanel(
             { height, left: left, top: null, width },
