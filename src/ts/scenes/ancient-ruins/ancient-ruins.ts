@@ -240,7 +240,7 @@ export class AncientRuins {
         .then(() => {
             this._loadingCtrl.gameMode();
             (document.getElementById('energy').getElementsByClassName('ldBar')[0] as any).ldBar.set(100);
-            document.getElementById('energy').classList.remove('hidden');
+            document.getElementById('energy').style.left = '0';
             this._state = AncientRuinsState.landing_start;
         });
     }

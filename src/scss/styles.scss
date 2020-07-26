@@ -4,6 +4,7 @@ body {
   display: block;
   font-family: Arial;
   margin: 0;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -31,10 +32,14 @@ h1 {
 
 #energy {
   display: block;
-  left: 0;
+  left: -10000px;
   position: absolute;
   top: 0;
   z-index: 10;
+
+  & .ldBar.label-center > .ldBar-label {
+    display: none;
+  }
 }
 
 .ldBar {
