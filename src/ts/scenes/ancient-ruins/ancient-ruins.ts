@@ -23,6 +23,7 @@ import { calculateNewCrewMemberDirection } from "./utils/calculate-new-crew-memb
 import { rotateCrewMember } from "./utils/rotate-crew-member";
 import { RankAbbreviationsMap } from "../../utils/rank-map";
 import { formatString } from "../../utils/format-string";
+import { EnergyBarCtrl } from "../../controls/controllers/energy-bar-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -76,6 +77,11 @@ export class AncientRuins {
      * Reference to the main Control Panel.
      */
     private _descTextPanel: PanelBase;
+
+    /**
+     * Reference to this scene's energy bar controller.
+     */
+    private _energyBarCtrl: EnergyBarCtrl;
 
     /**
      * Tile geometry that makes up the ground tiles.
@@ -149,6 +155,8 @@ export class AncientRuins {
 
         this._loadingCtrl = new LoadingCtrl();
         this._loadingCtrl.loadingMode();
+        
+        this._energyBarCtrl = new EnergyBarCtrl();
 
         // Text, Button, and Event Listeners
         const initialize = async function(scene: SceneType): Promise<void> {
@@ -239,8 +247,7 @@ export class AncientRuins {
         // Loading finished. Switch screens and state.
         .then(() => {
             this._loadingCtrl.gameMode();
-            (document.getElementById('energy').getElementsByClassName('ldBar')[0] as any).ldBar.set(100);
-            document.getElementById('energy').style.left = '0';
+            this._energyBarCtrl.set(100);
             this._state = AncientRuinsState.landing_start;
         });
     }
@@ -464,6 +471,8 @@ export class AncientRuins {
                     
                     if (tileSplit[0] === 'tile') {
                         this._teamCtrl.selectCrewMember(Number(tileSplit[1]), Number(tileSplit[2]));
+                        this._energyBarCtrl.set(this._ancientRuinsSpec.crew[this._teamCtrl.getCurrTeamMember()].energy);
+                        this._energyBarCtrl.show();
                     }
                 }
             });
@@ -476,6 +485,8 @@ export class AncientRuins {
         let height = window.innerHeight * 0.99;
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
+
+        this._energyBarCtrl.reposition(left);
 
         const exitHelp = (prevState: AncientRuinsState) => {
             this._descText.show();
@@ -561,7 +572,8 @@ export class AncientRuins {
             { height, left: left, top: null, width },
             null);
 
-        this._settingsCtrl = new SettingsCtrl(this._scene, border)
+        this._settingsCtrl = new SettingsCtrl(this._scene, border);
+        this._energyBarCtrl.hide();
     }
 
     /**
@@ -577,6 +589,8 @@ export class AncientRuins {
         this._controlPanel.resize({ height, left: left, top: null, width });
         this._descText.resize({ height, left: left, top: null, width });
         this._settingsCtrl.onWindowResize(height, left, null, width);
+
+        this._energyBarCtrl.reposition(left);
     }
 
     /**
@@ -591,6 +605,7 @@ export class AncientRuins {
         this._teamCtrl.dispose();
         this._settingsCtrl.dispose();
         window.removeEventListener( 'resize', this._listenerRef, false);
+        this._energyBarCtrl.hide();
     }
 
     /**

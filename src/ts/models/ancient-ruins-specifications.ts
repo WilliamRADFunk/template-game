@@ -79,52 +79,69 @@ export interface TeamMember {
      * Tracks position in walking animation sequence to know which animation to switch to next frame.
      */
     animationCounter: number;
+
     /**
      * The three meshes to flip through to simulate a walking animation.
      */
     animationMeshes: [Mesh, Mesh, Mesh];
+
     /**
      * Appearance here determines which of many graphics to use for crew member's avatar.
      */
     appearance: TeamMemberAppearance;
+
     /**
      * Current direction crew member should be facing.
      */
     currDirection: TeamMemberDirection;
+
+    /**
+     * Amount of energy left in crew member's life support.
+     */
+    energy: number;
+
     /**
      * Tiles in order that make up the crew member's path to travel.
      * Row, Column coordinates for each tile.
      */
     path: [number, number][];
+
     /**
      * Amount of remaining health for that crew member.
      * Zero means death.
      */
     health: number;
+
     /**
      * Flag to signal walking animation should be active.
      */
     isMoving?: boolean;
+
     /**
      * Crew member's name. ie. John Doe.
      */
     name: string;
+
     /**
      * Row, Column tile position of the crew member. 
      */
     position: [number, number];
+
     /**
      * Crew member's rank. An over-simplification of their abilities in the field.
      */
     rank: number;
+
     /**
      * Aside from health, status communicates other affects such as unconscious, injured, poisoned, etc.
      */
     status: TeamMemberStatus;
+
     /**
      * Value to place on tile's level layer when crew member is occupying it.
      */
     tileValue: number;
+
     /**
      * If crew member has a title such as Doctor, or Professor, it goes here.
      */
