@@ -25,6 +25,9 @@ export class EnergyBarCtrl {
     constructor () {
         this._element = document.getElementById('energy');
         this._ldBar = this._element.getElementsByClassName('ldBar')[0];
+        if (!this._element.getElementsByClassName('ldBar-label')[0].classList.contains('hidden')) {
+            this.hideLabel();
+        }
     }
 
     /**
@@ -32,6 +35,13 @@ export class EnergyBarCtrl {
      */
     public hide(): void {
         this._element.style.left = '-10000px';
+    }
+
+    /**
+     * Adds hidden class to the ldBar-label element
+     */
+    public hideLabel(): void {
+        this._element.getElementsByClassName('ldBar-label')[0].classList.add('hidden');
     }
 
     /**
@@ -64,5 +74,12 @@ export class EnergyBarCtrl {
     public show(): void {
         this._element.style.left = this._left;
         this._element.style.top = this._top;
+    }
+
+    /**
+     * Removes hidden class from the ldBar-label element
+     */
+    public showLabel(): void {
+        this._element.getElementsByClassName('ldBar-label')[0].classList.remove('hidden');
     }
 }
