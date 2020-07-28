@@ -30,7 +30,8 @@ h1 {
   z-index: 10;
 }
 
-#energy {
+#energy,
+#health {
   display: block;
   left: -10000px;
   position: absolute;
@@ -39,6 +40,12 @@ h1 {
 
   & .ldBar.label-center > .ldBar-label {
     display: none;
+  }
+}
+
+#health {
+  & .ldBar path.mainline {
+    stroke: #FF0000;
   }
 }
 

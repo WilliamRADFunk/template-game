@@ -24,6 +24,7 @@ import { rotateCrewMember } from "./utils/rotate-crew-member";
 import { RankAbbreviationsMap } from "../../utils/rank-map";
 import { formatString } from "../../utils/format-string";
 import { EnergyBarCtrl } from "../../controls/controllers/energy-bar-controller";
+import { HealthBarCtrl } from "../../controls/controllers/health-bar-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -94,6 +95,11 @@ export class AncientRuins {
     private _gridCtrl: GridCtrl;
 
     /**
+     * Reference to this scene's health bar controller.
+     */
+    private _healthBarCtrl: HealthBarCtrl;
+
+    /**
      * Reference to _onWindowResize so that it can be removed later.
      */
     private _listenerRef: () => void;
@@ -157,6 +163,7 @@ export class AncientRuins {
         this._loadingCtrl.loadingMode();
         
         this._energyBarCtrl = new EnergyBarCtrl();
+        this._healthBarCtrl = new HealthBarCtrl();
 
         // Text, Button, and Event Listeners
         const initialize = async function(scene: SceneType): Promise<void> {
@@ -248,6 +255,7 @@ export class AncientRuins {
         .then(() => {
             this._loadingCtrl.gameMode();
             this._energyBarCtrl.set(100);
+            this._healthBarCtrl.set(100);
             this._state = AncientRuinsState.landing_start;
         });
     }
@@ -473,6 +481,8 @@ export class AncientRuins {
                         this._teamCtrl.selectCrewMember(Number(tileSplit[1]), Number(tileSplit[2]));
                         this._energyBarCtrl.set(this._ancientRuinsSpec.crew[this._teamCtrl.getCurrTeamMember()].energy);
                         this._energyBarCtrl.show();
+                        this._healthBarCtrl.set(this._ancientRuinsSpec.crew[this._teamCtrl.getCurrTeamMember()].health);
+                        this._healthBarCtrl.show();
                     }
                 }
             });
@@ -486,7 +496,8 @@ export class AncientRuins {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        this._energyBarCtrl.reposition(left);
+        this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01));
+        this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01), (height * 0.01));
 
         const exitHelp = (prevState: AncientRuinsState) => {
             this._descText.show();
@@ -574,6 +585,7 @@ export class AncientRuins {
 
         this._settingsCtrl = new SettingsCtrl(this._scene, border);
         this._energyBarCtrl.hide();
+        this._healthBarCtrl.hide();
     }
 
     /**
@@ -590,7 +602,8 @@ export class AncientRuins {
         this._descText.resize({ height, left: left, top: null, width });
         this._settingsCtrl.onWindowResize(height, left, null, width);
 
-        this._energyBarCtrl.reposition(left);
+        this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01));
+        this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01), (height * 0.01));
     }
 
     /**
@@ -606,6 +619,7 @@ export class AncientRuins {
         this._settingsCtrl.dispose();
         window.removeEventListener( 'resize', this._listenerRef, false);
         this._energyBarCtrl.hide();
+        this._healthBarCtrl.hide();
     }
 
     /**
