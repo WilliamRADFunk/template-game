@@ -44,8 +44,8 @@ h1 {
 }
 
 #health {
-  & .ldBar path.mainline {
-    stroke: #FF0000;
+  & .ldBar path {
+    fill: red;
   }
 }
 

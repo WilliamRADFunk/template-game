@@ -496,8 +496,18 @@ export class AncientRuins {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
-        this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01));
-        this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01), (height * 0.01));
+        this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
+            height: (height * 0.02),
+            left: left + (width * 0.01),
+            top: (height * 0.005),
+            width: (width * 0.1)
+        });
+        this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
+            height: (height * 0.02),
+            left: left + (width * 0.01),
+            top: (height * 0.02),
+            width: (width * 0.1)
+        });
 
         const exitHelp = (prevState: AncientRuinsState) => {
             this._descText.show();
@@ -602,8 +612,18 @@ export class AncientRuins {
         this._descText.resize({ height, left: left, top: null, width });
         this._settingsCtrl.onWindowResize(height, left, null, width);
 
-        this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01));
-        this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, left + (width * 0.01), (height * 0.01));
+        this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
+            height: (height * 0.02),
+            left: left + (width * 0.01),
+            top: (height * 0.005),
+            width: (width * 0.1)
+        });
+        this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
+            height: (height * 0.02),
+            left: left + (width * 0.01),
+            top: (height * 0.02),
+            width: (width * 0.1)
+        });
     }
 
     /**

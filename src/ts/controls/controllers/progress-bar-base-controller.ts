@@ -1,3 +1,5 @@
+import { HTMLElementPosition } from "../../models/html-element-position";
+
 export class ProgressBarBaseCtrl {
     /**
      * The HTML element containing the progress bar.
@@ -8,6 +10,11 @@ export class ProgressBarBaseCtrl {
      * The HTML element containing the inner ldBar for progress.
      */
     protected _ldBar: any;
+    
+    /**
+     * Height the progress bar.
+     */
+    protected _height: string = '50px';
 
     /**
      * Left position to place the progress bar.
@@ -18,6 +25,11 @@ export class ProgressBarBaseCtrl {
      * Top position to place the progress bar.
      */
     protected _top: string = '0';
+    
+    /**
+     * Width the progress bar.
+     */
+    protected _width: string = '100px';
 
     /**
      * Constructor for the Progress Bar Base Controller class.
@@ -44,9 +56,13 @@ export class ProgressBarBaseCtrl {
      * @param left the left position of the progress bar.
      * @param top the top position of the progress bar.
      */
-    public reposition(show?: boolean, left?: number, top?: number): void {
-        this._left = left ? left + 'px' : '0';
-        this._top = top ? top + 'px' : '0';
+    public reposition(show?: boolean, position?: HTMLElementPosition): void {
+        this._height = (position && position.height) ? position.height + 'px' : '50px';
+        this._left = (position && position.left) ? position.left + 'px' : '0';
+        this._top = (position && position.top) ? position.top + 'px' : '0';
+        this._width = (position && position.width) ? position.width + 'px' : '100px';
+        (this._ldBar as any).style.height = this._height;
+        (this._ldBar as any).style.width = this._width;
         show ? this.show() : this.hide();
     }
 
