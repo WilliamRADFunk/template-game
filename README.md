@@ -64,7 +64,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 ## Remaining TODOs
 
-### Ancient Ruins Scene: - [ ] Required - - [ ] Optional
+### - [ ] Ancient Ruins Scene
 
 - [ ] Add tiles with animated graphics (fish jump in and out of water, tentacles in water, flying bird-like critters).
 
