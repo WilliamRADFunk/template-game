@@ -64,38 +64,100 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 ## Remaining TODOs
 
-### Settings Panel
+### Ancient Ruins Scene: - [ ] Required - - [ ] Optional
+
+- [ ] Add tiles with animated graphics (fish jump in and out of water, tentacles in water, flying bird-like critters).
+
+- [x] Add moving clouds overhead.
+
+- [x] Add fog of war.
+
+- [x] Make overhead tiles semi-transparent when a crew member is within certain range.
+
+- [x] Make terrain of various colors and types (ie. purple grass, yellow water, etc.).
+
+- [ ] Add obstruction objects like bounders, cliffs, and so on.
+
+- [x] Add multiple types of water bodies: large and small lakes, rivers with a bridge, narrow creeks, and beaches.
+
+- [x] Add text description of tiles player clicks on as well as descriptions about the crew members they choose to activate.
+
+- [ ] Make cemetery ruins, city ruins, library ruins, military ruins, monastery ruins, town ruins, village ruins.
+
+- [x] Add crew members according to their positions (red for security, blue for science and medical, and yellow for command).
+
+- [ ] Add mystery tiles (20 earth-like things that have disappeared over the years. Collect them to gain bonuses with wormholes).
+
+- [ ] Add dev menu options for the mystery tile options.
+
+- [ ] Create return type for when scene is complete.
+
+- [ ] Animation of ship landing, and leaving.
+
+- [ ] Create "action" buttons for each crew member.
+
+- [ ] Create hazard suit and health bars for each crew member.
+
+- [ ] Add action buttons for each team member type.
+
+- [ ] Path finding algo to verify every interactable tile can be reached.
+
+- [x] Path finding algo for team member to follow.
+
+- [ ] Generate trigger tiles that spawn random encounters (ie. traps that potentially hurt crew, fights against monsters, etc.).
+
+- [ ] Add reward tiles. Valuable materials, technology, food, and potentially new crew members if discovered.
+
+- [ ] (Optional) Reduce the memory footprint of using so many tiles.
+
+### Land & Mine Scene: - [x] Required - - [ ] Optional
+
+- [x] Create a lander module that is pulled by gravity, and has both vertical and horizontal thrusters.
+
+- [x] Create collision detection with land to crash if speed is too high, or not enough solid adjacent blocks (3 or 4) beneath ship.
+
+- [x] Create oxygen meter for crew. When empty, kill crew but return rocket.
+
+- [x] Create fuel meter for lander module. When empty, disable all thrusters.
+
+- [x] Enable ability for lander improvements to improve gameplay (ie. Can land at greater speed, slower fuel burn, etc.).
+
+- [x] Create an exit area the lander must reach to be considered "escaped", and materials recovered (successful minigame end).
+
+- [x] Create help screen button.
+
+- [x] Create tutorial for this scene.
+
+- [x] Add dev menu options for this scene.
+
+- [ ] (Optional) - Give up to three landers if player has built them. They must spend more crew to operate the new landers, though.
+
+### Settings Panel: - [ ] Required - - [ ] Optional
 
 - [ ] Populate the "Settings" Panel with settings related options.
 
-### Ancient Ruins Scene
+### Ship Layout Scene: - [ ] Required - - [ ] Optional
 
-- [ ] Ancient Ruins: Add tiles with animated graphics (fish jump in and out of water, tentacles in water, flying bird-like critters).
+- [x] Create grid of squares to represent areas of ship for interaction.
 
-- [ ] Ancient Ruins: Make cemetery ruins.
+- [x] Create text that changes depending on which grid square the user hovers the mouse.
 
-- [ ] Ancient Ruins: Make city ruins.
+- [x] Create menu options associated with a selected grid square (Add or remove tech points).
 
-- [ ] Ancient Ruins: Make library ruins.
+- [x] Add descriptions of the rooms when selected.
 
-- [ ] Ancient Ruins: Make military base ruins.
+- [x] Prefill some of the tech points for some of the room as minimum requirements (Must have engines...obviously).
 
-- [ ] Ancient Ruins: Make monastery ruins.
+- [x] Create limit on tech point upgrading overall and in specific rooms.
 
-- [ ] Ancient Ruins: Make town ruins.
+- [x] Add a confirm layout button.
 
-- [ ] Ancient Ruins: Make village ruins.
+- [x] Return user selection in an expected format when user clicks submit.
 
-- [ ] Ancient Ruins: Add mystery tiles (20 earth-like things that have disappeared over the years. Collect them to gain bonuses with wormholes).
+- [x] Add a reset to starting values button.
 
-- [ ] Ancient Ruins: Add dev menu options for the mystery tile options.
+- [ ] Add dev menu options for this scene.
 
-- [ ] Ancient Ruins: Create return type for when scene is complete.
+- [ ] Create help screen button.
 
-- [ ] Ancient Ruins: Animation of ship landing, and leaving.
-
-- [ ] Ancient Ruins: Add action buttons for each team member type.
-
-- [ ] Ancient Ruins: Path finding algo to verify every interactable tile can be reached.
-
-- [ ] Ancient Ruins: Path finding algo for team member to follow.
+- [ ] Create tutorial for this scene.
