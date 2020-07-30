@@ -64,7 +64,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 ## Remaining TODOs
 
-### - [ ] Ancient Ruins Scene
+### Ancient Ruins Scene
 
 - [ ] Add tiles with animated graphics (fish jump in and out of water, tentacles in water, flying bird-like critters).
 
@@ -110,7 +110,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] (Optional) Reduce the memory footprint of using so many tiles.
 
-### Land & Mine Scene: - [x] Required - - [ ] Optional
+### Land & Mine Scene
 
 - [x] Create a lander module that is pulled by gravity, and has both vertical and horizontal thrusters.
 
@@ -132,11 +132,11 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] (Optional) - Give up to three landers if player has built them. They must spend more crew to operate the new landers, though.
 
-### Settings Panel: - [ ] Required - - [ ] Optional
+### Settings Panel
 
 - [ ] Populate the "Settings" Panel with settings related options.
 
-### Ship Layout Scene: - [ ] Required - - [ ] Optional
+### Ship Layout Scene
 
 - [x] Create grid of squares to represent areas of ship for interaction.
 
