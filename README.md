@@ -64,6 +64,12 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 ## Remaining TODOs
 
+### All Global Modules
+
+- [ ] Singleton repair module that updates the repair state of the ship even when not in repair ship scene.
+
+- [ ] Singleton game state module that tracks larger state factor such as is ship in jump motion, which precludes repairs being made during that time.
+
 ### Ancient Ruins Scene
 
 - [ ] Add tiles with animated graphics (fish jump in and out of water, tentacles in water, flying bird-like critters).
@@ -131,6 +137,78 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 - [x] Add dev menu options for this scene.
 
 - [ ] (Optional) - Give up to three landers if player has built them. They must spend more crew to operate the new landers, though.
+
+### Load Screen
+
+- [x] Create main menu option for load screen.
+
+- [ ] Create dev menu option for load screen.
+
+- [ ] Detect if save code is in url, and prepopulate load field with that code.
+
+- [ ] Add clear all option to remove code present, and set cursor over first spot.
+
+- [ ] Add load from url button that populates code area with code from url.
+
+- [ ] Add more code slots for a larger more complex code.
+
+### Main Help Screen
+
+- [x] Create main menu option for help screen.
+
+- [ ] Create dev menu option for help screen.
+
+- [ ] Create big picture help in main help screen, pointing out that each scene will have greater help details relevant to that given scene.
+
+### Ransack Planet Scene
+
+- [ ] Create scene launch section in dev menu.
+
+- [ ] Create limited ability to move the tiny ship because it is far away in perspective of the planet.
+
+- [ ] Create an escape/leave area that the ship must navigate to if it is to leave. Note: player will never reach this if their engines have been disabled by damage.
+
+- [ ] Create variable number of planet defense weapons: nuke silo, satellite missile launchers, possible EMP weapon that disables ship when shields down, and just shields when they were up.
+
+- [ ] Planet defenses primarily block ships incoming weapons, and secondary fire at ship.
+
+- [ ] Both planet and ship must have a finite amount of ammunition.
+
+- [ ] Player can lose crew when ship is hit.
+
+- [ ] Player will have multiple target possibilities: defenses, civilian buildings, power providers (shields).
+
+- [ ] Destroying civillian targets
+
+### Repair Ship Scene
+
+- [ ] Create scene launch section in dev menu.
+
+- [ ] Show ship in profile with interior sections.
+
+- [ ] Add little red dots that move about the ship's image as repair crew.
+
+- [ ] Add list of existing repair crews available to players. Make clickable.
+
+- [ ] Allow repair crew list expandable to show individual crew part of each team.
+
+- [ ] Not all crews are equal as their ability to move quickly and repair quickly depends on the skills of their individual members.
+
+- [ ] Repair crew team health and effectiveness is a sum of the individuals. Dead crew in one means they might move slower and repair slower.
+
+- [ ] When instructing a repair crew to repair a section of the ship, there is a resource cost. Without resources, they can always repair it to a bare minimum (Gerry-rigged), and likely to break at the first sign of trouble.
+
+- [ ] Repairs can't be down while ship is in jump motion, and repair time is done in-game time.
+
+- [ ] Ships sections should be color coded based on their level of damage.
+
+- [ ] Ship statistics should be available for each room, showing how the damage is affecting that portion of the ship.
+
+- [ ] Must be able to enter, leave, and re-enter this scene and maintain state. Global controller must be monitoring and updating repairs (Global singleton).
+
+- [ ] Add dev menu options for all of the above features.
+
+- [ ] (Optional) - Create an initial mock scene that demonstrates the global updating of the repairs even in dev menu mode.
 
 ### Settings Panel
 
