@@ -178,7 +178,19 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Player will have multiple target possibilities: defenses, civilian buildings, power providers (shields).
 
-- [ ] Destroying civillian targets
+- [ ] Destroying civilian targets will break the will of the planet faster, but make rewards fewer, crew morale lower, and lower reputation.
+
+- [ ] Destroying military targets will reduce the accuracy of the planets weapons.
+
+- [ ] Destroying the defenses will obvious render them inoperable.
+
+- [ ] Destroying power providers will render their shield (if they have one) inoperable.
+
+- [ ] Any use of this scene will lower crew morale, and ship reputation, regardless of the outcome.
+
+- [ ] Depending on the number of civilian targets destroyed, a little ship will rise from the planet to greet player's ship containing the tribute. The end.
+
+- [ ] Reputation is can rise and fall depending on race being ransacked. If it's a race at war with everyone else, reputation will fall with them, but possible rise with those other races.
 
 ### Repair Ship Scene
 
