@@ -68,6 +68,14 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Singleton repair module that updates the repair state of the ship even when not in repair ship scene.
 
+- [x] Singleton asset loader module to prevent the passing of textures from one scene to another.
+
+- [x] Singleton sound manager to control sound across scene boundaries.
+
+- [ ] Singleton species lookup module to track the different available species and their traits.
+
+- [ ] Singleton settings manager to control settings across scene boundaries.
+
 - [ ] Singleton game state module that tracks larger state factor such as is ship in jump motion, which precludes repairs being made during that time.
 
 ### Ancient Ruins Scene
@@ -246,8 +254,44 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [x] Add a reset to starting values button.
 
+- [x] Add launch section in dev menu for this scene.
+
 - [ ] Add dev menu options for this scene.
 
 - [ ] Create help screen button.
 
 - [ ] Create tutorial for this scene.
+
+### Trade World/Ship/Station Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Two dialogue boxes: one for your side, and the other for the leader of those being traded with.
+
+- [ ] Use a profile image for trade leader.
+
+- [ ] Use a profile image of your assigned first officer (communications officer if first officer not assigned) in left box.
+
+- [ ] No communications officer assigned precludes the possibility of this scene taking place.
+
+- [ ] Add character noise in trader's dialogue to demonstrate ship's ability to translate the language.
+
+- [ ] Depending on the experience with the species, the translation is better. Having crew of that species will help, but even different dialects can confuse meaning.
+
+- [ ] Add another panel to show what you have available to trade.
+
+- [ ] Some of the items you have to trade might have special meaning to the trader. More crew of that species and experiences with that species might reveal those meanings.
+
+- [ ] Add another panel to show what the aliens are "willing" to trade.
+
+- [ ] Every trade involves round involves putting what you are willing to trade. The trader will put up what they want to trade for it, or vice versa. The person who went first can "encourage" the other party that they expect more.
+
+- [ ] Add meters around trader profile to signal mood reflectors (some hidden with lack of experience of that species and culture). Frustration meter, deception, disappointment, offence, etc.
+
+- [ ] Multi-system species or federations of species that span multiple systems will have currencies. Some will be material like gold, and some will be electronic. Player can choose to stockpile these currencies if the trader lacks goods the player wants, and still needs to offload some surplus. The electronic currencies take up no inventory, and can be used with traders of that species/federation in other systems.
+
+- [ ] It's possible to improve or worsen reputation when trading. Usually undercutting a desperate trader or being overly generous.
