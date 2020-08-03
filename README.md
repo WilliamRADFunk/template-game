@@ -124,6 +124,22 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] (Optional) Reduce the memory footprint of using so many tiles.
 
+### Improve Relations Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Identical to the trade with world/ship/station scene except all items move in one direction: from player to other race.
+
+- [ ] Meters suggesting mood will appear around the race's leader like in trade scene, but more specific to political temperment.
+
+- [ ] The overall relationship meter will be centralized.
+
+- [ ] The overall success of the encounter meter will be a miniature version of the overall, and when hovered over, it will show the modification it has on the overall meter.
+
 ### Land & Mine Scene
 
 - [x] Create a lander module that is pulled by gravity, and has both vertical and horizontal thrusters.
@@ -261,6 +277,30 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 - [ ] Create help screen button.
 
 - [ ] Create tutorial for this scene.
+
+### Take on Crew Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Any planet/ship/station/encounter can have an opportunity to gain crew.
+
+- [ ] Reputation with that species and/or culture will affect whether this comes up as an option.
+
+- [ ] One panel shows current crew roster. Allows you to cycle through to see name, species, origin, skillset, and morale.
+
+- [ ] Another panel shows over stats affected by your total crew.
+
+- [ ] A final panel shows the current crew member trying to enlist. Like the crew roster panel, this person is not in your crew.
+
+- [ ] The enlisting crew member panel should have a CTA that when hovered over, it shows the crew member's affect on the stats panel.
+
+- [ ] Option only eligible if first contact scene already successfully completed with that species.
+
+- [ ] First officer has to first succeed in a charisma check before crew are interested. Failed attempts could lower reputation with that species.
 
 ### Trade World/Ship/Station Scene
 
