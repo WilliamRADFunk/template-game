@@ -335,3 +335,29 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 - [ ] Multi-system species or federations of species that span multiple systems will have currencies. Some will be material like gold, and some will be electronic. Player can choose to stockpile these currencies if the trader lacks goods the player wants, and still needs to offload some surplus. The electronic currencies take up no inventory, and can be used with traders of that species/federation in other systems.
 
 - [ ] It's possible to improve or worsen reputation when trading. Usually undercutting a desperate trader or being overly generous.
+
+### Travel In-progress Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene. Among them should be random encounter possibilities: wormholes, asteroid/rogue-planets for mining or ancient ruins to explore, black holes, pirate battles, ship in distress (could be pirates, or two parties duking it out), military engagement against player.
+
+- [ ] Add 3D model of ship from engines in forefront, looking over the ship's top with head pointing toward background.
+
+- [ ] Add stars in motion closer ones as lines, and farther ones as pin points.
+
+- [ ] Add star textured background to account for 80% or more of the stars.
+
+- [ ] Every vertex between major nodes has unseen "smaller" nodes that can only be "noticed" as the player passes through them. These are random encounters, and are decided after player confirms jump between those two larger nodes.
+
+- [ ] Add question mark graphic thing blinking in the corner of HUD that shows something is in range. Clicking it brings up a lit of options. Sensor tech might give more details. Options include: Stopping to investigate, mark it on the node-vertex map, ignoring it, or expending resources to boost the sensors for more info.
+
+- [ ] Add alert to user if they stop to investigate, they will not regain the fuel they spent to make the jump.
+
+- [ ] Regardless of user choice, the smaller node will appear on the node-vertex map. If they chose to ignore it, it will just be a question mark without details.
+
+- [ ] No steering, only watching and waiting. The engine's exhaust should be swirling color, almost hypnotic. The head of the ship should have a light energy half-sphere that randomly flickers (as debris hits it).
+
+- [ ] A few random encounters force user to stop without a choice. Some advanced species have the equivalent of a net that interferes with this almost FTL travel. This is most likely used by either a warlike race's military encounter, or that of a species the player has royally pissed off somehow. Also, blackholes can pull player from their course.
