@@ -124,6 +124,30 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] (Optional) Reduce the memory footprint of using so many tiles.
 
+### First Contact (World/Ship/Station) Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] A panel to show leader of species with which first contact is being made. Their profile and a section for their dialogue.
+
+- [ ] Add meters for leader to show various moods that first officer, communications oficer, and anthropologist are able to make out.
+
+- [ ] Add a panel for communications officer profile and dialogue with options on how to decode language both verbal and non-verbal.
+
+- [ ] Add a panel for first officer and dialogue with options on how they should procede.
+
+- [ ] Add a panel for the anthropologist and dialogue with options on how to "interpret" alien language, and what items to use for ceremonial trade at final stage.
+
+- [ ] If player makes it to ceremonial trade stage of first contact, and player has chosen item(s) for trade, a new centrally located panel appears over the others to display mini-cutscene.
+
+- [ ] Add cutscene for successful exchange of items to finish first contact.
+
+- [ ] Add cutscene of unsuccessful first contact (If ship, they leave. If station or planet, player is "escorted" to border, and returns to node-vertex map view).
+
 ### Improve Relations Scene
 
 - [ ] Create tutorial for this scene.
@@ -278,6 +302,30 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Create tutorial for this scene.
 
+### Ship/Station in Distress Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Add case where player arrives too late, and the ship is adrift without crew.
+
+- [ ] Add case where ship has hull damage and needs repair soon (dangerous).
+
+- [ ] Add case where reactor is melting down and needs repair soon (very dangerous).
+
+- [ ] Add case where ship needs something (fuel, materials, etc.) in order to be on their way again (not dangerous).
+
+- [ ] Add case where ship has some kind of plague, and need medical attention (dangerous). In some cases, not solving this will mean the spread of disease across systems.
+
+- [ ] Add way for level of sensor tech to improve the amount of info available.
+
+- [ ] Success could mean more crew, materials, improved relations, or discovered nodes on the node-vertex map (helps find points like ancient ruins).
+
+- [ ] Failure can result in loss of crew, materials, decreased relations with that species, and possibly the spread of disease across systems.
+
 ### Take on Crew Scene
 
 - [ ] Create tutorial for this scene.
@@ -361,3 +409,27 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 - [ ] No steering, only watching and waiting. The engine's exhaust should be swirling color, almost hypnotic. The head of the ship should have a light energy half-sphere that randomly flickers (as debris hits it).
 
 - [ ] A few random encounters force user to stop without a choice. Some advanced species have the equivalent of a net that interferes with this almost FTL travel. This is most likely used by either a warlike race's military encounter, or that of a species the player has royally pissed off somehow. Also, blackholes can pull player from their course.
+
+### Wormhole Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Show wormhole swirling large in the center of the screen through the bridge's main viewscreen.
+
+- [ ] Add sounds of beeps, click, and murmur from the crew. From outside there is a loud whooshing sound from the wormhole (made possible by speakers on the bridge to amplify whatever sensor picks up as their is no sound in space).
+
+- [ ] In one corner their needs to be a readout of remaining fuel, and another to show the cost in fuel for each action.
+
+- [ ] Add an area that shows a signal coming from the wormhole in some cases (also relevant to sensor tech level and science officer skill). Faded if not available.
+
+- [ ] Add an area where there might be a "glimpse" of what's on the other side (very high sensor level tech and science officer skills only). Faded if not available.
+
+- [ ] Add text description area to display explanations of these areas and readouts when player hovers over them.
+
+- [ ] At best, the player can glean from these sensors and skills one of the following about the wormhole: closer to home, farther from home, and same distance but different location.
+
+- [ ] The mysteries uncovered in some ancient ruins will reveal the above about a specific wormhole. If that wormhole is not yet discovered, the "connection" will be made when they do discover it. "We'll know it when we see it" the anthrolopolgist with reassure you when discovering such a mystery in an ancient ruin.
