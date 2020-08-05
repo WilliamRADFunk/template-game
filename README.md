@@ -208,6 +208,90 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Create big picture help in main help screen, pointing out that each scene will have greater help details relevant to that given scene.
 
+### Orbit Around Planetary Body Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene, which need to include which set of scenes are possible to player.
+
+- [ ] Use dev options from other sections to populate the scene player chooses.
+
+- [ ] Depending on planet type, pick randomly from that category of texture to use in scene. Either store texture id once shown, or have it already chosen at initial galaxy generation.
+
+- [ ] Depending on species and tech level, present only the relevant communication options.
+
+- [ ] This is an intermediate scene between node-vertex map and mini-games available to user at this planet.
+
+- [ ] Add panel for science officer with dialogue to describe the planet's details.
+
+- [ ] Add panel for communications officer with dialogue to describe if there are any signals coming from the planet, and languages in those signals if any.
+
+- [ ] Add panel for anthropologist (if there is intelligent life) with dialogue to describe the cultural details of those lifeforms.
+
+- [ ] Add panel for list of options player can choose at this stage.
+
+- [ ] Add player option for Land & Mine scene.
+
+- [ ] Add player option for Ancient Ruins scene.
+
+- [ ] Add player option for First Contact scene.
+
+- [ ] Add player option for Trade scene (if species is advanced enough).
+
+- [ ] Add player option for Improve Relations scene.
+
+- [ ] Add player option for Ransack scene.
+
+- [ ] Add player option for Take on Crew scene.
+
+### Pirate Encounter Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Add a panel for priate leader profile and dialogue.
+
+- [ ] Add a meter to show relative strength in offensive weaponry between your ship and pirate fleet.
+
+- [ ] Add a meter to show relative strength in defensive weaponry between your ship and pirate fleet.
+
+- [ ] Add panel for list of player choices.
+
+- [ ] Add player choice to pay the requested tribute.
+
+- [ ] Add a meter to show how probable the pirates are to attack even with the tribute.
+
+- [ ] Add player option to refuse to pay tribute.
+
+- [ ] Add player option to sneak attack.
+
+- [ ] Add option to secretly hide a bomb in the tribute to cripple pirate ship (Only available if player possesses x amount of a rare material tbd).
+
+- [ ] Add dialogue for when pirates attack anyway after tribute.
+
+- [ ] Add dialogue for when pirates attack after tribute refused.
+
+- [ ] Add dialogue for when pirates accept tribute and leave. "Pleasure doing business with you."
+
+- [ ] Add possibility where player's offensive/defensive stats far outway that of the pirates, th eplayer can demand tribute from the pirates.
+
+- [ ] If player cripples pirate ship via sneak attack or hidden bomb, pirates will offer tribute. You can accept and take the tribute, or refuse and destroy them. Destroyed, they offer little more than scraps and crew morale drops a little.
+
+- [ ] If pirates attack, scene transitions battle scene (prepopulated for pirate mode).
+
+- [ ] Losing in pirate battle mode due to surrender by player will lead to heavy loses in crew and material (crippling).
+
+- [ ] Losing in pirate battle mode without surrendering ends in destruction and an end to the game.
+
+- [ ] Winning in pirate battle mode due to pirate surrender results in large tribute.
+
+- [ ] Winning in pirate battle mode without pirate surrender leads to their destruction and very little material reward (maps maybe). This won't decrease crew morale.
+
 ### Ransack Planet Scene
 
 - [ ] Create scene launch section in dev menu.
