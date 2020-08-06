@@ -124,6 +124,78 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] (Optional) Reduce the memory footprint of using so many tiles.
 
+### Battle Ship to Ship(s) Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Adds the enzmann at medium size to the map, starting location dependent on type of battle: if military engagement enzmann starts at side with opponent on opposite side, pirate battle has enzmann at center and pirates circling it, interrupted battle between two sides has both enemies in center battling and ensmann entering from the bottom.
+
+- [ ] Opponent ships should be color-coded: all-red for enemies, blue if allies (if player interrupts a battle and takes a side, the side they didn't attack is blue).
+
+- [ ] Make enzmann's movements slow and cumbersome.
+
+- [ ] Add shields for enzmann.
+
+- [ ] Add shields for enemy vessels if they have the tech.
+
+- [ ] Add missiles for the enzmann (finite number).
+
+- [ ] Add missiles for the enemy if they have the tech (infinite).
+
+- [ ] Add lasers for the enzmann if player has the tech (finite based on power supplies).
+
+- [ ] Add lasers for the enemy if they have the tech (infinite).
+
+- [ ] Add algorithm for movement of enemy ships.
+
+- [ ] Add algorithm for enemy ships to use shields.
+
+- [ ] Add algorithm for enemy ships to use missiles.
+
+- [ ] Add algorithm for enemy ships to use lasers.
+
+- [ ] Add algorithm for ship to try and surrender.
+
+- [ ] Add algorithm for ship to try and flee.
+
+- [ ] Add physics for the collision of ships.
+
+- [ ] Add physics for ships to rebound when they strike each other.
+
+- [ ] Add debris on the field that can interrupt weapons and block ships (astroids).
+
+- [ ] Add basic physics for ships to rebound slightly when hit.
+
+- [ ] (Optional) add basic physics for ships to have recoil when firing weapons.
+
+### Black Hole Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
+- [ ] Add map with large central, swirling black hole, a mini-enzmann on one side, and one or two points to reach on opposing sides of the black hole.
+
+- [ ] If more than one endpoint available to user, user must select the point they wish to reach and confirm.
+
+- [ ] Once begun, the player must make a series of skill checks to safely reach the point. A or left key held for a period of time to reach the green zone of a radial fillbar. Any combination of A-left, W-up, S-down, d-right.
+
+- [ ] Player gets sets number of fails before complete destruction and death.
+
+- [ ] For each fail, player loses materials, crew, hull points, or a combo of those.
+
+- [ ] If successful, player can pass around the blackhole between those points in the future without the skill checks.
+
+- Note: main map has a number of blackholes that will block player from progressing unless they complete these.
+
+- [ ] Add benefits from improved sensor tech or navigation officer skills.
+
 ### First Contact (World/Ship/Station) Scene
 
 - [ ] Create tutorial for this scene.
