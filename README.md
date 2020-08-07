@@ -280,6 +280,32 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Create big picture help in main help screen, pointing out that each scene will have greater help details relevant to that given scene.
 
+### Node Vertex Map Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene, especially how many nodes to have, how many "rings" to use, and which ring the ship should start at.
+
+- [ ] Add algorithm to generate the nodes and vertices for the map. Vertices should have a set length of, 0, 1, 2, and 3. These numbers signifying how many minor nodes can fit on the vertex between those two major nodes.
+
+- [ ] Add wormholes randomly.
+
+- [ ] Ensure all nodes have a path to any other node, and for those that don't they have a path to a wormhole that connects them to a path that does.
+
+- [ ] Add culdesac nodes that initially don't appear connected to any others, but can be revealed through other game experiences like trade or destroying pirates. Player can't start on one of these.
+
+- [ ] Ensure all wormholes are one-way. When player uses a wormhole for the first time, a new "dotted" line connectes the input and output wormhole nodes.
+
+- [ ] Player can only choose to travel to a node that's connected to their node by a single vertex. This reduces complexity on how player chooses to travel.
+
+- [ ] Add click functionality to each visible node.
+
+- [ ] When nodes are clicked, a readout appears in a panel with whatever info player has access to about that node with the science officer profile.
+
+- [ ] When nodes in range are clicked, a button will appear. The button will be disabled if player doesn't have enough fuel to make the jump. Enabled if they do.
+
 ### Orbit Around Planetary Body Scene
 
 - [ ] Create tutorial for this scene.
