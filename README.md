@@ -66,7 +66,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 ### All Global Modules
 
-- [ ] Singleton repair module that updates the repair state of the ship even when not in repair ship scene.
+:white_check_mark: Singleton repair module that updates the repair state of the ship even when not in repair ship scene.
 
 - [x] Singleton asset loader module to prevent the passing of textures from one scene to another.
 
@@ -196,6 +196,14 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Add benefits from improved sensor tech or navigation officer skills.
 
+### Crew Roster Scene
+
+- [ ] Create tutorial for this scene.
+
+- [ ] Add launch section in dev menu for this scene.
+
+- [ ] Add dev menu options for this scene.
+
 ### First Contact (World/Ship/Station) Scene
 
 - [ ] Create tutorial for this scene.
@@ -280,7 +288,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 - [ ] Create big picture help in main help screen, pointing out that each scene will have greater help details relevant to that given scene.
 
-### Node Vertex Map Scene
+### Node Vertex (Travel) Map Scene
 
 - [ ] Create tutorial for this scene.
 
@@ -305,6 +313,42 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 - [ ] When nodes are clicked, a readout appears in a panel with whatever info player has access to about that node with the science officer profile.
 
 - [ ] When nodes in range are clicked, a button will appear. The button will be disabled if player doesn't have enough fuel to make the jump. Enabled if they do.
+
+- [ ] Most minor nodes won't be visible until player passes by them, revealed by high tech sensor sweeps, or revealed during gameplay via trade, or ancient ruins discoveries, etc..
+
+- [ ] Add animation of ships engines starting glow before transitioning to the "Travel In-progress" scene.
+
+- [ ] Add option to transition to "Repair Ship" scene.
+
+- [ ] Add option to transition to "Crew Roster" scene.
+
+- [ ] Add meter to show how long ship has been lost.
+
+- [ ] Add meterfor remaining fuel, and additional portion that shows how much will be used for a jump.
+
+- [ ] Add meter for structural integrity.
+
+- [ ] Add meter to show sensor range and power.
+
+- [ ] Add meter for how many crew on board, how many different species.
+
+- [ ] Add meter for remaining food stocks, and rate at which crew is moving through it.
+
+- [ ] Add meter for remaining water stocks, and rate at which crew is moving through it.
+
+- [ ] Add fog of war for areas outside sensor range.
+
+- [ ] Add option to view a overlay map that shows all map nodes and vertices player has visited. Hovering over a node gives a vague summary of it's properties. A shadow of the real node-vertex map, it's meant to simulate the enzmann can keep track of previous locations via digital maps despite fog of war not shoing it on real-time map.
+
+- [ ] Add overlay map described above.
+
+- [ ] Add graphics for the major and minor nodes.
+
+- [ ] Add graphics for the connecting vertices.
+
+- [ ] Add graphics for the nodes' contents on overlay map on hover (mini-blackholes, mini-wormholes, mini-pirate ships, mini-space stations, mini-planets, etc.).
+
+- [ ] Add the above for the realtime map, but only when player clicks on the node.
 
 ### Orbit Around Planetary Body Scene
 
