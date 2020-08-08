@@ -90,7 +90,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 :white_check_mark: Make terrain of various colors and types (ie. purple grass, yellow water, etc.).
 
-:black_square_button: Add obstruction objects like bounders, cliffs, and so on.
+:black_square_button: Add obstruction objects like boulders, cliffs, and so on.
 
 :white_check_mark: Add multiple types of water bodies: large and small lakes, rivers with a bridge, narrow creeks, and beaches.
 
@@ -192,9 +192,9 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 :black_square_button: If successful, player can pass around the blackhole between those points in the future without the skill checks.
 
-- Note: main map has a number of blackholes that will block player from progressing unless they complete these.
-
 :black_square_button: Add benefits from improved sensor tech or navigation officer skills.
+
+Note: main map has a number of blackholes that will block player from progressing unless they complete these.
 
 ### Crew Roster Scene
 
@@ -259,6 +259,32 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 :black_square_button: The overall relationship meter will be centralized.
 
 :black_square_button: The overall success of the encounter meter will be a miniature version of the overall, and when hovered over, it will show the modification it has on the overall meter.
+
+### Intro Scene
+
+:black_square_button: Add launch section in dev menu for this scene.
+
+:black_square_button: Add scene start of the enzmann flying through space at center screen.
+
+:black_square_button: Add panel for captain's dialogue, reporting enzmann's 10 year, deep-space exploration mission coming to a close. Need to return to Earth as the last of their spare parts were used to patch a glitch in the engine a month ago that caused thrusters to misfire.
+
+:black_square_button: Add another panel to interrrupt captain's log. This one with communications officer profile and dialogue stating they're picking up a faint signal that sounds like a distress call, but unlike anything they've ever heard before. Captain says that's impossible, no human has ever come out this far. Captain orders to go investigate.
+
+:black_square_button: Add movement scene with Enzmann flying faster through space, and arriving at the wormhole.
+
+:black_square_button: Add panel for science officer profile and dialogue with vague understanding of what it might be. He asks the captain what they should call it. Captain calls it Charybdis for a little foreshadowing.
+
+:black_square_button: Add panel with communications officer profile and dialogue again saying the signal is clearer but still too garbled to make anything intelligible out. It might not be human.
+
+:black_square_button: Add captain dialogue response ordering the enzmann in closer.
+
+:black_square_button: Add slow careful movement of enzmann toward the wormhole. Something explodes. There's shaking. The engines fire full speed.
+
+:black_square_button: Add captain dialogue demanding full stop.
+
+:black_square_button: Add panel with navigation officer profile and dialogue saying the controls aren't responding.
+
+:black_square_button: Add enzmann slipping down the wormhole like a toilet flushed goldfish.
 
 ### Land & Mine Scene
 
@@ -567,6 +593,42 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 :black_square_button: Success could mean more crew, materials, improved relations, or discovered nodes on the node-vertex map (helps find points like ancient ruins).
 
 :black_square_button: Failure can result in loss of crew, materials, decreased relations with that species, and possibly the spread of disease across systems.
+
+### Start of Game Cutscene
+
+:black_square_button: Add launch section in dev menu for this scene.
+
+:black_square_button: Add the enzmann getting poope out of the backend of the wormhole, something that simply flashes and vanishes.
+
+:black_square_button: Add enzmann floating through space, spinning out of control with bits of debris around it.
+
+:black_square_button: Add captain's dialogue demanding a situation report.
+
+:black_square_button: Add panel with engineer's profile and dialogue reporting they were able to cut the engine's but it will take awhile to get them back online.
+
+:black_square_button: Add panel for science officer profile and dialogue reporting that there doesn't appear to be any indication of the wormhole on sensors. What's worse is that the stars aren't...where they should be.
+
+:black_square_button: Add panel for communications officer profile and dialogue stating to the captain that the signal is no longer garbled, and not only is it not human, there are two non-human signals from two clearly different species.
+
+:black_square_button: Add captain dialogue panel instructing to put it on screen.
+
+:black_square_button: View switches to bridge main screen window with its idle sounds in the background. First the starlit blackness of space is all there is until something is zoomed into focus. Three large ships of two very different designs are firing weapons at each other, two against one. Occasional flashes of shields deflect some of the weapons fire.
+
+:black_square_button: A panel appears with first officer profile and dialogue asking what the captains wants to do.
+
+:black_square_button: Add a decision panel with the following options available: do nothing and hope to not be seen, attack the outmatched side, attack the side with more ships, attack both sides, attempt to communicate with both sides.
+
+:black_square_button: Add outcome where player does nothing, and the weaker side loses with an explosion. The superior side has a badly wounded ship. A panel appears with alien garbled dialogue with hints of suspicion but not overly aggressive. They fly away out of sight. Comms officer says they deciphered the names of the two species. Species names is generated. Engineer says there is debris from the destroyed ship they can use to repair the engines.
+
+:black_square_button: Add outcome where player fires on weaker side. The single ship is quickly destroyed. The larger force now has two well armed ship. panel with alient garbled dialogue sounding a little suspicious, but otherwise friendly. They leave. Comms officer says they deciphered the names of the two species, and says the destroyed ship got one last broadcast off. It contained an image of the enzmann. Engineer says debris from the destroyed ship contains parts they can use to repair the engines.
+
+:black_square_button: Add outcome where player fires on stronger side. The single ship is damaged but not destroyed. The larger force loses one ship, but the second flees. Panel with alient garbled dialogue sounding grateful, but confused. They leave. Comms officer says they deciphered the names of the two species, and says the remaining enemy ship got a broadcast off. It contained an image of the enzmann. Engineer says debris from the destroyed ship contains parts they can use to repair the engines.
+
+:black_square_button: Add outcome where player fires on both sides. The single ship is destroyed as is one of the two on the stronger side. The larger force's second ship flees. Panel with alient garbled dialogue sounding angry, but confused. They leave. Comms officer says they deciphered the names of the two species, and says both ships got a broadcast off. It contained an image of the enzmann. Engineer says debris from the destroyed ship contains parts they can use to repair the engines. Comms officer says they detect what appears to be blackboxes on the destroyed ships, and might be able to use them to better learn the languages of the two species. Otherwise, first officer reports the battle cause a severe loss of life in the crew, damage to the hull, and some of the food and water stores were lost.
+
+:black_square_button: Add panel with science officer describing that they are nowhere near familiar space. They are so far from home, they can't even map a course there. They are lost.
+
+:black_square_button: Transition to node-vertex map scene.
 
 ### Take on Crew Scene
 
