@@ -12,9 +12,15 @@ import { getIntersections } from '../../../utils/get-intersections';
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 import { ASSETS_CTRL } from '../../../controls/controllers/assets-controller';
 import { createShip1 } from '../../intro/actors/create-ship-1';
+import { createShip } from '../utils/create-ship';
+import { Thruster } from '../utils/thruster';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
+
+const THRUSTER1_OFFSETS = [-2.355, 1, -0.33];
+const THRUSTER2_OFFSETS = [-2.45, 1, 0.0075];
+const THRUSTER3_OFFSETS = [-2.355, 1, 0.335];
 
 /**
  * @class
@@ -45,6 +51,8 @@ export class Intro {
      */
     private _scene: Scene;
 
+    private _ship: Actor;
+
     /**
      * Stationary pin-pricks of light in the background.
      */
@@ -54,6 +62,10 @@ export class Intro {
      * Moving pin-pricks of light in the background.
      */
     private _starsInMotion: boolean = false;
+
+    private _thruster1: Thruster;
+    private _thruster2: Thruster;
+    private _thruster3: Thruster;
 
     /**
      * Positions mods to adjust objects quickly to give shaking sensation.
@@ -104,6 +116,12 @@ export class Intro {
 
         this._createStars();
         this._createActors();
+        this._ship = createShip();
+        this._scene.add(this._ship.mesh);
+        const shipPos = this._ship.mesh.position;
+        this._thruster1 = new Thruster(this._scene, [shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], 0.9);
+        this._thruster2 = new Thruster(this._scene, [shipPos.x + THRUSTER2_OFFSETS[0], shipPos.y + THRUSTER2_OFFSETS[1], shipPos.z + THRUSTER2_OFFSETS[2]]);
+        this._thruster3 = new Thruster(this._scene, [shipPos.x + THRUSTER3_OFFSETS[0], shipPos.y + THRUSTER3_OFFSETS[1], shipPos.z + THRUSTER3_OFFSETS[2]], 0.9);
         
         // Click event listener to register user click.
         document.onclick = event => {
@@ -268,6 +286,11 @@ export class Intro {
         if (!this._isActive) {
             return true;
         }
+
+        const shipPos = this._ship.mesh.position;
+        this._thruster1.endCycle([shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], true);
+        this._thruster2.endCycle([shipPos.x + THRUSTER2_OFFSETS[0], shipPos.y + THRUSTER2_OFFSETS[1], shipPos.z + THRUSTER2_OFFSETS[2]], true);
+        this._thruster3.endCycle([shipPos.x + THRUSTER3_OFFSETS[0], shipPos.y + THRUSTER3_OFFSETS[1], shipPos.z + THRUSTER3_OFFSETS[2]], true);
     
         this._currentFrame++;
         

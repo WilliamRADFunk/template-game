@@ -6,7 +6,7 @@ import { SceneType } from './models/scene-type';
 
 import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
-import { Intro } from './scenes/intro/intro';
+import { Intro } from './scenes/cut-scenes/intro/intro';
 import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
 import { Menu } from './scenes/main-menu/menu';
 import { ShipLayout } from './scenes/ship-layout/ship-layout';

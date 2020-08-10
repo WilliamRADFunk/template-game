@@ -1,4 +1,4 @@
-import { Scene, Texture, Mesh } from "three";
+import { Scene, Mesh } from "three";
 
 import { SceneType } from "../../models/scene-type";
 import { LeftTopPanel } from "../../controls/panels/left-top-panel";
