@@ -2,7 +2,6 @@ import {
     DoubleSide,
     Mesh,
     MeshBasicMaterial,
-    MeshPhongMaterial,
     PlaneGeometry,
     Scene } from 'three';
 
@@ -11,20 +10,49 @@ import { SceneType } from '../../../models/scene-type';
 import { getIntersections } from '../../../utils/get-intersections';
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 import { ASSETS_CTRL } from '../../../controls/controllers/assets-controller';
-import { createShip1 } from '../../intro/actors/create-ship-1';
 import { createShip } from '../utils/create-ship';
 import { Thruster } from '../utils/thruster';
+import { PanelBase } from '../../../controls/panels/panel-base';
+import { LeftBottomMiddlePanel } from '../../../controls/panels/left-bottom-middle-panel';
+import { LeftBottomPanel } from '../../../controls/panels/left-bottom-panel';
+import { LeftTopMiddlePanel } from '../../../controls/panels/left-top-middle-panel';
+import { LeftTopPanel } from '../../../controls/panels/left-top-panel';
+import { RightBottomMiddlePanel } from '../../../controls/panels/right-bottom-middle-panel';
+import { RightBottomPanel } from '../../../controls/panels/right-bottom-panel';
+import { RightTopMiddlePanel } from '../../../controls/panels/right-top-middle-panel';
+import { RightTopPanel } from '../../../controls/panels/right-top-panel';
+import { ProfileBase } from '../../../controls/profiles/profile-base';
+import { LeftTopProfile } from '../../../controls/profiles/left-top-profile';
+import { LeftTopDialogueText } from '../../../controls/text/dialogue/left-top-dialogue-text';
+import { dialogues } from '../configs/dialogues';
+import { TextBase } from '../../../controls/text/text-base';
+import { COLORS } from '../../../styles/colors';
+import { TextType } from '../../../controls/text/text-type';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
+// Offset position coordinates for top enzmann thruster in relation to the ship itself.
 const THRUSTER1_OFFSETS = [-2.355, 1, -0.33];
+
+// Offset position coordinates for middle enzmann thruster in relation to the ship itself.
 const THRUSTER2_OFFSETS = [-2.45, 1, 0.0075];
+
+// Offset position coordinates for bottom enzmann thruster in relation to the ship itself.
 const THRUSTER3_OFFSETS = [-2.355, 1, 0.335];
+
+// Starting frame for the first frame of the cutscene.
+const SCENE_PART_1_FRAME = 0;
+
+// Starting frame for the second frame of the cutscene.
+const SCENE_PART_2_FRAME = SCENE_PART_1_FRAME + 120;
+
+// Starting frame for the third frame of the cutscene.
+const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 120;
 
 /**
  * @class
- * Slow moving debris object that is sometimes on the path towards planet.
+ * Cutscene to introduce the premise of the game's beginning.
  */
 export class Intro {
     /**
@@ -37,6 +65,16 @@ export class Intro {
     private _currentFrame: number = 0;
 
     /**
+     * All of the dialogue panels
+     */
+    private _dialoguePanels: { [key: string]: PanelBase } = {};
+
+    /**
+     * All of the HTML text contained in the intro.
+     */
+    private _dialogueTexts: { [key: string]: TextBase } = {};
+
+    /**
      * Flag to signal the scene is no longer active. Primarily used for a click event to useful during endCycle.
      */
     private _isActive: boolean = true;
@@ -47,10 +85,18 @@ export class Intro {
     private _listenerRef: () => void;
 
     /**
+     * The profile image contained in the help screen.
+     */
+    private _dialogueProfiles: { [key: string]: ProfileBase } = {};
+
+    /**
      * Reference to the scene, used to remove ship from rendering cycle once destroyed.
      */
     private _scene: Scene;
 
+    /**
+     * Reference to the Enzmann ship actor.
+     */
     private _ship: Actor;
 
     /**
@@ -59,12 +105,18 @@ export class Intro {
     private _stars: Mesh[] = [];
 
     /**
-     * Moving pin-pricks of light in the background.
+     * Reference to the top thruster for the enzmann engine.
      */
-    private _starsInMotion: boolean = false;
-
     private _thruster1: Thruster;
+
+    /**
+     * Reference to the middle thruster for the enzmann engine.
+     */
     private _thruster2: Thruster;
+
+    /**
+     * Reference to the bottom thruster for the enzmann engine.
+     */
     private _thruster3: Thruster;
 
     /**
@@ -95,11 +147,6 @@ export class Intro {
     private _warpedStars: Mesh[] = [];
 
     /**
-     * Stars stretched out into lines to simulate light speeds and moving from right to left.
-     */
-    private _warpedStarsInMotion: boolean = false;
-
-    /**
      * Constructor for the Intro (Scene) class
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      */
@@ -110,30 +157,12 @@ export class Intro {
             return false;
         };
 
+        this._onInitialize(scene);
+
         this._onWindowResize();
         this._listenerRef = this._onWindowResize.bind(this);
         window.addEventListener('resize', this._listenerRef, false);
 
-        this._createStars();
-        this._createActors();
-        this._ship = createShip();
-        this._scene.add(this._ship.mesh);
-        const shipPos = this._ship.mesh.position;
-        this._thruster1 = new Thruster(this._scene, [shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], 0.9);
-        this._thruster2 = new Thruster(this._scene, [shipPos.x + THRUSTER2_OFFSETS[0], shipPos.y + THRUSTER2_OFFSETS[1], shipPos.z + THRUSTER2_OFFSETS[2]]);
-        this._thruster3 = new Thruster(this._scene, [shipPos.x + THRUSTER3_OFFSETS[0], shipPos.y + THRUSTER3_OFFSETS[1], shipPos.z + THRUSTER3_OFFSETS[2]], 0.9);
-        
-        // Click event listener to register user click.
-        document.onclick = event => {
-            event.preventDefault();
-            // Detection for player clicked on pause button
-            getIntersections(event, document.getElementById('mainview'), scene)
-                .filter(el => el.object.name === 'Click Barrier')
-                .forEach(el => {
-                    SOUNDS_CTRL.playBidooo();
-                    this._isActive = false;
-                });
-        };
     }
 
     /**
@@ -146,41 +175,6 @@ export class Intro {
         const t = actor.distanceTraveled / actor.totalDistance;
         actor.currentPoint[0] = ((1 - t) * actor.originalStartingPoint[0]) + (t * actor.endingPoint[0]);
         actor.currentPoint[1] = ((1 - t) * actor.originalStartingPoint[1]) + (t * actor.endingPoint[1]);
-    }
-
-    /**
-     * Creates items to be moved around in scene.
-     */
-    private _createActors(): void {
-        const headerParams = {
-            font: ASSETS_CTRL.gameFont,
-            size: 0.25,
-            height: 0.2,
-            curveSegments: 12,
-            bevelEnabled: false,
-            bevelThickness: 1,
-            bevelSize: 0.5,
-            bevelSegments: 3
-        };
-
-        const labelBackMaterial = new MeshBasicMaterial({
-            color: 0x111111,
-            opacity: 1,
-            transparent: false,
-            side: DoubleSide
-        });
-        const labelBackMaterialGlow = new MeshPhongMaterial({
-            color: 0x5555FF,
-            opacity: 0.6,
-            transparent: true,
-            side: DoubleSide
-        });
-        const labelBackGeometry = new PlaneGeometry( 4.5, 0.8, 0, 0 );
-        const labelBackGlowGeometry = new PlaneGeometry( 4.7, 0.9, 0, 0 );
-
-        const ship = createShip1();
-        this._scene.add(ship.mesh);
-        this._actors.push(ship);
     }
 
     /**
@@ -215,6 +209,71 @@ export class Intro {
             this._warpedStars[j] = mesh;
         }
     }
+    
+
+    /**
+     * Creates all of the elements and user event listeners for the first time on scene creation.
+     */
+    private _onInitialize(sceneType: SceneType): void {
+        // Get window dimmensions
+        let width = window.innerWidth * 0.99;
+        let height = window.innerHeight * 0.99;
+        width < height ? height = width : width = height;
+        const left = (((window.innerWidth * 0.99) - width) / 2);
+
+        // Panels
+        this._dialoguePanels.rightTopPanel = new RightTopPanel(this._scene);
+        this._dialoguePanels.rightTopPanel.hide();
+        this._dialoguePanels.leftTopPanel = new LeftTopPanel(this._scene);
+        this._dialoguePanels.leftTopPanel.hide();
+        this._dialoguePanels.rightTopMiddlePanel = new RightTopMiddlePanel(this._scene);
+        this._dialoguePanels.rightTopMiddlePanel.hide();
+        this._dialoguePanels.leftTopMiddlePanel = new LeftTopMiddlePanel(this._scene);
+        this._dialoguePanels.leftTopMiddlePanel.hide();
+        this._dialoguePanels.rightBottomMiddlePanel = new RightBottomMiddlePanel(this._scene);
+        this._dialoguePanels.rightBottomMiddlePanel.hide();
+        this._dialoguePanels.leftBottomMiddlePanel = new LeftBottomMiddlePanel(this._scene);
+        this._dialoguePanels.leftBottomMiddlePanel.hide();
+        this._dialoguePanels.leftBottomPanel = new LeftBottomPanel(this._scene);
+        this._dialoguePanels.leftBottomPanel.hide();
+        this._dialoguePanels.rightBottomPanel = new RightBottomPanel(this._scene);
+        this._dialoguePanels.rightBottomPanel.hide();
+
+        // Profile Images
+        this._dialogueProfiles.captain = new LeftTopProfile(this._scene, ASSETS_CTRL.textures.engineerProfile, true);
+        this._dialogueProfiles.captain.hide();
+        
+        // Dialogue Text graphics
+        this._dialogueTexts.leftTopDialogue = new LeftTopDialogueText(
+            dialogues['CaptainsLogIntro1'],
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.DIALOGUE);
+        this._dialogueTexts.leftTopDialogue.hide();
+
+
+        this._createStars();
+        this._ship = createShip();
+        this._scene.add(this._ship.mesh);
+        const shipPos = this._ship.mesh.position;
+        this._thruster1 = new Thruster(this._scene, [shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], 0.9);
+        this._thruster2 = new Thruster(this._scene, [shipPos.x + THRUSTER2_OFFSETS[0], shipPos.y + THRUSTER2_OFFSETS[1], shipPos.z + THRUSTER2_OFFSETS[2]]);
+        this._thruster3 = new Thruster(this._scene, [shipPos.x + THRUSTER3_OFFSETS[0], shipPos.y + THRUSTER3_OFFSETS[1], shipPos.z + THRUSTER3_OFFSETS[2]], 0.9);
+
+        // DOM Events
+        const container = document.getElementById('mainview');
+        document.onclick = event => {
+            event.preventDefault();
+            // Detection for player clicked on pause button
+            getIntersections(event, document.getElementById('mainview'), sceneType)
+                .filter(el => el.object.name === 'Click Barrier')
+                .forEach(el => {
+                    SOUNDS_CTRL.playBidooo();
+                    this._isActive = false;
+                });
+        };
+    }
 
     private _onWindowResize(): void {
         let WIDTH = window.innerWidth * 0.99;
@@ -227,6 +286,8 @@ export class Intro {
         const left = (((window.innerWidth * 0.99) - WIDTH) / 2);
         const width = WIDTH;
         const height = HEIGHT;
+
+        this._dialogueTexts.leftTopDialogue.resize({ height, left, top: null, width });
     };
 
     /**
@@ -273,7 +334,7 @@ export class Intro {
         document.onmousemove = () => {};
         document.onclick = () => {};
         document.oncontextmenu = () => {};
-        document.getElementById('intro-screen-sequence-texts').remove();
+        // document.getElementById('intro-screen-sequence-texts').remove();
         window.removeEventListener( 'resize', this._listenerRef, false);
     }
 
@@ -286,13 +347,97 @@ export class Intro {
         if (!this._isActive) {
             return true;
         }
-
-        const shipPos = this._ship.mesh.position;
-        this._thruster1.endCycle([shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], true);
-        this._thruster2.endCycle([shipPos.x + THRUSTER2_OFFSETS[0], shipPos.y + THRUSTER2_OFFSETS[1], shipPos.z + THRUSTER2_OFFSETS[2]], true);
-        this._thruster3.endCycle([shipPos.x + THRUSTER3_OFFSETS[0], shipPos.y + THRUSTER3_OFFSETS[1], shipPos.z + THRUSTER3_OFFSETS[2]], true);
     
         this._currentFrame++;
+
+        // Moving pin-pricks of light in the background.
+        let starsInMotion = false;
+        // Stars stretched out into lines to simulate light speeds and moving from right to left.
+        let warpedStarsInMotion = false;
+        // Whether to have thrusters showing.
+        let enginesOn = false;
+
+        const shipPos = this._ship.mesh.position;
+        if (this._currentFrame < SCENE_PART_2_FRAME) {
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
+            // Panels
+            this._dialoguePanels.rightTopPanel.hide();
+            this._dialoguePanels.leftTopPanel.hide();
+            this._dialoguePanels.rightTopMiddlePanel.hide();
+            this._dialoguePanels.leftTopMiddlePanel.hide();
+            this._dialoguePanels.rightBottomMiddlePanel.hide();
+            this._dialoguePanels.leftBottomMiddlePanel.hide();
+            this._dialoguePanels.leftBottomPanel.hide();
+            this._dialoguePanels.rightBottomPanel.hide();
+            // Profiles
+            this._dialogueProfiles.captain.hide();
+            // Text
+            this._dialogueTexts.leftTopDialogue.hide();
+        } else if (this._currentFrame < SCENE_PART_3_FRAME) {
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
+            // Panels
+            this._dialoguePanels.rightTopPanel.hide();
+            this._dialoguePanels.leftTopPanel.show();
+            this._dialoguePanels.rightTopMiddlePanel.hide();
+            this._dialoguePanels.leftTopMiddlePanel.hide();
+            this._dialoguePanels.rightBottomMiddlePanel.hide();
+            this._dialoguePanels.leftBottomMiddlePanel.hide();
+            this._dialoguePanels.leftBottomPanel.hide();
+            this._dialoguePanels.rightBottomPanel.hide();
+            // Profiles
+            this._dialogueProfiles.captain.show();
+            // Text
+            this._dialogueTexts.leftTopDialogue.show();
+            this._dialogueTexts.leftTopDialogue.cycle();
+        }
+
         
+
+        // Handle normal thruster appearances
+        this._thruster1.endCycle([shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], enginesOn);
+        this._thruster2.endCycle([shipPos.x + THRUSTER2_OFFSETS[0], shipPos.y + THRUSTER2_OFFSETS[1], shipPos.z + THRUSTER2_OFFSETS[2]], enginesOn);
+        this._thruster3.endCycle([shipPos.x + THRUSTER3_OFFSETS[0], shipPos.y + THRUSTER3_OFFSETS[1], shipPos.z + THRUSTER3_OFFSETS[2]], enginesOn);
+
+        // Handle star movement
+        if (starsInMotion) {
+            const length = this._stars.length;
+            this._stars.forEach((star, index) => {
+                const percentile = Math.floor((index / length) * 100);
+                if (percentile < 70) {
+                    // Stationary
+                } else if (percentile < 90) {
+                    star.position.set(star.position.x - 0.0015, 5, star.position.z);
+                } else {
+                    star.position.set(star.position.x - 0.0025, 5, star.position.z);
+                }
+                if (star.position.x < -7) {
+                    star.position.set(7, 5, star.position.z);
+                }
+            });
+        }
+        if (warpedStarsInMotion) {
+            const length = this._warpedStars.length;
+            this._warpedStars.forEach((warpedStar, index) => {
+                const percentile = Math.floor((index / length) * 100);
+                if (percentile < 70) {
+                    // Stationary
+                } else if (percentile < 90) {
+                    warpedStar.position.set(warpedStar.position.x - 0.001, 5, warpedStar.position.z);
+                } else {
+                    warpedStar.position.set(warpedStar.position.x - 0.002, 5, warpedStar.position.z);
+                }
+                if (warpedStar.position.x < -7) {
+                    warpedStar.position.set(7, 5, warpedStar.position.z);
+                }
+            });
+        } 
     }
 }

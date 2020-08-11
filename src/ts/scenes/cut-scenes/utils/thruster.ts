@@ -15,7 +15,7 @@ import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 let index: number = 0;
 
 const BLUE: string = '#2C538F';
-const WHITE: string = '#FFDDDD';
+const PINK: string = '#FF69B4';
 const YELLOW: string = '#FFFE00';
 /**
  * @class
@@ -44,8 +44,8 @@ export class Thruster {
     /**
      * White color in the main thruster's flame.
      */
-    private _whiteFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
-        color: WHITE,
+    private _pinkFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
+        color: PINK,
         opacity: 0.2,
         transparent: true
     });
@@ -107,13 +107,13 @@ export class Thruster {
         this._scene.add(meshBlue);
         meshBlue.visible = false;
 
-        const meshOrange = new Mesh(geometry, this._whiteFlameMaterial);
-        meshOrange.position.set(position[0], position[1], position[2]);
-        meshOrange.name = `flame-${index}`;
-        meshOrange.scale.set(scale, scale, scale);
-        this._flames.push(meshOrange);
-        this._scene.add(meshOrange);
-        meshOrange.visible = false;
+        const meshPink = new Mesh(geometry, this._pinkFlameMaterial);
+        meshPink.position.set(position[0], position[1], position[2]);
+        meshPink.name = `flame-${index}`;
+        meshPink.scale.set(scale, scale, scale);
+        this._flames.push(meshPink);
+        this._scene.add(meshPink);
+        meshPink.visible = false;
     }
 
     public dispose(): void {
