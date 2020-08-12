@@ -48,7 +48,7 @@ const SCENE_PART_1_FRAME = 0;
 const SCENE_PART_2_FRAME = SCENE_PART_1_FRAME + 120;
 
 // Starting frame for the third frame of the cutscene.
-const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 120;
+const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 240;
 
 /**
  * @class
@@ -245,7 +245,7 @@ export class Intro {
         
         // Dialogue Text graphics
         this._dialogueTexts.leftTopDialogue = new LeftTopDialogueText(
-            dialogues['CaptainsLogIntro1'],
+            ' ',
             { height, left, top: null, width },
             COLORS.neutral,
             border,
@@ -377,7 +377,7 @@ export class Intro {
             this._dialogueProfiles.captain.hide();
             // Text
             this._dialogueTexts.leftTopDialogue.hide();
-        } else if (this._currentFrame < SCENE_PART_3_FRAME) {
+        } else if (this._currentFrame === SCENE_PART_2_FRAME) {
             // Engines
             enginesOn = true;
             // Stars
@@ -395,11 +395,31 @@ export class Intro {
             // Profiles
             this._dialogueProfiles.captain.show();
             // Text
+            this._dialogueTexts.leftTopDialogue.update(dialogues['CaptainsLogIntro1'], true);
             this._dialogueTexts.leftTopDialogue.show();
-            this._dialogueTexts.leftTopDialogue.cycle();
+        } else if (this._currentFrame < SCENE_PART_3_FRAME) {
+            // // Engines
+            // enginesOn = true;
+            // // Stars
+            // starsInMotion = true;
+            // warpedStarsInMotion = false;
+            // // Panels
+            // this._dialoguePanels.rightTopPanel.hide();
+            // this._dialoguePanels.leftTopPanel.show();
+            // this._dialoguePanels.rightTopMiddlePanel.hide();
+            // this._dialoguePanels.leftTopMiddlePanel.hide();
+            // this._dialoguePanels.rightBottomMiddlePanel.hide();
+            // this._dialoguePanels.leftBottomMiddlePanel.hide();
+            // this._dialoguePanels.leftBottomPanel.hide();
+            // this._dialoguePanels.rightBottomPanel.hide();
+            // // Profiles
+            // this._dialogueProfiles.captain.show();
+            // // Text
+            // this._dialogueTexts.leftTopDialogue.show();
         }
 
-        
+        // Update dialogue texts
+        this._dialogueTexts.leftTopDialogue.cycle();        
 
         // Handle normal thruster appearances
         this._thruster1.endCycle([shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], enginesOn);
