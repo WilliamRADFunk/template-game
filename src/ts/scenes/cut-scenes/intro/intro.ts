@@ -41,14 +41,17 @@ const THRUSTER2_OFFSETS = [-2.45, 1, 0.0075];
 // Offset position coordinates for bottom enzmann thruster in relation to the ship itself.
 const THRUSTER3_OFFSETS = [-2.355, 1, 0.335];
 
-// Starting frame for the first frame of the cutscene.
+// Starting frame for the first part of the cutscene.
 const SCENE_PART_1_FRAME = 0;
 
-// Starting frame for the second frame of the cutscene.
+// Starting frame for the second part of the cutscene.
 const SCENE_PART_2_FRAME = SCENE_PART_1_FRAME + 120;
 
-// Starting frame for the third frame of the cutscene.
-const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 240;
+// Starting frame for the third part of the cutscene.
+const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 550;
+
+// Starting frame for the fourth part of the cutscene.
+const SCENE_PART_4_FRAME = SCENE_PART_3_FRAME + 550;
 
 /**
  * @class
@@ -398,24 +401,25 @@ export class Intro {
             this._dialogueTexts.leftTopDialogue.update(dialogues['CaptainsLogIntro1'], true);
             this._dialogueTexts.leftTopDialogue.show();
         } else if (this._currentFrame < SCENE_PART_3_FRAME) {
-            // // Engines
-            // enginesOn = true;
-            // // Stars
-            // starsInMotion = true;
-            // warpedStarsInMotion = false;
-            // // Panels
-            // this._dialoguePanels.rightTopPanel.hide();
-            // this._dialoguePanels.leftTopPanel.show();
-            // this._dialoguePanels.rightTopMiddlePanel.hide();
-            // this._dialoguePanels.leftTopMiddlePanel.hide();
-            // this._dialoguePanels.rightBottomMiddlePanel.hide();
-            // this._dialoguePanels.leftBottomMiddlePanel.hide();
-            // this._dialoguePanels.leftBottomPanel.hide();
-            // this._dialoguePanels.rightBottomPanel.hide();
-            // // Profiles
-            // this._dialogueProfiles.captain.show();
-            // // Text
-            // this._dialogueTexts.leftTopDialogue.show();
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
+        } else if (this._currentFrame === SCENE_PART_3_FRAME) {
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
+            // Text
+            this._dialogueTexts.leftTopDialogue.update(dialogues['CaptainsLogIntro2'], true);
+        } else if (this._currentFrame < SCENE_PART_4_FRAME) {
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
         }
 
         // Update dialogue texts
