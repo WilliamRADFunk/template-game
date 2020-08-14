@@ -28,6 +28,8 @@ import { dialogues } from '../configs/dialogues';
 import { TextBase } from '../../../controls/text/text-base';
 import { COLORS } from '../../../styles/colors';
 import { TextType } from '../../../controls/text/text-type';
+import { RightTopDialogueText } from '../../../controls/text/dialogue/right-top-dialogue-text';
+import { RightTopProfile } from '../../../controls/profiles/right-top-profile';
 
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
@@ -51,7 +53,10 @@ const SCENE_PART_2_FRAME = SCENE_PART_1_FRAME + 120;
 const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 550;
 
 // Starting frame for the fourth part of the cutscene.
-const SCENE_PART_4_FRAME = SCENE_PART_3_FRAME + 550;
+const SCENE_PART_4_FRAME = SCENE_PART_3_FRAME + 570;
+
+// Starting frame for the fourth part of the cutscene.
+const SCENE_PART_5_FRAME = SCENE_PART_4_FRAME + 240;
 
 /**
  * @class
@@ -245,6 +250,8 @@ export class Intro {
         // Profile Images
         this._dialogueProfiles.captain = new LeftTopProfile(this._scene, ASSETS_CTRL.textures.engineerProfile, true);
         this._dialogueProfiles.captain.hide();
+        this._dialogueProfiles.commsOfficer = new RightTopProfile(this._scene, ASSETS_CTRL.textures.scienceOfficerProfile1, true);
+        this._dialogueProfiles.commsOfficer.hide();
         
         // Dialogue Text graphics
         this._dialogueTexts.leftTopDialogue = new LeftTopDialogueText(
@@ -254,6 +261,13 @@ export class Intro {
             border,
             TextType.DIALOGUE);
         this._dialogueTexts.leftTopDialogue.hide();
+        this._dialogueTexts.rightTopDialogue = new RightTopDialogueText(
+            ' ',
+            { height, left, top: null, width },
+            COLORS.neutral,
+            border,
+            TextType.DIALOGUE);
+        this._dialogueTexts.rightTopDialogue.hide();
 
 
         this._createStars();
@@ -291,6 +305,7 @@ export class Intro {
         const height = HEIGHT;
 
         this._dialogueTexts.leftTopDialogue.resize({ height, left, top: null, width });
+        this._dialogueTexts.rightTopDialogue.resize({ height, left, top: null, width });
     };
 
     /**
@@ -387,14 +402,7 @@ export class Intro {
             starsInMotion = true;
             warpedStarsInMotion = false;
             // Panels
-            this._dialoguePanels.rightTopPanel.hide();
             this._dialoguePanels.leftTopPanel.show();
-            this._dialoguePanels.rightTopMiddlePanel.hide();
-            this._dialoguePanels.leftTopMiddlePanel.hide();
-            this._dialoguePanels.rightBottomMiddlePanel.hide();
-            this._dialoguePanels.leftBottomMiddlePanel.hide();
-            this._dialoguePanels.leftBottomPanel.hide();
-            this._dialoguePanels.rightBottomPanel.hide();
             // Profiles
             this._dialogueProfiles.captain.show();
             // Text
@@ -420,10 +428,30 @@ export class Intro {
             // Stars
             starsInMotion = true;
             warpedStarsInMotion = false;
+        } else if (this._currentFrame === SCENE_PART_4_FRAME) {
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
+            // Panels
+            this._dialoguePanels.rightTopPanel.show();
+            // Profiles
+            this._dialogueProfiles.commsOfficer.show();
+            // Text
+            this._dialogueTexts.rightTopDialogue.update(dialogues['CommsOfficerIntro1'], true);
+            this._dialogueTexts.rightTopDialogue.show();
+        } else if (this._currentFrame < SCENE_PART_5_FRAME) {
+            // Engines
+            enginesOn = true;
+            // Stars
+            starsInMotion = true;
+            warpedStarsInMotion = false;
         }
 
         // Update dialogue texts
-        this._dialogueTexts.leftTopDialogue.cycle();        
+        this._dialogueTexts.leftTopDialogue.cycle();
+        this._dialogueTexts.rightTopDialogue.cycle();
 
         // Handle normal thruster appearances
         this._thruster1.endCycle([shipPos.x + THRUSTER1_OFFSETS[0], shipPos.y + THRUSTER1_OFFSETS[1], shipPos.z + THRUSTER1_OFFSETS[2]], enginesOn);
