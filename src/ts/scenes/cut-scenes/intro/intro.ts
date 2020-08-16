@@ -55,8 +55,11 @@ const SCENE_PART_3_FRAME = SCENE_PART_2_FRAME + 550;
 // Starting frame for the fourth part of the cutscene.
 const SCENE_PART_4_FRAME = SCENE_PART_3_FRAME + 570;
 
-// Starting frame for the fourth part of the cutscene.
+// Starting frame for the fifth part of the cutscene.
 const SCENE_PART_5_FRAME = SCENE_PART_4_FRAME + 240;
+
+// Starting frame for the sixth part of the cutscene.
+const SCENE_PART_6_FRAME = SCENE_PART_5_FRAME + 240;
 
 /**
  * @class
