@@ -8,7 +8,10 @@ import {
     Texture,
     Vector2,
     NearestFilter,
-    RepeatWrapping } from "three";
+    RepeatWrapping, 
+    CircleGeometry,
+    LinearFilter,
+    MeshPhongMaterial} from "three";
 
 import {
     AncientRuinsSpecifications,
@@ -123,6 +126,11 @@ export class GridCtrl {
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
+
+    /**
+     * Landing ship the grows and shrinks when crew lands and takes off again.
+     */
+    private _ship: Mesh = null;
 
     /**
      * All of the tile textures contained in this scene.
@@ -446,6 +454,21 @@ export class GridCtrl {
             this._landingShadow.rotation.set(RAD_90_DEG_LEFT, 0, 0);
             this._landingShadow.position.set(getXPos(center[1]), LayerYPos.LAYER_0_5, getZPos(center[0]));
             this._scene.add(this._landingShadow);
+
+            const shipGeo = new CircleGeometry(0.5, 16, 16);
+            const shipMat: MeshPhongMaterial = new MeshPhongMaterial({
+                map: ASSETS_CTRL.textures.ship,
+                shininess: 0,
+                transparent: true
+            });
+            shipMat.map.minFilter = LinearFilter;
+            this._ship = new Mesh(shipGeo, shipMat);
+            this._ship.matrixAutoUpdate = false;
+            // TODO: Determine rotation based on which side of the screen the landing zone is on.
+            this._ship.rotation.set(RAD_90_DEG_LEFT, 0, RAD_90_DEG_LEFT);
+            // TODO: Start ship position on opposite side of screen, rotate over landing zone before lowering to stop.
+            this._ship.position.set(getXPos(center[1]), LayerYPos.LAYER_0_5, getZPos(center[0]));
+            this._scene.add(this._ship);
         }
     }
 
@@ -1673,6 +1696,8 @@ export class GridCtrl {
                 this._landingShadow.scale.set(0.1, 0.1, 0.1);
                 this._landingShadow.visible = true;
                 this._landingShadow.updateMatrix();
+                this._ship.visible = true;
+                this._ship.updateMatrix();
             } else if (landingFrameCounter < 240) {
                 this._landingShadow.scale.set(landingShadowScale.x + 0.00375, landingShadowScale.y + 0.00375, landingShadowScale.z + 0.00375);
                 this._landingShadow.updateMatrix();

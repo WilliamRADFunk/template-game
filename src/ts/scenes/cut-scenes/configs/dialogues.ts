@@ -14,6 +14,6 @@ export const dialogues: { [key: string]: string } = {
         No one can wait for the party Earth is going to throw when we get back home--"`,
 
     'CommsOfficerIntro1': `
-        "Captain'!:<br><br>
+        "Captain!:<br><br>
         I'm picking up a signal."`,
 };
