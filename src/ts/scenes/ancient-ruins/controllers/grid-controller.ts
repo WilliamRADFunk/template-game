@@ -46,6 +46,11 @@ const overheadRowColModVals = [
     [2, 0], [2, 1], [0, 2], [-1, 2], [-2, 0], [-2, -1], [0, -2], [1, -2], [-2, 1], [-1, -2], [2, -1], [1, 2]
 ];
 
+const SCENE_BOOKMARK_FRAME_1 = 240;
+const SCENE_BOOKMARK_FRAME_2 = SCENE_BOOKMARK_FRAME_1 + 120;
+const SCENE_BOOKMARK_FRAME_3 = SCENE_BOOKMARK_FRAME_2 + 120;
+const SCENE_BOOKMARK_FRAME_4 = SCENE_BOOKMARK_FRAME_3 + 240;
+
 function shuffle(arr: any[]): any[] {
     for(let i = arr.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * i);
@@ -91,6 +96,16 @@ export class GridCtrl {
      * Type:            [row][col][elevation] gives "type" of tile
      */
     private _grid: number[][][] = [];
+
+    /**
+     * Landing direction is the modifier to apply to incremental movement of ship toward landing site.
+     */
+    private _landingDirection: number = 1;
+
+    /**
+     * Landing increment is the distance to apply to movement of ship toward landing site per frame.
+     */
+    private _landingIncrement: number = 0;
 
     /**
      * Landing shadow the grows and shrinks when ship lands and takes off again.
@@ -464,10 +479,29 @@ export class GridCtrl {
             shipMat.map.minFilter = LinearFilter;
             this._ship = new Mesh(shipGeo, shipMat);
             this._ship.matrixAutoUpdate = false;
+
+            let isLeft = false;
+            let isBottom = false;
+            let zRot = RAD_90_DEG_LEFT;
+            if (center[1] < 15) {
+                isLeft = true;
+                zRot = -RAD_90_DEG_LEFT;
+            }
+            if (center[0] < 15) {
+                isBottom = true;
+            }
             // TODO: Determine rotation based on which side of the screen the landing zone is on.
-            this._ship.rotation.set(RAD_90_DEG_LEFT, 0, RAD_90_DEG_LEFT);
+            this._ship.rotation.set(RAD_90_DEG_LEFT, 0, zRot);
             // TODO: Start ship position on opposite side of screen, rotate over landing zone before lowering to stop.
-            this._ship.position.set(getXPos(center[1]), LayerYPos.LAYER_0_5, getZPos(center[0]));
+            if (isLeft) {
+                this._ship.position.set(getXPos(30), LayerYPos.LAYER_0_5, getZPos(center[0]));
+                this._landingDirection = -1;
+                this._landingIncrement = (getXPos(30) - getXPos(center[1])) / 240;
+            } else {
+                this._ship.position.set(getXPos(-1), LayerYPos.LAYER_0_5, getZPos(center[0]));
+                this._landingDirection = 1;
+                this._landingIncrement = (getXPos(center[1]) - getXPos(-1)) / 240;
+            }
             this._scene.add(this._ship);
         }
     }
@@ -1692,20 +1726,47 @@ export class GridCtrl {
             // TODO: Add animated scene that first grows ship, deposits crew, then shrinks ship again.
             landingFrameCounter++;
             const landingShadowScale = this._landingShadow.scale;
+            const shipScale = this._ship.scale;
+            const shipRotZ = this._ship.rotation;
             if (!landingFrameCounter) {
                 this._landingShadow.scale.set(0.1, 0.1, 0.1);
                 this._landingShadow.visible = true;
                 this._landingShadow.updateMatrix();
+                this._ship.scale.set(1.5, 1.5, 1.5);
                 this._ship.visible = true;
                 this._ship.updateMatrix();
-            } else if (landingFrameCounter < 240) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_1) {
                 this._landingShadow.scale.set(landingShadowScale.x + 0.00375, landingShadowScale.y + 0.00375, landingShadowScale.z + 0.00375);
                 this._landingShadow.updateMatrix();
-            } else if (landingFrameCounter === 240) {
+                this._ship.position.x += (this._landingDirection * this._landingIncrement);
+                this._ship.updateMatrix();
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_2) {
+                if (this._landingDirection < 0 && this._ship.position.z < 0) {
+                    console.log("rotating clockwise", this._landingDirection, this._ship.position.z);
+                    this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z - (RAD_90_DEG_LEFT / 120));
+                } else if (this._landingDirection < 0 && this._ship.position.z > 0) {
+                    console.log("rotating counterclockwise", this._landingDirection, this._ship.position.z);
+                    this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_90_DEG_LEFT / 120));
+                } else if (this._landingDirection > 0 && this._ship.position.z < 0) {
+                    console.log("rotating counterclockwise", this._landingDirection, this._ship.position.z);
+                    this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_90_DEG_LEFT / 120));
+                } else if (this._landingDirection > 0 && this._ship.position.z > 0) {
+                    console.log("rotating clockwise", this._landingDirection, this._ship.position.z);
+                    this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z - (RAD_90_DEG_LEFT / 120));
+                } else {
+                    console.log("other", this._landingDirection, this._ship.position.z);
+                }
+                this._ship.updateMatrix();
+                // Rotate ship
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_3) {
+                this._landingShadow.scale.set(landingShadowScale.x - 0.00375, landingShadowScale.y - 0.00375, landingShadowScale.z - 0.00375);
+                this._landingShadow.updateMatrix();
+                this._ship.scale.set(shipScale.x - 0.004167, shipScale.y - 0.004167, shipScale.z - 0.004167);
+                this._ship.updateMatrix();
+                // Land Ship.
+            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_3) {
                 return true;
-            } else if (landingFrameCounter < 480) {
-                // Do nothing. Deposit crew.
-            } else if (landingFrameCounter < 720) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
                 this._landingShadow.scale.set(landingShadowScale.x - 0.00375, landingShadowScale.y - 0.00375, landingShadowScale.z - 0.00375);
                 this._landingShadow.updateMatrix();
             } else if (landingFrameCounter === 720) {
