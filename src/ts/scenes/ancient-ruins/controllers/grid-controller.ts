@@ -49,7 +49,7 @@ const overheadRowColModVals = [
 
 
 // Offset position coordinates for top enzmann thruster in relation to the ship itself.
-const THRUSTER_OFFSETS = [0, 0, -0.5];
+const THRUSTER_OFFSETS = [-1.4, 1, 0];
 
 const SCENE_BOOKMARK_FRAME_1 = 240;
 const SCENE_BOOKMARK_FRAME_2 = SCENE_BOOKMARK_FRAME_1 + 120;
@@ -509,18 +509,24 @@ export class GridCtrl {
                 this._ship.position.set(getXPos(30), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = -1;
                 this._landingIncrement = (getXPos(30) - getXPos(center[1])) / 240;
+                
+                this._landingThruster = new Thruster(this._scene, [
+                    this._ship.position.x + THRUSTER_OFFSETS[0],
+                    this._ship.position.y + THRUSTER_OFFSETS[1],
+                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                ], false);
             } else {
                 this._ship.position.set(getXPos(-1), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = 1;
                 this._landingIncrement = (getXPos(center[1]) - getXPos(-1)) / 240;
+                
+                this._landingThruster = new Thruster(this._scene, [
+                    this._ship.position.x + THRUSTER_OFFSETS[0],
+                    this._ship.position.y + THRUSTER_OFFSETS[1],
+                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                ], true);
             }
             this._scene.add(this._ship);
-            this._landingThruster = new Thruster(this._scene, [
-                this._ship.position.x + THRUSTER_OFFSETS[0],
-                this._ship.position.y + THRUSTER_OFFSETS[1],
-                this._ship.position.z + THRUSTER_OFFSETS[2]
-            ]);
-            this._landingThruster.rotate(this._ship.rotation);
         }
     }
 
@@ -1765,11 +1771,17 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS[1],
                     this._ship.position.z + THRUSTER_OFFSETS[2]
                 ], true);
+            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_1) {
+                this._landingThruster.switch();
+                this._landingThruster.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS[0],
+                    this._ship.position.y + THRUSTER_OFFSETS[1],
+                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                ], false);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_2) {
                 // Rotate Ship
                 this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_180_DEG_LEFT / 120));
                 this._ship.updateMatrix();
-                this._landingThruster.rotate(this._ship.rotation);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_3) {
                 // Land Ship.
                 this._landingShadow.scale.set(landingShadowScale.x - 0.001, landingShadowScale.y - 0.001, landingShadowScale.z - 0.001);
@@ -1804,6 +1816,12 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
                 this._ship.visible = false;
                 this._ship.updateMatrix();
+
+                this._landingThruster.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS[0],
+                    this._ship.position.y + THRUSTER_OFFSETS[1],
+                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                ], false);
                 landingFrameCounter = -1;
                 return true;
             }
