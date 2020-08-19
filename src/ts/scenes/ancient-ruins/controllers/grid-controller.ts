@@ -33,7 +33,8 @@ import { AncientRuinsState } from "../ancient-ruins";
 import { isInBounds } from "../utils/is-in-bounds";
 import { isBlocking } from "../utils/is-blocking";
 import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
-import { Thruster } from "../utils/thruster";
+import { DirectionalThruster } from "../utils/thruster-directional";
+import { CircularThruster } from "../utils/thruster-circular";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
@@ -49,7 +50,8 @@ const overheadRowColModVals = [
 
 
 // Offset position coordinates for top enzmann thruster in relation to the ship itself.
-const THRUSTER_OFFSETS = [-1.4, 1, 0];
+const THRUSTER_OFFSETS_DIR = [-1.4, 1, 0];
+const THRUSTER_OFFSETS_CIR = [0, 1, 0];
 
 const SCENE_BOOKMARK_FRAME_1 = 240;
 const SCENE_BOOKMARK_FRAME_2 = SCENE_BOOKMARK_FRAME_1 + 120;
@@ -120,9 +122,14 @@ export class GridCtrl {
     private _landingShadow: Mesh = null;
 
     /**
-     * Landing shadow the grows and shrinks when ship lands and takes off again.
+     * Circular blast of fire that simulates a rocket engine under the ship as it lifts or lowers.
      */
-    private _landingThruster: Thruster = null;
+    private _landingThrusterCircular: CircularThruster = null;
+
+    /**
+     * Directional blast of fire that simulates a rocket engine pushing the ship forward.
+     */
+    private _landingThrusterDirectional: DirectionalThruster = null;
 
     /**
      * Dictionary of materials already made for use in building out the game's tile map.
@@ -492,40 +499,35 @@ export class GridCtrl {
             this._ship = new Mesh(shipGeo, shipMat);
             this._ship.matrixAutoUpdate = false;
 
-            let isLeft = false;
-            let isBottom = false;
-            let zRot = RAD_90_DEG_LEFT;
-            if (center[1] < 5) {
-                isLeft = true;
-                zRot = -RAD_90_DEG_LEFT;
-            }
-            if (center[0] < 5) {
-                isBottom = true;
-            }
-            // TODO: Determine rotation based on which side of the screen the landing zone is on.
-            this._ship.rotation.set(RAD_90_DEG_LEFT, 0, zRot);
-            // TODO: Start ship position on opposite side of screen, rotate over landing zone before lowering to stop.
-            if (isLeft) {
-                this._ship.position.set(getXPos(30), LayerYPos.LAYER_SKY, getZPos(center[0]));
+            if (center[1] < 15) { // landing is on left side of screen.
+                this._ship.rotation.set(RAD_90_DEG_LEFT, 0, -RAD_90_DEG_LEFT);
+                this._ship.position.set(getXPos(32), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = -1;
-                this._landingIncrement = (getXPos(30) - getXPos(center[1])) / 240;
+                this._landingIncrement = (getXPos(32) - getXPos(center[1])) / 240;
                 
-                this._landingThruster = new Thruster(this._scene, [
-                    this._ship.position.x + THRUSTER_OFFSETS[0],
-                    this._ship.position.y + THRUSTER_OFFSETS[1],
-                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                this._landingThrusterDirectional = new DirectionalThruster(this._scene, [
+                    this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], false);
             } else {
-                this._ship.position.set(getXPos(-1), LayerYPos.LAYER_SKY, getZPos(center[0]));
+                this._ship.rotation.set(RAD_90_DEG_LEFT, 0, RAD_90_DEG_LEFT);
+                this._ship.position.set(getXPos(-3), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = 1;
-                this._landingIncrement = (getXPos(center[1]) - getXPos(-1)) / 240;
+                this._landingIncrement = (getXPos(center[1]) - getXPos(-3)) / 240;
                 
-                this._landingThruster = new Thruster(this._scene, [
-                    this._ship.position.x + THRUSTER_OFFSETS[0],
-                    this._ship.position.y + THRUSTER_OFFSETS[1],
-                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                this._landingThrusterDirectional = new DirectionalThruster(this._scene, [
+                    this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
             }
+                
+            this._landingThrusterCircular = new CircularThruster(this._scene, [
+                this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+            ]);
             this._scene.add(this._ship);
         }
     }
@@ -1766,28 +1768,40 @@ export class GridCtrl {
                 this._ship.position.x += (this._landingDirection * this._landingIncrement);
                 this._ship.updateMatrix();
                 
-                this._landingThruster.endCycle([
-                    this._ship.position.x + THRUSTER_OFFSETS[0],
-                    this._ship.position.y + THRUSTER_OFFSETS[1],
-                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                this._landingThrusterDirectional.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_1) {
-                this._landingThruster.switch();
-                this._landingThruster.endCycle([
-                    this._ship.position.x + THRUSTER_OFFSETS[0],
-                    this._ship.position.y + THRUSTER_OFFSETS[1],
-                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                this._landingThrusterDirectional.switch();
+                this._landingThrusterDirectional.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], false);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_2) {
                 // Rotate Ship
                 this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_180_DEG_LEFT / 120));
                 this._ship.updateMatrix();
+                
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 1, true);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_3) {
                 // Land Ship.
                 this._landingShadow.scale.set(landingShadowScale.x - 0.001, landingShadowScale.y - 0.001, landingShadowScale.z - 0.001);
                 this._landingShadow.updateMatrix();
                 this._ship.scale.set(shipScale.x - 0.002567, shipScale.y - 0.002567, shipScale.z - 0.002567);
                 this._ship.updateMatrix();
+                
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], -0.002567, true);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
                 // Stand Still
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
@@ -1796,8 +1810,20 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
                 this._ship.scale.set(shipScale.x + 0.002567, shipScale.y + 0.002567, shipScale.z + 0.002567);
                 this._ship.updateMatrix();
+                
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0.002567, true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_5) {
                 // Deposit Crew
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0, false);
+
                 return true;
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_6) {
                 // Fly Away
@@ -1806,10 +1832,10 @@ export class GridCtrl {
                 this._ship.position.x -= (this._landingDirection * this._landingIncrement);
                 this._ship.updateMatrix();
                 
-                this._landingThruster.endCycle([
-                    this._ship.position.x + THRUSTER_OFFSETS[0],
-                    this._ship.position.y + THRUSTER_OFFSETS[1],
-                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                this._landingThrusterDirectional.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_6) {
                 this._landingShadow.visible = false;;
@@ -1817,10 +1843,10 @@ export class GridCtrl {
                 this._ship.visible = false;
                 this._ship.updateMatrix();
 
-                this._landingThruster.endCycle([
-                    this._ship.position.x + THRUSTER_OFFSETS[0],
-                    this._ship.position.y + THRUSTER_OFFSETS[1],
-                    this._ship.position.z + THRUSTER_OFFSETS[2]
+                this._landingThrusterDirectional.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], false);
                 landingFrameCounter = -1;
                 return true;

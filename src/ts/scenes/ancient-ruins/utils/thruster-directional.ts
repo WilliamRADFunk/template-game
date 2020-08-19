@@ -17,7 +17,7 @@ const YELLOW: string = '#FFFE00';
  * @class
  * Creates and updates main thrusters.
  */
-export class Thruster {
+export class DirectionalThruster {
     /**
      * Controls the overall rendering of the various flames.
      */
@@ -126,19 +126,19 @@ export class Thruster {
         rightGeo.faces.push(new Face3(0, 2, 1, rightNormal));
 
         const rightMeshYellow = new Mesh(rightGeo, this._yellowFlameMaterial);
-        rightMeshYellow.position.set(position[0] + 3, position[1], position[2]);
+        rightMeshYellow.position.set(position[0] + 2.8, position[1], position[2]);
         this._flames.push(rightMeshYellow);
         this._scene.add(rightMeshYellow);
         rightMeshYellow.visible = false;
 
         const rightMeshOrange = new Mesh(rightGeo, this._orangeFlameMaterial);
-        rightMeshOrange.position.set(position[0] + 3, position[1], position[2]);
+        rightMeshOrange.position.set(position[0] + 2.8, position[1], position[2]);
         this._flames.push(rightMeshOrange);
         this._scene.add(rightMeshOrange);
         rightMeshOrange.visible = false;
 
         const rightMeshRed = new Mesh(rightGeo, this._redFlameMaterial);
-        rightMeshRed.position.set(position[0] + 3, position[1], position[2]);
+        rightMeshRed.position.set(position[0] + 2.8, position[1], position[2]);
         this._flames.push(rightMeshRed);
         this._scene.add(rightMeshRed);
         rightMeshRed.visible = false;
@@ -191,7 +191,7 @@ export class Thruster {
             });
         }
         this._flames.slice(0, 3).forEach(flame => flame.position.set(position[0], position[1], position[2]));
-        this._flames.slice(3, 6).forEach(flame => flame.position.set(position[0] + 3, position[1], position[2]));
+        this._flames.slice(3, 6).forEach(flame => flame.position.set(position[0] + 2.8, position[1], position[2]));
     }
 
     public switch() {
