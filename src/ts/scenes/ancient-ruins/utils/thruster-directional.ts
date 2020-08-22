@@ -5,9 +5,9 @@ import {
     MeshBasicMaterial,
     Scene,
     Triangle,
-    Vector3, 
+    Vector3,
     Euler} from 'three';
-    
+
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 
 const ORANGE: string = '#FF6800';
@@ -110,7 +110,7 @@ export class DirectionalThruster {
         this._flames.push(leftMeshRed);
         this._scene.add(leftMeshRed);
         leftMeshRed.visible = false;
-        
+
         const rightGeo = new Geometry();
         const rightV1 = new Vector3(-0.75, 0, -0.36);
         const rightV2 = new Vector3(0.05, 0, 0);
@@ -154,7 +154,6 @@ export class DirectionalThruster {
      * @returns boolean that means very little neither true or false will have any meaning.
      */
     public endCycle(position: [number, number, number], isBurning?: boolean): void {
-        console.log('endCycle', this._isUsingLeftThrusters ? 0 : 3, this._isUsingLeftThrusters ? 3 : 6);
         const flames = this._flames.slice(this._isUsingLeftThrusters ? 0 : 3, this._isUsingLeftThrusters ? 3 : 6);
         if (isBurning) {
             if (!flames[0].visible) {
@@ -172,14 +171,12 @@ export class DirectionalThruster {
                     (flame.material as MeshBasicMaterial).opacity = currOpacity - 0.05;
                 }
             });
-        } else {
-            if (flames[0].visible) {
-                flames.forEach(flame => {
-                    flame.visible = false;
-                    flame.updateMatrix();
-                    SOUNDS_CTRL.stopMainThrusterSmall();
-                });
-            }
+        } else if (flames[0].visible) {
+            flames.forEach(flame => {
+                flame.visible = false;
+                flame.updateMatrix();
+                SOUNDS_CTRL.stopMainThrusterSmall();
+            });
         }
         // For the thrusters not being used
         const offFlames = this._flames.slice(this._isUsingLeftThrusters ? 3 : 0, this._isUsingLeftThrusters ? 6 : 3);

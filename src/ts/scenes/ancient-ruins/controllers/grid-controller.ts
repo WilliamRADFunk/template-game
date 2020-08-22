@@ -8,7 +8,7 @@ import {
     Texture,
     Vector2,
     NearestFilter,
-    RepeatWrapping, 
+    RepeatWrapping,
     CircleGeometry,
     LinearFilter,
     MeshPhongMaterial} from "three";
@@ -20,7 +20,7 @@ import {
     TreeLeafColor,
     TreeTrunkColor,
     WaterBiome,
-    WaterColor, 
+    WaterColor,
     TeamMember} from "../../../models/ancient-ruins-specifications";
 import { TileCtrl } from "./tile-controller";
 import { RandomWithBounds } from "../../../utils/random-with-bounds";
@@ -214,7 +214,7 @@ export class GridCtrl {
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                 if (!isInBounds(row, col)) continue;
-                
+
                 if (this._grid[row][col][4]) {
                     (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.95;
                 } else {
@@ -253,7 +253,7 @@ export class GridCtrl {
                 || !!this._grid[cell[0]][cell[1]][3]
                 || (this._grid[cell[0]][cell[1]][1] > this._tileCtrl.getWaterBaseValue() && this._grid[cell[0]][cell[1]][1] < this._tileCtrl.getWaterEndValue());
         });
-            
+
     }
 
     /**
@@ -504,7 +504,7 @@ export class GridCtrl {
                 this._ship.position.set(getXPos(32), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = -1;
                 this._landingIncrement = (getXPos(32) - getXPos(center[1])) / 240;
-                
+
                 this._landingThrusterDirectional = new DirectionalThruster(this._scene, [
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
@@ -515,14 +515,14 @@ export class GridCtrl {
                 this._ship.position.set(getXPos(-3), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = 1;
                 this._landingIncrement = (getXPos(center[1]) - getXPos(-3)) / 240;
-                
+
                 this._landingThrusterDirectional = new DirectionalThruster(this._scene, [
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
             }
-                
+
             this._landingThrusterCircular = new CircularThruster(this._scene, [
                 this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                 this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
@@ -546,7 +546,7 @@ export class GridCtrl {
                         const scaleX = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3]);
                         const scaleZ = 1 + this._tileCtrl.getGridDicScaleMod(this._grid[row][col][3], true);
 
-                        let material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]].clone();
+                        const material: MeshBasicMaterial = this._materialsMap[this._grid[row][col][3]].clone();
 
                         const tile = new Mesh( this._geometry, material );
                         tile.matrixAutoUpdate = false;
@@ -1767,7 +1767,7 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
                 this._ship.position.x += (this._landingDirection * this._landingIncrement);
                 this._ship.updateMatrix();
-                
+
                 this._landingThrusterDirectional.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
@@ -1784,7 +1784,7 @@ export class GridCtrl {
                 // Rotate Ship
                 this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_180_DEG_LEFT / 120));
                 this._ship.updateMatrix();
-                
+
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
@@ -1796,7 +1796,7 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
                 this._ship.scale.set(shipScale.x - 0.002567, shipScale.y - 0.002567, shipScale.z - 0.002567);
                 this._ship.updateMatrix();
-                
+
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
@@ -1810,7 +1810,7 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
                 this._ship.scale.set(shipScale.x + 0.002567, shipScale.y + 0.002567, shipScale.z + 0.002567);
                 this._ship.updateMatrix();
-                
+
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
@@ -1831,7 +1831,7 @@ export class GridCtrl {
                 this._landingShadow.updateMatrix();
                 this._ship.position.x -= (this._landingDirection * this._landingIncrement);
                 this._ship.updateMatrix();
-                
+
                 this._landingThrusterDirectional.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
@@ -1936,7 +1936,7 @@ export class GridCtrl {
                 resolve();
             }, 0);
         }).then(() => {});
-    }    
+    }
 
     /**
      * Constructor level initializer for fog of war level meshes, made public to allow game controller to control timing of loading graphic.

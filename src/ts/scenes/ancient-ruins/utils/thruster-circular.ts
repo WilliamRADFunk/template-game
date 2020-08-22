@@ -5,9 +5,9 @@ import {
     MeshBasicMaterial,
     Scene,
     Triangle,
-    Vector3, 
+    Vector3,
     CircleGeometry} from 'three';
-    
+
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 
 const ORANGE: string = '#FF6800';
@@ -127,14 +127,12 @@ export class CircularThruster {
                     (flame.material as MeshBasicMaterial).opacity = currOpacity - 0.05;
                 }
             });
-        } else {
-            if (this._flames[0].visible) {
-                this._flames.forEach(flame => {
-                    flame.visible = false;
-                    flame.updateMatrix();
-                    SOUNDS_CTRL.stopMainThrusterSmall();
-                });
-            }
+        } else if (this._flames[0].visible) {
+            this._flames.forEach(flame => {
+                flame.visible = false;
+                flame.updateMatrix();
+                SOUNDS_CTRL.stopMainThrusterSmall();
+            });
         }
         this._flames.forEach(flame => flame.position.set(position[0], position[1], position[2]));
     }
