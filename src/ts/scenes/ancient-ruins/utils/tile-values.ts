@@ -774,13 +774,19 @@ export const gridDictionary: GridDictionary = {
     3023: { devDescription: 'Pier - Open both sides (Wood)', gameDescription: 'Section of a disintegrating pier', spritePosition: [1, 15], blocker: true },
     3024: { devDescription: 'Pier - Ends on left (Wood)', gameDescription: 'Weastern edge of a disintegrating pier', spritePosition: [2, 15], blocker: true },
 
+    // Graveyard Objects
+    3100: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with a strange alien inscription', spritePosition: [4, 9], blocker: true },
+    3101: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with a strange alien inscription', spritePosition: [4, 10], blocker: true },
+    3102: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with strange alien symbolology', spritePosition: [4, 9], blocker: true },
+    3103: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with strange alien symbolology', spritePosition: [4, 9], blocker: true },
+
     // Away team references.
     6000: { devDescription: 'Team leader', gameDescription: 'Team leader: {0} {1}', spritePosition: [-1, -1], blocker: true },
     6001: { devDescription: 'Science Officer', gameDescription: 'Science Officer: {0} {1}', spritePosition: [-1, -1], blocker: true },
     6002: { devDescription: 'Medical Officer', gameDescription: 'Medical Officer: {0} {1}', spritePosition: [-1, -1], blocker: true },
     6003: { devDescription: 'Security 1', gameDescription: 'Security: {0} {1}', spritePosition: [-1, -1], blocker: true },
     6004: { devDescription: 'Security 2', gameDescription: 'Security: {0} {1}', spritePosition: [-1, -1], blocker: true },
-    
+
     10000: { devDescription: 'Landing Zone (Top of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
     10001: { devDescription: 'Landing Zone (Right of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
     10002: { devDescription: 'Landing Zone (Bottom of Screen)', gameDescription: 'Landing Zone', spritePosition: [-1, -1], blocker: true },
