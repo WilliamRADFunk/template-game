@@ -1789,7 +1789,7 @@ export class GridCtrl {
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 1, true);
+                ], 0, true);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_3) {
                 // Land Ship.
                 this._landingShadow.scale.set(landingShadowScale.x - 0.001, landingShadowScale.y - 0.001, landingShadowScale.z - 0.001);
@@ -1804,6 +1804,11 @@ export class GridCtrl {
                 ], -0.002567, true);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
                 // Stand Still
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0, false);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
                 // Lift Ship.
                 this._landingShadow.scale.set(landingShadowScale.x + 0.001, landingShadowScale.y + 0.001, landingShadowScale.z + 0.001);
