@@ -776,9 +776,10 @@ export const gridDictionary: GridDictionary = {
 
     // Graveyard Objects
     3100: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with a strange alien inscription', spritePosition: [4, 9], blocker: true },
-    3101: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with a strange alien inscription', spritePosition: [4, 10], blocker: true },
-    3102: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with strange alien symbolology', spritePosition: [4, 9], blocker: true },
-    3103: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with strange alien symbolology', spritePosition: [4, 9], blocker: true },
+    3101: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with a strange alien inscription', spritePosition: [5, 9], blocker: true },
+    3102: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with strange alien symbolology', spritePosition: [4, 10], blocker: true },
+    3103: { devDescription: 'Gravemarker with alien symbols (Stone)', gameDescription: 'Stone gravemarker with strange alien symbolology', spritePosition: [5, 10], blocker: true },
+    3104: { devDescription: 'Gravemarker with alien statue (Stone)', gameDescription: 'Stone gravemarker with stature ofalien figure', spritePosition: [4, 11], blocker: true },
 
     // Away team references.
     6000: { devDescription: 'Team leader', gameDescription: 'Team leader: {0} {1}', spritePosition: [-1, -1], blocker: true },
