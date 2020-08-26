@@ -8,10 +8,10 @@ import {
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 
 const POSITION_MODS: [number, number][] = [
-    [-0.3, -0.3],
-    [0.3, -0.3],
-    [-0.3, 0.3],
-    [0.3, 0.3],
+    [-0.35, -0.35],
+    [0.35, -0.35],
+    [-0.35, 0.35],
+    [0.35, 0.35],
 ];
 
 const ORANGE: string = '#FF6800';
@@ -83,62 +83,62 @@ export class CircularThruster {
         const redFlames = new Object3D();
 
         const meshYellow = new Mesh(geo, this._yellowFlameMaterial);
-        meshYellow.position.set(position[0] + POSITION_MODS[0][0], position[1], position[2] + POSITION_MODS[0][1]);
+        meshYellow.position.set(POSITION_MODS[0][0], 0, POSITION_MODS[0][1]);
         meshYellow.rotation.set(-1.5708, 0, 0);
         yellowFlames.add(meshYellow);
 
         const meshYellow2 = new Mesh(geo, this._yellowFlameMaterial);
-        meshYellow2.position.set(position[0] + POSITION_MODS[1][0], position[1], position[2] + POSITION_MODS[1][1]);
+        meshYellow2.position.set(POSITION_MODS[1][0], 0, POSITION_MODS[1][1]);
         meshYellow2.rotation.set(-1.5708, 0, 0);
         yellowFlames.add(meshYellow2);
 
         const meshYellow3 = new Mesh(geo, this._yellowFlameMaterial);
-        meshYellow3.position.set(position[0] + POSITION_MODS[2][0], position[1], position[2] + POSITION_MODS[2][1]);
+        meshYellow3.position.set(POSITION_MODS[2][0], 0, POSITION_MODS[2][1]);
         meshYellow3.rotation.set(-1.5708, 0, 0);
         yellowFlames.add(meshYellow3);
 
         const meshYellow4 = new Mesh(geo, this._yellowFlameMaterial);
-        meshYellow4.position.set(position[0] + POSITION_MODS[3][0], position[1], position[2] + POSITION_MODS[3][1]);
+        meshYellow4.position.set(POSITION_MODS[3][0], 0, POSITION_MODS[3][1]);
         meshYellow4.rotation.set(-1.5708, 0, 0);
         yellowFlames.add(meshYellow4);
 
-        const meshOrange = new Mesh(geo, this._yellowFlameMaterial);
-        meshOrange.position.set(position[0] + POSITION_MODS[0][0], position[1], position[2] + POSITION_MODS[0][1]);
+        const meshOrange = new Mesh(geo, this._orangeFlameMaterial);
+        meshOrange.position.set(POSITION_MODS[0][0], 0, POSITION_MODS[0][1]);
         meshOrange.rotation.set(-1.5708, 0, 0);
         orangeFlames.add(meshOrange);
 
-        const meshOrange2 = new Mesh(geo, this._yellowFlameMaterial);
-        meshOrange2.position.set(position[0] + POSITION_MODS[1][0], position[1], position[2] + POSITION_MODS[1][1]);
+        const meshOrange2 = new Mesh(geo, this._orangeFlameMaterial);
+        meshOrange2.position.set(POSITION_MODS[1][0], 0, POSITION_MODS[1][1]);
         meshOrange2.rotation.set(-1.5708, 0, 0);
         orangeFlames.add(meshOrange2);
 
-        const meshOrange3 = new Mesh(geo, this._yellowFlameMaterial);
-        meshOrange3.position.set(position[0] + POSITION_MODS[2][0], position[1], position[2] + POSITION_MODS[2][1]);
+        const meshOrange3 = new Mesh(geo, this._orangeFlameMaterial);
+        meshOrange3.position.set(POSITION_MODS[2][0], 0, POSITION_MODS[2][1]);
         meshOrange3.rotation.set(-1.5708, 0, 0);
         orangeFlames.add(meshOrange3);
 
-        const meshOrange4 = new Mesh(geo, this._yellowFlameMaterial);
-        meshOrange4.position.set(position[0] + POSITION_MODS[3][0], position[1], position[2] + POSITION_MODS[3][1]);
+        const meshOrange4 = new Mesh(geo, this._orangeFlameMaterial);
+        meshOrange4.position.set(POSITION_MODS[3][0], 0, POSITION_MODS[3][1]);
         meshOrange4.rotation.set(-1.5708, 0, 0);
         orangeFlames.add(meshOrange4);
 
-        const meshRed = new Mesh(geo, this._yellowFlameMaterial);
-        meshRed.position.set(position[0] + POSITION_MODS[0][0], position[1], position[2] + POSITION_MODS[0][1]);
+        const meshRed = new Mesh(geo, this._redFlameMaterial);
+        meshRed.position.set(POSITION_MODS[0][0], 0, POSITION_MODS[0][1]);
         meshRed.rotation.set(-1.5708, 0, 0);
         redFlames.add(meshRed);
 
-        const meshRed2 = new Mesh(geo, this._yellowFlameMaterial);
-        meshRed2.position.set(position[0] + POSITION_MODS[1][0], position[1], position[2] + POSITION_MODS[1][1]);
+        const meshRed2 = new Mesh(geo, this._redFlameMaterial);
+        meshRed2.position.set(POSITION_MODS[1][0], 0, POSITION_MODS[1][1]);
         meshRed2.rotation.set(-1.5708, 0, 0);
         redFlames.add(meshRed2);
 
-        const meshRed3 = new Mesh(geo, this._yellowFlameMaterial);
-        meshRed3.position.set(position[0] + POSITION_MODS[2][0], position[1], position[2] + POSITION_MODS[2][1]);
+        const meshRed3 = new Mesh(geo, this._redFlameMaterial);
+        meshRed3.position.set(POSITION_MODS[2][0], 0, POSITION_MODS[2][1]);
         meshRed3.rotation.set(-1.5708, 0, 0);
         redFlames.add(meshRed3);
 
-        const meshRed4 = new Mesh(geo, this._yellowFlameMaterial);
-        meshRed4.position.set(position[0] + POSITION_MODS[3][0], position[1], position[2] + POSITION_MODS[3][1]);
+        const meshRed4 = new Mesh(geo, this._redFlameMaterial);
+        meshRed4.position.set(POSITION_MODS[3][0], 0, POSITION_MODS[3][1]);
         meshRed4.rotation.set(-1.5708, 0, 0);
         redFlames.add(meshRed4);
 
@@ -177,7 +177,6 @@ export class CircularThruster {
             this._flames.forEach(flameGroup => {
                 flameGroup.children.forEach((flame: Mesh) => {
                     if (flame.isMesh) {
-                        console.log('isMesh');
                         const currScale = flame.scale;
                         flame.scale.set(currScale.x + scaleMod, currScale.y + scaleMod, currScale.z + scaleMod);
                         const currOpacity = (flame.material as MeshBasicMaterial).opacity;
@@ -198,7 +197,15 @@ export class CircularThruster {
             });
         }
         this._flames.forEach((flame, index) => {
-            flame.position.set(0, position[1], 0);
+            flame.position.set(position[0], position[1], position[2]);
+            flame.updateMatrix();
+        });
+    }
+
+    public rotate(rotateMod: [number, number, number]): void {
+        this._flames.forEach(flame => {
+            const currRot = flame.rotation;
+            flame.rotation.set(currRot.x + rotateMod[0], currRot.y + rotateMod[1], currRot.z + rotateMod[2]);
             flame.updateMatrix();
         });
     }

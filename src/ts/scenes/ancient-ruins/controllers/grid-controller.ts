@@ -1785,6 +1785,8 @@ export class GridCtrl {
                 this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_180_DEG_LEFT / 120));
                 this._ship.updateMatrix();
 
+                this._landingThrusterCircular.rotate([0, (RAD_180_DEG_LEFT / 120), 0]);
+
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
