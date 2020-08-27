@@ -76,7 +76,7 @@ export class CircularThruster {
      * @param position x, y, z coordinate for base of flames.
      */
     private _createFlames(position: [number, number, number]): void {
-        const geo = new CircleGeometry(0.25, 32);
+        const geo = new CircleGeometry(0.3, 32);
 
         const yellowFlames = new Object3D();
         const orangeFlames = new Object3D();
@@ -196,7 +196,7 @@ export class CircularThruster {
                 SOUNDS_CTRL.stopMainThrusterSmall();
             });
         }
-        this._flames.forEach((flame, index) => {
+        this._flames.forEach(flame => {
             flame.position.set(position[0], position[1], position[2]);
             flame.updateMatrix();
         });
