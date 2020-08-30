@@ -66,16 +66,15 @@ export class CircularThruster {
      * @param position x, y, z coordinate for base of flames.
      * @hidden
      */
-    constructor(scene: Scene, position: [number, number, number]) {
+    constructor(scene: Scene) {
         this._scene = scene;
-        this._createFlames(position);
+        this._createFlames();
     }
 
     /**
      * Instantiates the flames of the thruster.
-     * @param position x, y, z coordinate for base of flames.
      */
-    private _createFlames(position: [number, number, number]): void {
+    private _createFlames(): void {
         const geo = new CircleGeometry(0.3, 32);
 
         const yellowFlames = new Object3D();
