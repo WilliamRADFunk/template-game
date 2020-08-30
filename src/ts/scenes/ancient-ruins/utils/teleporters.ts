@@ -79,7 +79,7 @@ export class Teleporters {
      * @param position x, y, z coordinate for base of flames.
      */
     private _createTeleporterEffects(position: [number, number, number], index: number): void {
-        const geo = new PlaneGeometry(0.4, 0.4, 10, 10);
+        const geo = new PlaneGeometry(0.4, 0.1, 10, 10);
 
         const meshWhite = new Mesh(geo, this._whiteFlameMaterial);
         meshWhite.position.set(position[0], position[1], position[2]);
@@ -87,12 +87,12 @@ export class Teleporters {
         this._teleporters[index].push(meshWhite);
 
         const meshBlue = new Mesh(geo, this._blueFlameMaterial);
-        meshBlue.position.set(position[0], position[1], position[2]);
+        meshBlue.position.set(position[0], position[1], position[2] - 0.1);
         meshBlue.rotation.set(-1.5708, 0, 0);
         this._teleporters[index].push(meshBlue);
 
         const meshCyan = new Mesh(geo, this._cyanFlameMaterial);
-        meshCyan.position.set(position[0], position[1], position[2]);
+        meshCyan.position.set(position[0], position[1], position[2] + 0.1);
         meshCyan.rotation.set(-1.5708, 0, 0);
         this._teleporters[index].push(meshCyan);
 

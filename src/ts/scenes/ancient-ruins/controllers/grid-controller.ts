@@ -1840,6 +1840,13 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0.002567, true);
+            } else if (landingFrameCounter ===  SCENE_BOOKMARK_FRAME_6) {
+                // Stop Circular thrusters
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0.002567, false);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_7) {
                 // Fly Away
                 this._landingShadow.scale.set(landingShadowScale.x - 0.00475, landingShadowScale.y - 0.00475, landingShadowScale.z - 0.00475);
