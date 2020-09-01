@@ -1,22 +1,20 @@
 import {
+    DoubleSide,
     Mesh,
     MeshBasicMaterial,
-    Scene,
+    NearestFilter,
     PlaneGeometry,
-    Object3D} from 'three';
+    RepeatWrapping,
+    Scene,
+    Vector2 } from 'three';
 
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
+import { ASSETS_CTRL } from '../../../controls/controllers/assets-controller';
+import { RAD_90_DEG_LEFT } from './radians-x-degrees-left';
 
-const POSITION_MODS: [number, number][] = [
-    [-0.35, -0.35],
-    [0.35, -0.35],
-    [-0.35, 0.35],
-    [0.35, 0.35],
-];
 
-const WHITE: string = '#FFFFFF';
-const CYAN: string = '#00FFFF';
-const BLUE: string = '#0000FF';
+export const spriteMapCols = 16;
+export const spriteMapRows = 4;
 /**
  * @class
  * Creates and updates main thrusters.
@@ -32,33 +30,6 @@ export class Teleporters {
      * Reference to the scene, used to and and remove flames from rendering cycle once finished.
      */
     private _scene: Scene;
-
-    /**
-     * Blue color in the main thruster's flame.
-     */
-    private _whiteFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
-        color: WHITE,
-        opacity: 0.5,
-        transparent: true
-    });
-
-    /**
-     * White color in the main thruster's flame.
-     */
-    private _cyanFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
-        color: CYAN,
-        opacity: 0.2,
-        transparent: true
-    });
-
-    /**
-     * Yellow color in the main thruster's flame.
-     */
-    private _blueFlameMaterial: MeshBasicMaterial = new MeshBasicMaterial({
-        color: BLUE,
-        opacity: 0.8,
-        transparent: true
-    });
 
     /**
      * Constructor for the Thruster class
@@ -79,31 +50,47 @@ export class Teleporters {
      * @param position x, y, z coordinate for base of flames.
      */
     private _createTeleporterEffects(position: [number, number, number], index: number): void {
-        const geo = new PlaneGeometry(0.4, 0.1, 10, 10);
+        const geo = new PlaneGeometry( 0.40, 0.40, 10, 10 );
+        for (let i = 0; i < 60; i++) {
+            const col = i % 16;
+            const row = Math.abs(Math.floor(i / 16) - 3);
+            const size = [spriteMapCols, spriteMapRows];
 
-        const meshWhite = new Mesh(geo, this._whiteFlameMaterial);
-        meshWhite.position.set(position[0], position[1], position[2]);
-        meshWhite.rotation.set(-1.5708, 0, 0);
-        this._teleporters[index].push(meshWhite);
+            const material: MeshBasicMaterial = new MeshBasicMaterial({
+                color: 0xFFFFFF,
+                map: ASSETS_CTRL.textures.spriteMapTeleporterEffects.clone(),
+                side: DoubleSide,
+                transparent: true
+            });
 
-        const meshBlue = new Mesh(geo, this._blueFlameMaterial);
-        meshBlue.position.set(position[0], position[1], position[2] - 0.1);
-        meshBlue.rotation.set(-1.5708, 0, 0);
-        this._teleporters[index].push(meshBlue);
+            material.map.offset = new Vector2(
+                (1 / size[0]) * col,
+                (1 / size[1]) * row);
 
-        const meshCyan = new Mesh(geo, this._cyanFlameMaterial);
-        meshCyan.position.set(position[0], position[1], position[2] + 0.1);
-        meshCyan.rotation.set(-1.5708, 0, 0);
-        this._teleporters[index].push(meshCyan);
+            material.map.repeat = new Vector2(
+                (1 / size[0]),
+                (1 / size[1]));
 
-        meshWhite.visible = false;
-        meshBlue.visible = false;
-        meshCyan.visible = false;
-        this._scene.add(meshWhite);
-        this._scene.add(meshBlue);
-        this._scene.add(meshCyan);
+            material.map.magFilter = NearestFilter;
+            material.map.minFilter = NearestFilter;
+            material.map.wrapS = RepeatWrapping;
+            material.map.wrapT = RepeatWrapping;
+
+            material.depthTest = false;
+            material.map.needsUpdate = true;
+
+            const teleporterEffect = new Mesh( geo, material.clone() );
+            teleporterEffect.matrixAutoUpdate = false;
+            teleporterEffect.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+            teleporterEffect.visible = false;
+            teleporterEffect.updateMatrix();
+            this._scene.add(teleporterEffect);
+        }
     }
 
+    /**
+     * Handles all cleanup responsibility for instance before it's destroyed.
+     */
     public dispose(): void {
         this._teleporters.forEach(teleporter => {
             teleporter && teleporter.forEach(teleMesh => teleMesh && this._scene.remove(teleMesh));

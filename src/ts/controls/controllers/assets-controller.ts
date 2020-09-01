@@ -309,7 +309,8 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     scienceOfficerProfile1: ['assets/images/science-officer-profile-01.png', null],
     ship: ['assets/images/ship.png', null],
     spriteMapAncientRuins: ['assets/images/sprite-map-ancient-ruins.png', null],
-    spriteMapAncientRuinsCrew: ['assets/images/sprite-map-ancient-ruins-astronauts.png', null]
+    spriteMapAncientRuinsCrew: ['assets/images/sprite-map-ancient-ruins-astronauts.png', null],
+    spriteMapTeleporterEffects: ['assets/images/sprite-map-teleporters.png', null]
 };
 
 /**
@@ -360,7 +361,7 @@ export class AssetsCtrl {
             !Object.keys(TEXTURES).some(key => !TEXTURES[key][1]) &&
             Object.keys(this._sounds).length === SOUND_LOADERS.length) {
             SOUNDS_CTRL.addSounds(this._sounds);
-    
+
             setTimeout(() => {
                 const loading = document.getElementById('loading');
                 loading.classList.add('hidden');

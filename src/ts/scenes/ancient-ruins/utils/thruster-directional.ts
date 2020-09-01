@@ -144,6 +144,9 @@ export class DirectionalThruster {
         rightMeshRed.visible = false;
     }
 
+    /**
+     * Handles all cleanup responsibility for instance before it's destroyed.
+     */
     public dispose(): void {
         this._flames.forEach(flame => flame && this._scene.remove(flame));
         this._flames.length = 0;
