@@ -21,15 +21,35 @@ export const spriteMapRows = 4;
  */
 export class Teleporters {
     /**
-     * Controls the overall rendering of the various flames.
+     * Reference to the teleporter effect mesh index (aka current frame in the animation sequence).
      */
+    private _currIndex: number = 0;
 
-    private _teleporters: Mesh[][] = [];
+    /**
+     * Flag to track if the frames/meshes of the animation should be should from first to last, or last to first.
+     */
+    private _forwardDir: boolean = true;
+
+    /**
+     * Flag to track if the frames were already set to false last iteration.
+     */
+    private _isOff: boolean = true;
+
+    /**
+     * Total number of available frames/meshes in the animation sequence.
+     */
+    private _maxIndex: number = 59;
 
     /**
      * Reference to the scene, used to and and remove flames from rendering cycle once finished.
      */
     private _scene: Scene;
+
+    /**
+     * Controls the overall rendering of the various flames.
+     */
+
+    private _teleporters: Mesh[][] = [];
 
     /**
      * Constructor for the Thruster class
@@ -42,14 +62,17 @@ export class Teleporters {
         for (let i = 0; i < positions.length; i++) {
             this._teleporters[i] = [];
         }
-        positions.forEach((position, index) => this._createTeleporterEffects(position, index));
+        positions.forEach((position, index) => {
+            this._teleporters[index] = this._createTeleporterEffects(position, index)
+        });
     }
 
     /**
      * Instantiates the flames of the thruster.
      * @param position x, y, z coordinate for base of flames.
      */
-    private _createTeleporterEffects(position: [number, number, number], index: number): void {
+    private _createTeleporterEffects(position: [number, number, number], index: number): Mesh[] {
+        const meshes: Mesh[] = [];
         const geo = new PlaneGeometry( 0.40, 0.40, 10, 10 );
         for (let i = 0; i < 60; i++) {
             const col = i % 16;
@@ -81,11 +104,14 @@ export class Teleporters {
 
             const teleporterEffect = new Mesh( geo, material.clone() );
             teleporterEffect.matrixAutoUpdate = false;
+            teleporterEffect.position.set(position[0], position[1], position[2]);
             teleporterEffect.rotation.set(RAD_90_DEG_LEFT, 0, 0);
             teleporterEffect.visible = false;
             teleporterEffect.updateMatrix();
+            meshes.push(teleporterEffect);
             this._scene.add(teleporterEffect);
         }
+        return meshes;
     }
 
     /**
@@ -105,40 +131,28 @@ export class Teleporters {
      */
     public endCycle(isVisible?: boolean): void {
         if (isVisible) {
-            if (!this._teleporters[0][0].visible) {
-                this._teleporters.forEach(teleporter => {
-                    teleporter.forEach(teleMesh => {
-                        teleMesh.visible = true;
-                        teleMesh.updateMatrix();
-                        // SOUNDS_CTRL.playTeleporter();
-                    });
+            this._isOff = false;
+            if (!this._currIndex || this._currIndex > this._maxIndex) {
+                this._currIndex = 0;
+                this._teleporters.forEach(teleEffect => {
+                    teleEffect[this._maxIndex].visible = false;
+                    teleEffect[this._maxIndex].updateMatrix();
+                    teleEffect[0].visible = true;
+                    teleEffect[0].updateMatrix();
                 });
+                return;
             }
-            this._teleporters.forEach(teleporter => {
-                    teleporter.forEach((teleMesh: Mesh) => {
-                    const currOpacity = (teleMesh.material as MeshBasicMaterial).opacity;
-                    if (currOpacity <= 0.1) {
-                        (teleMesh.material as MeshBasicMaterial).opacity = 0.8;
-                    } else {
-                        (teleMesh.material as MeshBasicMaterial).opacity = currOpacity - 0.05;
-                    }
-                    teleMesh.updateMatrix();
-                });
+            this._teleporters.forEach(teleEffect => {
+                teleEffect[this._currIndex - 1].visible = false;
+                teleEffect[this._currIndex - 1].updateMatrix();
+                teleEffect[this._currIndex].visible = true;
+                teleEffect[this._currIndex].updateMatrix();
             });
-            this._teleporters.forEach(teleporter => {
-                teleporter.forEach((teleMesh: Mesh, index: number) => {
-                    const currRot = teleMesh.rotation;
-                    teleMesh.rotation.set(currRot.x, currRot.y + (index * 0.01), currRot.z);
-                    teleMesh.updateMatrix();
-                });
-            });
-        } else if (this._teleporters[0][0].visible) {
-            this._teleporters.forEach(teleporter => {
-                teleporter.forEach(teleMesh => {
-                    teleMesh.visible = false;
-                    teleMesh.updateMatrix();
-                    // SOUNDS_CTRL.stopTeleporter();
-                });
+            this._currIndex++;
+        } else if (this._isOff) {
+            this._teleporters.forEach(teleEffect => {
+                teleEffect[this._currIndex].visible = false;
+                teleEffect[this._currIndex].updateMatrix();
             });
         }
     }
