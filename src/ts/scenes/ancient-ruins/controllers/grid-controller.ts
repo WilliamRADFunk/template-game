@@ -533,13 +533,27 @@ export class GridCtrl {
             this._landingThrusterCircular = new CircularThruster(this._scene);
             this._scene.add(this._ship);
 
-            this._teleporters = new Teleporters(this._scene, [
-                [getXPos(0), LayerYPos.LAYER_SKY, getZPos(0)],
-                [getXPos(1), LayerYPos.LAYER_SKY, getZPos(1)],
-                [getXPos(center[1]), LayerYPos.LAYER_SKY, getZPos(center[0])],
-                [getXPos(0), LayerYPos.LAYER_SKY, getZPos(1)],
-                [getXPos(2), LayerYPos.LAYER_SKY, getZPos(2)]
-            ]);
+            const landingShadowPosistions = [
+                [ center[0] + 1, center[1] - 1 ],
+                [ center[0] + 1, center[1] ],
+                [ center[0] + 1, center[1] + 1 ],
+                [ center[0], center[1] - 1 ],
+                [ center[0], center[1] ],
+                [ center[0], center[1] + 1 ],
+                [ center[0] - 1, center[1] - 1 ],
+                [ center[0] - 1, center[1] ],
+                [ center[0] - 1, center[1] + 1 ]
+            ];
+            const teamPositions: [number, number, number][] = landingShadowPosistions
+                .filter(pos => {
+                    const tileVal = this.getTileValue(pos[0], pos[1], 2);
+                    return (tileVal >= 6000 && tileVal <= 6004);
+                })
+                .map(pos => {
+                    return [ pos[0], LayerYPos.LAYER_SKY, pos[1] ];
+                });
+
+            this._teleporters = new Teleporters(this._scene, teamPositions);
         }
     }
 
@@ -1815,14 +1829,13 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], -0.002567, true);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4 && landingFrameCounter % 2 === 0) {
                 // Stand Still + Teleport Effect
                 this._teleporters.endCycle(true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
                 // Deposit Crew
-                this._teleporters.endCycle(true);
                 return true;
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5 && landingFrameCounter % 2 === 0) {
                 // Disperse Teleport Effect
                 this._teleporters.endCycle(true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_5) {

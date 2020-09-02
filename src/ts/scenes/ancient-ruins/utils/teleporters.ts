@@ -4,7 +4,7 @@ import {
     MeshBasicMaterial,
     NearestFilter,
     PlaneGeometry,
-    RepeatWrapping,
+    ClampToEdgeWrapping,
     Scene,
     Vector2 } from 'three';
 
@@ -59,11 +59,8 @@ export class Teleporters {
      */
     constructor(scene: Scene, positions: [number, number, number][]) {
         this._scene = scene;
-        for (let i = 0; i < positions.length; i++) {
-            this._teleporters[i] = [];
-        }
         positions.forEach((position, index) => {
-            this._teleporters[index] = this._createTeleporterEffects(position, index)
+            this._teleporters[index] = this._createTeleporterEffects(position, index);
         });
     }
 
@@ -73,7 +70,7 @@ export class Teleporters {
      */
     private _createTeleporterEffects(position: [number, number, number], index: number): Mesh[] {
         const meshes: Mesh[] = [];
-        const geo = new PlaneGeometry( 0.40, 0.40, 10, 10 );
+        const geo = new PlaneGeometry( 1.2, 1.2, 10, 10 );
         for (let i = 0; i < 60; i++) {
             const col = i % 16;
             const row = Math.abs(Math.floor(i / 16) - 3);
@@ -96,8 +93,8 @@ export class Teleporters {
 
             material.map.magFilter = NearestFilter;
             material.map.minFilter = NearestFilter;
-            material.map.wrapS = RepeatWrapping;
-            material.map.wrapT = RepeatWrapping;
+            material.map.wrapS = ClampToEdgeWrapping;
+            material.map.wrapT = ClampToEdgeWrapping;
 
             material.depthTest = false;
             material.map.needsUpdate = true;
@@ -149,7 +146,7 @@ export class Teleporters {
                 teleEffect[this._currIndex].updateMatrix();
             });
             this._currIndex++;
-        } else if (this._isOff) {
+        } else if (!isVisible && this._isOff) {
             this._teleporters.forEach(teleEffect => {
                 teleEffect[this._currIndex].visible = false;
                 teleEffect[this._currIndex].updateMatrix();
