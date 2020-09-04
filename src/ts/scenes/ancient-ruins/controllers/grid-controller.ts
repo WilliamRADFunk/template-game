@@ -521,7 +521,7 @@ export class GridCtrl {
                 this._ship.rotation.set(RAD_90_DEG_LEFT, 0, RAD_90_DEG_LEFT);
                 this._ship.position.set(getXPos(-3), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = 1;
-                this._landingIncrement = (Math.abs(getXPos(-3)) + Math.abs(getXPos(center[1] - 3))) / 240;
+                this._landingIncrement = (Math.abs(getXPos(-3)) + Math.abs(getXPos(center[1]))) / 240;
 
                 this._landingThrusterDirectional = new DirectionalThruster(this._scene, [
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
@@ -550,7 +550,7 @@ export class GridCtrl {
                     return (tileVal >= 6000 && tileVal <= 6004);
                 })
                 .map(pos => {
-                    return [ pos[0], LayerYPos.LAYER_SKY, pos[1] ];
+                    return [ getXPos(pos[1]), LayerYPos.LAYER_SKY, getZPos(pos[0]) ];
                 });
 
             this._teleporters = new Teleporters(this._scene, teamPositions);
@@ -1829,18 +1829,42 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], -0.002567, true);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4 && landingFrameCounter % 2 === 0) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
                 // Stand Still + Teleport Effect
-                this._teleporters.endCycle(true);
+                if (landingFrameCounter % 2 === 0) {
+                    this._teleporters.endCycle(true);
+                }
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0, true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
                 // Deposit Crew
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0, true);
                 return true;
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5 && landingFrameCounter % 2 === 0) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
                 // Disperse Teleport Effect
-                this._teleporters.endCycle(true);
+                if (landingFrameCounter % 2 === 0) {
+                    this._teleporters.endCycle(true);
+                }
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0, true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_5) {
                 // Stop Teleport Effect
                 this._teleporters.endCycle(false);
+                this._landingThrusterCircular.endCycle([
+                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
+                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
+                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
+                ], 0, true);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_6) {
                 // Lift Ship.
                 this._landingShadow.scale.set(landingShadowScale.x + 0.001, landingShadowScale.y + 0.001, landingShadowScale.z + 0.001);
