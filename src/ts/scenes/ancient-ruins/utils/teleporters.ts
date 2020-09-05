@@ -11,6 +11,7 @@ import {
 import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 import { ASSETS_CTRL } from '../../../controls/controllers/assets-controller';
 import { RAD_90_DEG_LEFT } from './radians-x-degrees-left';
+import { LayerYPos } from './layer-y-values';
 
 
 export const spriteMapCols = 16;
@@ -137,14 +138,14 @@ export class Teleporters {
                     teleEffect[0].visible = true;
                     teleEffect[0].updateMatrix();
                 });
-                return;
+            } else {
+                this._teleporters.forEach(teleEffect => {
+                    teleEffect[this._currIndex - 1].visible = false;
+                    teleEffect[this._currIndex - 1].updateMatrix();
+                    teleEffect[this._currIndex].visible = true;
+                    teleEffect[this._currIndex].updateMatrix();
+                });
             }
-            this._teleporters.forEach(teleEffect => {
-                teleEffect[this._currIndex - 1].visible = false;
-                teleEffect[this._currIndex - 1].updateMatrix();
-                teleEffect[this._currIndex].visible = true;
-                teleEffect[this._currIndex].updateMatrix();
-            });
             this._currIndex++;
         } else if (!isVisible && this._isOff) {
             this._teleporters.forEach(teleEffect => {
