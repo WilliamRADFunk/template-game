@@ -521,7 +521,7 @@ export class GridCtrl {
                 this._ship.rotation.set(RAD_90_DEG_LEFT, 0, RAD_90_DEG_LEFT);
                 this._ship.position.set(getXPos(-3), LayerYPos.LAYER_SKY, getZPos(center[0]));
                 this._landingDirection = 1;
-                this._landingIncrement = (Math.abs(getXPos(-3)) + Math.abs(getXPos(center[1]))) / 240;
+                this._landingIncrement = ((center[1] * 0.4)) / 240;
 
                 this._landingThrusterDirectional = new DirectionalThruster(this._scene, [
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
