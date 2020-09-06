@@ -482,20 +482,34 @@ export class GridCtrl {
      */
     private _createLandingZoneShadow(): void {
         const landingZone = [];
-        for (let row = MIN_ROWS; row < MAX_ROWS; row++) {
-            for (let col = MIN_COLS; col < MAX_COLS; col++) {
+        for (let row = MIN_ROWS; row <= MAX_ROWS; row++) {
+            for (let col = MIN_COLS; col <= MAX_COLS; col++) {
                 if (this.getTileValue(row, col, 0) >= this._tileCtrl.getLandingZoneValue()) {
                     landingZone.push([row, col]);
                 }
             }
         }
-        const center = landingZone[4];
 
+        const rows = landingZone
+            .map(tile => tile[0])
+            .sort();
+        const minRow = rows[0];
+        const maxRow = rows[rows.length - 1];
+        const midRow = rows.find(row => row !== minRow && row !== maxRow);
+
+        const cols = landingZone
+            .map(tile => tile[1])
+            .sort();
+        const minCol = cols[0];
+        const maxCol = cols[cols.length - 1];
+        const midCol = cols.find(col => col !== minCol && col !== maxCol);
+
+        const center = [midRow, midCol];
         if (center) {
             const landingGeo = createBoxWithRoundedEdges(1.2, 1.2, 0.05, 0)
             const landingMat: MeshBasicMaterial = new MeshBasicMaterial({
                 color: 0x333333,
-                opacity: 0.9,
+                opacity: 0.4,
                 side: FrontSide,
                 transparent: true
             });
@@ -1829,7 +1843,7 @@ export class GridCtrl {
                 ], -0.002567, true);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
                 // Stand Still + Teleport Effect
-                if (landingFrameCounter % 2 === 0) {
+                if (landingFrameCounter % 3 === 0) {
                     this._teleporters.endCycle(true);
                 }
                 this._landingThrusterCircular.endCycle([
@@ -1839,6 +1853,7 @@ export class GridCtrl {
                 ], 0, true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
                 // Deposit Crew
+                this._teleporters.endCycle(true);
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
@@ -1847,7 +1862,7 @@ export class GridCtrl {
                 return true;
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
                 // Disperse Teleport Effect
-                if (landingFrameCounter % 2 === 0) {
+                if (landingFrameCounter % 3 === 0) {
                     this._teleporters.endCycle(true);
                 }
                 this._landingThrusterCircular.endCycle([

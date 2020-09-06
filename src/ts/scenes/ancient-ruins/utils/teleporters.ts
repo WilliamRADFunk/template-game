@@ -160,9 +160,11 @@ export class Teleporters {
             this._currIndex++;
         } else if (!isVisible && !this._isOff) {
             this._isOff = true;
-            this._teleporters.forEach(teleEffect => {
-                teleEffect[this._currIndex].visible = false;
-                teleEffect[this._currIndex].updateMatrix();
+            this._teleporters.forEach(teleEffects => {
+                teleEffects.forEach(teleEffect => {
+                    teleEffect.visible = false;
+                    teleEffect.updateMatrix();
+                });
             });
         }
     }
