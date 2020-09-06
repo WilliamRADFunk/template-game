@@ -221,10 +221,10 @@ export class AncientRuins {
                 return this._loadingCtrl.getLoadWaitPromise(250, 70);
             });
         })
-        // Initialization clouds and landing zone.
+        // Initialization clouds.
         .then(() => {
-            return this._gridCtrl.initiateCloudsAndLandingMeshes().then(() => {
-                return this._loadingCtrl.getLoadWaitPromise(500, 75);
+            return this._gridCtrl.initiateCloudAndLandingMeshes().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(100, 75);
             });
         })
         // Team controller initialization, and creation of lower right description panel.
@@ -239,7 +239,13 @@ export class AncientRuins {
             this._descTextPanel.toggleOpacity();
             this._teamCtrl.hideTeam();
     
-            return this._loadingCtrl.getLoadWaitPromise(250, 89);
+            return this._loadingCtrl.getLoadWaitPromise(250, 81);
+        })
+        // Initialization Landing zone.
+        .then(() => {
+            return this._gridCtrl.initiateLandingShadowMeshes().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(500, 89);
+            });
         })
         // Path Finder Controller initialization.
         .then(() => {

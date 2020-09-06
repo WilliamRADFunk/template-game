@@ -479,9 +479,18 @@ export class GridCtrl {
 
     /**
      * Places a square graphic above the ground but below away team that "scorches" the ground to designate landing zone.
-     * @param center horizontal,vertical coordinate of the center landing zone tile.
      */
-    private _createLandingZoneShadow(center: number[]): void {
+    private _createLandingZoneShadow(): void {
+        const landingZone = [];
+        for (let row = MIN_ROWS; row < MAX_ROWS; row++) {
+            for (let col = MIN_COLS; col < MAX_COLS; col++) {
+                if (this.getTileValue(row, col, 0) >= this._tileCtrl.getLandingZoneValue()) {
+                    landingZone.push([row, col]);
+                }
+            }
+        }
+        const center = landingZone[4];
+
         if (center) {
             const landingGeo = createBoxWithRoundedEdges(1.2, 1.2, 0.05, 0)
             const landingMat: MeshBasicMaterial = new MeshBasicMaterial({
@@ -533,18 +542,7 @@ export class GridCtrl {
             this._landingThrusterCircular = new CircularThruster(this._scene);
             this._scene.add(this._ship);
 
-            const landingShadowPosistions = [
-                [ center[0] + 1, center[1] - 1 ],
-                [ center[0] + 1, center[1] ],
-                [ center[0] + 1, center[1] + 1 ],
-                [ center[0], center[1] - 1 ],
-                [ center[0], center[1] ],
-                [ center[0], center[1] + 1 ],
-                [ center[0] - 1, center[1] - 1 ],
-                [ center[0] - 1, center[1] ],
-                [ center[0] - 1, center[1] + 1 ]
-            ];
-            const teamPositions: [number, number, number][] = landingShadowPosistions
+            const teamPositions: [number, number, number][] = landingZone
                 .filter(pos => {
                     const tileVal = this.getTileValue(pos[0], pos[1], 2);
                     return (tileVal >= 6000 && tileVal <= 6004);
@@ -1980,15 +1978,13 @@ export class GridCtrl {
     }
 
     /**
-     * Constructor level initializer for clouds and landing zone, made public to allow game controller to control timing of loading graphic.
+     * Constructor level initializer for clouds, made public to allow game controller to control timing of loading graphic.
      * @returns an empty promise to make function async
      */
-    public async initiateCloudsAndLandingMeshes(): Promise<void> {
+    public async initiateCloudAndLandingMeshes(): Promise<void> {
         this._createClouds();
 
-        const landingMiddleTile = this._createLandingZone();
-
-        this._createLandingZoneShadow(landingMiddleTile);
+        this._createLandingZone();
 
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -2011,6 +2007,20 @@ export class GridCtrl {
      */
     public async initiateGroundLevelMeshes(): Promise<void> {
         return this._createGroundLevelMeshes();
+    }
+
+    /**
+     * Constructor level initializer for landing zone, made public to allow game controller to control timing of loading graphic.
+     * @returns an empty promise to make function async
+     */
+    public async initiateLandingShadowMeshes(): Promise<void> {
+        this._createLandingZoneShadow();
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 0);
+        }).then(() => {});
     }
 
     /**

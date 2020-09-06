@@ -37,6 +37,11 @@ export class Teleporters {
     private _isOff: boolean = true;
 
     /**
+     * Materials for the teleporter effect frames.
+     */
+    private _materials: MeshBasicMaterial[] = [];
+
+    /**
      * Total number of available frames/meshes in the animation sequence.
      */
     private _maxIndex: number = 59;
@@ -49,7 +54,6 @@ export class Teleporters {
     /**
      * Controls the overall rendering of the various flames.
      */
-
     private _teleporters: Mesh[][] = [];
 
     /**
@@ -60,18 +64,13 @@ export class Teleporters {
      */
     constructor(scene: Scene, positions: [number, number, number][]) {
         this._scene = scene;
+        this._createTeleporterEffectMaterials();
         positions.forEach((position, index) => {
             this._teleporters[index] = this._createTeleporterEffects(position, index);
         });
     }
 
-    /**
-     * Instantiates the flames of the thruster.
-     * @param position x, y, z coordinate for base of flames.
-     */
-    private _createTeleporterEffects(position: [number, number, number], index: number): Mesh[] {
-        const meshes: Mesh[] = [];
-        const geo = new PlaneGeometry( 1.2, 1.2, 10, 10 );
+    private _createTeleporterEffectMaterials(): void {
         for (let i = 0; i < 60; i++) {
             const col = i % 16;
             const row = Math.abs(Math.floor(i / 16) - 3);
@@ -100,7 +99,19 @@ export class Teleporters {
             material.depthTest = false;
             material.map.needsUpdate = true;
 
-            const teleporterEffect = new Mesh( geo, material.clone() );
+            this._materials.push(material);
+        }
+    }
+
+    /**
+     * Instantiates the flames of the thruster.
+     * @param position x, y, z coordinate for base of flames.
+     */
+    private _createTeleporterEffects(position: [number, number, number], index: number): Mesh[] {
+        const meshes: Mesh[] = [];
+        const geo = new PlaneGeometry( 1.2, 1.2, 10, 10 );
+        for (let i = 0; i < 60; i++) {
+            const teleporterEffect = new Mesh( geo, this._materials[i].clone() );
             teleporterEffect.matrixAutoUpdate = false;
             teleporterEffect.position.set(position[0], position[1], position[2]);
             teleporterEffect.rotation.set(RAD_90_DEG_LEFT, 0, 0);
@@ -147,7 +158,8 @@ export class Teleporters {
                 });
             }
             this._currIndex++;
-        } else if (!isVisible && this._isOff) {
+        } else if (!isVisible && !this._isOff) {
+            this._isOff = true;
             this._teleporters.forEach(teleEffect => {
                 teleEffect[this._currIndex].visible = false;
                 teleEffect[this._currIndex].updateMatrix();
