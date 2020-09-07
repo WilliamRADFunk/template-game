@@ -36,6 +36,7 @@ import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 import { DirectionalThruster } from "../utils/thruster-directional";
 import { CircularThruster } from "../utils/thruster-circular";
 import { Teleporters } from "../utils/teleporters";
+import { SOUNDS_CTRL } from "../../../controls/controllers/sounds-controller";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
@@ -1778,7 +1779,7 @@ export class GridCtrl {
      * Handles all cleanup responsibility for controller before it's destroyed.
      */
     public dispose(): void {
-
+        SOUNDS_CTRL.stopBackgroundMusicScifi01();
     }
 
     /**
@@ -1786,7 +1787,6 @@ export class GridCtrl {
      */
     public endCycle(state?: AncientRuinsState): boolean {
         if (state === AncientRuinsState.landing_start || state === AncientRuinsState.leaving_start) {
-            // TODO: Add animated scene that first grows ship, deposits crew, then shrinks ship again.
             landingFrameCounter++;
             const landingShadowScale = this._landingShadow.scale;
             const shipScale = this._ship.scale;
@@ -1843,6 +1843,7 @@ export class GridCtrl {
                 ], -0.002567, true);
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_3) {
                 // Deposit Crew
+                SOUNDS_CTRL.playTeleporter();
                 this._ancientRuinsSpec.crew.forEach(crewMember => {
                     (crewMember.animationMeshes[0].material as any).opacity = 0.01;
                     crewMember.animationMeshes[0].updateMatrix();
@@ -1865,6 +1866,7 @@ export class GridCtrl {
                 });
             } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
                 // Stop Teleport Effect
+                SOUNDS_CTRL.stopTeleporter();
                 this._teleporters.endCycle(false);
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
@@ -1875,21 +1877,21 @@ export class GridCtrl {
                 // Lift Ship.
                 this._landingShadow.scale.set(landingShadowScale.x + 0.001, landingShadowScale.y + 0.001, landingShadowScale.z + 0.001);
                 this._landingShadow.updateMatrix();
-                this._ship.scale.set(shipScale.x + 0.005134, shipScale.y + 0.005134, shipScale.z + 0.005134);
+                this._ship.scale.set(shipScale.x + 0.0012835, shipScale.y + 0.0012835, shipScale.z + 0.0012835);
                 this._ship.updateMatrix();
 
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 0.005134, true);
+                ], 0.0012835, true);
             } else if (landingFrameCounter ===  SCENE_BOOKMARK_FRAME_5) {
                 // Stop Circular thrusters
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 0.005134, false);
+                ], 0.0012835, false);
             } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_6) {
                 // Fly Away
                 this._landingShadow.scale.set(landingShadowScale.x - 0.00475, landingShadowScale.y - 0.00475, landingShadowScale.z - 0.00475);
@@ -1914,6 +1916,7 @@ export class GridCtrl {
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], false);
                 landingFrameCounter = -1;
+                SOUNDS_CTRL.playBackgroundMusicScifi02();
                 return true;
             }
         } else {

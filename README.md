@@ -106,7 +106,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 :black_square_button: Create return type for when scene is complete.
 
-:black_square_button: Animation of ship landing, and leaving.
+:white_check_mark: Animation of ship landing, and leaving.
 
 :black_square_button: Create "action" buttons for each crew member.
 
@@ -121,6 +121,8 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 :black_square_button: Generate trigger tiles that spawn random encounters (ie. traps that potentially hurt crew, fights against monsters, etc.).
 
 :black_square_button: Add reward tiles. Valuable materials, technology, food, and potentially new crew members if discovered.
+
+:black_square_button: Add the various sound effects: walking, splashes, interacting, fighting, etc..
 
 :black_square_button: (Optional) Reduce the memory footprint of using so many tiles.
 

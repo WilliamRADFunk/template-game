@@ -62,6 +62,7 @@ class SoundsCtrl {
         this._sounds['airThruster'].sound = new Sound(this._sounds['airThruster'].audio, 4.5, 0.8, 0.3, true, 9);
         this._sounds['airThruster'].misc = 0;
         this._sounds['backgroundMusicScifi01'].sound = new Sound(this._sounds['backgroundMusicScifi01'].audio, 0, 0.2, 0.1, true);
+        this._sounds['backgroundMusicScifi02'].sound = new Sound(this._sounds['backgroundMusicScifi02'].audio, 16, 0.7, 0.3, true);
         this._sounds['baseLost'].sound = new Sound(this._sounds['baseLost'].audio, 2.2, 0.4);
         this._sounds['bidooo'].sound = new Sound(this._sounds['bidooo'].audio, 0, 0.4, 0.2);
         this._sounds['bidooo'].notPausable = true;
@@ -84,6 +85,7 @@ class SoundsCtrl {
         this._sounds['saucer'].sound = new Sound(this._sounds['saucer'].audio, 0, 0.2);
         this._sounds['shieldDown'].sound = new Sound(this._sounds['shieldDown'].audio, 0, 0.7);
         this._sounds['shieldUp'].sound = new Sound(this._sounds['shieldUp'].audio, 0, 0.7);
+        this._sounds['teleporter'].sound = new Sound(this._sounds['teleporter'].audio, 0, 1.1);
         this._sounds['walkingFastGravel'].sound = new Sound(this._sounds['walkingFastGravel'].audio, 0, 0.2, 0.1, true);
         this._sounds['wind'].sound = new Sound(this._sounds['wind'].audio, 0, 0.4, 0.2, true);
     }
@@ -143,6 +145,14 @@ class SoundsCtrl {
     public playBackgroundMusicScifi01(): void {
         if (this.isMute || this.isPaused) { return; }
         this._sounds.backgroundMusicScifi01.sound.play();
+    }
+
+    /**
+     * Plays the background scifi looping music 02 sound.
+     */
+    public playBackgroundMusicScifi02(): void {
+        if (this.isMute || this.isPaused) { return; }
+        this._sounds.backgroundMusicScifi02.sound.play();
     }
 
     /**
@@ -316,6 +326,14 @@ class SoundsCtrl {
     }
 
     /**
+     * Plays the teleporters sound.
+     */
+    public playTeleporter(): void {
+        if (this.isMute || this.isPaused) { return; }
+        this._sounds.teleporter.sound.play();
+    }
+
+    /**
      * Plays the walkingFastGravel sound.
      */
     public playWalkingFastGravel(): void {
@@ -364,6 +382,14 @@ class SoundsCtrl {
     }
 
     /**
+     * Stops the background scifi looping music 02 sound.
+     */
+    public stopBackgroundMusicScifi02(): void {
+        if (this.isMute) { return; }
+        this._sounds.backgroundMusicScifi02.sound.stop();
+    }
+
+    /**
      * Stops the drilling is coming sound.
      */
     public stopDrilling(): void {
@@ -385,6 +411,14 @@ class SoundsCtrl {
     public stopSaucer(): void {
         if (this.isMute) { return; }
         this._sounds.saucer.sound.stop();
+    }
+
+    /**
+     * Stops the teleporter sound.
+     */
+    public stopTeleporter(): void {
+        if (this.isMute) { return; }
+        this._sounds.teleporter.sound.stop();
     }
 
     /**

@@ -27,6 +27,16 @@ const SOUND_PATHS: { name: string; path: string; }[] = [
         path: 'assets/audio/background-music-scifi-01.mp3'
     },
     {
+        name: 'backgroundMusicScifi02',
+        /**
+        * Eerie Tense Background
+        * https://freesound.org/people/Speedenza/sounds/207753/
+        * license: https://creativecommons.org/licenses/by-nc/3.0/
+        * Recorded by: Speedenza
+        */
+        path: 'assets/audio/background-music-scifi-02.wav'
+    },
+    {
         name: 'baseLost',
         /**
         * Gunfire In Crowd Sound
@@ -235,6 +245,16 @@ const SOUND_PATHS: { name: string; path: string; }[] = [
         * Recorded by: Mike Koenig
         */
         path: 'assets/audio/shield-up.mp3'
+    },
+    {
+        name: 'teleporter',
+        /**
+        * New Space Sounds! » teleport
+        * https://freesound.org/people/NoiseCollector/sounds/43047/
+        * license: https://creativecommons.org/licenses/by/3.0/
+        * Recorded by: NoiseCollector
+        */
+        path: 'assets/audio/teleporter.wav'
     },
     {
         name: 'walkingFastGravel',
