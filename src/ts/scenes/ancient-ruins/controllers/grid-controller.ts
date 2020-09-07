@@ -58,9 +58,9 @@ const SCENE_BOOKMARK_FRAME_1 = 240;
 const SCENE_BOOKMARK_FRAME_2 = SCENE_BOOKMARK_FRAME_1 + 120;
 const SCENE_BOOKMARK_FRAME_3 = SCENE_BOOKMARK_FRAME_2 + 120;
 const SCENE_BOOKMARK_FRAME_4 = SCENE_BOOKMARK_FRAME_3 + 120;
-const SCENE_BOOKMARK_FRAME_5 = SCENE_BOOKMARK_FRAME_4 + 120;
-const SCENE_BOOKMARK_FRAME_6 = SCENE_BOOKMARK_FRAME_5 + 120;
-const SCENE_BOOKMARK_FRAME_7 = SCENE_BOOKMARK_FRAME_6 + 240;
+const SCENE_BOOKMARK_FRAME_5 = SCENE_BOOKMARK_FRAME_4 + 240;
+const SCENE_BOOKMARK_FRAME_6 = SCENE_BOOKMARK_FRAME_5 + 240;
+// const SCENE_BOOKMARK_FRAME_7 = SCENE_BOOKMARK_FRAME_6 + 240;
 
 function shuffle(arr: any[]): any[] {
     for(let i = arr.length - 1; i > 0; i--){
@@ -1841,26 +1841,14 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], -0.002567, true);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
-                // Stand Still + Teleport Effect
-                if (landingFrameCounter % 3 === 0) {
-                    this._teleporters.endCycle(true);
-                }
-                this._landingThrusterCircular.endCycle([
-                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
-                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
-                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 0, true);
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
+            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_3) {
                 // Deposit Crew
-                this._teleporters.endCycle(true);
-                this._landingThrusterCircular.endCycle([
-                    this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
-                    this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
-                    this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 0, true);
+                this._ancientRuinsSpec.crew.forEach(crewMember => {
+                    (crewMember.animationMeshes[0].material as any).opacity = 0.01;
+                    crewMember.animationMeshes[0].updateMatrix();
+                });
                 return true;
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
                 // Disperse Teleport Effect
                 if (landingFrameCounter % 3 === 0) {
                     this._teleporters.endCycle(true);
@@ -1870,7 +1858,12 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0, true);
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_5) {
+                
+                this._ancientRuinsSpec.crew.forEach(crewMember => {
+                    (crewMember.animationMeshes[0].material as any).opacity += (0.99 / 120);
+                    crewMember.animationMeshes[0].updateMatrix();
+                });
+            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
                 // Stop Teleport Effect
                 this._teleporters.endCycle(false);
                 this._landingThrusterCircular.endCycle([
@@ -1878,26 +1871,26 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0, true);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_6) {
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
                 // Lift Ship.
                 this._landingShadow.scale.set(landingShadowScale.x + 0.001, landingShadowScale.y + 0.001, landingShadowScale.z + 0.001);
                 this._landingShadow.updateMatrix();
-                this._ship.scale.set(shipScale.x + 0.002567, shipScale.y + 0.002567, shipScale.z + 0.002567);
+                this._ship.scale.set(shipScale.x + 0.005134, shipScale.y + 0.005134, shipScale.z + 0.005134);
                 this._ship.updateMatrix();
 
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 0.002567, true);
-            } else if (landingFrameCounter ===  SCENE_BOOKMARK_FRAME_6) {
+                ], 0.005134, true);
+            } else if (landingFrameCounter ===  SCENE_BOOKMARK_FRAME_5) {
                 // Stop Circular thrusters
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
-                ], 0.002567, false);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_7) {
+                ], 0.005134, false);
+            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_6) {
                 // Fly Away
                 this._landingShadow.scale.set(landingShadowScale.x - 0.00475, landingShadowScale.y - 0.00475, landingShadowScale.z - 0.00475);
                 this._landingShadow.updateMatrix();
@@ -1909,7 +1902,7 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_7) {
+            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_6) {
                 this._landingShadow.visible = false;;
                 this._landingShadow.updateMatrix();
                 this._ship.visible = false;
