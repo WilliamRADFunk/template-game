@@ -878,7 +878,7 @@ export class DevMenu {
         this._page1textElements.leftTopMiddleTitleText = new LeftTopMiddleTitleText(
             'Ship Layout',
             { left, height, top: null, width },
-            COLORS.neutral,
+            COLORS.highlighted,
             border,
             TextType.FADABLE);
 
@@ -898,7 +898,7 @@ export class DevMenu {
         this._page1textElements.rightTopMiddleTitleText = new RightTopMiddleTitleText(
             'Repair',
             { left, height, top: null, width },
-            COLORS.neutral,
+            COLORS.selected,
             border,
             TextType.FADABLE);
 
@@ -918,7 +918,7 @@ export class DevMenu {
         this._page1textElements.leftBottomMiddleTitleText = new LeftBottomMiddleTitleText(
             'Travel',
             { left, height, top: null, width },
-            COLORS.neutral,
+            COLORS.selected,
             border,
             TextType.FADABLE);
 
@@ -958,7 +958,7 @@ export class DevMenu {
         this._page1textElements.leftBottomTitleText = new LeftBottomTitleText(
             'Land & Mine',
             { left, height, top: null, width },
-            COLORS.neutral,
+            COLORS.highlighted,
             border,
             TextType.FADABLE);
 
@@ -1561,7 +1561,7 @@ export class DevMenu {
         this._page1textElements.rightBottomTitleText = new RightBottomTitleText(
             'Next Page',
             { left, height, top: null, width },
-            COLORS.selected,
+            COLORS.neutral,
             border,
             TextType.FADABLE);
 
@@ -1639,7 +1639,7 @@ export class DevMenu {
         this._page2textElements.leftBottomTitleText2 = new LeftBottomTitleText(
             'Previous Page',
             { left, height, top: null, width },
-            COLORS.selected,
+            COLORS.neutral,
             border,
             TextType.FADABLE);
         this._page2textElements.leftBottomTitleText2.hide();
@@ -1660,7 +1660,7 @@ export class DevMenu {
         this._page2textElements.rightBottomTitleText2 = new RightBottomTitleText(
             'Next Page',
             { left, height, top: null, width },
-            COLORS.selected,
+            COLORS.neutral,
             border,
             TextType.FADABLE);
         this._page2textElements.rightBottomTitleText2.hide();
@@ -1687,7 +1687,7 @@ export class DevMenu {
         this._page3textElements.leftTopTitleText3 = new LeftTopTitleText(
             'Previous Page',
             { left, height, top: null, width },
-            COLORS.selected,
+            COLORS.neutral,
             border,
             TextType.FADABLE);
         this._page3textElements.leftTopTitleText3.hide();
