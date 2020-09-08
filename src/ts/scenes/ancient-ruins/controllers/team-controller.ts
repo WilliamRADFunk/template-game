@@ -14,6 +14,7 @@ import { formatString } from "../../../utils/format-string";
 import { RankAbbreviationsMap } from "../../../utils/rank-map";
 import { TileCtrl } from "./tile-controller";
 import { animateCrewMember } from "../utils/animate-crew-member";
+import { SOUNDS_CTRL } from "../../../controls/controllers/sounds-controller";
 
 export class TeamCtrl {
     /**
@@ -241,13 +242,6 @@ export class TeamCtrl {
     }
 
     /**
-     * Handles all cleanup responsibility for controller before it's destroyed.
-     */
-    public dispose(): void {
-
-    }
-
-    /**
      * Rotates the crew members graphics in the desired direction.
      * @param index crew member index to have its direction altered.
      * @param newDir new direction to have crew member face.
@@ -258,12 +252,40 @@ export class TeamCtrl {
     }
 
     /**
+     * Handles all cleanup responsibility for controller before it's destroyed.
+     */
+    public dispose(): void {
+        this._ancientRuinsSpec.crew
+            .filter(member => member.isMovingSound)
+            .forEach(member => {
+                SOUNDS_CTRL.stopWalkingFastGravel();
+                member.isMovingSound = false;
+                member.isMoving = false;
+            });
+    }
+
+    /**
      * At the end of each loop iteration, check for team-specific animations.
      */
-    public endCycle(): void {
-        this._ancientRuinsSpec.crew.filter(member => member.isMoving).forEach(member => {
+    public endCycle(): void {//SOUNDS_CTRL.playWalkingFastGravel();
+        const movingCrewMembers = this._ancientRuinsSpec.crew.filter(member => member.isMoving);
+        
+        movingCrewMembers.forEach(member => {
             animateCrewMember(member);
+            if (!member.isMovingSound) {
+                SOUNDS_CTRL.playWalkingFastGravel();
+                member.isMovingSound = true;
+            }
         });
+
+        if (!movingCrewMembers.length) {
+            this._ancientRuinsSpec.crew.forEach(member => {
+                if (member.isMovingSound) {
+                    SOUNDS_CTRL.stopWalkingFastGravel();
+                    member.isMovingSound = false;
+                }
+            });
+        }
     }
 
     /**

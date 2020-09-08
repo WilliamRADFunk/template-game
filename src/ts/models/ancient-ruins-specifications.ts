@@ -118,6 +118,11 @@ export interface TeamMember {
     isMoving?: boolean;
 
     /**
+     * Flag to signal walking animation sound isPlaying.
+     */
+    isMovingSound?: boolean;
+
+    /**
      * Crew member's name. ie. John Doe.
      */
     name: string;

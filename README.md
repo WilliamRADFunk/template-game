@@ -122,7 +122,7 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 :black_square_button: Add reward tiles. Valuable materials, technology, food, and potentially new crew members if discovered.
 
-:black_square_button: Add the various sound effects: walking, splashes, interacting, fighting, etc..
+:black_square_button: Add the various sound effects: walking, splashes, interacting, fighting, background, etc..
 
 :black_square_button: (Optional) Reduce the memory footprint of using so many tiles.
 
