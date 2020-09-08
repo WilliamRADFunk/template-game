@@ -46,10 +46,14 @@ const overheadMeshOpacityFrameCounterReset = 30;
 
 const overheadRowColModVals = [
     [0, 0],
+    [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]
+];
+
+const fogRowColModVals = [
+    [0, 0],
     [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1],
     [2, 0], [2, 1], [0, 2], [-1, 2], [-2, 0], [-2, -1], [0, -2], [1, -2], [-2, 1], [-1, -2], [2, -1], [1, 2]
 ];
-
 
 // Offset position coordinates for top enzmann thruster in relation to the ship itself.
 const THRUSTER_OFFSETS_DIR = [-1.4, 1, 0];
@@ -199,15 +203,20 @@ export class GridCtrl {
         // Reset all fog of war tiles to 1
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
-                if (!isInBounds(row, col)) continue;
-                this._grid[row][col][4] = 1;
+                // Skip if out of bounds or already explored.
+                if (!isInBounds(row, col) || this._grid[row][col][4] === 2) continue;
+                if (!this._grid[row][col][4]) {
+                    this._grid[row][col][4] = 2;
+                } else {
+                    this._grid[row][col][4] = 1;
+                }
             }
         }
 
         // Set only those tiles in range of crew members' visibility to 0
         this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
             if (cPos) {
-                overheadRowColModVals.forEach(overPos => {
+                fogRowColModVals.forEach(overPos => {
                     const posX = cPos[0] + overPos[0];
                     const posY = cPos[1] + overPos[1];
 
@@ -223,8 +232,10 @@ export class GridCtrl {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                 if (!isInBounds(row, col)) continue;
 
-                if (this._grid[row][col][4]) {
+                if (this._grid[row][col][4] === 1) {
                     (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.95;
+                } else if (this._grid[row][col][4] === 2) {
+                    (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0.4;
                 } else {
                     (this._level4FogOfWarMeshMap[row][col].material as MeshBasicMaterial).opacity = 0;
                 }
