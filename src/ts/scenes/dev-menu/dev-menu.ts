@@ -996,7 +996,7 @@ export class DevMenu {
         groupLeftStart = 0.015;
         //#region LaunchLandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
-        let rowSub2height = sizeHeightForLandAndMine(-2, height);
+        const rowSub2height = sizeHeightForLandAndMine(-2, height);
 
         this._page1textElements.freestyleHThresholdText = new FreestyleText(
             'H Threshold',
@@ -1014,7 +1014,7 @@ export class DevMenu {
         //#endregion
         //#region LaunchLandAndMineScene Row -1
         let rowSub1Left = groupLeftStart;
-        let rowSub1height = sizeHeightForLandAndMine(-1, height);
+        const rowSub1height = sizeHeightForLandAndMine(-1, height);
 
         onClick = () => {
             let newHorizontalCrashMargin = this._landAndMineLanderSpec.horizontalCrashMargin - 0.001;
@@ -1981,7 +1981,7 @@ export class DevMenu {
         groupLeftStart = 0.015;
         //#region LandAndMineScene Row -2
         let rowSub2Left = groupLeftStart;
-        let rowSub2height = sizeHeightForLandAndMine(-2, height);
+        const rowSub2height = sizeHeightForLandAndMine(-2, height);
 
         this._textElements.freestyleHThresholdText.resize({ left: left + (rowSub2Left * width), height, top: rowSub2height, width });
         rowSub2Left += 0.325;
@@ -1989,7 +1989,7 @@ export class DevMenu {
         //#endregion
         //#region LandAndMine Row -1
         let rowSub1Left = groupLeftStart;
-        let rowSub1height = sizeHeightForLandAndMine(-1, height);
+        const rowSub1height = sizeHeightForLandAndMine(-1, height);
 
         this._buttons.horizontalCrashMarginMinusButton.resize({ left: left + (rowSub1Left * width), height, top: rowSub1height, width });
         rowSub1Left += 0.035;

@@ -22,8 +22,8 @@ import { SOUNDS_CTRL } from "../controls/controllers/sounds-controller";
 export function createSceneModule(scene: SceneType, excludeAmbientLight?: boolean): { container: HTMLElement; onWindowResizeRef: () => void; } {
     scene.active = true;
     // Establish initial window size.
-    let WIDTH: number = window.innerWidth * 0.99;
-    let HEIGHT: number = window.innerHeight * 0.99;
+    const WIDTH: number = window.innerWidth * 0.99;
+    const HEIGHT: number = window.innerHeight * 0.99;
     // Create ThreeJS scene.
     scene.scene = new Scene();
     // Choose WebGL renderer if browser supports, otherwise fall back to canvas renderer.

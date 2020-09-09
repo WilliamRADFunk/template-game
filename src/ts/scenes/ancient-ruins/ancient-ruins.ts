@@ -166,8 +166,8 @@ export class AncientRuins {
         this._healthBarCtrl = new HealthBarCtrl();
 
         // Text, Button, and Event Listeners
-        const initialize = async function(scene: SceneType): Promise<void> {
-            this._onInitialize(scene);
+        const initialize = async function(_scene: SceneType): Promise<void> {
+            this._onInitialize(_scene);
             this._listenerRef = this._onWindowResize.bind(this);
             window.addEventListener('resize', this._listenerRef, false);
     
