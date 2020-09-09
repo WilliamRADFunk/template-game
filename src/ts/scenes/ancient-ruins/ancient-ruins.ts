@@ -620,13 +620,13 @@ export class AncientRuins {
 
         this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
             height: (height * 0.02),
-            left: left + (width * 0.01),
+            left: left + (width * 0.02),
             top: (height * 0.005),
             width: (width * 0.1)
         });
         this._energyBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
             height: (height * 0.02),
-            left: left + (width * 0.01),
+            left: left + (width * 0.02),
             top: (height * 0.02),
             width: (width * 0.1)
         });

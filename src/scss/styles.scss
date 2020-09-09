@@ -38,14 +38,18 @@ h1 {
   top: 0;
   z-index: 10;
 
-  & .ldBar.label-center > .ldBar-label {
-    display: none;
+  & .ldBar {
+    .label-center > .ldBar-label {
+      display: none;
+    }
   }
 }
 
 #health {
-  & .ldBar path {
-    fill: red;
+  & .ldBar {
+    & path {
+      fill: #ff0000;
+    }
   }
 }
 
