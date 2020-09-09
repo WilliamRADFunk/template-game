@@ -409,7 +409,7 @@ export class AssetsCtrl {
             });
         });
         // Callback function to set the scoreboard font once it is finished loading.
-        (new FontLoader()).load( '../../assets/fonts/Luckiest_Guy_Regular.json', font => {
+        (new FontLoader()).load('assets/fonts/Luckiest_Guy_Regular.json', font => {
             this.gameFont = font;
             this._assetsLoadedCount++;
             (loadingBar as any).ldBar.set((this._assetsLoadedCount / this._totalAssetCountToLoad) * 100);
