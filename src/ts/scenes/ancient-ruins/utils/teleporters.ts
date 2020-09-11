@@ -8,10 +8,8 @@ import {
     Scene,
     Vector2 } from 'three';
 
-import { SOUNDS_CTRL } from '../../../controls/controllers/sounds-controller';
 import { ASSETS_CTRL } from '../../../controls/controllers/assets-controller';
 import { RAD_90_DEG_LEFT } from './radians-x-degrees-left';
-import { LayerYPos } from './layer-y-values';
 
 
 export const spriteMapCols = 16;
@@ -25,11 +23,6 @@ export class Teleporters {
      * Reference to the teleporter effect mesh index (aka current frame in the animation sequence).
      */
     private _currIndex: number = 0;
-
-    /**
-     * Flag to track if the frames/meshes of the animation should be should from first to last, or last to first.
-     */
-    private _forwardDir: boolean = true;
 
     /**
      * Flag to track if the frames were already set to false last iteration.

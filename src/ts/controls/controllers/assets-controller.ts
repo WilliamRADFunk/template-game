@@ -330,6 +330,7 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     ship: ['assets/images/ship.png', null],
     spriteMapAncientRuins: ['assets/images/sprite-map-ancient-ruins.png', null],
     spriteMapAncientRuinsCrew: ['assets/images/sprite-map-ancient-ruins-astronauts.png', null],
+    spriteMapGlowingBlueOrb: ['assets/images/sprite-map-glowing-blue-orb.png', null],
     spriteMapTeleporterEffects: ['assets/images/sprite-map-teleporters.png', null]
 };
 
