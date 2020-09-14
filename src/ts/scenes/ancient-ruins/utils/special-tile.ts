@@ -12,8 +12,8 @@ import { ASSETS_CTRL } from '../../../controls/controllers/assets-controller';
 import { RAD_90_DEG_LEFT } from './radians-x-degrees-left';
 
 
-export const spriteMapCols = 16;
-export const spriteMapRows = 4;
+export const spriteMapCols = 8;
+export const spriteMapRows = 8;
 /**
  * @class
  * Creates and updates main thrusters.
@@ -57,13 +57,13 @@ export class SpecialTile {
      */
     constructor(scene: Scene, positions: [number, number, number][]) {
         this._scene = scene;
-        this._createTeleporterEffectMaterials();
+        this._createSpecialTileEffectMaterials();
         positions.forEach((position, index) => {
-            this._blueOrbs[index].meshes = this._createTeleporterEffects(position, index);
+            this._blueOrbs[index].meshes = this._createSpecialTileEffects(position, index);
         });
     }
 
-    private _createTeleporterEffectMaterials(): void {
+    private _createSpecialTileEffectMaterials(): void {
         for (let i = 0; i < 60; i++) {
             const col = i % 16;
             const row = Math.abs(Math.floor(i / 16) - 3);
@@ -71,7 +71,7 @@ export class SpecialTile {
 
             const material: MeshBasicMaterial = new MeshBasicMaterial({
                 color: 0xFFFFFF,
-                map: ASSETS_CTRL.textures.spriteMapTeleporterEffects.clone(),
+                map: ASSETS_CTRL.textures.spriteMapGlowingBlueOrb.clone(),
                 side: DoubleSide,
                 transparent: true
             });
@@ -97,21 +97,21 @@ export class SpecialTile {
     }
 
     /**
-     * Instantiates the flames of the thruster.
+     * Instantiates the blue sphere.
      * @param position x, y, z coordinate for base of flames.
      */
-    private _createTeleporterEffects(position: [number, number, number], index: number): Mesh[] {
+    private _createSpecialTileEffects(position: [number, number, number], index: number): Mesh[] {
         const meshes: Mesh[] = [];
         const geo = new PlaneGeometry( 1.2, 1.2, 10, 10 );
         for (let i = 0; i < 60; i++) {
-            const teleporterEffect = new Mesh( geo, this._materials[i].clone() );
-            teleporterEffect.matrixAutoUpdate = false;
-            teleporterEffect.position.set(position[0], position[1], position[2]);
-            teleporterEffect.rotation.set(RAD_90_DEG_LEFT, 0, 0);
-            teleporterEffect.visible = false;
-            teleporterEffect.updateMatrix();
-            meshes.push(teleporterEffect);
-            this._scene.add(teleporterEffect);
+            const specialTileEffect = new Mesh( geo, this._materials[i].clone() );
+            specialTileEffect.matrixAutoUpdate = false;
+            specialTileEffect.position.set(position[0], position[1], position[2]);
+            specialTileEffect.rotation.set(RAD_90_DEG_LEFT, 0, 0);
+            specialTileEffect.visible = false;
+            specialTileEffect.updateMatrix();
+            meshes.push(specialTileEffect);
+            this._scene.add(specialTileEffect);
         }
         return meshes;
     }
@@ -128,7 +128,7 @@ export class SpecialTile {
 
     /**
      * At the end of each loop iteration, rotate each flame color's opacity a little.
-     * @param isVisible whether or not the teleporter effects are visible in this frame.
+     * @param isVisible whether or not the special tile effects are visible in this frame.
      * @returns boolean that means very little neither true or false will have any meaning.
      */
     public endCycle(isVisible?: boolean): void {

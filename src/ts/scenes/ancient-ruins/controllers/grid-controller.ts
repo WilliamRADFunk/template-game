@@ -37,6 +37,7 @@ import { DirectionalThruster } from "../utils/thruster-directional";
 import { CircularThruster } from "../utils/thruster-circular";
 import { Teleporters } from "../utils/teleporters";
 import { SOUNDS_CTRL } from "../../../controls/controllers/sounds-controller";
+import { SpecialTile } from "../utils/special-tile";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
@@ -172,6 +173,11 @@ export class GridCtrl {
      * Landing ship the grows and shrinks when crew lands and takes off again.
      */
     private _ship: Mesh = null;
+
+    /**
+     * Special tiles with glowing blue spheres above them.
+     */
+    private _specialTiles: SpecialTile[] = [];
 
     /**
      * The sparkly teleporter effect where the 5 crew members appear during intro and exit at the end.
@@ -354,6 +360,7 @@ export class GridCtrl {
         const ctx = canvas.getContext('2d');
         canvas.setAttribute('width', '1920');
         canvas.setAttribute('height', '1920');
+        this._specialTiles.push(new SpecialTile(this._scene, [[0, 2, 0]]));
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
