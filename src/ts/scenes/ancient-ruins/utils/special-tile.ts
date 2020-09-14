@@ -59,41 +59,48 @@ export class SpecialTile {
         this._scene = scene;
         this._createSpecialTileEffectMaterials();
         positions.forEach((position, index) => {
+            this._blueOrbs[index] = {
+                meshes: [],
+                visible: true,
+            };
             this._blueOrbs[index].meshes = this._createSpecialTileEffects(position, index);
         });
     }
 
     private _createSpecialTileEffectMaterials(): void {
-        for (let i = 0; i < 60; i++) {
-            const col = i % 16;
-            const row = Math.abs(Math.floor(i / 16) - 3);
-            const size = [spriteMapCols, spriteMapRows];
+        for (let i = 7; i > 2; i--) {
+            for (let j = 0; (j < 2 && i === 3) || (j < 5 && i > 3); j++) {
+                const col = j;
+                const row = i;
+                const size = [spriteMapCols, spriteMapRows];
 
-            const material: MeshBasicMaterial = new MeshBasicMaterial({
-                color: 0xFFFFFF,
-                map: ASSETS_CTRL.textures.spriteMapGlowingBlueOrb.clone(),
-                side: DoubleSide,
-                transparent: true
-            });
+                const material: MeshBasicMaterial = new MeshBasicMaterial({
+                    color: 0xFFFFFF,
+                    map: ASSETS_CTRL.textures.spriteMapGlowingBlueOrb.clone(),
+                    side: DoubleSide,
+                    transparent: true
+                });
 
-            material.map.offset = new Vector2(
-                (1 / size[0]) * col,
-                (1 / size[1]) * row);
+                material.map.offset = new Vector2(
+                    (1 / size[0]) * col,
+                    (1 / size[1]) * row);
 
-            material.map.repeat = new Vector2(
-                (1 / size[0]),
-                (1 / size[1]));
+                material.map.repeat = new Vector2(
+                    (1 / size[0]),
+                    (1 / size[1]));
 
-            material.map.magFilter = NearestFilter;
-            material.map.minFilter = NearestFilter;
-            material.map.wrapS = ClampToEdgeWrapping;
-            material.map.wrapT = ClampToEdgeWrapping;
+                material.map.magFilter = NearestFilter;
+                material.map.minFilter = NearestFilter;
+                material.map.wrapS = ClampToEdgeWrapping;
+                material.map.wrapT = ClampToEdgeWrapping;
 
-            material.depthTest = false;
-            material.map.needsUpdate = true;
+                material.depthTest = false;
+                material.map.needsUpdate = true;
 
-            this._materials.push(material);
+                this._materials.push(material);
+            }
         }
+        this._maxIndex = this._materials.length;
     }
 
     /**
@@ -103,7 +110,7 @@ export class SpecialTile {
     private _createSpecialTileEffects(position: [number, number, number], index: number): Mesh[] {
         const meshes: Mesh[] = [];
         const geo = new PlaneGeometry( 1.2, 1.2, 10, 10 );
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < this._materials.length; i++) {
             const specialTileEffect = new Mesh( geo, this._materials[i].clone() );
             specialTileEffect.matrixAutoUpdate = false;
             specialTileEffect.position.set(position[0], position[1], position[2]);

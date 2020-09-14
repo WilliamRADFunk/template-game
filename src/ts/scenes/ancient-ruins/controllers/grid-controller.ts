@@ -1939,6 +1939,9 @@ export class GridCtrl {
             }
         } else {
             this._cycleClouds();
+            this._specialTiles.forEach(specialTile => {
+                specialTile.endCycle(true);
+            })
             overheadMeshOpacityFrameCounter++;
             if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
                 overheadMeshOpacityFrameCounter = 0;
