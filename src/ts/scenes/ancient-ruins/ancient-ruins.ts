@@ -251,7 +251,13 @@ export class AncientRuins {
         .then(() => {
             this._pathFindingCtrl = new PathFindingCtrl(this._gridCtrl);
 
-            return this._loadingCtrl.getLoadWaitPromise(250, 94);
+            return this._loadingCtrl.getLoadWaitPromise(250, 93);
+        })
+        // Special tiles initialization.
+        .then(() => {
+            return this._gridCtrl.initiateSpecialTiles().then(() => {
+                return this._loadingCtrl.getLoadWaitPromise(250, 97);
+            });
         })
         // Turn off loading graphic and initiate game.
         .then(() => {

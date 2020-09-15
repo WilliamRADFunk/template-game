@@ -100,7 +100,7 @@ export class SpecialTile {
                 this._materials.push(material);
             }
         }
-        this._maxIndex = this._materials.length;
+        this._maxIndex = this._materials.length - 1;
     }
 
     /**
@@ -109,7 +109,7 @@ export class SpecialTile {
      */
     private _createSpecialTileEffects(position: [number, number, number], index: number): Mesh[] {
         const meshes: Mesh[] = [];
-        const geo = new PlaneGeometry( 1.2, 1.2, 10, 10 );
+        const geo = new PlaneGeometry( 0.3, 0.3, 10, 10 );
         for (let i = 0; i < this._materials.length; i++) {
             const specialTileEffect = new Mesh( geo, this._materials[i].clone() );
             specialTileEffect.matrixAutoUpdate = false;

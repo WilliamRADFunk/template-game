@@ -41,7 +41,7 @@ import { SpecialTile } from "../utils/special-tile";
 
 const fiftyFifty = () => Math.random() < 0.5;
 
-let landingFrameCounter = -1;
+let frameCounter = -1;
 let overheadMeshOpacityFrameCounter = 0;
 const overheadMeshOpacityFrameCounterReset = 30;
 
@@ -360,7 +360,7 @@ export class GridCtrl {
         const ctx = canvas.getContext('2d');
         canvas.setAttribute('width', '1920');
         canvas.setAttribute('height', '1920');
-        this._specialTiles.push(new SpecialTile(this._scene, [[0, 2, 0]]));
+
         return new Promise((resolve) => {
             for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                 for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
@@ -621,6 +621,26 @@ export class GridCtrl {
                 }
             }
 
+            resolve();
+        }).then(() => {});
+    }
+
+    /**
+     * Chooses tiles at random to be special trigger tiles, and sets up spceial graphics over that tile visible if player's crew detects them.
+     * @returns an empty promise to make function async. 
+     */
+    private async _createSpecialTiles(): Promise<void> {
+        return new Promise((resolve) => {
+            const specialTilePositions: [number, number, number][] = [];
+            for (let row = MIN_ROWS; row <= MAX_ROWS; row++) {
+                for (let col = MIN_COLS; col <= MAX_COLS; col++) {
+                    if (isInBounds(row, col) && !this._grid[row][col][2] && Math.random() < 0.05) {
+                        specialTilePositions.push([getXPos(col), LayerYPos.LAYER_0_5, getZPos(row)]);
+                        this._grid[row][col][0] = 1;
+                    }
+                }
+            }
+            this._specialTiles.push(new SpecialTile(this._scene, specialTilePositions));
             resolve();
         }).then(() => {});
     }
@@ -1804,19 +1824,27 @@ export class GridCtrl {
      * At the end of each loop iteration, check for grid-specific animations.
      */
     public endCycle(state?: AncientRuinsState): boolean {
+        if (state === AncientRuinsState.landing_start
+            || state === AncientRuinsState.leaving_start
+            || state === AncientRuinsState.newGame) {
+            frameCounter++;
+        }
+        // Reset counter to prevent an absurdly high number. Since 10002 is % by 2 and 3, it's the same as 0.
+        if (frameCounter >= 10002) {
+            frameCounter = 0;
+        }
         if (state === AncientRuinsState.landing_start || state === AncientRuinsState.leaving_start) {
-            landingFrameCounter++;
             const landingShadowScale = this._landingShadow.scale;
             const shipScale = this._ship.scale;
             const shipRotZ = this._ship.rotation;
-            if (!landingFrameCounter) {
+            if (!frameCounter) {
                 this._landingShadow.scale.set(0.1, 0.1, 0.1);
                 this._landingShadow.visible = true;
                 this._landingShadow.updateMatrix();
                 this._ship.scale.set(1.5, 1.5, 1.5);
                 this._ship.visible = true;
                 this._ship.updateMatrix();
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_1) {
+            } else if (frameCounter < SCENE_BOOKMARK_FRAME_1) {
                 // Fly In
                 this._landingShadow.scale.set(landingShadowScale.x + 0.00475, landingShadowScale.y + 0.00475, landingShadowScale.z + 0.00475);
                 this._landingShadow.updateMatrix();
@@ -1828,14 +1856,14 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_1) {
+            } else if (frameCounter === SCENE_BOOKMARK_FRAME_1) {
                 this._landingThrusterDirectional.switch();
                 this._landingThrusterDirectional.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_DIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], false);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_2) {
+            } else if (frameCounter < SCENE_BOOKMARK_FRAME_2) {
                 // Rotate Ship
                 this._ship.rotation.set(shipRotZ.x, 0, shipRotZ.z + (RAD_180_DEG_LEFT / 120));
                 this._ship.updateMatrix();
@@ -1847,7 +1875,7 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0, true);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_3) {
+            } else if (frameCounter < SCENE_BOOKMARK_FRAME_3) {
                 // Land Ship.
                 this._landingShadow.scale.set(landingShadowScale.x - 0.001, landingShadowScale.y - 0.001, landingShadowScale.z - 0.001);
                 this._landingShadow.updateMatrix();
@@ -1859,7 +1887,7 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], -0.002567, true);
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_3) {
+            } else if (frameCounter === SCENE_BOOKMARK_FRAME_3) {
                 // Deposit Crew
                 SOUNDS_CTRL.playTeleporter();
                 this._ancientRuinsSpec.crew.forEach(crewMember => {
@@ -1867,9 +1895,9 @@ export class GridCtrl {
                     crewMember.animationMeshes[0].updateMatrix();
                 });
                 return true;
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_4) {
+            } else if (frameCounter < SCENE_BOOKMARK_FRAME_4) {
                 // Disperse Teleport Effect
-                if (landingFrameCounter % 3 === 0) {
+                if (frameCounter % 3 === 0) {
                     this._teleporters.endCycle(true);
                 }
                 this._landingThrusterCircular.endCycle([
@@ -1882,7 +1910,7 @@ export class GridCtrl {
                     (crewMember.animationMeshes[0].material as any).opacity += (0.99 / 120);
                     crewMember.animationMeshes[0].updateMatrix();
                 });
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_4) {
+            } else if (frameCounter === SCENE_BOOKMARK_FRAME_4) {
                 // Stop Teleport Effect
                 SOUNDS_CTRL.stopTeleporter();
                 this._teleporters.endCycle(false);
@@ -1891,7 +1919,7 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0, true);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_5) {
+            } else if (frameCounter < SCENE_BOOKMARK_FRAME_5) {
                 // Lift Ship.
                 this._landingShadow.scale.set(landingShadowScale.x + 0.001, landingShadowScale.y + 0.001, landingShadowScale.z + 0.001);
                 this._landingShadow.updateMatrix();
@@ -1903,14 +1931,14 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0.0012835, true);
-            } else if (landingFrameCounter ===  SCENE_BOOKMARK_FRAME_5) {
+            } else if (frameCounter ===  SCENE_BOOKMARK_FRAME_5) {
                 // Stop Circular thrusters
                 this._landingThrusterCircular.endCycle([
                     this._ship.position.x + THRUSTER_OFFSETS_CIR[0],
                     this._ship.position.y + THRUSTER_OFFSETS_CIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_CIR[2]
                 ], 0.0012835, false);
-            } else if (landingFrameCounter < SCENE_BOOKMARK_FRAME_6) {
+            } else if (frameCounter < SCENE_BOOKMARK_FRAME_6) {
                 // Fly Away
                 this._landingShadow.scale.set(landingShadowScale.x - 0.00475, landingShadowScale.y - 0.00475, landingShadowScale.z - 0.00475);
                 this._landingShadow.updateMatrix();
@@ -1922,7 +1950,7 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
-            } else if (landingFrameCounter === SCENE_BOOKMARK_FRAME_6) {
+            } else if (frameCounter === SCENE_BOOKMARK_FRAME_6) {
                 this._landingShadow.visible = false;;
                 this._landingShadow.updateMatrix();
                 this._ship.visible = false;
@@ -1933,15 +1961,16 @@ export class GridCtrl {
                     this._ship.position.y + THRUSTER_OFFSETS_DIR[1],
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], false);
-                landingFrameCounter = -1;
                 SOUNDS_CTRL.playBackgroundMusicScifi02();
                 return true;
             }
         } else {
             this._cycleClouds();
-            this._specialTiles.forEach(specialTile => {
-                specialTile.endCycle(true);
-            })
+            if (frameCounter % 3 === 0) {
+                this._specialTiles.forEach(specialTile => {
+                    specialTile.endCycle(true);
+                });
+            }
             overheadMeshOpacityFrameCounter++;
             if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
                 overheadMeshOpacityFrameCounter = 0;
@@ -2069,6 +2098,14 @@ export class GridCtrl {
      */
     public async initiateGridValues(): Promise<void> {
         return this._setGridValues();
+    }
+
+    /**
+     * Constructor level initializer for special tile setup, made public to allow game controller to control timing of loading graphic.
+     * @returns an empty promise to make function async
+     */
+    public async initiateSpecialTiles(): Promise<void> {
+        return this._createSpecialTiles();
     }
 
     /**
