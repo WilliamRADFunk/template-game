@@ -5,7 +5,6 @@ import {
     MeshBasicMaterial,
     PlaneGeometry,
     Scene,
-    Texture,
     Vector2,
     NearestFilter,
     RepeatWrapping,
@@ -45,16 +44,54 @@ let frameCounter = -1;
 let overheadMeshOpacityFrameCounter = 0;
 const overheadMeshOpacityFrameCounterReset = 30;
 
-const overheadRowColModVals = [
-    [0, 0],
-    [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]
+// Builds a ring system. Whatever ring chosen will have all sub rings completely filled, and the last ring missing the corners.
+let overheadRowColModVals = [
+    [[0, 0]],
+    [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]]
 ];
+[2, 3, 4, 5, 6, 7, 8, 9].forEach(ring => {
+    const fogRing = [[0, 0]];
 
-const fogRowColModVals = [
-    [0, 0],
-    [1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1],
-    [2, 0], [2, 1], [0, 2], [-1, 2], [-2, 0], [-2, -1], [0, -2], [1, -2], [-2, 1], [-1, -2], [2, -1], [1, 2]
-];
+    // Inner rings
+    for (let subRing = 1; subRing < ring; subRing++) {
+        let fillY = -subRing;
+        for (let fillX = -subRing; fillX <= subRing; fillX++) {
+            fogRing.push([fillX, fillY]);
+        }
+        let fillX = -subRing;
+        for (let fillY = -subRing; fillY <= subRing; fillY++) {
+            fogRing.push([fillX, fillY]);
+        }
+        fillY = subRing;
+        for (let fillX = -subRing; fillX <= subRing; fillX++) {
+            fogRing.push([fillX, fillY]);
+        }
+        fillX = subRing;
+        for (let fillY = -subRing; fillY <= subRing; fillY++) {
+            fogRing.push([fillX, fillY]);
+        }
+    }
+
+    // Outer ring
+    let fillY = -ring;
+    for (let fillX = -ring + 1; fillX < ring; fillX++) {
+        fogRing.push([fillX, fillY]);
+    }
+    let fillX = -ring;
+    for (let fillY = -ring + 1; fillY < ring; fillY++) {
+        fogRing.push([fillX, fillY]);
+    }
+    fillY = ring;
+    for (let fillX = -ring + 1; fillX < ring; fillX++) {
+        fogRing.push([fillX, fillY]);
+    }
+    fillX = ring;
+    for (let fillY = -ring + 1; fillY < ring; fillY++) {
+        fogRing.push([fillX, fillY]);
+    }
+
+    overheadRowColModVals.push(fogRing);
+});
 
 // Offset position coordinates for top enzmann thruster in relation to the ship itself.
 const THRUSTER_OFFSETS_DIR = [-1.4, 1, 0];
@@ -219,12 +256,13 @@ export class GridCtrl {
             }
         }
 
-        // Set only those tiles in range of crew members' visibility to 0
-        this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
-            if (cPos) {
-                fogRowColModVals.forEach(overPos => {
-                    const posX = cPos[0] + overPos[0];
-                    const posY = cPos[1] + overPos[1];
+        // Set only those tiles in range of crew members' visibility to 0.
+        this._ancientRuinsSpec.crew.forEach(crew => {
+            if (crew.position) {
+                const maxRing = Math.ceil(crew.rank / 3) + 1; // Min of 2
+                overheadRowColModVals[maxRing].forEach(fogPos => {
+                    const posX = crew.position[0] + fogPos[0];
+                    const posY = crew.position[1] + fogPos[1];
 
                     if (isInBounds(posX, posY)) {
                         this._grid[posX][posY][4] = 0;
@@ -233,7 +271,7 @@ export class GridCtrl {
             }
         });
 
-        // Not that the tiles are updated, it only takes a single pass through to update material opacities.
+        // Now that the tiles are updated, it only takes a single pass through to update material opacities.
         for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
             for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                 if (!isInBounds(row, col)) continue;
@@ -1984,16 +2022,19 @@ export class GridCtrl {
                     }
                 }
 
-                this._ancientRuinsSpec.crew.map(c => c.position).forEach(cPos => {
-                    overheadRowColModVals.forEach(overPos => {
-                        const posX = cPos[0] + overPos[0];
-                        const posY = cPos[1] + overPos[1];
-
-                        if (isInBounds(posX, posY) && this._grid[posX][posY][3]) {
-                            (this._level3OverheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
-                            this._level3OverheadMeshMap[posX][posY].updateMatrix();
-                        }
-                    });
+                this._ancientRuinsSpec.crew.forEach(crew => {
+                    if (crew.position) {
+                        const maxRing = Math.ceil(crew.rank / 3); // Min of 1 (1 less than fog of war reveal)
+                        overheadRowColModVals[maxRing].forEach(fogPos => {
+                            const posX = crew.position[0] + fogPos[0];
+                            const posY = crew.position[1] + fogPos[1];
+        
+                            if (isInBounds(posX, posY) && this._grid[posX][posY][3]) {
+                                (this._level3OverheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
+                                this._level3OverheadMeshMap[posX][posY].updateMatrix();
+                            }
+                        });
+                    }
                 });
             }
         }
