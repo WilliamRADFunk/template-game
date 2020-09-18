@@ -58,15 +58,27 @@ export class ModalDialogueCtrl {
     public reposition(position?: HTMLElementPosition): void {
         this._wrapper.style.width = position.width + 'px';
         this._wrapper.style.height = position.height + 'px';
+        this._wrapper.style.left = position.left + 'px';
+        this._wrapper.style.top = position.top + 'px';
+        this._wrapper.style.position = 'absolute';
         this._wrapper.style.zIndex = '10';
         this._backdrop.style.width = position.width + 'px';
         this._backdrop.style.height = position.height + 'px';
+        this._backdrop.style.left = position.left + 'px';
+        this._backdrop.style.top = position.top + 'px';
         this._backdrop.style.opacity = '0.7';
+        this._backdrop.style.display = 'block';
+        this._backdrop.style.position = 'absolute';
+        this._backdrop.style.zIndex = '10';
         this._box.style.width = (position.width * 0.7) + 'px';
         this._box.style.height = (position.height * 0.5) + 'px';
+        this._box.style.left = position.left + 'px';
+        this._box.style.top = position.top + 'px';
         this._box.style.backgroundColor = '#CCCCCC';
         this._box.style.border = '3px solid white';
         this._box.style.borderRadius = '3px';
+        this._box.style.display = 'block';
+        this._box.style.position = 'absolute';
         this._box.style.zIndex = '20';
     }
 
