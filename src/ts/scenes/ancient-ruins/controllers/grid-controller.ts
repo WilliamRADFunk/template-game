@@ -1861,7 +1861,7 @@ export class GridCtrl {
     /**
      * At the end of each loop iteration, check for grid-specific animations.
      */
-    public endCycle(state?: AncientRuinsState): boolean {
+    public endCycle(state?: AncientRuinsState): any {
         if (state === AncientRuinsState.landing_start
             || state === AncientRuinsState.leaving_start
             || state === AncientRuinsState.newGame) {
@@ -1989,7 +1989,7 @@ export class GridCtrl {
                     this._ship.position.z + THRUSTER_OFFSETS_DIR[2]
                 ], true);
             } else if (frameCounter === SCENE_BOOKMARK_FRAME_6) {
-                this._landingShadow.visible = false;;
+                this._landingShadow.visible = false;
                 this._landingShadow.updateMatrix();
                 this._ship.visible = false;
                 this._ship.updateMatrix();

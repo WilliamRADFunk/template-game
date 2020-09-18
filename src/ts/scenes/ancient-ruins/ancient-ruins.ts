@@ -25,6 +25,7 @@ import { RankAbbreviationsMap } from "../../utils/rank-map";
 import { formatString } from "../../utils/format-string";
 import { EnergyBarCtrl } from "../../controls/controllers/energy-bar-controller";
 import { HealthBarCtrl } from "../../controls/controllers/health-bar-controller";
+import { ModalDialogueCtrl } from "../../controls/controllers/modal-dialogue-controller";
 
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
@@ -44,7 +45,8 @@ export enum AncientRuinsState {
     'settings' = 3,
     'landing_start' = 4,
     'leaving_start' = 5,
-    'loading' = 6
+    'loading' = 6,
+    'triggered_event' = 7
 }
 
 /**
@@ -113,6 +115,11 @@ export class AncientRuins {
      * All of the materials contained in this scene.
      */
     private _materials: { [key: string]: MeshPhongMaterial };
+
+    /**
+     * Reference to this scene's modal dialogue controller.
+     */
+    private _modalDialogueCtrl: ModalDialogueCtrl;
 
     /**
      * Reference to this scene's path finding controller.
@@ -351,8 +358,9 @@ export class AncientRuins {
      * Creates all of the html elements for the first time on scene creation.
      */
     private _onInitialize(sceneType: SceneType): void {
-        // DOM Events
         const container = document.getElementById('mainview');
+        this._modalDialogueCtrl = new ModalDialogueCtrl(container);
+        // DOM Events
         document.oncontextmenu = event => {
             event.preventDefault();
             
@@ -508,6 +516,10 @@ export class AncientRuins {
         width < height ? height = width : width = height;
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
+        this._modalDialogueCtrl.reposition({ height, left, top: 0, width});
+        // TODO: Remove below line when modal and connections are complete. Shown here only for testing.
+        this._modalDialogueCtrl.show();
+
         this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
             height: (height * 0.02),
             left: left + (width * 0.01),
@@ -623,6 +635,7 @@ export class AncientRuins {
         this._controlPanel.resize({ height, left: left, top: null, width });
         this._descText.resize({ height, left: left, top: null, width });
         this._settingsCtrl.onWindowResize(height, left, null, width);
+        this._modalDialogueCtrl.reposition({ height, left, top: 0, width});
 
         this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
             height: (height * 0.02),
@@ -684,12 +697,19 @@ export class AncientRuins {
                 this._teamCtrl.showTeam();
             }
         }
+        // Game is in leaving_start mode. When finished start game.
         if (this._state === AncientRuinsState.leaving_start) {
             if (this._gridCtrl.endCycle(AncientRuinsState.leaving_start)) {
                 this._state = AncientRuinsState.newGame;
             }
         }
-
+        // Game is in play mode. When tile is triggered, enter modal mode.
+        if (this._state === AncientRuinsState.newGame) {
+            const event = this._gridCtrl.endCycle(AncientRuinsState.newGame);
+            if (event && event.triggered_event) {
+                this._state = AncientRuinsState.triggered_event;
+            }
+        }
 
         this._ancientRuinsSpec.crew
             .filter(member => member.isMoving)
