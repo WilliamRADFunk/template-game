@@ -108,8 +108,6 @@ Make sure you aren't importing a capitalized version of the name (ie. `import { 
 
 :white_check_mark: Animation of ship landing, and leaving.
 
-:black_square_button: Create "action" buttons for each crew member.
-
 :black_square_button: Create hazard suit and health bars for each crew member.
 
 :black_square_button: Add action buttons for each team member type.
