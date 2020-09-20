@@ -80,6 +80,8 @@ export class ModalDialogueCtrl {
         this._box.style.display = 'block';
         this._box.style.position = 'absolute';
         this._box.style.zIndex = '20';
+        this._box.style.marginLeft = 'auto';
+        this._box.style.marginRight = 'auto';
     }
 
     /**
