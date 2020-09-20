@@ -76,7 +76,7 @@ export class ModalDialogueCtrl {
         this._box.style.top = position.top + 'px';
         this._box.style.backgroundColor = '#CCCCCC';
         this._box.style.border = '3px solid white';
-        this._box.style.borderRadius = '3px';
+        this._box.style.borderRadius = '4px';
         this._box.style.display = 'block';
         this._box.style.position = 'absolute';
         this._box.style.zIndex = '20';
