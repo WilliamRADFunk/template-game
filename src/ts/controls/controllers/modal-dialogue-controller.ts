@@ -33,10 +33,11 @@ export class ModalDialogueCtrl {
         this._backdrop = document.createElement('div');
         this._box = document.createElement('div');
         this._description = document.createElement('p');
+        this._description.style.fontFamily = 'Luckiest Guy';
         this._wrapper = document.createElement('div');
         this._wrapper.appendChild(this._backdrop);
         this._wrapper.appendChild(this._box);
-        this._wrapper.appendChild(this._description);
+        this._box.appendChild(this._description);
 
         container.appendChild(this._wrapper);
 
@@ -58,22 +59,22 @@ export class ModalDialogueCtrl {
     public reposition(position?: HTMLElementPosition): void {
         this._wrapper.style.width = position.width + 'px';
         this._wrapper.style.height = position.height + 'px';
-        this._wrapper.style.left = position.left + 'px';
-        this._wrapper.style.top = position.top + 'px';
+        this._wrapper.style.left = '0px';
+        this._wrapper.style.top = '0px';
         this._wrapper.style.position = 'absolute';
         this._wrapper.style.zIndex = '10';
         this._backdrop.style.width = position.width + 'px';
         this._backdrop.style.height = position.height + 'px';
-        this._backdrop.style.left = position.left + 'px';
-        this._backdrop.style.top = position.top + 'px';
+        this._backdrop.style.left = '0px';
+        this._backdrop.style.top = '0px';
         this._backdrop.style.opacity = '0.7';
         this._backdrop.style.display = 'block';
         this._backdrop.style.position = 'absolute';
         this._backdrop.style.zIndex = '10';
         this._box.style.width = (position.width * 0.7) + 'px';
-        this._box.style.height = (position.height * 0.5) + 'px';
+        this._box.style.height = (position.height * 0.35) + 'px';
         this._box.style.left = position.left + 'px';
-        this._box.style.top = position.top + 'px';
+        this._box.style.top = (position.height * 0.2)  + 'px';
         this._box.style.backgroundColor = '#CCCCCC';
         this._box.style.border = '3px solid white';
         this._box.style.borderRadius = '4px';
@@ -89,5 +90,14 @@ export class ModalDialogueCtrl {
      */
     public show(): void {
         this._wrapper.style.display = 'block';
+    }
+
+    /**
+     * Updates the content of the modal with main description/choices, and possible choices.
+     * @param mainText the main description and request for user decision.
+     * @param choices the options available to player to choose from.
+     */
+    public updateContent(mainText: string, choices: string[]): void {
+        this._description.innerText = mainText;
     }
 }

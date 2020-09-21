@@ -517,8 +517,9 @@ export class AncientRuins {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         this._modalDialogueCtrl.reposition({ height, left, top: 0, width});
-        // TODO: Remove below line when modal and connections are complete. Shown here only for testing.
+        // TODO: Remove below 2 lines when modal and connections are complete. Shown here only for testing.
         this._modalDialogueCtrl.show();
+        this._modalDialogueCtrl.updateContent('This is a demo event where we test what the modal is capable of.', []);
 
         this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
             height: (height * 0.02),
