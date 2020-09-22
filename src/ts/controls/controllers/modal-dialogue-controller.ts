@@ -112,7 +112,7 @@ export class ModalDialogueCtrl {
      * @param mainText the main description and request for user decision.
      * @param choices the options available to player to choose from.
      */
-    public updateContent(mainText: string, choices: string[]): void {
+    public updateContent(mainText: string, choices: string[], selectionCallback: (choice: number) => void): void {
         this._description.innerText = mainText;
     }
 }

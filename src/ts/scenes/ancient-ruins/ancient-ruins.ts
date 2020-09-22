@@ -517,9 +517,6 @@ export class AncientRuins {
         const left = (((window.innerWidth * 0.99) - width) / 2);
 
         this._modalDialogueCtrl.reposition({ height, left, top: 0, width});
-        // TODO: Remove below 2 lines when modal and connections are complete. Shown here only for testing.
-        this._modalDialogueCtrl.show();
-        this._modalDialogueCtrl.updateContent('This is a demo event where we test what the modal is capable of.', []);
 
         this._healthBarCtrl.reposition(this._teamCtrl && this._teamCtrl.getCurrTeamMember() >= 0, {
             height: (height * 0.02),
@@ -708,7 +705,17 @@ export class AncientRuins {
         if (this._state === AncientRuinsState.newGame) {
             const event = this._gridCtrl.endCycle(AncientRuinsState.newGame);
             if (event && event.triggered_event) {
+                const { mainText, options, results } = event.triggered_event;
                 this._state = AncientRuinsState.triggered_event;
+                this._modalDialogueCtrl.show();
+                this._modalDialogueCtrl.updateContent(mainText, options, (choice) => {
+                    // TODO: Transition to modal result state
+                    this._state = AncientRuinsState.newGame;
+                    const modalResult = results[choice];
+                    // TODO: Roll odds if there are any to roll.
+                    // TODO: Update content of modal to the modal result, with simple acknowledgement cta.
+                    console.log('modalResult', modalResult);
+                });
             }
         }
 

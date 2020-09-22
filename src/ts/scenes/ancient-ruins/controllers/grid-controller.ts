@@ -227,6 +227,11 @@ export class GridCtrl {
     private _tileCtrl: TileCtrl;
 
     /**
+     * All of the tile textures contained in this scene.
+     */
+    private _triggeredModal: { [key: string]: string | string[] } = null;
+
+    /**
      * Constructor for the Grid Controller class.
      * @param scene the scene to which meshes are added
      * @param ancientRuinsSpec all the details for these ancient ruins
@@ -2002,17 +2007,15 @@ export class GridCtrl {
                 SOUNDS_CTRL.playBackgroundMusicScifi02();
                 return true;
             }
+            return false;
+        } else if (state === AncientRuinsState.triggered_event) {
+            return false;
         } else {
-            this._cycleClouds();
-            if (frameCounter % 3 === 0) {
-                this._specialTiles.forEach(specialTile => {
-                    specialTile.endCycle(true);
-                });
-            }
             overheadMeshOpacityFrameCounter++;
             if (overheadMeshOpacityFrameCounter >= overheadMeshOpacityFrameCounterReset) {
                 overheadMeshOpacityFrameCounter = 0;
 
+                // Reset opacity of all overhead tiles.
                 for (let row = MIN_ROWS; row < MAX_ROWS + 1; row++) {
                     for (let col = MIN_COLS; col < MAX_COLS + 1; col++) {
                         if (!isInBounds(row, col) || !this._grid[row][col][3]) continue;
@@ -2023,11 +2026,25 @@ export class GridCtrl {
                 }
 
                 this._ancientRuinsSpec.crew.forEach(crew => {
-                    if (crew.position) {
-                        const maxRing = Math.ceil(crew.rank / 3); // Min of 1 (1 less than fog of war reveal)
+                    const { position, rank, triggeredTilePosition } = crew;
+                    if (position) {
+                        // Check for special tile triggers.
+                        const specialTile = this.getTileValue(position[0], position[1], 0);
+                        if (specialTile && !triggeredTilePosition) {
+                            crew.triggeredTilePosition = [ position[0], position[1] ];
+                            // TODO: Lookup special tile trigger value.
+                            this._triggeredModal = {
+                                mainText: 'This is a demo event where we test what the modal is capable of.',
+                                options: [],
+                                results: []
+                            };
+                        }
+
+                        // Adjust opacity of overhead tiles within range.
+                        const maxRing = Math.ceil(rank / 3); // Min of 1 (1 less than fog of war reveal)
                         overheadRowColModVals[maxRing].forEach(fogPos => {
-                            const posX = crew.position[0] + fogPos[0];
-                            const posY = crew.position[1] + fogPos[1];
+                            const posX = position[0] + fogPos[0];
+                            const posY = position[1] + fogPos[1];
         
                             if (isInBounds(posX, posY) && this._grid[posX][posY][3]) {
                                 (this._level3OverheadMeshMap[posX][posY].material as MeshBasicMaterial).opacity = 0.6;
@@ -2038,6 +2055,14 @@ export class GridCtrl {
                 });
             }
         }
+        
+        this._cycleClouds();
+        if (frameCounter % 3 === 0) {
+            this._specialTiles.forEach(specialTile => {
+                specialTile.endCycle(true);
+            });
+        }
+
         return false;
     }
 

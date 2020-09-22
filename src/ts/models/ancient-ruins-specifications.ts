@@ -151,6 +151,11 @@ export interface TeamMember {
      * If crew member has a title such as Doctor, or Professor, it goes here.
      */
     title: string;
+
+    /**
+     * Position of special tile triggered by crew member, to avoid repeating same tile.
+     */
+    triggeredTilePosition?: [number, number];
 }
 
 export enum TeamMemberAppearance {
