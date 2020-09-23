@@ -13,6 +13,8 @@ import browserify from 'browserify';
 import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
 
+var devbuild = false;
+
 gulp.task('clean:dist', () => {
 log('== Cleaning dist ==');
 return del(['dist/**/*']);
@@ -157,7 +159,7 @@ gulp.task('bundle', () => {
     .pipe(source('bundle.js'))
       .on('error', log)
     .pipe(buffer())
-    .pipe(gulp.dest('./dist/js-pure/'))
+    .pipe(gulp.dest('./dist/' + devbuild ? 'js/' : 'js-pure/'))
 });
 
 gulp.task('fuglify', () => {
@@ -200,12 +202,25 @@ gulp.task('reload', () => {
     .pipe(connect.reload());
 });
 
+gulp.task('envSet', (callback) => {
+  devbuild = true;
+  callback();
+});
+
 gulp.task('watch', () => {
   gulp.watch('src/assets/**/*', ['assets']);
   gulp.watch('src/ts/**/*.ts', ['scripts:reload']);
   gulp.watch('src/scss/**/*.scss', ['sass']);
   gulp.watch('src/index.html', ['html']);
 });
+
+gulp.task('devbuild', gulp.series(
+  'clean:dist',
+  ['tslint', 'sasslint'],
+  ['assets', 'html', 'sass', 'loading-bar', 'font-awesome', 'font-awesome-fonts', 'typescript'],
+  'loading-bar-script',
+  'bundle'
+));
 
 gulp.task('build', gulp.series(
   'clean:dist',
@@ -226,6 +241,7 @@ gulp.task('lint', gulp.series(
 ));
 
 gulp.task('default', gulp.series(
+  // 'envSet',
   'clean:dist',
   ['assets', 'html', 'sass', 'loading-bar', 'font-awesome', 'font-awesome-fonts', 'typescript'],
   'loading-bar-script',

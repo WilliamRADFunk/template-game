@@ -2025,18 +2025,21 @@ export class GridCtrl {
                     }
                 }
 
-                this._ancientRuinsSpec.crew.forEach(crew => {
+                let tileTriggered: { position: [number, number]; value: number; };
+                this._ancientRuinsSpec.crew.forEach((crew, index) => {
                     const { position, rank, triggeredTilePosition } = crew;
                     if (position) {
                         // Check for special tile triggers.
                         const specialTile = this.getTileValue(position[0], position[1], 0);
-                        if (specialTile && !triggeredTilePosition) {
+                        console.log('specialTile', !tileTriggered, specialTile, !triggeredTilePosition);
+                        if (!tileTriggered && specialTile && !triggeredTilePosition) {
+                            // Tracks position of tile triggered.
                             crew.triggeredTilePosition = [ position[0], position[1] ];
-                            // TODO: Lookup special tile trigger value.
-                            this._triggeredModal = {
-                                mainText: 'This is a demo event where we test what the modal is capable of.',
-                                options: [],
-                                results: []
+
+                            // Prevents other crew from triggering tile simultaneously.
+                            tileTriggered = {
+                                position: crew.triggeredTilePosition,
+                                value: specialTile
                             };
                         }
 
@@ -2053,6 +2056,7 @@ export class GridCtrl {
                         });
                     }
                 });
+                return tileTriggered;
             }
         }
         

@@ -704,9 +704,14 @@ export class AncientRuins {
         // Game is in play mode. When tile is triggered, enter modal mode.
         if (this._state === AncientRuinsState.newGame) {
             const event = this._gridCtrl.endCycle(AncientRuinsState.newGame);
+            console.log('event', event);
             if (event && event.triggered_event) {
-                const { mainText, options, results } = event.triggered_event;
+                const { position, value } = event.triggered_event;
                 this._state = AncientRuinsState.triggered_event;
+                // TODO: Lookup special tile trigger value.
+                const mainText = 'This is a demo event where we test what the modal is capable of.';
+                const options: string[] = [];
+                const results: string[] = [];
                 this._modalDialogueCtrl.show();
                 this._modalDialogueCtrl.updateContent(mainText, options, (choice) => {
                     // TODO: Transition to modal result state
