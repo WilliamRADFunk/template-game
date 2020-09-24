@@ -152,14 +152,14 @@ gulp.task('typescript', () => {
 
 gulp.task('bundle', () => {
   log('== Bundling the js ==');
-  return browserify('./dist/js-pure/index.js')
+  return browserify('dist/js-pure/index.js')
       .on('error', log)
     .bundle()
       .on('error', log)
     .pipe(source('bundle.js'))
       .on('error', log)
     .pipe(buffer())
-    .pipe(gulp.dest('./dist/' + devbuild ? 'js/' : 'js-pure/'))
+    .pipe(gulp.dest('dist/' + (devbuild ? 'js/' : 'js-pure/')))
 });
 
 gulp.task('fuglify', () => {
@@ -241,11 +241,10 @@ gulp.task('lint', gulp.series(
 ));
 
 gulp.task('default', gulp.series(
-  // 'envSet',
+  'envSet',
   'clean:dist',
   ['assets', 'html', 'sass', 'loading-bar', 'font-awesome', 'font-awesome-fonts', 'typescript'],
   'loading-bar-script',
   'bundle',
-  'fuglify',
   'connect'
 ));

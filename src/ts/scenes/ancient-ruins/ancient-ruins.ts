@@ -678,6 +678,10 @@ export class AncientRuins {
         if (this._state === AncientRuinsState.paused) {
             return;
         }
+        // Game is internally paused when a modal is open.
+        if (this._state === AncientRuinsState.triggered_event) {
+            return;
+        }
         // Game is in help mode. Play animations from help screen.
         if (this._state === AncientRuinsState.tutorial) {
             // this._helpCtrl.endCycle();
@@ -704,7 +708,6 @@ export class AncientRuins {
         // Game is in play mode. When tile is triggered, enter modal mode.
         if (this._state === AncientRuinsState.newGame) {
             const event = this._gridCtrl.endCycle(AncientRuinsState.newGame);
-            console.log('event', event);
             if (event && event.triggered_event) {
                 const { position, value } = event.triggered_event;
                 this._state = AncientRuinsState.triggered_event;

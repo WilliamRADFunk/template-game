@@ -2025,21 +2025,22 @@ export class GridCtrl {
                     }
                 }
 
-                let tileTriggered: { position: [number, number]; value: number; };
+                let tileTriggered: { triggered_event: { position: [number, number]; value: number; } };
                 this._ancientRuinsSpec.crew.forEach((crew, index) => {
                     const { position, rank, triggeredTilePosition } = crew;
                     if (position) {
                         // Check for special tile triggers.
                         const specialTile = this.getTileValue(position[0], position[1], 0);
-                        console.log('specialTile', !tileTriggered, specialTile, !triggeredTilePosition);
-                        if (!tileTriggered && specialTile && !triggeredTilePosition) {
+                        if (!tileTriggered && (specialTile && specialTile < 10000) && !triggeredTilePosition) {
                             // Tracks position of tile triggered.
                             crew.triggeredTilePosition = [ position[0], position[1] ];
 
                             // Prevents other crew from triggering tile simultaneously.
                             tileTriggered = {
-                                position: crew.triggeredTilePosition,
-                                value: specialTile
+                                triggered_event: {
+                                    position: crew.triggeredTilePosition,
+                                    value: specialTile
+                                }
                             };
                         }
 
