@@ -27,6 +27,31 @@ import { EnergyBarCtrl } from "../../controls/controllers/energy-bar-controller"
 import { HealthBarCtrl } from "../../controls/controllers/health-bar-controller";
 import { ModalDialogueCtrl } from "../../controls/controllers/modal-dialogue-controller";
 
+interface TriggeredEventResult {
+    successMsg: string;
+    successReward: SuccessReward;
+    failureMsg: string;
+    failureConsequence: FailureConsequence;
+}
+
+interface FailureConsequence {
+    type: ConsequenceType,
+    quantity: number;
+}
+
+interface SuccessReward {
+    type: RewardType,
+    quantity: number;
+}
+
+const enum RewardType {
+    Experience = 0,
+}
+
+const enum ConsequenceType {
+    Health = 0,
+}
+
 /**
  * Border value used for dev mode to see outline around text content (for positioning and sizing).
  */
@@ -712,9 +737,28 @@ export class AncientRuins {
                 const { position, value } = event.triggered_event;
                 this._state = AncientRuinsState.triggered_event;
                 // TODO: Lookup special tile trigger value.
-                const mainText = 'This is a demo event where we test what the modal is capable of.';
-                const options: string[] = [];
-                const results: string[] = [];
+                const mainText = 'The ground ahead appears softer than the surrounding soil. At closer inspection, it appear to pulsate slowly as if breathing. Do you:';
+                const options: string[] = [
+                    "[weapons]: Point your weapon at the bulging center and fire.",
+                    "With the toe of your boot, nudge it a little.",
+                    "[science]: Scan it for more information.",
+                    "[leadership]: Order your closest security officer to start digging.",
+                    "Leave it well enough alone"
+                ];
+                const results: TriggeredEventResult[] = [
+                    {
+                        successMsg: '[Success]: With an impressive shot from your blaster, you hit dead center. An unnatural screech issues up from the ground, followed by a gurgling death rattle. Upon further inspection you find the mangled corpse of an alien lifeform. Not much remains, but what there is provides useful scientific value.',
+                        successReward: {
+                            type: RewardType.Experience,
+                            quantity: 100
+                        },
+                        failureMsg: '[Failure]: Clearly you need more time practicing your aim, as you manage only to hit the edge of the pulsating mound. An unearthly howl pierces your ears as something bursts forth quicker than you can follow. Something pierces your suit, and a stab of red hot pain ripples down your arm. As fast as it appeared, the entity vanishes back to its subterranean habitat.' ,
+                        failureConsequence: {
+                            type: ConsequenceType.Health,
+                            quantity: 25
+                        },
+                    }
+                ];
                 this._modalDialogueCtrl.show();
                 this._modalDialogueCtrl.updateContent(mainText, options, (choice) => {
                     // TODO: Transition to modal result state

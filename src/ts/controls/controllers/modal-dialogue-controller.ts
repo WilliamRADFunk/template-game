@@ -20,6 +20,11 @@ export class ModalDialogueCtrl {
      * The HTML element containing the modal dialogue's main text.
      */
     protected _mainText: string;
+    
+    /**
+     * The HTML element containing the list of options text.
+     */
+    protected _options: HTMLElement;
 
     /**
      * The HTML element containing the whole dialogue modal and backdrop
@@ -65,6 +70,13 @@ export class ModalDialogueCtrl {
         this._description.style.lineHeight = '1.1';
         this._description.style.textShadow = '0px 1px 1px #000000';
 
+        // Create main text.
+        this._options = document.createElement('div');
+        this._options.style.color = '#DDDDDD';
+        this._options.style.fontFamily = 'Luckiest Guy';
+        this._options.style.lineHeight = '1.1';
+        this._options.style.textShadow = '0px 1px 1px #000000';
+
         // Append.
         this._wrapper.appendChild(this._backdrop);
         this._wrapper.appendChild(this._box);
@@ -98,6 +110,8 @@ export class ModalDialogueCtrl {
         this._box.style.top = (position.height * 0.2)  + 'px';
         this._description.style.fontSize = (position.width * 0.0172) + 'px';
         this._description.style.padding = (position.width * 0.01) + 'px';
+        this._options.style.fontSize = (position.width * 0.0172) + 'px';
+        this._options.style.padding = (position.width * 0.01) + 'px';
     }
 
     /**
@@ -113,6 +127,13 @@ export class ModalDialogueCtrl {
      * @param choices the options available to player to choose from.
      */
     public updateContent(mainText: string, choices: string[], selectionCallback: (choice: number) => void): void {
+        this._options.innerHTML = '';
         this._description.innerText = mainText;
+
+        choices.forEach((choice, index) => {
+            const option = document.createElement('p');
+            option.innerText = `${String.fromCharCode(index + 65)}: ${choice}`;
+            // TODO: Attach event listener for hover and click.
+        });
     }
 }
