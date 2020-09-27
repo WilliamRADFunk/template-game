@@ -12,6 +12,7 @@ import { createMiningTeam } from "../utils/create-mining-team";
 import { SOUNDS_CTRL } from "../../../controls/controllers/sounds-controller";
 import { LootCtrl } from "./loot-controller";
 import { ButtonBase } from "../../../controls/buttons/button-base";
+import { ASSETS_CTRL } from "../../../controls/controllers/assets-controller";
 
 /**
  * @class
@@ -77,11 +78,6 @@ export class MiningCtrl {
      * Reference to the scene, used to remove elements from rendering cycle once destroyed.
      */
     private _scene: Scene;
-
-    /**
-     * Textures needed to make ThreeJS objects.
-     */
-    private _textures: { [key: string]: Texture } = {};
 
     /**
      * Constructor for the Mining Controller class.
@@ -297,7 +293,7 @@ export class MiningCtrl {
                 const geo = new PlaneGeometry( 0.105, 0.105, 10, 10 );
                 const minedMat = new MeshPhongMaterial({
                     color: '#FFFFFF',
-                    map: this._textures.minedSquare1,
+                    map: ASSETS_CTRL.textures.minedSquare1,
                     shininess: 0,
                     transparent: true
                 });
@@ -312,7 +308,7 @@ export class MiningCtrl {
                 const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
                 const drillMat = new MeshPhongMaterial({
                     color: '#FFFFFF',
-                    map: this._textures.miningDrill,
+                    map: ASSETS_CTRL.textures.miningDrill,
                     shininess: 0,
                     transparent: true
                 });
@@ -418,7 +414,7 @@ export class MiningCtrl {
         const drillGeo = new PlaneGeometry( 0.05, 0.1, 10, 10 );
         const drillMat = new MeshPhongMaterial({
             color: '#FFFFFF',
-            map: this._textures.miningDrill,
+            map: ASSETS_CTRL.textures.miningDrill,
             shininess: 0,
             transparent: true
         });
