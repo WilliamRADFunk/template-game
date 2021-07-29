@@ -3,17 +3,17 @@
  */
 export const dialogues: { [key: string]: string } = {
     'CaptainsLogIntro1': `
-        "Captain's log:<br><br>
-        Soldate 08.03.2137<br><br>
-        The Enzmann is coming up on the final days of its ten year voyage to explore the furthest reaches of space."`,
+        "Example line 1:<br><br>
+        Example line 2<br><br>
+        Really long Example line 3 to play it out a bit."`,
 
     'CaptainsLogIntro2': `
-        "Crew is tired.<br><br>
-        Supplies are low.<br><br>
-        The Enzmann is desperate for some TLC in drydock.<br><br>
-        No one can wait for the party Earth is going to throw when we get back home--"`,
+        "Example line 1.<br><br>
+        Example line 2.<br><br>
+        Really long Example line 3 to play it out a bit more.<br><br>
+        Really Really Really Really Reallylong Example line 4 to play it out a bit more more."`,
 
     'CommsOfficerIntro1': `
-        "Captain!:<br><br>
-        I'm picking up a signal."`,
+        "Example line 1:<br><br>
+        Example line 2."`,
 };

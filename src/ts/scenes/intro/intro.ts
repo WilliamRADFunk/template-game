@@ -2,7 +2,6 @@ import {
     DoubleSide,
     Mesh,
     MeshBasicMaterial,
-    MeshPhongMaterial,
     PlaneGeometry,
     Scene } from 'three';
 
@@ -13,17 +12,7 @@ import { Sequence } from '../../models/sequence';
 import { ActorEvent } from '../../models/actor-event';
 import { TextEvent } from "../../models/text-event";
 import { SEQUENCE01 } from "./sequences/sequence-01";
-import { SEQUENCE02 } from './sequences/sequence-02';
-import { SEQUENCE03 } from './sequences/sequence-03';
-import { SEQUENCE04 } from './sequences/sequence-04';
-import { SEQUENCE05 } from './sequences/sequence-05';
-import { createEarth } from './actors/create-earth';
-import { createMars } from './actors/create-mars';
-import { createAsteroid } from './actors/create-asteroid';
-import { createEnceladus } from './actors/create-enceladus';
-import { createSolarSystem } from './actors/create-solar-system';
 import { createShip1 } from './actors/create-ship-1';
-import { createGeminiStation } from './actors/createGeminiStation';
 import { createEntryEffect } from './actors/create-entry-effect';
 import { SceneType } from '../../models/scene-type';
 import { ASSETS_CTRL } from '../../controls/controllers/assets-controller';
@@ -41,24 +30,8 @@ export class Intro {
      * List of actors in the scene.
      */
     private _actors: Actor[] = [
-        // 0: earth,
-        // 1: mars,
-        // 2: asteroid,
-        // 3: enceladus,
-        // 4: sun,
-        // 5: mercury,
-        // 6: venus,
-        // 7: tiny earth,
-        // 8: tiny mars,
-        // 9: jupiter,
-        // 10: saturn,
-        // 11: uranus,
-        // 12: neptune
-        // 13: pluto,
-        // 14: barrier station,
-        // 15: station,
-        // 16: entryEffect,
-        // 17: ship,
+        // 0: entryEffect,
+        // 1: ship,
     ];
     /**
      * Current frame
@@ -89,11 +62,7 @@ export class Intro {
      * Tracks series of events that make up the intro scene.
      */
     private _sequences: Sequence[] = [
-        SEQUENCE01, // Colonize Mars
-        SEQUENCE02, // Mine Asteroid Belt
-        SEQUENCE03, // Colonize Enceladus
-        SEQUENCE04, // Explore outer solar system
-        SEQUENCE05, // Warp Drive
+        SEQUENCE01, // Moving Ship
     ];
 
     /**
@@ -207,78 +176,6 @@ export class Intro {
             bevelSize: 0.5,
             bevelSegments: 3
         };
-
-        const labelBackMaterial = new MeshBasicMaterial({
-            color: 0x111111,
-            opacity: 1,
-            transparent: false,
-            side: DoubleSide
-        });
-        const labelBackMaterialGlow = new MeshPhongMaterial({
-            color: 0x5555FF,
-            opacity: 0.6,
-            transparent: true,
-            side: DoubleSide
-        });
-        const labelBackGeometry = new PlaneGeometry( 4.5, 0.8, 0, 0 );
-        const labelBackGlowGeometry = new PlaneGeometry( 4.7, 0.9, 0, 0 );
-
-        const earth = createEarth(
-            labelBackGlowGeometry,
-            labelBackMaterialGlow,
-            labelBackGeometry,
-            labelBackMaterial,
-            headerParams);
-        this._scene.add(earth.mesh);
-        this._actors.push(earth);
-
-        const mars = createMars(
-            labelBackGlowGeometry,
-            labelBackMaterialGlow,
-            labelBackGeometry,
-            labelBackMaterial,
-            headerParams);
-        this._scene.add(mars.mesh);
-        this._actors.push(mars);
-
-        const asteroid = createAsteroid(
-            labelBackGlowGeometry,
-            labelBackMaterialGlow,
-            labelBackGeometry,
-            labelBackMaterial,
-            headerParams);
-        this._scene.add(asteroid.mesh);
-        this._actors.push(asteroid);
-
-        const enceladus = createEnceladus(
-            labelBackGlowGeometry,
-            labelBackMaterialGlow,
-            labelBackGeometry,
-            labelBackMaterial,
-            headerParams);
-        this._scene.add(enceladus.mesh);
-        this._actors.push(enceladus);
-
-        this._actors.push(...createSolarSystem(
-            ASSETS_CTRL.gameFont,
-            labelBackGlowGeometry,
-            labelBackMaterialGlow,
-            labelBackGeometry,
-            labelBackMaterial,
-            headerParams
-        ).filter(x => {
-            this._scene.add(x.mesh);
-            return true;
-        }));
-
-        const station = createGeminiStation(
-            labelBackGlowGeometry,
-            labelBackMaterialGlow,
-            labelBackGeometry,
-            labelBackMaterial,
-            headerParams);
-        this._scene.add(station.mesh);
-        this._actors.push(station);
 
         const entryEffect = createEntryEffect();
         this._scene.add(entryEffect.mesh);

@@ -37,7 +37,7 @@ export interface Collidable {
      */
     isPassive: () => boolean;
     /**
-     * Removes asteroid object from the three.js scene.
+     * Removes object from the three.js scene.
      * @param scene graphic rendering scene object. Used each iteration to redraw things contained in scene.
      */
     removeFromScene?: (scene: Scene) => void;

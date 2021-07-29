@@ -21,7 +21,7 @@ export function createShip1() {
     ship.mesh = new Mesh(ship.geometry, ship.material);
     ship.mesh.position.set(ship.currentPoint[0], 0, ship.currentPoint[1]);
     ship.mesh.rotation.set(-1.5708, 0, -1.5708);
-    ship.mesh.name = 'Enzmann';
+    ship.mesh.name = 'Spaceship';
     ship.mesh.scale.set(0.0001, 0.0001, 0.0001);
     return ship;
 }

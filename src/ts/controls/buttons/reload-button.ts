@@ -4,30 +4,30 @@ import { ButtonColors } from "../../models/button-colors";
 
 /**
  * @class
- * Button that says Unload.
+ * Button that says Reload.
  */
-export class UnloadButton extends ButtonBase {
+export class ReloadButton extends ButtonBase {
     /**
      * Scale to apply to button dimensions.
      */
     private _scale: number;
 
     /**
-     * Constructor for the unload button sub class
+     * Constructor for the reload button sub class
      * @param position height, width, left and top position of the button.
      * @param colors colors of the buttons at the different stages of its lifecycle.
      * @param onClick callback for onClick event.
-     * @param visible whether or not to unload the button in a visible state.
+     * @param visible whether or not to reload the button in a visible state.
      * @param scale scale to apply to button dimensions.
      */
     constructor(position: HTMLElementPosition, colors: ButtonColors, onClick: () => void, visible: boolean, scale?: number) {
-        super('unload-button', colors, onClick, visible);
+        super('reload-button', colors, onClick, visible);
 
         this._scale = scale || 1;
 
         this.element.style.borderRadius = '5px';
         this.element.style.fontFamily = 'Luckiest Guy';
-        this.element.innerHTML = 'Unload';
+        this.element.innerHTML = 'Reload';
         document.body.appendChild(this.element);
 
         this.resize(position);

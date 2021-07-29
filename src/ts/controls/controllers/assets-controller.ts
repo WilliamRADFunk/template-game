@@ -309,9 +309,9 @@ const TEXTURES: { [key: string]: [string, Texture] } = {
     engineerProfile: ['assets/images/ship-layout-profile.png', null],
     // The loaded texture, used for the ship layout dialogue engineer profile 2.
     engineer2Profile: ['assets/images/ship-layout-profile-2.png', null],
-    // The loaded texture, used for the enzmann's interior.
-    enzmannLayout: ['assets/images/enzmann-layout.png', null],
-    enzmannOutside: ['assets/images/enzmann-outside.png', null],
+    // The loaded texture, used for the spaceship's interior.
+    spaceshipLayout: ['assets/images/spaceship-layout.png', null],
+    spaceshipOutside: ['assets/images/spaceship-outside.png', null],
     fire: ['assets/images/fire.png', null],
     keysForDown: ['assets/images/keys-down.png', null],
     keysForLeft: ['assets/images/keys-left.png', null],

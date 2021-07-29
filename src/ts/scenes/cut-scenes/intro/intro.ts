@@ -34,13 +34,13 @@ import { RightTopProfile } from '../../../controls/profiles/right-top-profile';
 // const border: string = '1px solid #FFF';
 const border: string = 'none';
 
-// Offset position coordinates for top enzmann thruster in relation to the ship itself.
+// Offset position coordinates for top spaceship thruster in relation to the ship itself.
 const THRUSTER1_OFFSETS = [-2.355, 1, -0.33];
 
-// Offset position coordinates for middle enzmann thruster in relation to the ship itself.
+// Offset position coordinates for middle spaceship thruster in relation to the ship itself.
 const THRUSTER2_OFFSETS = [-2.45, 1, 0.0075];
 
-// Offset position coordinates for bottom enzmann thruster in relation to the ship itself.
+// Offset position coordinates for bottom spaceship thruster in relation to the ship itself.
 const THRUSTER3_OFFSETS = [-2.355, 1, 0.335];
 
 // Starting frame for the first part of the cutscene.
@@ -106,7 +106,7 @@ export class Intro {
     private _scene: Scene;
 
     /**
-     * Reference to the Enzmann ship actor.
+     * Reference to the Spaceship actor.
      */
     private _ship: Actor;
 
@@ -116,17 +116,17 @@ export class Intro {
     private _stars: Mesh[] = [];
 
     /**
-     * Reference to the top thruster for the enzmann engine.
+     * Reference to the top thruster for the spaceship engine.
      */
     private _thruster1: Thruster;
 
     /**
-     * Reference to the middle thruster for the enzmann engine.
+     * Reference to the middle thruster for the spaceship engine.
      */
     private _thruster2: Thruster;
 
     /**
-     * Reference to the bottom thruster for the enzmann engine.
+     * Reference to the bottom thruster for the spaceship engine.
      */
     private _thruster3: Thruster;
 

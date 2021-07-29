@@ -1,18 +1,13 @@
 import { ASSETS_CTRL } from './controls/controllers/assets-controller';
 
-import { AncientRuinsSpecifications } from './models/ancient-ruins-specifications';
-import { LanderSpecifications } from './models/lander-specifications';
 import { SceneType } from './models/scene-type';
 
-import { AncientRuins } from './scenes/ancient-ruins/ancient-ruins';
 import { DevMenu } from './scenes/dev-menu/dev-menu';
 import { Intro } from './scenes/cut-scenes/intro/intro';
-import { LandAndMine } from './scenes/land-and-mine/land-and-mine';
+import { MainPlayLevel } from './scenes/main-play-level/main-play-level';
 import { Menu } from './scenes/main-menu/menu';
-import { ShipLayout } from './scenes/ship-layout/ship-layout';
 
 import { ENVIRONMENT } from './environment';
-import { PlanetSpecifications, OreTypes, OreQuantity, PlanetLandTypes, SkyTypes } from './models/planet-specifications';
 
 import * as stats from 'stats.js';
 
@@ -47,7 +42,7 @@ const scenes: { [ key: string ]: SceneType } = {
         renderer: null,
         scene: null
     },
-    landAndMine: {
+    mainPlayLevel: {
         active: false,
         camera: null,
         instance: null,
@@ -81,14 +76,6 @@ const loadDevMenu = () => {
 
     window.addEventListener( 'resize', sceneMod.onWindowResizeRef, false);
     // Click event listeners that activates certain menu options.
-    const activateAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
-        scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
-        setTimeout(() => {
-            loadAncientRuinsScene(ancientRuinsSpec);
-        }, 50);
-    };
     const activateIntroScene = () => {
         scenes.devMenu.active = false;
         window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
@@ -105,52 +92,12 @@ const loadDevMenu = () => {
             loadGameMenu();
         }, 50);
     };
-    const activateRepairScene = () => {
+    const activateMainPlayLevelScene = (level: number, score: number, lives: number) => {
         scenes.devMenu.active = false;
         window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
         sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
         setTimeout(() => {
-            // loadRepairScene();
-        }, 50);
-    };
-    const activateShipLayoutScene = () => {
-        scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
-        setTimeout(() => {
-            loadShipLayoutScene();
-        }, 50);
-    };
-    const activateTravelScene = () => {
-        scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
-        setTimeout(() => {
-            // loadTravelScene();
-        }, 50);
-    };
-    const activateVertexMapScene = () => {
-        scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
-        setTimeout(() => {
-            // loadVertexMapScene();
-        }, 50);
-    };
-    const activateLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
-        scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
-        setTimeout(() => {
-            loadLandAndMineScene(planetSpec, landerSpec);
-        }, 50);
-    };
-    const activatePlanetRaid = () => {
-        scenes.devMenu.active = false;
-        window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-        sceneMod.container.removeChild( (scenes.devMenu.renderer as any).domElement );
-        setTimeout(() => {
-            // loadPlanetRaidScene();
+            loadMainPlayLevelScene(level, score, lives);
         }, 50);
     };
     
@@ -158,15 +105,9 @@ const loadDevMenu = () => {
     scenes.devMenu.instance = new DevMenu(
         scenes.devMenu,
         {
-            activateAncientRuinsScene,
             activateGameMenu,
             activateIntroScene,
-            activateLandAndMineScene,
-            activatePlanetRaid,
-            activateRepairScene,
-            activateShipLayoutScene,
-            activateTravelScene,
-            activateVertexMapScene
+            activateMainPlayLevelScene
         });
     
     /**
@@ -210,27 +151,7 @@ const loadGameMenu = () => {
                 disposeScene(scenes.menu);
 
                 // TODO: Load ship lost in wormhole scene. For now, launch most recently completed mini-section.
-                loadLandAndMineScene(
-                    {
-                        gravity: 0.0001,
-                        hasWater: true,
-                        isFrozen: false,
-                        isLife: true,
-                        ore: OreTypes.Gold,
-                        oreQuantity: OreQuantity.Average,
-                        peakElevation: 3,
-                        planetBase: PlanetLandTypes.Red,
-                        skyBase: SkyTypes.Blue,
-                        wind: 0
-                    },
-                    {
-                        drillLength: 5,
-                        fuelBurn: 0.05,
-                        horizontalCrashMargin: 0.001,
-                        oxygenBurn: 0.02,
-                        verticalCrashMargin: 0.01
-                    }
-                );
+                loadMainPlayLevelScene(1, 0, 3);
             }, 750);
         } else {
             scenes.menu.renderer.render( scenes.menu.scene, scenes.menu.camera );
@@ -280,153 +201,49 @@ const loadIntroScene = () => {
 };
 
 /**
- * Game's intro scene. Only starts when all assets are finished loading.
+ * Game's main level scene, where player actually plays the game. Only starts when all assets are finished loading.
  */
-const loadAncientRuinsScene = (ancientRuinsSpec: AncientRuinsSpecifications) => {
-    const sceneMod = createSceneModule(scenes.ancientRuins);
+const loadMainPlayLevelScene = (level: number, score: number, lives: number) => {
+    const sceneMod = createSceneModule(scenes.mainPlayLevel);
     // Create instance of game section.
-    scenes.ancientRuins.instance = new AncientRuins(scenes.ancientRuins, ancientRuinsSpec);
+    scenes.mainPlayLevel.instance = new MainPlayLevel(scenes.mainPlayLevel, level, score, lives);
 
     /**
      * The render loop. Everything that should be checked, called, or drawn in each animation frame.
      */
     const render = () => {
-        if (!scenes.ancientRuins.active) {
-            scenes.ancientRuins.instance.dispose();
+        if (!scenes.mainPlayLevel.active) {
+            scenes.mainPlayLevel.instance.dispose();
             // Remove renderer from the html container, and remove event listeners.
             window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-            sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
-            // Clear up memory used by ancientRuins scene.
-            disposeScene(scenes.ancientRuins);
-            statsPanel.end();
-            return;
-        } else {
-            statsPanel.update();
-            const output: any = scenes.ancientRuins.instance.endCycle();
-            if (output) {
-                console.log('Output', output);
-                scenes.ancientRuins.instance.dispose();
-                scenes.ancientRuins.active = false;
-                window.alert(output);
-                // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                sceneMod.container.removeChild( (scenes.ancientRuins.renderer as any).domElement );
-                // Clear up memory used by ancientRuins scene.
-                disposeScene(scenes.ancientRuins);
-                statsPanel.end();
-                setTimeout(() => {
-                    loadMenu();
-                }, 10);
-                return;
-            }
-        }
-        scenes.ancientRuins.renderer.render( scenes.ancientRuins.scene, scenes.ancientRuins.camera );
-        requestAnimationFrame( render );
-    };
-    statsPanel.begin();
-    // Kick off the first render loop iteration.
-    scenes.ancientRuins.renderer.render( scenes.ancientRuins.scene, scenes.ancientRuins.camera );
-	requestAnimationFrame( render );
-};
-
-/**
- * Game's intro scene. Only starts when all assets are finished loading.
- */
-const loadLandAndMineScene = (planetSpec: PlanetSpecifications, landerSpec: LanderSpecifications) => {
-    const sceneMod = createSceneModule(scenes.landAndMine);
-    // Create instance of game section.
-    scenes.landAndMine.instance = new LandAndMine(scenes.landAndMine, planetSpec, landerSpec);
-
-    /**
-     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
-     */
-    const render = () => {
-        if (!scenes.landAndMine.active) {
-            scenes.landAndMine.instance.dispose();
-            // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-            sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
-            // Clear up memory used by landAndMine scene.
-            disposeScene(scenes.landAndMine);
+            sceneMod.container.removeChild( (scenes.mainPlayLevel.renderer as any).domElement );
+            // Clear up memory used by mainPlayLevel scene.
+            disposeScene(scenes.mainPlayLevel);
             return;
         } else {
             statsPanel.begin();
-            const layout: { [key: number]: number } = scenes.landAndMine.instance.endCycle();
+            const layout: { [key: number]: number } = scenes.mainPlayLevel.instance.endCycle();
             statsPanel.end();
             if (layout) {
-                let output = `Loot received:
-                    Lander = ${layout[-3]},
-                    Crew = ${layout[-2] > 0 ? '+': ''}${layout[-2]},
-                    Food = ${layout[-1]},
-                    Water = ${layout[0]}`;
-                Object.keys(layout).filter(key => Number(key) > 0).forEach(key => {
-                    output += `,
-                    ${OreTypes[Number(key)]} = ${layout[Number(key)]}`;
-                });
-                scenes.landAndMine.instance.dispose();
-                scenes.landAndMine.active = false;
-                window.alert(output);
+                scenes.mainPlayLevel.instance.dispose();
+                scenes.mainPlayLevel.active = false;
+                window.alert(layout);
                 // Remove renderer from the html container, and remove event listeners.
                 window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                sceneMod.container.removeChild( (scenes.landAndMine.renderer as any).domElement );
-                // Clear up memory used by landAndMine scene.
-                disposeScene(scenes.landAndMine);
+                sceneMod.container.removeChild( (scenes.mainPlayLevel.renderer as any).domElement );
+                // Clear up memory used by mainPlayLevel scene.
+                disposeScene(scenes.mainPlayLevel);
                 setTimeout(() => {
                     loadMenu();
                 }, 10);
                 return;
             }
         }
-        scenes.landAndMine.renderer.render( scenes.landAndMine.scene, scenes.landAndMine.camera );
+        scenes.mainPlayLevel.renderer.render( scenes.mainPlayLevel.scene, scenes.mainPlayLevel.camera );
         requestAnimationFrame( render );
     };
     // Kick off the first render loop iteration.
-    scenes.landAndMine.renderer.render( scenes.landAndMine.scene, scenes.landAndMine.camera );
-	requestAnimationFrame( render );
-};
-
-/**
- * Game's intro scene. Only starts when all assets are finished loading.
- */
-const loadShipLayoutScene = () => {
-    const sceneMod = createSceneModule(scenes.shipLayout);
-    // Create instance of game section.
-    scenes.shipLayout.instance = new ShipLayout(scenes.shipLayout);
-
-    /**
-     * The render loop. Everything that should be checked, called, or drawn in each animation frame.
-     */
-    const render = () => {
-        if (!scenes.shipLayout.active) {
-            scenes.shipLayout.instance.dispose();
-            // Remove renderer from the html container, and remove event listeners.
-            window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-            sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
-            // Clear up memory used by shipLayout scene.
-            disposeScene(scenes.shipLayout);
-            return;
-        } else {
-            const layout = scenes.shipLayout.instance.endCycle();
-            if (layout) {
-                console.log("Chosen Layout: ", layout);
-                scenes.shipLayout.instance.dispose();
-                scenes.shipLayout.active = false;
-                // Remove renderer from the html container, and remove event listeners.
-                window.removeEventListener( 'resize', sceneMod.onWindowResizeRef, false);
-                sceneMod.container.removeChild( (scenes.shipLayout.renderer as any).domElement );
-                // Clear up memory used by shipLayout scene.
-                disposeScene(scenes.shipLayout);
-                setTimeout(() => {
-                    loadMenu();
-                }, 10);
-                return;
-            }
-        }
-        scenes.shipLayout.renderer.render( scenes.shipLayout.scene, scenes.shipLayout.camera );
-        requestAnimationFrame( render );
-    };
-    // Kick off the first render loop iteration.
-    scenes.shipLayout.renderer.render( scenes.shipLayout.scene, scenes.shipLayout.camera );
+    scenes.mainPlayLevel.renderer.render( scenes.mainPlayLevel.scene, scenes.mainPlayLevel.camera );
 	requestAnimationFrame( render );
 };
 

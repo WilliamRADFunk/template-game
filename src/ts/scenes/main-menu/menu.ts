@@ -378,7 +378,7 @@ export class Menu {
         this._scene.add(this._barrierOn);
 
         // Main Banner button text
-        this._mainBannerGeometry = new TextGeometry('Enzmann\'s Odyssey',
+        this._mainBannerGeometry = new TextGeometry('Template Game',
             {
                 font: this._menuFont,
                 size: 0.6,
@@ -395,7 +395,7 @@ export class Menu {
         this._scene.add(this._mainBanner);
 
         // Copyright text
-        this._copyrightGeometry = new TextGeometry('Copyright 2020 Tenacious Teal Games',
+        this._copyrightGeometry = new TextGeometry('Copyright 2021 Tenacious Teal Games',
             {
                 font: this._menuFont,
                 size: 0.2,
@@ -442,7 +442,9 @@ export class Menu {
         this._scene.add(this._help);
 
         this._helpHandler = new HelpHandler(this._scene, this._menuFont);
+        this._helpHandler.deactivate();
         this._loadHandler = new LoadHandler(this._scene, this._menuFont);
+        this._loadHandler.deactivate();
 
         // Sound text
         const soundGeometry = new TextGeometry('Sound: ', this._fontDifficultyBtnParams);
@@ -477,56 +479,57 @@ export class Menu {
             const intersecs = getIntersections(event, document.getElementById('mainview'), scene)
             for (let i = 0; i < intersecs.length; i++) {
                 const name = intersecs[i].object.name;
-                if (name === 'Start') {
+                console.log('name', name);
+                if (this._mode === 0 && name === 'Start') {
                     this._pressedStart();
                     this._isActive = false;
                     SOUNDS_CTRL.playBidooo();
                     // TODO: Fill game data with empty set + chosen difficulty setting.
                     break;
-                } else if (name === 'Load Code') {
+                } else if (this._mode === 2 && name === 'Load Code') {
                     SOUNDS_CTRL.playBidooo();
                     this._isActive = false;
                     // TODO: Fill game data with decrypted load code.
                     break;
-                } else if (name === 'Easy') {
+                } else if (this._mode === 0 && name === 'Easy') {
                     this._changeDifficulty(0);
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'Normal') {
+                } else if (this._mode === 0 && name === 'Normal') {
                     this._changeDifficulty(1);
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'Hard') {
+                } else if (this._mode === 0 && name === 'Hard') {
                     this._changeDifficulty(2);
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'Hardcore') {
+                } else if (this._mode === 0 && name === 'Hardcore') {
                     this._changeDifficulty(3);
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'Load') {
+                } else if (this._mode === 0 && name === 'Load') {
                     this._pressedLoad();
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'Help') {
+                } else if (this._mode === 0 && name === 'Help') {
                     this._pressedHelp();
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'On') {
+                } else if (this._mode === 0 && name === 'On') {
                     this._pressedOn();
                     break;
-                } else if (name === 'Off') {
+                } else if (this._mode === 0 && name === 'Off') {
                     this._pressedOff();
                     break;
-                } else if (name === 'Return Help') {
+                } else if (this._mode === 1 && name === 'Return Help') {
                     this._returnToMainMenu();
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name === 'Return Load') {
+                } else if (this._mode === 2 && name === 'Return Load') {
                     this._returnToMainMenu();
                     SOUNDS_CTRL.playBidooo();
                     break;
-                } else if (name.length === 1) {
+                } else if (this._mode === 2 && name.length === 1) {
                     this._charEntered(name);
                     SOUNDS_CTRL.playBidooo();
                     break;
@@ -619,7 +622,6 @@ export class Menu {
      * Changes the help menu button text when clicked to signal to user that their click worked.
      */
     private _pressedHelp(): void {
-        this._barrierHelp.visible = false;
         this._scene.remove(this._help);
         // Selected help button text
         this._helpGeometry = new TextGeometry('Help', this._fontDifficultyBtnParams);

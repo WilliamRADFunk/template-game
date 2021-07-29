@@ -36,41 +36,20 @@ class Collisionator {
                 const entityJ = this.collisionItems[j];
                 // If second collidable isn't active, don't collide
                 if (!entityJ.getActive()) continue;
-                const isEnemyMissile = (entityI.getName().indexOf('enemy') > -1 || entityJ.getName().indexOf('enemy') > -1);
-                // Two unexploded enemy missiles should not collide.
-                if (entityI.getName().indexOf('enemy') > -1 && entityJ.getName().indexOf('enemy') > -1) continue;
-                // If both collidables are passive (ie. planet && shield) then they should not collide
+                const isEnemyProjectile = (entityI.getName().indexOf('Projectile-enemy') > -1 || entityJ.getName().indexOf('Projectile-enemy') > -1);
+                // Two unexploded enemy projectile should not collide.
+                if (entityI.getName().indexOf('Projectile-enemy') > -1 && entityJ.getName().indexOf('Projectile-enemy') > -1) continue;
+                // If both collidables are passive (ie. scenery objects) then they should not collide
                 if (entityI.isPassive() && entityJ.isPassive()) continue;
                 // No need to register two explosions colliding; they're already blowing up.
                 if (!entityI.getName().indexOf('explosion') &&
                     !entityJ.getName().indexOf('explosion')) continue;
-                // Two unexploding asteroids shouldn't collide.
-                if (!entityI.getName().indexOf('Asteroid') &&
-                    !entityJ.getName().indexOf('Asteroid')) continue;
-                // Two unexploding saucers shouldn't collide.
-                if (!entityI.getName().indexOf('Saucer') &&
-                    !entityJ.getName().indexOf('Saucer')) continue;
-                // Two unexploding drones shouldn't collide.
-                if (!entityI.getName().indexOf('Drone') &&
-                    !entityJ.getName().indexOf('Drone')) continue;
-                // Unexploded enemy missiles and asteroids should not collide.
-                if ((!entityI.getName().indexOf('Asteroid') ||
-                    !entityJ.getName().indexOf('Asteroid')) && isEnemyMissile) continue;
-                // Unexploded enemy missiles and drones should not collide.
-                if ((!entityI.getName().indexOf('Drone') ||
-                    !entityJ.getName().indexOf('Drone')) && isEnemyMissile) continue;
-                // Unexploded enemy missiles and saucers should not collide.
-                if ((!entityI.getName().indexOf('Saucer') ||
-                    !entityJ.getName().indexOf('Saucer')) && isEnemyMissile) continue;
-                // Asteroids and saucers should not collide.
-                if ((!entityI.getName().indexOf('Saucer') && !entityJ.getName().indexOf('Asteroid')) || 
-                    (!entityI.getName().indexOf('Asteroid') && !entityJ.getName().indexOf('Saucer'))) continue;
-                // Drones and saucers should not collide.
-                if ((!entityI.getName().indexOf('Saucer') && !entityJ.getName().indexOf('Drone')) || 
-                    (!entityI.getName().indexOf('Drone') && !entityJ.getName().indexOf('Saucer'))) continue;
-                // Drones and asteroids should not collide.
-                if ((!entityI.getName().indexOf('Asteroid') && !entityJ.getName().indexOf('Drone')) || 
-                    (!entityI.getName().indexOf('Drone') && !entityJ.getName().indexOf('Asteroid'))) continue;
+                // Two enemy bandits shouldn't collide.
+                if (!entityI.getName().indexOf('Bandit') &&
+                    !entityJ.getName().indexOf('Bandit')) continue;
+                // Unexploded enemy projectile and bandits should not collide.
+                if ((!entityI.getName().indexOf('Bandit') ||
+                    !entityJ.getName().indexOf('Bandit')) && isEnemyProjectile) continue;
 
                 const posI = entityI.getCurrentPosition();
                 const posJ = entityJ.getCurrentPosition();
